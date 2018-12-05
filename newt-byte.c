@@ -17,7 +17,6 @@
 void
 newt_byte_add_op(newt_op_t op)
 {
-
 }
 
 void

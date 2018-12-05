@@ -17,12 +17,14 @@
 void *
 newt_ref(newt_poly_t poly)
 {
-	if (poly == NEWT_NULL)
+	if (newt_is_null(poly))
 		return NULL;
+	return newt_pool + (poly.u & 0x0fffffc);
 }
 
 newt_poly_t
 newt_poly(const void *addr, newt_type_t type)
 {
+	return newt_uint_to_value(((const uint8_t *) addr - newt_pool) | type);
 }
 

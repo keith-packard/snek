@@ -16,8 +16,8 @@
 #include "newt.h"
 
 #ifdef NEWT_DYNAMIC
-uint8_t *newt_pool  __attribute__((aligned(NEWT_ALLOC_ROUND)));
-ao_poly	newt_pool_size;
+uint8_t 	*newt_pool  __attribute__((aligned(NEWT_ALLOC_ROUND)));
+uint32_t	newt_pool_size;
 #else
 uint8_t	newt_pool[NEWT_POOL + NEWT_POOL_EXTRA] __attribute__((aligned(NEWT_ALLOC_ROUND)));
 #endif
@@ -30,8 +30,17 @@ struct newt_root {
 #define NEWT_NUM_STASH	6
 static newt_poly_t		stash_poly[NEWT_NUM_STASH];
 static int			stash_poly_ptr;
+static newt_offset_t		stash_name;
 
 static const struct newt_root	newt_root[] = {
+	{
+		.type = &newt_name_mem,
+		.addr = (void **) (void *) &newt_names,
+	},
+	{
+		.type = &newt_name_mem,
+		.addr = (void **) (void *) &stash_name,
+	},
 	{
 		.type = NULL,
 		.addr = (void **) (void *) &stash_poly[0]
@@ -71,8 +80,8 @@ struct newt_chunk {
 
 #ifdef NEWT_DYNAMIC
 static uint8_t	*newt_busy;
-static uint8_t	*newt_cons_note;
-static uint8_t	*newt_cons_last;
+static uint8_t	*newt_list_note;
+static uint8_t	*newt_list_last;
 static struct newt_chunk *newt_chunk;
 static newt_poly_t NEWT_NCHUNK;
 
@@ -89,9 +98,9 @@ newt_mem_alloc(newt_poly_t pool_size)
 	if (!newt_pool)
 		return false;
 	newt_busy = newt_pool + pool_size + NEWT_POOL_EXTRA;
-	newt_cons_note = newt_busy + busy_size;
-	newt_cons_last = newt_cons_note + busy_size;
-	newt_chunk = (struct newt_chunk *) (((uintptr_t)(newt_cons_last + busy_size) + 7) & ~7);
+	newt_list_note = newt_busy + busy_size;
+	newt_list_last = newt_list_note + busy_size;
+	newt_chunk = (struct newt_chunk *) (((uintptr_t)(newt_list_last + busy_size) + 7) & ~7);
 	newt_pool_size = pool_size;
 	NEWT_NCHUNK = NEWT_NCHUNK_EST(pool_size);
 	return true;
@@ -102,13 +111,13 @@ newt_mem_alloc(newt_poly_t pool_size)
 #define NEWT_NCHUNK NEWT_NCHUNK_EST(NEWT_POOL)
 
 static uint8_t	newt_busy[NEWT_BUSY_SIZE];
-static uint8_t	newt_cons_note[NEWT_BUSY_SIZE];
-static uint8_t	newt_cons_last[NEWT_BUSY_SIZE];
+static uint8_t	newt_list_note[NEWT_BUSY_SIZE];
+static uint8_t	newt_list_last[NEWT_BUSY_SIZE];
 static struct newt_chunk newt_chunk[NEWT_NCHUNK];
 
 #endif
 
-static uint8_t	newt_cons_noted;
+static uint8_t	newt_list_noted;
 
 newt_offset_t		newt_top;
 
@@ -145,10 +154,10 @@ static inline int limit(int offset) {
 }
 
 static inline void
-note_cons(newt_offset_t offset)
+note_list(newt_offset_t offset)
 {
-	newt_cons_noted = 1;
-	mark(newt_cons_note, offset);
+	newt_list_noted = 1;
+	mark(newt_list_note, offset);
 }
 
 static newt_offset_t	chunk_low, chunk_high;
@@ -222,13 +231,13 @@ reset_chunks(void)
 
 static void
 walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
-     int (*visit_poly)(newt_offset_t *p, uint8_t do_note_cons))
+     int (*visit_poly)(newt_poly_t *p, uint8_t do_note_list))
 {
 	newt_offset_t i;
 
 	memset(newt_busy, '\0', NEWT_BUSY_SIZE);
-	memset(newt_cons_note, '\0', NEWT_BUSY_SIZE);
-	newt_cons_noted = 0;
+	memset(newt_list_note, '\0', NEWT_BUSY_SIZE);
+	newt_list_noted = 0;
 	for (i = 0; i < (int) NEWT_ROOT; i++) {
 		if (newt_root[i].type) {
 			void **a = newt_root[i].addr, *v;
@@ -236,25 +245,23 @@ walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
 				visit_addr(newt_root[i].type, a);
 			}
 		} else {
-			newt_offset_t *a = (newt_offset_t *) newt_root[i].addr, p;
-			if (a && (p = *a)) {
+			newt_poly_t *a = (newt_poly_t *) newt_root[i].addr, p;
+			if (a && !newt_is_null(p = *a)) {
 				visit_poly(a, 0);
 			}
 		}
 	}
-#if 0
-	while (newt_cons_noted) {
-		memcpy(newt_cons_last, newt_cons_note, NEWT_BUSY_SIZE);
-		memset(newt_cons_note, '\0', NEWT_BUSY_SIZE);
-		newt_cons_noted = 0;
+	while (newt_list_noted) {
+		memcpy(newt_list_last, newt_list_note, NEWT_BUSY_SIZE);
+		memset(newt_list_note, '\0', NEWT_BUSY_SIZE);
+		newt_list_noted = 0;
 		for (i = 0; i < NEWT_POOL; i += NEWT_ALLOC_ROUND) {
-			if (busy(newt_cons_last, i)) {
+			if (busy(newt_list_last, i)) {
 				void *v = newt_pool + i;
-				visit_addr(&newt_cons_type, &v);
+				visit_addr(&newt_list_mem, &v);
 			}
 		}
 	}
-#endif
 }
 
 
@@ -264,21 +271,15 @@ static const struct newt_mem * const newt_mems[4] = {
 };
 
 static int
-newt_mark(const struct newt_mem *type, void *addr);
-
-static int
-newt_move(const struct newt_mem *type, void **ref);
-
-static int
 newt_mark_ref(const struct newt_mem *type, void **ref)
 {
 	return newt_mark(type, *ref);
 }
 
 static int
-newt_poly_mark_ref(newt_poly_t *p, uint8_t do_note_cons)
+newt_poly_mark_ref(newt_poly_t *p, uint8_t do_note_list)
 {
-	return newt_poly_mark(*p, do_note_cons);
+	return newt_poly_mark(*p, do_note_list);
 }
 
 int newt_last_top;
@@ -361,7 +362,7 @@ newt_collect(uint8_t style)
 		if (chunk_first < chunk_last) {
 			/* Relocate all references to the objects */
 			walk(newt_move, newt_poly_move);
-			newt_atom_move();
+//			newt_atom_move();
 		}
 
 		/* If we ran into the end of the heap, then
@@ -394,16 +395,14 @@ newt_collect(uint8_t style)
 int
 newt_mark_memory(const struct newt_mem *type, void *addr)
 {
-	int offset;
+	newt_offset_t offset;
+
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
 	offset = pool_offset(addr);
-	MDBG_MOVE("mark memory %d\n", MDBG_OFFSET(addr));
-	if (busy(newt_busy, offset)) {
-		MDBG_MOVE("already marked\n");
+	if (busy(newt_busy, offset))
 		return 1;
-	}
 	mark(newt_busy, offset);
 	note_chunk(offset, newt_size(type, addr));
 	return 0;
@@ -412,57 +411,49 @@ newt_mark_memory(const struct newt_mem *type, void *addr)
 /*
  * Mark an object and all that it refereces
  */
-static int
+int
 newt_mark(const struct newt_mem *type, void *addr)
 {
 	int ret;
-	MDBG_MOVE("mark offset %d\n", MDBG_OFFSET(addr));
-	MDBG_MOVE_IN();
 	ret = newt_mark_memory(type, addr);
-	if (!ret) {
-		MDBG_MOVE("mark recurse\n");
+	if (!ret)
 		type->mark(addr);
-	}
-	MDBG_MOVE_OUT();
 	return ret;
 }
 
 /*
  * Mark an object, unless it is a cons cell and
- * do_note_cons is set. In that case, just
+ * do_note_list is set. In that case, just
  * set a bit in the cons note array; those
  * will be marked in a separate pass to avoid
  * deep recursion in the collector
  */
 int
-newt_poly_mark(newt_offset_t p, uint8_t do_note_cons)
+newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
 {
-	uint8_t type;
-	void	*addr;
-	int	ret;
+	newt_type_t	type;
+	void		*addr;
+	int		ret;
 
-	type = newt_poly_base_type(p);
+	type = newt_poly_type(p);
 
-	if (type == NEWT_INT)
+	if (type == newt_float)
 		return 1;
 
 	addr = newt_ref(p);
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
-	if (type == NEWT_CONS && do_note_cons) {
-		note_cons(pool_offset(addr));
+	if (type == newt_list && do_note_list) {
+		note_list(pool_offset(addr));
 		return 1;
 	} else {
-		const struct newt_mem *lisp_type;
+		const struct newt_mem *mem;
 
-		if (type == NEWT_OTHER)
-			type = newt_other_type(addr);
-
-		lisp_type = newt_mems[type];
-		ret = newt_mark_memory(lisp_type, addr);
+		mem = newt_mems[type];
+		ret = newt_mark_memory(mem, addr);
 		if (!ret)
-			lisp_type->mark(addr);
+			mem->mark(addr);
 
 		return ret;
 	}
@@ -493,58 +484,65 @@ move_map(newt_offset_t offset)
 }
 
 int
+newt_move_offset(const struct newt_mem *type, newt_offset_t *ref)
+{
+	newt_offset_t	orig_offset = *ref;
+	newt_offset_t	offset;
+
+	(void) type;
+
+	offset = move_map(orig_offset);
+	if (offset != orig_offset)
+		*ref = offset;
+
+	if (busy(newt_busy, offset))
+		return 1;
+
+	mark(newt_busy, offset);
+	return 0;
+}
+
+int
 newt_move_memory(const struct newt_mem *type, void **ref)
 {
 	void		*addr = *ref;
 	newt_offset_t	offset, orig_offset;
+	int		ret;
 
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
 	(void) type;
 
-	MDBG_MOVE("move memory %d\n", MDBG_OFFSET(addr));
 	orig_offset = pool_offset(addr);
-	offset = move_map(orig_offset);
-	if (offset != orig_offset) {
-		MDBG_MOVE("update ref %d %d -> %d\n",
-			  newt_is_pool_addr(ref) ? MDBG_OFFSET(ref) : -1,
-			  orig_offset, offset);
+	offset = orig_offset;
+	ret = newt_move_offset(type, &offset);
+	if (offset != orig_offset)
 		*ref = newt_pool + offset;
-	}
-	if (busy(newt_busy, offset)) {
-		MDBG_MOVE("already moved\n");
-		return 1;
-	}
-	mark(newt_busy, offset);
-	newt_record(type, addr, newt_size(type, addr));
-	return 0;
-}
 
-static int
-newt_move(const struct newt_mem *type, void **ref)
-{
-	int ret;
-	MDBG_MOVE("move object %d\n", MDBG_OFFSET(*ref));
-	MDBG_MOVE_IN();
-	ret = newt_move_memory(type, ref);
-	if (!ret) {
-		MDBG_MOVE("move recurse\n");
-		type->move(*ref);
-	}
-	MDBG_MOVE_OUT();
 	return ret;
 }
 
 int
-newt_poly_move(newt_offset_t *ref, uint8_t do_note_cons)
+newt_move(const struct newt_mem *type, void **ref)
 {
-	newt_offset_t		p = *ref;
+	int ret;
+	ret = newt_move_memory(type, ref);
+	if (!ret)
+		type->move(*ref);
+
+	return ret;
+}
+
+int
+newt_poly_move(newt_poly_t *ref, uint8_t do_note_list)
+{
+	newt_poly_t	p = *ref;
 	int		ret;
 	void		*addr;
 	newt_offset_t	offset, orig_offset;
 
-	if (newt_poly_base_type(p) == NEWT_INT)
+	if (newt_is_float(p))
 		return 1;
 
 	addr = newt_ref(p);
@@ -554,37 +552,24 @@ newt_poly_move(newt_offset_t *ref, uint8_t do_note_cons)
 	orig_offset = pool_offset(addr);
 	offset = move_map(orig_offset);
 
-	if (newt_poly_base_type(p) == NEWT_CONS && do_note_cons) {
-		note_cons(orig_offset);
+	if (newt_poly_type(p) == newt_list && do_note_list) {
+		note_list(orig_offset);
 		ret = 1;
 	} else {
-		uint8_t type = newt_poly_base_type(p);
-		const struct newt_mem *lisp_type;
+		newt_type_t type = newt_poly_type(p);
+		const struct newt_mem *mem;
 
-		if (type == NEWT_OTHER)
-			type = newt_other_type(newt_pool + offset);
+		mem = newt_mems[type];
 
-		lisp_type = newt_mems[type];
-#if DBG_MEM
-		if (!lisp_type)
-			newt_abort();
-#endif
 		/* inline newt_move to save stack space */
-		MDBG_MOVE("move object %d\n", MDBG_OFFSET(addr));
-		MDBG_MOVE_IN();
-		ret = newt_move_memory(lisp_type, &addr);
-		if (!ret) {
-			MDBG_MOVE("move recurse\n");
-			lisp_type->move(addr);
-		}
-		MDBG_MOVE_OUT();
+		ret = newt_move_memory(mem, &addr);
+		if (!ret)
+			mem->move(addr);
 	}
 
 	/* Re-write the poly value */
 	if (offset != orig_offset) {
-		newt_offset_t np = newt_poly(newt_pool + offset, newt_poly_base_type(p));
-		MDBG_MOVE("poly %d moved %d -> %d\n",
-			  newt_offset_type(np), orig_offset, offset);
+		newt_poly_t np = newt_poly(newt_pool + offset, newt_poly_type(p));
 		*ref = np;
 	}
 	return ret;
@@ -603,38 +588,50 @@ newt_alloc(newt_offset_t size)
 {
 	void	*addr;
 
-	MDBG_DO(++dbg_allocs);
-	MDBG_DO(if (dbg_validate) newt_validate());
 	size = newt_size_round(size);
 	if (NEWT_POOL - newt_top < size &&
 	    newt_collect(NEWT_COLLECT_INCREMENTAL) < size &&
 	    newt_collect(NEWT_COLLECT_FULL) < size)
 	{
-		newt_error(NEWT_OOM, "out of memory");
+//		newt_error(NEWT_OOM, "out of memory");
 		return NULL;
 	}
 	addr = newt_pool + newt_top;
 	newt_top += size;
-	MDBG_MOVE("alloc %d size %d\n", MDBG_OFFSET(addr), size);
 	return addr;
 }
 
 void
-newt_poly_stash(newt_offset_t p)
+newt_poly_stash(newt_poly_t p)
 {
 	assert(stash_poly_ptr < NEWT_NUM_STASH);
 	stash_poly[stash_poly_ptr++] = p;
 }
 
-newt_offset_t
+newt_poly_t
 newt_poly_fetch(void)
 {
-	newt_offset_t	p;
+	newt_poly_t	p;
 
 	assert (stash_poly_ptr > 0);
 	p = stash_poly[--stash_poly_ptr];
-	stash_poly[stash_poly_ptr] = NEWT_NIL;
+	stash_poly[stash_poly_ptr] = NEWT_NULL;
 	return p;
+}
+
+void
+newt_name_stash(newt_offset_t name)
+{
+	stash_name = name;
+}
+
+newt_offset_t
+newt_name_fetch(void)
+{
+	newt_offset_t	name;
+	name = stash_name;
+	stash_name = 0;
+	return name;
 }
 
 int

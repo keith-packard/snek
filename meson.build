@@ -19,11 +19,13 @@ configure_file(output : 'config.h',
 	       configuration : conf_data)
 
 cfiles=[
-  'newt-byte.c',
+  'newt-code.c',
+  'newt-frame.c',
   'newt-list.c',
   'newt-main.c',
   'newt-memory.c',
-  'newt-name.c'
+  'newt-name.c',
+  'newt-poly.c'
 ]
 
 executable('newt', cfiles, lfiles, pfiles)

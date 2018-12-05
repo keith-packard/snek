@@ -15,22 +15,68 @@
 #include "newt.h"
 
 typedef struct newt_name {
-    struct newt_name *next;
-    char name[0];
+	newt_offset_t	next;
+	char		name[0];
 } newt_name_t;
 
-static newt_name_t *names;
+newt_name_t *newt_names;
 
 char *
 newt_name_find(char *name)
 {
-    newt_name_t *n;
-    for (n = names; n; n = n->next)
-        if (!strcmp(n->name, name))
-            return n->name;
-    n = malloc(sizeof (newt_name_t) + strlen(name) + 1);
-    strcpy(n->name, name);
-    n->next = names;
-    names = n;
-    return n->name;
+	newt_name_t *n;
+	for (n = newt_names; n; n = newt_pool_ref(n->next))
+		if (!strcmp(n->name, name))
+			return n->name;
+	n = newt_alloc(sizeof (newt_name_t) + strlen(name) + 1);
+	strcpy(n->name, name);
+	n->next = newt_pool_offset(newt_names);
+	newt_names = n;
+	return n->name;
 }
+
+static int
+newt_name_size(void *addr)
+{
+	newt_name_t *n = addr;
+
+	return sizeof (newt_name_t) + strlen(n->name) + 1;
+}
+
+static void
+newt_name_mark(void *addr)
+{
+	newt_name_t *n = addr;
+
+	for (;;) {
+		n = newt_pool_ref(n->next);
+		if (!n)
+			break;
+		newt_mark_memory(&newt_name_mem, n);
+	}
+}
+
+void
+newt_name_move(void *addr)
+{
+	newt_name_t *n = addr;
+
+	for (;;) {
+		newt_name_t *next = newt_pool_ref(n->next);
+		if (!next)
+			break;
+		int ret = newt_move_memory(&newt_name_mem, (void **) &next);
+		if (next != newt_pool_ref(n->next))
+			n->next = newt_pool_offset(next);
+		if (ret)
+			break;
+		n = next;
+	}
+}
+
+const newt_mem_t newt_name_mem = {
+	.size = newt_name_size,
+	.mark = newt_name_mark,
+	.move = newt_name_move,
+	.name = "name"
+};
