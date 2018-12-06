@@ -28,3 +28,15 @@ newt_poly(const void *addr, newt_type_t type)
 	return newt_uint_to_value(((const uint8_t *) addr - newt_pool) | type);
 }
 
+void
+newt_poly_print(newt_poly_t poly)
+{
+	switch (newt_poly_type(poly)) {
+	case newt_float:
+		printf("%g", newt_poly_to_float(poly));
+		break;
+	default:
+		printf("?%d.%x?", newt_poly_type(poly), newt_poly_to_uint(poly));
+		break;
+	}
+}

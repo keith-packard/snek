@@ -280,7 +280,7 @@ newt_id_t
 newt_name_id(char *name);
 
 char *
-newt_name_find(newt_id_t id);
+newt_name_string(newt_id_t id);
 
 extern const newt_mem_t newt_name_mem;
 extern newt_name_t *newt_names;
@@ -292,6 +292,9 @@ newt_ref(newt_poly_t poly);
 
 newt_poly_t
 newt_poly(const void *addr, newt_type_t type);
+
+void
+newt_poly_print(newt_poly_t poly);
 
 static inline void *
 newt_pool_ref(newt_offset_t offset)

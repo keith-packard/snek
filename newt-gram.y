@@ -29,6 +29,7 @@
 
 %type	<bools>		stat
 %type	<offset>	expr test if elif else
+%type	<offset>	while mark
 
 %token	<ints>		INDENT EXDENT
 %token  <number> 	NUMBER
@@ -92,6 +93,7 @@ small_stat	: expr
 		}
 	;
 compound_stat: if_stat elif_stats else_stat
+	| while_stat else_stat
 	;
 if_stat	: if suite
 		{ newt_code_patch_branch($1, newt_code_current()); }
@@ -113,6 +115,19 @@ else_stat: else suite
 	;
 else	: ELSE COLON
 		{ $$ = newt_code_add_op_branch(newt_op_branch); }
+	;
+while_stat : mark while suite
+		{
+			newt_offset_t loop = newt_code_add_op_branch(newt_op_branch);
+			newt_code_patch_branch($2, newt_code_current());
+			newt_code_patch_branch(loop, $1);
+		}
+	;
+while	: WHILE test COLON
+		{ $$ = newt_code_add_op_branch(newt_op_if); }
+	;
+mark	:
+		{ $$ = newt_code_current(); }
 	;
 suite	: simple_stat
 	| NL INDENT stats EXDENT

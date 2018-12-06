@@ -32,6 +32,16 @@ newt_name_id(char *name)
 	return n->id;
 }
 
+char *
+newt_name_string(newt_id_t id)
+{
+	newt_name_t *n;
+	for (n = newt_names; n; n = newt_pool_ref(n->next))
+		if (n->id == id)
+			return n->name;
+	return "<unknown>";
+}
+
 static int
 newt_name_size(void *addr)
 {
