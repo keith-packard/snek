@@ -19,25 +19,29 @@
 
 %}
 %union {
+	bool		bools;
 	int		ints;
 	newt_op_t	op;
 	newt_offset_t	offset;
-	char		*name;
+	newt_id_t	id;
 	float		number;
 }
 
-%type   <ints>		block
-%type	<offset>	expr
+%type	<bools>		stat
+%type	<offset>	expr test if elif else
 
 %token	<ints>		INDENT EXDENT
 %token  <number> 	NUMBER
-%token  <name>		NAME
+%token  <id>		NAME
 %token			INVALID
 %token			NL
 
 %token			COLON COMMA SEMI
 
-%right			ASSIGN
+%right	<op>		ASSIGN
+%left	<op>		OR
+%left	<op>		AND
+%right	<op>		NOT
 %left	<op>		EQ NE
 %left	<op>		LT GT LE GE
 %left	<op>		PLUS MINUS
@@ -45,35 +49,93 @@
 %right			UMINUS
 %left			OP CP OS CS
 
-%token			DEF
+%token			DEF GLOBAL
+%token			IF ELSE ELIF
+%token			FOR WHILE CONTINUE BREAK
+%token			TRUE FALSE
+%token			RANGE IN
 
 %%
 file	: file pcommand
 	|
 	;
 
-pcommand: command
-        | error NL
-		{ yyerrok; }
-	;
-command	: NAME ASSIGN expr NL
-		{ printf ("assignment %s\n", $1); }
-	| expr NL
+pcommand: stat
 		{
 			newt_code_t *code = newt_code_finish();
 			newt_poly_t p = newt_code_run(code);
-			printf("value: %g\n", newt_poly_to_float(p));
+			if ($1)
+				printf(" %g\n", newt_poly_to_float(p));
 		}
+        | error NL
+		{ yyerrok; }
+	;
+stats	: stats stat
+	| stat
+	;
+stat	: simple_stat
+		{ $$ = true; }
+	| compound_stat
+		{ $$ = false; }
 	| NL
-		{ printf ("blank line\n"); }
-	| block
-		{ printf ("block\n"); }
+		{ $$ = false; }
 	;
-block	: INDENT commands EXDENT
-		{ if ($1 != $3) YYERROR; $$ = $1; }
+simple_stat: small_stats NL
 	;
-commands: commands command
-	| command
+small_stats: small_stats SEMI small_stat
+	| small_stat
+	;
+small_stat	: expr
+	| NAME ASSIGN expr
+		{
+			newt_code_add_op_id($2, $1);
+		}
+	;
+compound_stat: if_stat elif_stats else_stat
+	;
+if_stat	: if suite
+		{ newt_code_patch_branch($1, newt_code_current()); }
+if	: IF test COLON
+		{ $$ = newt_code_add_op_branch(newt_op_if); }
+	;
+elif_stats	: elif_stats elif_stat
+	|
+	;
+elif_stat: elif suite
+		{ newt_code_patch_branch($1, newt_code_current()); }
+	;
+elif	: ELIF test COLON
+		{ $$ = newt_code_add_op_branch(newt_op_if); }
+	;
+else_stat: else suite 
+		{ newt_code_patch_branch($1, newt_code_current()); }
+	|
+	;
+else	: ELSE COLON
+		{ $$ = newt_code_add_op_branch(newt_op_branch); }
+	;
+suite	: simple_stat
+	| NL INDENT stats EXDENT
+		{ if ($2 != $4) YYERROR; }
+	;
+test	: test OR test
+		{ goto bin_op; }
+	| test AND test
+		{ goto bin_op; }
+	| NOT test
+		{ $$ = newt_code_add_op(newt_op_not); }
+	| expr EQ expr
+		{ goto bin_op; }
+	| expr NE expr
+		{ goto bin_op; }
+	| expr LT expr
+		{ goto bin_op; }
+	| expr GT expr
+		{ goto bin_op; }
+	| expr LE expr
+		{ goto bin_op; }
+	| expr GE expr
+		{ goto bin_op; }
 	;
 expr	: OP expr CP
 		{ $$ = $2; }
@@ -93,22 +155,8 @@ expr	: OP expr CP
 		{ goto bin_op; }
 	| MINUS expr %prec UMINUS
 		{ $$ = newt_code_add_op(newt_op_uminus); }
-	| expr EQ expr
-		{ goto bin_op; }
-	| expr NE expr
-		{ goto bin_op; }
-	| expr LT expr
-		{ goto bin_op; }
-	| expr GT expr
-		{ goto bin_op; }
-	| expr LE expr
-		{ goto bin_op; }
-	| expr GE expr
-		{ goto bin_op; }
 	| NAME
-		{
-			printf("name %s\n", $1);
-		}
+		{ $$ = newt_code_add_op_id(newt_op_id, $1); }
 	| NUMBER
 		{ $$ = newt_code_add_number($1); }
 	;

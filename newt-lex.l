@@ -50,7 +50,7 @@ static int current_indent;
 ":"	return COLON;
 ";"	return SEMI;
 ","	return COMMA;
-"="	return ASSIGN;
+"="	{ yylval.op = newt_op_assign; return ASSIGN; }
 "=="	{ yylval.op = newt_op_eq; return EQ; }
 "!="	{ yylval.op = newt_op_ne; return NE; }
 "<"	{ yylval.op = newt_op_lt; return LT; }
@@ -67,6 +67,20 @@ static int current_indent;
 ")"	return CP;
 
 def	return DEF;
+global	return GLOBAL;
+if	return IF;
+else	return ELSE;
+elif	return ELIF;
+for	return FOR;
+while	return WHILE;
+continue	return CONTINUE;
+break	return BREAK;
+True	return TRUE;
+False	return FALSE;
+range	return RANGE;
+in	return IN;
+or	return OR;
+and	return AND;
 
 (([0-9][0-9_]*((\.[0-9_]*)?))|(\.[0-9][0-9_]*)|(\.([0-9][0-9_]*)?))(([Ee][-+]?[0-9_]+)?) {
 	char *under;
@@ -75,7 +89,7 @@ def	return DEF;
 	yylval.number = strtof(yytext, NULL); return NUMBER;
 }
 [A-Za-z_][A-Za-z0-9_]* {
-	yylval.name = newt_name_find(yytext);
+	yylval.id = newt_name_id(yytext);
 	return NAME;
 }
 

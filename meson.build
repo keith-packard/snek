@@ -1,4 +1,9 @@
-project('newt', 'c')
+project('newt', 'c',
+	license : 'GPLv2+',
+	default_options : ['buildtype=debugoptimized', 'c_std=c99']
+       )
+
+add_project_arguments(['-D_DEFAULT_SOURCE'], language: 'c')
 
 flex = find_program('flex')
 bison = find_program('bison')

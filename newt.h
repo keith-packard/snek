@@ -30,7 +30,11 @@ typedef union {
 typedef enum {
 	newt_op_nop,
 	newt_op_num,
-	newt_op_name,
+	newt_op_id,
+
+	newt_op_and,
+	newt_op_or,
+	newt_op_not,
 
 	newt_op_eq,
 	newt_op_ne,
@@ -48,6 +52,9 @@ typedef enum {
 	newt_op_uminus,
 
 	newt_op_assign,
+
+	newt_op_if,
+	newt_op_branch,
 
 	newt_op_push = 0x80,
 } __attribute__((packed)) newt_op_t;
@@ -117,22 +124,35 @@ extern uint8_t	newt_pool[NEWT_POOL + NEWT_POOL_EXTRA] __attribute__((aligned(NEW
 
 #if NEWT_POOL <= 65536
 typedef uint16_t	newt_offset_t;
+#define NEWT_OFFSET_NONE	0xffffu
 #else
 typedef uint32_t	newt_offset_t;
+#define NEWT_OFFSET_NONE	0xffffffffu
 #endif
+
+typedef newt_offset_t newt_id_t;
 
 #include "newt-gram.h"
 
 /* newt-code.c */
 
 newt_offset_t
+newt_code_current(void);
+
+newt_offset_t
 newt_code_add_op(newt_op_t op);
 
 newt_offset_t
-newt_code_add_op_name(newt_op_t op, int atom);
+newt_code_add_op_id(newt_op_t op, newt_id_t id);
 
 newt_offset_t
 newt_code_add_number(float number);
+
+newt_offset_t
+newt_code_add_op_branch(newt_op_t op);
+
+void
+newt_code_patch_branch(newt_offset_t branch, newt_offset_t target);
 
 void
 newt_code_set_push(newt_offset_t offset);
@@ -145,13 +165,23 @@ newt_code_run(newt_code_t *code);
 
 extern const newt_mem_t newt_code_mem;
 
+extern const newt_mem_t newt_stack_mem;
+
 /* newt-frame.c */
 
 typedef struct newt_variable {
 	newt_offset_t	next;
-	newt_offset_t	name;
+	newt_id_t	id;
 	newt_poly_t	value;
 } newt_variable_t;
+
+typedef struct newt_frame {
+	newt_offset_t	prev;
+	newt_offset_t	variables;
+} newt_frame_t;
+
+extern newt_frame_t	*newt_globals;
+extern newt_frame_t	*newt_locals;
 
 extern const newt_mem_t newt_variable_mem;
 
@@ -237,11 +267,23 @@ int
 newt_print_stop(void);
 
 /* newt-name.c */
+
+typedef newt_offset_t newt_id_t;
+
+typedef struct newt_name {
+	newt_offset_t	next;
+	newt_id_t	id;
+	char		name[0];
+} newt_name_t;
+
+newt_id_t
+newt_name_id(char *name);
+
 char *
-newt_name_find(char *name);
+newt_name_find(newt_id_t id);
 
 extern const newt_mem_t newt_name_mem;
-extern struct newt_name *newt_names;
+extern newt_name_t *newt_names;
 
 /* newt-poly.c */
 

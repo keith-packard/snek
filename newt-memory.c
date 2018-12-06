@@ -34,8 +34,20 @@ static newt_offset_t		stash_name;
 
 static const struct newt_root	newt_root[] = {
 	{
+		.type = &newt_stack_mem,
+		.addr = NULL,
+	},
+	{
 		.type = &newt_name_mem,
 		.addr = (void **) (void *) &newt_names,
+	},
+	{
+		.type = &newt_frame_mem,
+		.addr = (void **) (void *) &newt_globals,
+	},
+	{
+		.type = &newt_frame_mem,
+		.addr = (void **) (void *) &newt_locals,
 	},
 	{
 		.type = &newt_name_mem,

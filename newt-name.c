@@ -14,25 +14,22 @@
 
 #include "newt.h"
 
-typedef struct newt_name {
-	newt_offset_t	next;
-	char		name[0];
-} newt_name_t;
-
 newt_name_t *newt_names;
+newt_id_t   newt_id;
 
-char *
-newt_name_find(char *name)
+newt_id_t
+newt_name_id(char *name)
 {
 	newt_name_t *n;
 	for (n = newt_names; n; n = newt_pool_ref(n->next))
 		if (!strcmp(n->name, name))
-			return n->name;
+			return n->id;
 	n = newt_alloc(sizeof (newt_name_t) + strlen(name) + 1);
 	strcpy(n->name, name);
 	n->next = newt_pool_offset(newt_names);
+	n->id = ++newt_id;
 	newt_names = n;
-	return n->name;
+	return n->id;
 }
 
 static int
