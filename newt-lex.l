@@ -19,6 +19,8 @@
 
 static int current_indent;
 
+static char *string_build(char *text, int leng);
+
 %}
 %x NEWLINE
 %%
@@ -65,6 +67,8 @@ static int current_indent;
 
 "("	return OP;
 ")"	return CP;
+"["	return OS;
+"]"	return CS;
 
 def	return DEF;
 global	return GLOBAL;
@@ -75,12 +79,23 @@ for	return FOR;
 while	return WHILE;
 continue	return CONTINUE;
 break	return BREAK;
-True	return TRUE;
-False	return FALSE;
+return	return RETURN;
+True	{ yylval.number = 1.0; return NUMBER; }
+False	{ yylval.number = 2.0; return NUMBER; }
 range	return RANGE;
 in	return IN;
 or	return OR;
 and	return AND;
+
+\"([^\n\\"]|\\\")*\" {
+	yylval.string = string_build(yytext, yyleng);
+	return STRING;
+}
+
+\'([^\n\\']|\\\')*\' {
+	yylval.string = string_build(yytext, yyleng);
+	return STRING;
+}
 
 (([0-9][0-9_]*((\.[0-9_]*)?))|(\.[0-9][0-9_]*)|(\.([0-9][0-9_]*)?))(([Ee][-+]?[0-9_]+)?) {
 	char *under;
@@ -96,3 +111,57 @@ and	return AND;
 .	{ return INVALID; }
 %%
 
+static inline bool
+isoctal(char c)
+{
+	return '0' <= c && c <= '7';
+}
+
+static int
+string_char_len(char *s)
+{
+	char	a = *s++;
+	if (a != '\\')
+		return 1;
+	int len = 1;
+	while (len < 4 && isoctal(*s++))
+		len++;
+	return len;
+}
+
+static char
+string_char(char *s)
+{
+	char	a = *s++;
+
+	if (a == '\\') {
+		switch ((a = *s++)) {
+		case 'n':
+			return '\n';
+		case 't':
+			return '\t';
+		}
+		if (isoctal(a)) {
+			char c;
+			a -= '0';
+			while (isoctal(c = *s++))
+				a = a << 3 | (c - '0');
+		}
+	}
+	return a;
+}
+
+static char *
+string_build(char *text, int leng)
+{
+	char *string, *s;
+	int len = 0;
+	int i;
+
+	for (i = 1; i < yyleng - 1; i += string_char_len(yytext + i))
+		len++;
+	s = string = newt_alloc(len + 1);
+	for (i = 1; i < yyleng - 1; i += string_char_len(yytext + i))
+		*s++ = string_char(yytext + i);
+	return string;
+}

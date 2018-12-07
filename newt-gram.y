@@ -17,6 +17,11 @@
 #include <stdio.h>
 #include "newt.h"
 
+#define MAX_FORMALS	10
+
+static int nformal;
+static newt_id_t formals[MAX_FORMALS];
+
 %}
 %union {
 	bool		bools;
@@ -25,14 +30,18 @@
 	newt_offset_t	offset;
 	newt_id_t	id;
 	float		number;
+	char		*string;
 }
 
 %type	<bools>		stat
-%type	<offset>	expr test if elif else
+%type	<offset>	opt_expr opt_stride
+%type	<offset>	expr if elif else
 %type	<offset>	while mark
+%type	<ints>		opt_actuals actuals
 
 %token	<ints>		INDENT EXDENT
 %token  <number> 	NUMBER
+%token	<string>	STRING
 %token  <id>		NAME
 %token			INVALID
 %token			NL
@@ -48,12 +57,12 @@
 %left	<op>		PLUS MINUS
 %left	<op>		TIMES DIVIDE MOD
 %right			UMINUS
-%left			OP CP OS CS
+%left	<op>		OP CP OS CS
 
 %token			DEF GLOBAL
 %token			IF ELSE ELIF
-%token			FOR WHILE CONTINUE BREAK
-%token			TRUE FALSE
+%token			FOR WHILE
+%token			RETURN CONTINUE BREAK
 %token			RANGE IN
 
 %%
@@ -65,11 +74,39 @@ pcommand: stat
 		{
 			newt_code_t *code = newt_code_finish();
 			newt_poly_t p = newt_code_run(code);
-			if ($1)
-				printf(" %g\n", newt_poly_to_float(p));
+			if ($1) {
+				newt_poly_print(p);
+				printf("\n");
+			}
 		}
+	| def
         | error NL
 		{ yyerrok; }
+	;
+def	: DEF { nformal = 0; } NAME OP opt_params CP mark COLON suite
+		{
+			newt_code_patch_forward($7, newt_forward_return, newt_code_current());
+			newt_code_t	*code = newt_code_finish();
+			newt_func_t	*func = newt_func_alloc(code, nformal, formals);
+			newt_poly_t	poly = newt_func_to_poly(func);
+
+			newt_poly_stash(poly);
+			newt_variable_t *var = newt_frame_lookup($3, true);
+			poly = newt_poly_fetch();
+			if (var)
+				var->value = poly;
+		}
+	;
+opt_params: params
+	|
+	;
+params	: params COMMA param
+	| param
+	;
+param	: NAME
+		{
+			formals[nformal++] = $1;
+		}
 	;
 stats	: stats stat
 	| stat
@@ -91,13 +128,25 @@ small_stat	: expr
 		{
 			newt_code_add_op_id($2, $1);
 		}
+	| RETURN expr
+		{
+			newt_code_add_forward(newt_forward_return);
+		}
+	| BREAK
+		{
+			newt_code_add_forward(newt_forward_break);
+		}
+	| CONTINUE
+		{
+			newt_code_add_forward(newt_forward_continue);
+		}
 	;
 compound_stat: if_stat elif_stats else_stat
 	| while_stat else_stat
 	;
 if_stat	: if suite
 		{ newt_code_patch_branch($1, newt_code_current()); }
-if	: IF test COLON
+if	: IF expr COLON
 		{ $$ = newt_code_add_op_branch(newt_op_if); }
 	;
 elif_stats	: elif_stats elif_stat
@@ -106,7 +155,7 @@ elif_stats	: elif_stats elif_stat
 elif_stat: elif suite
 		{ newt_code_patch_branch($1, newt_code_current()); }
 	;
-elif	: ELIF test COLON
+elif	: ELIF expr COLON
 		{ $$ = newt_code_add_op_branch(newt_op_if); }
 	;
 else_stat: else suite 
@@ -121,9 +170,11 @@ while_stat : mark while suite
 			newt_offset_t loop = newt_code_add_op_branch(newt_op_branch);
 			newt_code_patch_branch($2, newt_code_current());
 			newt_code_patch_branch(loop, $1);
+			newt_code_patch_forward($2, newt_forward_continue, $1);
+			newt_code_patch_forward($2, newt_forward_break, newt_code_current());
 		}
 	;
-while	: WHILE test COLON
+while	: WHILE expr COLON
 		{ $$ = newt_code_add_op_branch(newt_op_if); }
 	;
 mark	:
@@ -133,27 +184,43 @@ suite	: simple_stat
 	| NL INDENT stats EXDENT
 		{ if ($2 != $4) YYERROR; }
 	;
-test	: test OR test
-		{ goto bin_op; }
-	| test AND test
-		{ goto bin_op; }
-	| NOT test
-		{ $$ = newt_code_add_op(newt_op_not); }
-	| expr EQ expr
-		{ goto bin_op; }
-	| expr NE expr
-		{ goto bin_op; }
-	| expr LT expr
-		{ goto bin_op; }
-	| expr GT expr
-		{ goto bin_op; }
-	| expr LE expr
-		{ goto bin_op; }
-	| expr GE expr
-		{ goto bin_op; }
 	;
 expr	: OP expr CP
 		{ $$ = $2; }
+	| expr OS expr CS
+		{
+			newt_code_set_push($1);
+			$$ = newt_code_add_op(newt_op_array_fetch);
+		}
+	| expr OS opt_expr COLON opt_expr opt_stride CS
+		{
+			bool present = false;
+			bool start = false, end = false, stride = false;
+			if ($6 != NEWT_OFFSET_NONE) {
+				present = true;
+				stride = true;
+			}
+			if ($5 != NEWT_OFFSET_NONE) {
+				if (present)
+					newt_code_set_push($5);
+				present = true;
+				end = true;
+			}
+			if ($3 != NEWT_OFFSET_NONE) {
+				if (present)
+					newt_code_set_push($3);
+				present = true;
+				start = true;
+			}
+			if (present)
+				newt_code_set_push($1);
+			$$ = newt_code_add_slice(start, end, stride);
+		}
+	| expr OP opt_actuals CP
+		{
+			newt_code_set_push($1);
+			$$ = newt_code_add_call($3);
+		}
 	| expr PLUS expr
 		{
 		bin_op:
@@ -168,11 +235,56 @@ expr	: OP expr CP
 		{ goto bin_op; }
 	| expr MOD expr
 		{ goto bin_op; }
+	| expr OR expr
+		{ goto bin_op; }
+	| expr AND expr
+		{ goto bin_op; }
+	| NOT expr
+		{ $$ = newt_code_add_op(newt_op_not); }
+	| expr EQ expr
+		{ goto bin_op; }
+	| expr NE expr
+		{ goto bin_op; }
+	| expr LT expr
+		{ goto bin_op; }
+	| expr GT expr
+		{ goto bin_op; }
+	| expr LE expr
+		{ goto bin_op; }
+	| expr GE expr
+		{ goto bin_op; }
 	| MINUS expr %prec UMINUS
 		{ $$ = newt_code_add_op(newt_op_uminus); }
 	| NAME
 		{ $$ = newt_code_add_op_id(newt_op_id, $1); }
 	| NUMBER
 		{ $$ = newt_code_add_number($1); }
+	| STRING
+		{ $$ = newt_code_add_string($1); }
+	;
+opt_expr: expr
+		{ $$ = $1; }
+	|
+		{ $$ = NEWT_OFFSET_NONE; }
+	;
+opt_stride: COLON expr
+		{ $$ = $2; }
+	| COLON
+		{ $$ = NEWT_OFFSET_NONE; }
+	|
+		{ $$ = NEWT_OFFSET_NONE; }
+	;
+opt_actuals:	actuals
+		{ $$ = $1; }
+	|
+		{ $$ = 0; }
+	;
+actuals	: actuals COMMA actual
+		{ $$ = $1 + 1; }
+	| actual
+		{ $$ = 1; }
+	;
+actual	: expr
+		{ newt_code_set_push($1); }
 	;
 %%

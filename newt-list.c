@@ -17,7 +17,8 @@
 static int
 newt_list_size(void *addr)
 {
-	return 0;
+	(void) addr;
+	return sizeof (newt_list_t);
 }
 
 static void

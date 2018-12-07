@@ -15,7 +15,7 @@
 #include "newt.h"
 
 newt_frame_t	*newt_globals;
-newt_frame_t	*newt_locals;
+newt_frame_t	*newt_frame;
 
 static newt_variable_t *
 newt_variable_lookup(newt_frame_t *frame, newt_id_t id, bool insert)
@@ -52,14 +52,14 @@ newt_frame_lookup(newt_id_t id, bool insert)
 {
 	newt_variable_t	*v;
 
-	if (newt_locals && (v = newt_variable_lookup(newt_locals, id, false)))
+	if (newt_frame && (v = newt_variable_lookup(newt_frame, id, false)))
 		return v;
 	if (newt_globals && (v = newt_variable_lookup(newt_globals, id, false)))
 		return v;
 	if (!insert)
 		return NULL;
-	if (newt_locals)
-		v = newt_variable_lookup(newt_locals, id, true);
+	if (newt_frame)
+		v = newt_variable_lookup(newt_frame, id, true);
 	else {
 		newt_frame_t *g = newt_frame_globals();
 		v = newt_variable_lookup(g, id, true);
@@ -70,10 +70,10 @@ newt_frame_lookup(newt_id_t id, bool insert)
 bool
 newt_frame_mark_global(newt_id_t id)
 {
-	if (newt_locals) {
+	if (newt_frame) {
 		newt_variable_t *v;
 
-		v = newt_variable_lookup(newt_locals, id, true);
+		v = newt_variable_lookup(newt_frame, id, true);
 		if (!v)
 			return false;
 		v->value = NEWT_GLOBAL;
@@ -82,16 +82,66 @@ newt_frame_mark_global(newt_id_t id)
 }
 
 bool
-newt_frame_push(void)
+newt_frame_push(newt_code_t *code, newt_offset_t ip)
 {
 	newt_frame_t *f;
 
+	newt_code_stash(code);
 	f = newt_alloc(sizeof (newt_frame_t));
+	code = newt_code_fetch();
 	if (!f)
 		return false;
-	f->prev = newt_pool_offset(newt_locals);
-	newt_locals = f;
+	f->code = newt_pool_offset(code);
+	f->ip = ip;
+	f->prev = newt_pool_offset(newt_frame);
+	newt_frame = f;
 	return true;
+}
+
+newt_code_t *
+newt_frame_pop(newt_offset_t *ip_p)
+{
+	if (!newt_frame)
+		return NULL;
+
+	newt_code_t	*code = newt_pool_ref(newt_frame->code);
+	newt_offset_t	ip = newt_frame->ip;
+
+	newt_frame = newt_pool_ref(newt_frame->prev);
+
+	*ip_p = ip;
+	return code;
+}
+
+newt_poly_t
+newt_id_fetch(newt_id_t id)
+{
+	newt_variable_t *v = newt_frame_lookup(id, false);
+	if (!v)
+		return NEWT_ZERO;
+	return v->value;
+}
+
+void
+newt_id_assign(newt_id_t id, newt_poly_t a)
+{
+	newt_poly_stash(a);
+	newt_variable_t *v = newt_frame_lookup(id, true);
+	a = newt_poly_fetch();
+	if (v)
+		v->value = a;
+}
+
+void
+newt_id_insert(newt_id_t id, newt_poly_t a)
+{
+	newt_variable_t *v;
+
+	newt_poly_stash(a);
+	v = newt_variable_lookup(newt_frame, id, true);
+	a = newt_poly_fetch();
+	if (v)
+		v->value = a;
 }
 
 static int
@@ -159,7 +209,7 @@ newt_frame_mark(void *addr)
 
 	for (;;) {
 		newt_mark(&newt_variable_mem, newt_pool_ref(f->variables));
-
+		newt_mark(&newt_code_mem, newt_pool_ref(f->code));
 		newt_frame_t *prev = newt_pool_ref(f->prev);
 		if (!prev)
 			break;
@@ -175,9 +225,17 @@ newt_frame_move(void *addr)
 
 	for (;;) {
 		newt_variable_t *v = newt_pool_ref(f->variables);
-		newt_move(&newt_variable_mem, (void **) &v);
-		if (v != newt_pool_ref(f->variables))
-			f->variables = newt_pool_offset(v);
+		if (v) {
+			newt_move(&newt_variable_mem, (void **) &v);
+			if (v != newt_pool_ref(f->variables))
+				f->variables = newt_pool_offset(v);
+		}
+		newt_code_t *c = newt_pool_ref(f->code);
+		if (c) {
+			newt_move(&newt_code_mem, (void **) &c);
+			if (c != newt_pool_ref(f->code))
+				f->code = newt_pool_offset(c);
+		}
 		newt_frame_t *prev = newt_pool_ref(f->prev);
 		if (!prev)
 			break;

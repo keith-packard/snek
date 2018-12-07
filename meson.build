@@ -1,6 +1,6 @@
 project('newt', 'c',
 	license : 'GPLv2+',
-	default_options : ['buildtype=debugoptimized', 'c_std=c99']
+	default_options : ['buildtype=debug', 'c_std=c99']
        )
 
 add_project_arguments(['-D_DEFAULT_SOURCE'], language: 'c')
@@ -26,11 +26,13 @@ configure_file(output : 'config.h',
 cfiles=[
   'newt-code.c',
   'newt-frame.c',
+  'newt-func.c',
   'newt-list.c',
   'newt-main.c',
   'newt-memory.c',
   'newt-name.c',
-  'newt-poly.c'
+  'newt-poly.c',
+  'newt-string.c'
 ]
 
 executable('newt', cfiles, lfiles, pfiles)

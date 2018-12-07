@@ -30,7 +30,8 @@ struct newt_root {
 #define NEWT_NUM_STASH	6
 static newt_poly_t		stash_poly[NEWT_NUM_STASH];
 static int			stash_poly_ptr;
-static newt_offset_t		stash_name;
+static newt_name_t		*stash_name;
+static newt_code_t		*stash_code;
 
 static const struct newt_root	newt_root[] = {
 	{
@@ -47,11 +48,15 @@ static const struct newt_root	newt_root[] = {
 	},
 	{
 		.type = &newt_frame_mem,
-		.addr = (void **) (void *) &newt_locals,
+		.addr = (void **) (void *) &newt_frame,
 	},
 	{
 		.type = &newt_name_mem,
 		.addr = (void **) (void *) &stash_name,
+	},
+	{
+		.type = &newt_code_mem,
+		.addr = (void **) (void *) &stash_code,
 	},
 	{
 		.type = NULL,
@@ -279,7 +284,8 @@ walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
 
 static const struct newt_mem * const newt_mems[4] = {
 	[newt_list] = &newt_list_mem,
-//	[newt_string] = &newt_string_mem,
+	[newt_string] = &newt_string_mem,
+	[newt_func] = &newt_func_mem,
 };
 
 static int
@@ -632,18 +638,33 @@ newt_poly_fetch(void)
 }
 
 void
-newt_name_stash(newt_offset_t name)
+newt_name_stash(newt_name_t *name)
 {
 	stash_name = name;
 }
 
-newt_offset_t
+newt_name_t *
 newt_name_fetch(void)
 {
-	newt_offset_t	name;
+	newt_name_t	*name;
 	name = stash_name;
 	stash_name = 0;
 	return name;
+}
+
+void
+newt_code_stash(newt_code_t *code)
+{
+	stash_code = code;
+}
+
+newt_code_t *
+newt_code_fetch(void)
+{
+	newt_code_t	*code;
+	code = stash_code;
+	stash_code = 0;
+	return code;
 }
 
 int

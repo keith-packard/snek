@@ -22,6 +22,25 @@
 #include <math.h>
 #include <assert.h>
 
+#define NEWT_POOL		8192
+#define NEWT_POOL_EXTRA		0
+#define NEWT_ALLOC_SHIFT	2
+#define NEWT_ALLOC_ROUND	(1 << NEWT_ALLOC_SHIFT)
+
+#if NEWT_POOL <= 65536
+typedef uint16_t	newt_offset_t;
+typedef int16_t		newt_soffset_t;
+#define NEWT_OFFSET_NONE	0xffffu
+#define NEWT_SOFFSET_NONE	0x7fff
+#else
+typedef uint32_t	newt_offset_t;
+typedef int32_t		newt_soffset_t;
+#define NEWT_OFFSET_NONE	0xffffffffu
+#define NEWT_SOFFSET_NONE	0x7fffffff
+#endif
+
+typedef newt_offset_t newt_id_t;
+
 typedef union {
 	uint32_t    u;
 	float       f;
@@ -30,6 +49,7 @@ typedef union {
 typedef enum {
 	newt_op_nop,
 	newt_op_num,
+	newt_op_string,
 	newt_op_id,
 
 	newt_op_and,
@@ -51,18 +71,31 @@ typedef enum {
 
 	newt_op_uminus,
 
+	newt_op_call,
+
+	newt_op_array_fetch,
+	newt_op_array_store,
+	newt_op_slice,
+
 	newt_op_assign,
 
 	newt_op_if,
 	newt_op_branch,
+	newt_op_forward,
 
 	newt_op_push = 0x80,
 } __attribute__((packed)) newt_op_t;
 
 typedef enum {
+	newt_forward_return,
+	newt_forward_break,
+	newt_forward_continue,
+} __attribute__((packed)) newt_forward_t;
+
+typedef enum {
 	newt_list = 0,
 	newt_string = 1,
-	newt_code = 2,
+	newt_func = 2,
 	newt_float = 4,
 } __attribute__((packed)) newt_type_t;
 
@@ -84,6 +117,68 @@ typedef struct newt_code {
 	uint8_t		code[0];
 } newt_code_t;
 
+typedef struct newt_func {
+	newt_offset_t	code;
+	newt_offset_t	nformal;
+	newt_id_t	formals[0];
+} newt_func_t;
+
+typedef struct newt_name {
+	newt_offset_t	next;
+	newt_id_t	id;
+	char		name[0];
+} newt_name_t;
+
+typedef struct newt_variable {
+	newt_offset_t	next;
+	newt_id_t	id;
+	newt_poly_t	value;
+} newt_variable_t;
+
+typedef struct newt_frame {
+	newt_offset_t	prev;
+	newt_offset_t	code;
+	newt_offset_t	ip;
+	newt_offset_t	variables;
+} newt_frame_t;
+
+
+typedef struct newt_slice {
+	/* provided parameters */
+	int32_t		start;
+	int32_t		end;
+	int32_t		stride;
+
+	/* provided length of object */
+	newt_offset_t	len;
+
+	/* computed number of outputs */
+	newt_offset_t	count;
+
+	/* computed position of current object */
+	newt_offset_t	pos;
+} newt_slice_t;
+
+#define NEWT_SLICE_DEFAULT	0x7fffffff	/* empty value provided [1:] */
+
+static inline void
+newt_slice_start(newt_slice_t *slice)
+{
+	slice->pos = slice->start;
+}
+
+static inline bool
+newt_slice_test(newt_slice_t *slice)
+{
+	return slice->stride > 0 ? slice->pos < slice->end : slice->pos > slice->end;
+}
+
+static inline void
+newt_slice_step(newt_slice_t *slice)
+{
+	slice->pos += slice->stride;
+}
+
 #define NEWT_NAN_U	0x7fffffffu
 #define NEWT_NAN	((newt_poly_t) { .u = NEWT_NAN_U })
 #define NEWT_NULL_U	0xffffffffu
@@ -91,6 +186,34 @@ typedef struct newt_code {
 #define NEWT_GLOBAL_U	0xfffffffeu
 #define NEWT_GLOBAL	((newt_poly_t) { .u = NEWT_GLOBAL_U })
 #define NEWT_ZERO	((newt_poly_t) { .f = 0.0f })
+
+#define NEWT_STACK	32
+extern newt_poly_t	newt_stack[NEWT_STACK];
+extern newt_offset_t	newt_stackp;
+
+static inline void
+newt_stack_push(newt_poly_t p)
+{
+	newt_stack[newt_stackp++] = p;
+}
+
+static inline newt_poly_t
+newt_stack_pop(void)
+{
+	return newt_stack[--newt_stackp];
+}
+
+static inline newt_poly_t
+newt_stack_pick(newt_offset_t off)
+{
+	return newt_stack[newt_stackp - off - 1];
+}
+
+static inline void
+newt_stack_drop(newt_offset_t off)
+{
+	newt_stackp -= off;
+}
 
 static inline bool
 newt_is_nan(newt_poly_t p)
@@ -110,10 +233,6 @@ newt_is_global(newt_poly_t p)
 	return p.u == NEWT_GLOBAL_U;
 }
 
-#define NEWT_POOL		8192
-#define NEWT_POOL_EXTRA		0
-#define NEWT_ALLOC_SHIFT	2
-#define NEWT_ALLOC_ROUND	(1 << NEWT_ALLOC_SHIFT)
 
 #ifdef NEWT_DYNAMIC
 extern uint8_t *newt_pool  __attribute__((aligned(NEWT_ALLOC_ROUND)));
@@ -122,19 +241,13 @@ extern uint32_t	newt_pool_size;
 extern uint8_t	newt_pool[NEWT_POOL + NEWT_POOL_EXTRA] __attribute__((aligned(NEWT_ALLOC_ROUND)));
 #endif
 
-#if NEWT_POOL <= 65536
-typedef uint16_t	newt_offset_t;
-#define NEWT_OFFSET_NONE	0xffffu
-#else
-typedef uint32_t	newt_offset_t;
-#define NEWT_OFFSET_NONE	0xffffffffu
-#endif
-
-typedef newt_offset_t newt_id_t;
-
 #include "newt-gram.h"
 
 /* newt-code.c */
+
+#define NEWT_OP_SLICE_START	1
+#define NEWT_OP_SLICE_END	2
+#define NEWT_OP_SLICE_STRIDE	4
 
 newt_offset_t
 newt_code_current(void);
@@ -149,7 +262,22 @@ newt_offset_t
 newt_code_add_number(float number);
 
 newt_offset_t
+newt_code_add_string(char *string);
+
+newt_offset_t
 newt_code_add_op_branch(newt_op_t op);
+
+newt_offset_t
+newt_code_add_forward(newt_forward_t forward);
+
+void
+newt_code_patch_forward(newt_offset_t start, newt_forward_t forward, newt_offset_t target);
+
+newt_offset_t
+newt_code_add_call(newt_offset_t nactual);
+
+newt_offset_t
+newt_code_add_slice(bool has_start, bool has_end, bool has_stride);
 
 void
 newt_code_patch_branch(newt_offset_t branch, newt_offset_t target);
@@ -169,19 +297,8 @@ extern const newt_mem_t newt_stack_mem;
 
 /* newt-frame.c */
 
-typedef struct newt_variable {
-	newt_offset_t	next;
-	newt_id_t	id;
-	newt_poly_t	value;
-} newt_variable_t;
-
-typedef struct newt_frame {
-	newt_offset_t	prev;
-	newt_offset_t	variables;
-} newt_frame_t;
-
 extern newt_frame_t	*newt_globals;
-extern newt_frame_t	*newt_locals;
+extern newt_frame_t	*newt_frame;
 
 extern const newt_mem_t newt_variable_mem;
 
@@ -191,7 +308,35 @@ newt_frame_lookup(newt_offset_t name, bool insert);
 bool
 newt_frame_mark_global(newt_offset_t name);
 
+bool
+newt_frame_push(newt_code_t *code, newt_offset_t ip);
+
+newt_code_t *
+newt_frame_pop(newt_offset_t *ip_p);
+
+newt_poly_t
+newt_id_fetch(newt_id_t id);
+
+void
+newt_id_assign(newt_id_t id, newt_poly_t a);
+
+void
+newt_id_insert(newt_id_t id, newt_poly_t a);
+
 extern const newt_mem_t newt_frame_mem;
+
+/* newt-func.c */
+
+newt_func_t *
+newt_func_alloc(newt_code_t *code, newt_offset_t nparam, newt_id_t *formals);
+
+bool
+newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt_offset_t ip);
+
+newt_code_t *
+newt_func_pop(newt_offset_t *ip);
+
+extern const newt_mem_t newt_func_mem;
 
 /* newt-list.c */
 
@@ -249,10 +394,16 @@ newt_poly_t
 newt_poly_fetch(void);
 
 void
-newt_name_stash(newt_offset_t name);
+newt_name_stash(newt_name_t *name);
 
-newt_offset_t
+newt_name_t *
 newt_name_fetch(void);
+
+void
+newt_code_stash(newt_code_t *code);
+
+newt_code_t *
+newt_code_fetch(void);
 
 int
 newt_print_mark_addr(void *addr);
@@ -267,14 +418,6 @@ int
 newt_print_stop(void);
 
 /* newt-name.c */
-
-typedef newt_offset_t newt_id_t;
-
-typedef struct newt_name {
-	newt_offset_t	next;
-	newt_id_t	id;
-	char		name[0];
-} newt_name_t;
 
 newt_id_t
 newt_name_id(char *name);
@@ -291,10 +434,43 @@ void *
 newt_ref(newt_poly_t poly);
 
 newt_poly_t
+newt_poly_offset(newt_offset_t offset, newt_type_t type);
+
+newt_poly_t
 newt_poly(const void *addr, newt_type_t type);
 
 void
 newt_poly_print(newt_poly_t poly);
+
+bool
+newt_slice_canon(newt_slice_t *slice);
+
+void
+newt_null_mark(void *addr);
+
+void
+newt_null_move(void *addr);
+
+/* newt-string.c */
+
+char *
+newt_string_copy(char *string);
+
+char *
+newt_string_make(char c);
+
+char
+newt_string_fetch(char *string, int i);
+
+char *
+newt_string_cat(char *a, char *b);
+
+char *
+newt_string_slice(char *a, newt_slice_t *slice);
+
+extern const newt_mem_t newt_string_mem;
+
+/* inlines */
 
 static inline void *
 newt_pool_ref(newt_offset_t offset)
@@ -392,4 +568,16 @@ static inline char *
 newt_poly_to_string(newt_poly_t poly)
 {
 	return newt_ref(poly);
+}
+
+static inline newt_func_t *
+newt_poly_to_func(newt_poly_t poly)
+{
+	return newt_ref(poly);
+}
+
+static inline newt_poly_t
+newt_func_to_poly(newt_func_t *func)
+{
+	return newt_poly(func, newt_func);
 }
