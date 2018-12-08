@@ -14,6 +14,161 @@
 
 #include "newt.h"
 
+// #define DEBUG_COMPILE
+//#define DEBUG_EXEC
+#if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
+
+static const char *newt_op_names[] = {
+	[newt_op_nop] = "nop",
+	[newt_op_num] = "num",
+	[newt_op_string] = "string",
+	[newt_op_list] = "list",
+	[newt_op_id] = "id",
+
+	[newt_op_not] = "not",
+
+	[newt_op_eq] = "eq",
+	[newt_op_ne] = "ne",
+	[newt_op_gt] = "gt",
+	[newt_op_lt] = "lt",
+	[newt_op_ge] = "ge",
+	[newt_op_le] = "le",
+
+	[newt_op_is] = "is",
+	[newt_op_is_not] = "is_not",
+	[newt_op_in] = "in",
+	[newt_op_not_in] = "not_in",
+
+	[newt_op_plus] = "plus",
+	[newt_op_minus] = "minus",
+	[newt_op_times] = "times",
+	[newt_op_divide] = "divide",
+	[newt_op_div] = "div",
+	[newt_op_mod] = "mod",
+	[newt_op_pow] = "pow",
+	[newt_op_land] = "land",
+	[newt_op_lor] = "lor",
+	[newt_op_lxor] = "lxor",
+	[newt_op_lshift] = "lshift",
+	[newt_op_rshift] = "rshift",
+
+	[newt_op_call] = "call",
+
+	[newt_op_uminus] = "uminus",
+	[newt_op_lnot] = "lnot",
+
+	[newt_op_array_fetch] = "array_fetch",
+	[newt_op_array_store] = "array_store",
+	[newt_op_slice] = "slice",
+
+
+	[newt_op_assign] = "assign",
+	[newt_op_assign_plus] = "assign_plus",
+	[newt_op_assign_minus] = "assign_minus",
+	[newt_op_assign_times] = "assign_times",
+	[newt_op_assign_divide] = "assign_divide",
+	[newt_op_assign_div] = "assign_div",
+	[newt_op_assign_mod] = "assign_mod",
+	[newt_op_assign_land] = "assign_land",
+	[newt_op_assign_lor] = "assign_lor",
+	[newt_op_assign_lxor] = "assign_lxor",
+	[newt_op_assign_lshift] = "assign_lshift",
+	[newt_op_assign_rshift] = "assign_rshift",
+	[newt_op_assign_pow] = "assign_pow",
+
+	[newt_op_branch_true] = "branch_true",
+	[newt_op_branch_false] = "branch_false",
+	[newt_op_branch] = "branch",
+	[newt_op_forward] = "forward",
+};
+
+newt_offset_t
+newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
+{
+	float		f;
+	newt_id_t	id;
+	newt_offset_t	o;
+
+	printf("%6d:  ", ip);
+	newt_op_t op = code->code[ip++];
+	bool push = (op & newt_op_push) != 0;
+	op &= ~newt_op_push;
+	printf("%-12s %c ", newt_op_names[op], push ? '^' : ' ');
+	switch(op) {
+	case newt_op_num:
+		memcpy(&f, &code->code[ip], sizeof(float));
+		ip += sizeof(float);
+		printf("%g\n", f);
+		break;
+	case newt_op_string:
+		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
+		ip += sizeof (newt_offset_t);
+		printf("%s\n", (char *) newt_pool_ref(o));
+		break;
+	case newt_op_list:
+		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
+		printf("%u\n", o);
+		ip += sizeof (newt_offset_t);
+		break;
+	case newt_op_id:
+	case newt_op_assign:
+	case newt_op_assign_plus:
+	case newt_op_assign_minus:
+	case newt_op_assign_times:
+	case newt_op_assign_divide:
+	case newt_op_assign_div:
+	case newt_op_assign_mod:
+	case newt_op_assign_land:
+	case newt_op_assign_lor:
+	case newt_op_assign_lxor:
+	case newt_op_assign_lshift:
+	case newt_op_assign_rshift:
+	case newt_op_assign_pow:
+		memcpy(&id, &code->code[ip], sizeof(newt_id_t));
+		ip += sizeof (newt_id_t);
+		if (id)
+			printf("%s\n", newt_name_string(id));
+		else
+			printf("<array>\n");
+		break;
+	case newt_op_call:
+		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
+		ip += sizeof (newt_offset_t);
+		printf("%d actuals\n", o);
+		break;
+	case newt_op_slice:
+		if (code->code[ip] & NEWT_OP_SLICE_START) printf(" start");
+		if (code->code[ip] & NEWT_OP_SLICE_END) printf(" end");
+		if (code->code[ip] & NEWT_OP_SLICE_STRIDE) printf(" stride");
+		ip++;
+		break;
+	case newt_op_branch:
+	case newt_op_branch_true:
+	case newt_op_branch_false:
+	case newt_op_forward:
+		memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
+		printf("%d\n", o);
+		ip += sizeof (newt_offset_t);
+		break;
+	default:
+		printf("\n");
+		break;
+	}
+	return ip;
+}
+
+void
+newt_code_dump(newt_code_t *code)
+{
+	newt_offset_t	ip = 0;
+
+	while (ip < code->size) {
+		ip = newt_code_dump_instruction(code, ip);
+	}
+}
+
+#endif
+
 static uint8_t		*compile;
 static newt_offset_t	compile_size, compile_alloc;
 
@@ -56,8 +211,9 @@ newt_op_extra_size(newt_op_t op)
 		return 1;
 	case newt_op_assign:
 		return sizeof (newt_id_t);
-	case newt_op_if:
 	case newt_op_branch:
+	case newt_op_branch_true:
+	case newt_op_branch_false:
 	case newt_op_forward:
 		return sizeof (newt_offset_t);
 	default:
@@ -215,8 +371,13 @@ newt_code_t *
 newt_code_finish(void)
 {
 	newt_code_t *code = newt_alloc(sizeof (newt_code_t) + compile_size);
-	memcpy(&code->code, compile, compile_size);
-	code->size = compile_size;
+	if (code) {
+		memcpy(&code->code, compile, compile_size);
+		code->size = compile_size;
+#ifdef DEBUG_COMPILE
+		newt_code_dump(code);
+#endif
+	}
 	compile_size = 0;
 	return code;
 }
@@ -241,124 +402,6 @@ newt_bool(bool b)
 	return newt_float_to_poly(b ? 1.0f : 0.0f);
 }
 
-//#define DEBUG_COMPILE
-//#define DEBUG_EXEC
-#if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
-
-static const char *newt_op_names[] = {
-	[newt_op_nop] = "nop",
-	[newt_op_num] = "num",
-	[newt_op_string] = "string",
-	[newt_op_list] = "list",
-	[newt_op_id] = "id",
-
-	[newt_op_and] = "and",
-	[newt_op_or] = "or",
-	[newt_op_not] = "not",
-
-	[newt_op_eq] = "eq",
-	[newt_op_ne] = "ne",
-	[newt_op_gt] = "gt",
-	[newt_op_lt] = "lt",
-	[newt_op_ge] = "ge",
-	[newt_op_le] = "le",
-
-	[newt_op_plus] = "plus",
-	[newt_op_minus] = "minus",
-	[newt_op_times] = "times",
-	[newt_op_divide] = "divide",
-	[newt_op_div] = "div",
-	[newt_op_mod] = "mod",
-
-	[newt_op_call] = "call",
-
-	[newt_op_uminus] = "uminus",
-
-	[newt_op_array_fetch] = "array_fetch",
-	[newt_op_array_store] = "array_store",
-	[newt_op_slice] = "slice",
-
-
-	[newt_op_assign] = "assign",
-
-	[newt_op_if] = "if",
-	[newt_op_branch] = "branch",
-	[newt_op_forward] = "forward",
-};
-
-newt_offset_t
-newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
-{
-	float		f;
-	newt_id_t	id;
-	newt_offset_t	o;
-
-	printf("%6d:  ", ip);
-	newt_op_t op = code->code[ip++];
-	bool push = (op & newt_op_push) != 0;
-	op &= ~newt_op_push;
-	printf("%-12s %c ", newt_op_names[op], push ? '^' : ' ');
-	switch(op) {
-	case newt_op_num:
-		memcpy(&f, &code->code[ip], sizeof(float));
-		ip += sizeof(float);
-		printf("%g\n", f);
-		break;
-	case newt_op_string:
-		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
-		ip += sizeof (newt_offset_t);
-		printf("%s\n", (char *) newt_pool_ref(o));
-		break;
-	case newt_op_list:
-		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
-		printf("%u\n", (o);
-		break;
-	case newt_op_id:
-	case newt_op_assign:
-		memcpy(&id, &code->code[ip], sizeof(newt_id_t));
-		ip += sizeof (newt_id_t);
-		printf("%s\n", newt_name_string(id));
-		break;
-	case newt_op_call:
-		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
-		ip += sizeof (newt_offset_t);
-		printf("%d actuals\n", o);
-		break;
-	case newt_op_slice:
-		if (code->code[ip] & NEWT_OP_SLICE_START) printf(" start");
-		if (code->code[ip] & NEWT_OP_SLICE_END) printf(" end");
-		if (code->code[ip] & NEWT_OP_SLICE_STRIDE) printf(" stride");
-		ip++;
-		break;
-	case newt_op_if:
-	case newt_op_branch:
-		memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
-		printf("%d\n", o);
-		ip += sizeof (newt_offset_t);
-		break;
-	default:
-		printf("\n");
-		break;
-	}
-	return ip;
-}
-#endif
-
-
-#ifdef DEBUG_COMPILE
-void
-newt_code_dump(newt_code_t *code)
-{
-	newt_offset_t	ip = 0;
-
-	while (ip < code->size) {
-		ip = newt_code_dump_instruction(code, ip);
-	}
-}
-
-#else
-#define newt_code_dump(code)
-#endif
 
 static newt_poly_t
 newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
@@ -371,14 +414,14 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
 	float		bf;
 
 	switch (op) {
-	case newt_op_and:
-		return newt_bool(newt_true(a) && newt_true(b));
-	case newt_op_or:
-		return newt_bool(newt_true(a) || newt_true(b));
 	case newt_op_eq:
 		return newt_bool(newt_poly_equal(a, b));
 	case newt_op_ne:
 		return newt_bool(!newt_poly_equal(a, b));
+	case newt_op_is:
+		return newt_bool(a.u == b.u);
+	case newt_op_is_not:
+		return newt_bool(a.u != b.u);
 	default:
 		break;
 	}
@@ -405,6 +448,18 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
 		af = newt_poly_to_float(a);
 		bf = newt_poly_to_float(b);
 		switch (op) {
+		case newt_op_lt:
+			af = newt_bool_float(af < bf);
+			break;
+		case newt_op_gt:
+			af = newt_bool_float(af > bf);
+			break;
+		case newt_op_le:
+			af = newt_bool_float(af <= bf);
+			break;
+		case newt_op_ge:
+			af = newt_bool_float(af >= bf);
+			break;
 		case newt_op_plus:
 			af = af + bf;
 			break;
@@ -423,17 +478,14 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
 		case newt_op_mod:
 			af = (float) ((int32_t) af % (int32_t) bf);
 			break;
-		case newt_op_lt:
-			af = newt_bool_float(af < bf);
+		case newt_op_land:
+			af = (float) ((int32_t) af & (int32_t) bf);
 			break;
-		case newt_op_gt:
-			af = newt_bool_float(af > bf);
+		case newt_op_lor:
+			af = (float) ((int32_t) af | (int32_t) bf);
 			break;
-		case newt_op_le:
-			af = newt_bool_float(af <= bf);
-			break;
-		case newt_op_ge:
-			af = newt_bool_float(af >= bf);
+		case newt_op_lxor:
+			af = (float) ((int32_t) af ^ (int32_t) bf);
 			break;
 		default:
 			break;
@@ -574,6 +626,23 @@ newt_slice(newt_poly_t a, uint8_t bits)
 	return a;
 }
 
+static void
+newt_assign(newt_id_t id, newt_poly_t value)
+{
+	if (id != NEWT_ID_NONE) {
+		newt_id_assign(id, value);
+		return;
+	}
+	newt_poly_t ip = newt_stack_pop();
+	newt_poly_t lp = newt_stack_pop();
+	if (newt_poly_type(ip) == newt_float && newt_poly_type(lp) == newt_list) {
+		newt_list_t	*l = newt_poly_to_list(lp);
+		float		f = newt_poly_to_float(ip);
+
+		if (0 <= f && f <= l->size)
+			newt_list_data(l)[(newt_offset_t) f] = value;
+	}
+}
 
 newt_poly_t	newt_stack[NEWT_STACK];
 newt_offset_t	newt_stackp = 0;
@@ -668,8 +737,9 @@ newt_code_run(newt_code_t *code)
 			case newt_op_gt:
 			case newt_op_ge:
 			case newt_op_le:
-			case newt_op_and:
-			case newt_op_or:
+			case newt_op_lxor:
+			case newt_op_land:
+			case newt_op_lor:
 			case newt_op_array_fetch:
 				b = newt_stack_pop();
 				a = newt_binary(b, op, a);
@@ -696,11 +766,17 @@ newt_code_run(newt_code_t *code)
 				break;
 			case newt_op_assign:
 				memcpy(&id, &code->code[ip], sizeof (newt_id_t));
-				newt_id_assign(id, a);
+				newt_assign(id, a);
 				ip += sizeof (newt_id_t);
 				break;
-			case newt_op_if:
+			case newt_op_branch_false:
 				if (!newt_true(a))
+					memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
+				else
+					ip += sizeof (newt_offset_t);
+				break;
+			case newt_op_branch_true:
+				if (newt_true(a))
 					memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
 				else
 					ip += sizeof (newt_offset_t);

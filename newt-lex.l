@@ -53,18 +53,36 @@ static char *string_build(char *text, int leng);
 ";"	return SEMI;
 ","	return COMMA;
 "="	{ yylval.op = newt_op_assign; return ASSIGN; }
+"+="	{ yylval.op = newt_op_assign_plus; return ASSIGN; }
+"-="	{ yylval.op = newt_op_assign_minus; return ASSIGN; }
+"*="	{ yylval.op = newt_op_assign_times; return ASSIGN; }
+"/="	{ yylval.op = newt_op_assign_divide; return ASSIGN; }
+"//="	{ yylval.op = newt_op_assign_div; return ASSIGN; }
+"%="	{ yylval.op = newt_op_assign_mod; return ASSIGN; }
+"&="	{ yylval.op = newt_op_assign_land; return ASSIGN; }
+"|="	{ yylval.op = newt_op_assign_lor; return ASSIGN; }
+"^="	{ yylval.op = newt_op_assign_lxor; return ASSIGN; }
+"<<="	{ yylval.op = newt_op_assign_lshift; return ASSIGN; }
+">>="	{ yylval.op = newt_op_assign_rshift; return ASSIGN; }
+"**="	{ yylval.op = newt_op_assign_pow; return ASSIGN; }
 "=="	{ yylval.op = newt_op_eq; return EQ; }
 "!="	{ yylval.op = newt_op_ne; return NE; }
 "<"	{ yylval.op = newt_op_lt; return LT; }
 ">"	{ yylval.op = newt_op_gt; return GT; }
 "<="	{ yylval.op = newt_op_le; return LE; }
 ">="	{ yylval.op = newt_op_ge; return GE; }
+"&"	{ yylval.op = newt_op_land; return LAND; }
+"|"	{ yylval.op = newt_op_land; return LOR; }
+"^"	{ yylval.op = newt_op_land; return LXOR; }
+"<<"	{ yylval.op = newt_op_land; return LSHIFT; }
+">>"	{ yylval.op = newt_op_land; return RSHIFT; }
 "+"	{ yylval.op = newt_op_plus; return PLUS; }
 "-"	{ yylval.op = newt_op_minus; return MINUS; }
 "*"	{ yylval.op = newt_op_times; return TIMES; }
 "/"	{ yylval.op = newt_op_divide; return DIVIDE; }
 "//"	{ yylval.op = newt_op_div; return DIV; }
 "%"	{ yylval.op = newt_op_mod; return MOD; }
+"~"	{ yylval.op = newt_op_lnot; return LNOT; }
 
 "("	return OP;
 ")"	return CP;
@@ -82,11 +100,15 @@ continue	return CONTINUE;
 break	return BREAK;
 return	return RETURN;
 True	{ yylval.number = 1.0; return NUMBER; }
-False	{ yylval.number = 2.0; return NUMBER; }
+False	{ yylval.number = 0.0; return NUMBER; }
 range	return RANGE;
-in	return IN;
 or	return OR;
 and	return AND;
+is	{ yylval.op = newt_op_is; return IS; }
+"is[ \t]+not" { yylval.op = newt_op_is_not; return IS_NOT; }
+in	{ yylval.op = newt_op_in; return IN; }
+not	{ yylval.op = newt_op_not; return NOT; }
+"not[ \t]+in" { yylval.op = newt_op_not_in; return NOT_IN; }
 
 \"([^\n\\"]|\\\")*\" {
 	yylval.string = string_build(yytext, yyleng);

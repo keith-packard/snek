@@ -41,6 +41,8 @@ typedef int32_t		newt_soffset_t;
 
 typedef newt_offset_t newt_id_t;
 
+#define NEWT_ID_NONE		0
+
 typedef union {
 	uint32_t    u;
 	float       f;
@@ -53,8 +55,6 @@ typedef enum {
 	newt_op_list,
 	newt_op_id,
 
-	newt_op_and,
-	newt_op_or,
 	newt_op_not,
 
 	newt_op_eq,
@@ -64,14 +64,26 @@ typedef enum {
 	newt_op_ge,
 	newt_op_le,
 
+	newt_op_is,
+	newt_op_is_not,
+	newt_op_in,
+	newt_op_not_in,
+
 	newt_op_plus,
 	newt_op_minus,
 	newt_op_times,
 	newt_op_divide,
 	newt_op_div,
 	newt_op_mod,
+	newt_op_pow,
+	newt_op_land,
+	newt_op_lor,
+	newt_op_lxor,
+	newt_op_lshift,
+	newt_op_rshift,
 
 	newt_op_uminus,
+	newt_op_lnot,
 
 	newt_op_call,
 
@@ -80,9 +92,22 @@ typedef enum {
 	newt_op_slice,
 
 	newt_op_assign,
+	newt_op_assign_plus,
+	newt_op_assign_minus,
+	newt_op_assign_times,
+	newt_op_assign_divide,
+	newt_op_assign_div,
+	newt_op_assign_mod,
+	newt_op_assign_land,
+	newt_op_assign_lor,
+	newt_op_assign_lxor,
+	newt_op_assign_lshift,
+	newt_op_assign_rshift,
+	newt_op_assign_pow,
 
-	newt_op_if,
 	newt_op_branch,
+	newt_op_branch_true,
+	newt_op_branch_false,
 	newt_op_forward,
 
 	newt_op_push = 0x80,
@@ -109,13 +134,13 @@ typedef struct newt_mem {
 } newt_mem_t;
 
 typedef struct newt_list {
-	uint16_t	size;
-	uint16_t	alloc;
+	newt_offset_t	size;
+	newt_offset_t	alloc;
 	newt_offset_t	data;
 } newt_list_t;
 
 typedef struct newt_code {
-	uint16_t	size;
+	newt_offset_t	size;
 	uint8_t		code[0];
 } newt_code_t;
 
@@ -259,6 +284,9 @@ newt_code_add_op(newt_op_t op);
 
 newt_offset_t
 newt_code_add_op_id(newt_op_t op, newt_id_t id);
+
+newt_offset_t
+newt_code_add_op_array(newt_op_t op);
 
 newt_offset_t
 newt_code_add_number(float number);

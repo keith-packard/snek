@@ -118,7 +118,7 @@ char *
 newt_poly_format(newt_poly_t a, char format)
 {
 	newt_type_t atype = newt_poly_type(a);
-	static char buf[12];
+	static char buf[14];
 	char format_string[3] = "%.";
 
 	format_string[1] = format;
@@ -172,6 +172,8 @@ newt_poly_format(newt_poly_t a, char format)
 	case newt_func:
 		sprintf(buf, "<func %d>", newt_pool_offset(newt_poly_to_func(a)));
 		return buf;
+	default:
+		return "???";
 	}
 }
 

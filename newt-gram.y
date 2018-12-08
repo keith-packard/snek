@@ -34,7 +34,7 @@ static newt_id_t formals[MAX_FORMALS];
 }
 
 %type	<bools>		stat
-%type	<offset>	opt_expr opt_stride
+%type	<offset>	opt_expr opt_stride branch_false branch_true
 %type	<offset>	expr if elif else
 %type	<offset>	while mark
 %type	<ints>		opt_actuals actuals
@@ -52,18 +52,22 @@ static newt_id_t formals[MAX_FORMALS];
 %left	<op>		OR
 %left	<op>		AND
 %right	<op>		NOT
-%left	<op>		EQ NE
-%left	<op>		LT GT LE GE
+%left	<op>		EQ NE LT GT LE GE IS IS_NOT IN NOT_IN
+%left	<op>		LOR
+%left	<op>		LAND
+%left	<op>		LXOR
+%left	<op>		LSHIFT RSHIFT
 %left	<op>		PLUS MINUS
 %left	<op>		TIMES DIVIDE DIV MOD
-%right			UMINUS
+%right	<op>		UMINUS LNOT
+%right	<op>		POW
 %left	<op>		OP CP OS CS
 
 %token			DEF GLOBAL
 %token			IF ELSE ELIF
 %token			FOR WHILE
 %token			RETURN CONTINUE BREAK
-%token			RANGE IN IS
+%token			RANGE
 
 %%
 file	: file pcommand
@@ -128,6 +132,12 @@ small_stat	: expr
 		{
 			newt_code_add_op_id($2, $1);
 		}
+	| expr OS expr CS ASSIGN expr
+		{
+			newt_code_set_push($1);
+			newt_code_set_push($3);
+			newt_code_add_op_id($5, NEWT_ID_NONE);
+		}
 	| RETURN expr
 		{
 			newt_code_add_forward(newt_forward_return);
@@ -147,7 +157,7 @@ compound_stat: if_stat elif_stats else_stat
 if_stat	: if suite
 		{ newt_code_patch_branch($1, newt_code_current()); }
 if	: IF expr COLON
-		{ $$ = newt_code_add_op_branch(newt_op_if); }
+		{ $$ = newt_code_add_op_branch(newt_op_branch_false); }
 	;
 elif_stats	: elif_stats elif_stat
 	|
@@ -156,7 +166,7 @@ elif_stat: elif suite
 		{ newt_code_patch_branch($1, newt_code_current()); }
 	;
 elif	: ELIF expr COLON
-		{ $$ = newt_code_add_op_branch(newt_op_if); }
+		{ $$ = newt_code_add_op_branch(newt_op_branch_false); }
 	;
 else_stat: else suite 
 		{ newt_code_patch_branch($1, newt_code_current()); }
@@ -175,7 +185,7 @@ while_stat : mark while suite
 		}
 	;
 while	: WHILE expr COLON
-		{ $$ = newt_code_add_op_branch(newt_op_if); }
+		{ $$ = newt_code_add_op_branch(newt_op_branch_false); }
 	;
 mark	:
 		{ $$ = newt_code_current(); }
@@ -237,12 +247,10 @@ expr	: OP expr CP
 		{ goto bin_op; }
 	| expr MOD expr
 		{ goto bin_op; }
-	| expr OR expr
-		{ goto bin_op; }
-	| expr AND expr
-		{ goto bin_op; }
-	| NOT expr
-		{ $$ = newt_code_add_op(newt_op_not); }
+	| expr OR branch_true expr
+		{ newt_code_patch_branch($3, newt_code_current()); $$ = $4; }
+	| expr AND branch_false expr
+		{ newt_code_patch_branch($3, newt_code_current()); $$ = $4; }
 	| expr EQ expr
 		{ goto bin_op; }
 	| expr NE expr
@@ -255,6 +263,28 @@ expr	: OP expr CP
 		{ goto bin_op; }
 	| expr GE expr
 		{ goto bin_op; }
+	| expr IS expr
+		{ goto bin_op; }
+	| expr IS_NOT expr
+		{ goto bin_op; }
+	| expr NOT_IN expr
+		{ goto bin_op; }
+	| expr IN expr
+		{ goto bin_op; }
+	| expr LOR expr
+		{ goto bin_op; }
+	| expr LAND expr
+		{ goto bin_op; }
+	| expr LXOR expr
+		{ goto bin_op; }
+	| expr LSHIFT expr
+		{ goto bin_op; }
+	| expr RSHIFT expr
+		{ goto bin_op; }
+	| NOT expr
+		{ unop: $$ = newt_code_add_op($1); }
+	| LNOT expr
+		{ goto unop; }
 	| MINUS expr %prec UMINUS
 		{ $$ = newt_code_add_op(newt_op_uminus); }
 	| NAME
@@ -265,6 +295,14 @@ expr	: OP expr CP
 		{ $$ = newt_code_add_string($1); }
 	| OS actuals CS
 		{ $$ = newt_code_add_list($2); }
+	| OP actuals CP
+		{ $$ = newt_code_add_list($2); }
+	;
+branch_false:
+		{ $$ = newt_code_add_op_branch(newt_op_branch_false); }
+	;
+branch_true:
+		{ $$ = newt_code_add_op_branch(newt_op_branch_true); }
 	;
 opt_expr: expr
 		{ $$ = $1; }
