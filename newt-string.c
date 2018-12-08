@@ -67,7 +67,7 @@ newt_string_slice(char *a, newt_slice_t *slice)
 	a = newt_poly_to_string(newt_poly_fetch());
 	if (!r)
 		return NULL;
-	int i = 0;
+	newt_offset_t i = 0;
 	for (newt_slice_start(slice); newt_slice_test(slice); newt_slice_step(slice))
 		r[i++] = a[slice->pos];
 	r[i] = '\0';

@@ -72,7 +72,7 @@ newt_name_move(void *addr)
 		newt_name_t *next = newt_pool_ref(n->next);
 		if (!next)
 			break;
-		int ret = newt_move_memory(&newt_name_mem, (void **) &next);
+		int ret = newt_move_memory((void **) &next);
 		if (next != newt_pool_ref(n->next))
 			n->next = newt_pool_offset(next);
 		if (ret)

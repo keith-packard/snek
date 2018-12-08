@@ -55,7 +55,7 @@ static newt_id_t formals[MAX_FORMALS];
 %left	<op>		EQ NE
 %left	<op>		LT GT LE GE
 %left	<op>		PLUS MINUS
-%left	<op>		TIMES DIVIDE MOD
+%left	<op>		TIMES DIVIDE DIV MOD
 %right			UMINUS
 %left	<op>		OP CP OS CS
 
@@ -233,6 +233,8 @@ expr	: OP expr CP
 		{ goto bin_op; }
 	| expr DIVIDE expr
 		{ goto bin_op; }
+	| expr DIV expr
+		{ goto bin_op; }
 	| expr MOD expr
 		{ goto bin_op; }
 	| expr OR expr
@@ -261,6 +263,8 @@ expr	: OP expr CP
 		{ $$ = newt_code_add_number($1); }
 	| STRING
 		{ $$ = newt_code_add_string($1); }
+	| OS actuals CS
+		{ $$ = newt_code_add_list($2); }
 	;
 opt_expr: expr
 		{ $$ = $1; }

@@ -411,7 +411,7 @@ newt_collect(uint8_t style)
  */
 
 int
-newt_mark_memory(const struct newt_mem *type, void *addr)
+newt_mark_blob(void *addr, newt_offset_t size)
 {
 	newt_offset_t offset;
 
@@ -422,8 +422,14 @@ newt_mark_memory(const struct newt_mem *type, void *addr)
 	if (busy(newt_busy, offset))
 		return 1;
 	mark(newt_busy, offset);
-	note_chunk(offset, newt_size(type, addr));
+	note_chunk(offset, size);
 	return 0;
+}
+
+int
+newt_mark_memory(const struct newt_mem *type, void *addr)
+{
+	return newt_mark_blob(addr, newt_size(type, addr));
 }
 
 /*
@@ -502,12 +508,10 @@ move_map(newt_offset_t offset)
 }
 
 int
-newt_move_offset(const struct newt_mem *type, newt_offset_t *ref)
+newt_move_offset(newt_offset_t *ref)
 {
 	newt_offset_t	orig_offset = *ref;
 	newt_offset_t	offset;
-
-	(void) type;
 
 	offset = move_map(orig_offset);
 	if (offset != orig_offset)
@@ -521,7 +525,7 @@ newt_move_offset(const struct newt_mem *type, newt_offset_t *ref)
 }
 
 int
-newt_move_memory(const struct newt_mem *type, void **ref)
+newt_move_memory(void **ref)
 {
 	void		*addr = *ref;
 	newt_offset_t	offset, orig_offset;
@@ -530,11 +534,9 @@ newt_move_memory(const struct newt_mem *type, void **ref)
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
-	(void) type;
-
 	orig_offset = pool_offset(addr);
 	offset = orig_offset;
-	ret = newt_move_offset(type, &offset);
+	ret = newt_move_offset(&offset);
 	if (offset != orig_offset)
 		*ref = newt_pool + offset;
 
@@ -545,7 +547,7 @@ int
 newt_move(const struct newt_mem *type, void **ref)
 {
 	int ret;
-	ret = newt_move_memory(type, ref);
+	ret = newt_move_memory(ref);
 	if (!ret)
 		type->move(*ref);
 
@@ -580,7 +582,7 @@ newt_poly_move(newt_poly_t *ref, uint8_t do_note_list)
 		mem = newt_mems[type];
 
 		/* inline newt_move to save stack space */
-		ret = newt_move_memory(mem, &addr);
+		ret = newt_move_memory(&addr);
 		if (!ret)
 			mem->move(addr);
 	}

@@ -41,8 +41,7 @@ have lexical scope, and you can refer to global variables with the
 Newt doesn't even do everything in this document yet, but its getting
 close. Still to do are:
 
- * List datatype
- * // operator
+ * For statement (which requires generators)
  * Built-in functions (like print).
 
 ## A complete Newt system

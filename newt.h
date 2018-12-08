@@ -50,6 +50,7 @@ typedef enum {
 	newt_op_nop,
 	newt_op_num,
 	newt_op_string,
+	newt_op_list,
 	newt_op_id,
 
 	newt_op_and,
@@ -67,6 +68,7 @@ typedef enum {
 	newt_op_minus,
 	newt_op_times,
 	newt_op_divide,
+	newt_op_div,
 	newt_op_mod,
 
 	newt_op_uminus,
@@ -109,7 +111,7 @@ typedef struct newt_mem {
 typedef struct newt_list {
 	uint16_t	size;
 	uint16_t	alloc;
-	newt_poly_t	*data;
+	newt_offset_t	data;
 } newt_list_t;
 
 typedef struct newt_code {
@@ -265,6 +267,9 @@ newt_offset_t
 newt_code_add_string(char *string);
 
 newt_offset_t
+newt_code_add_list(newt_offset_t size);
+
+newt_offset_t
 newt_code_add_op_branch(newt_op_t op);
 
 newt_offset_t
@@ -340,6 +345,24 @@ extern const newt_mem_t newt_func_mem;
 
 /* newt-list.c */
 
+newt_list_t *
+newt_list_make(newt_offset_t size);
+
+bool
+newt_list_cat(newt_list_t *list, newt_list_t *append);
+
+newt_list_t *
+newt_list_plus(newt_list_t *a, newt_list_t *b);
+
+bool
+newt_list_equal(newt_list_t *a, newt_list_t *b);
+
+newt_list_t *
+newt_list_imm(newt_offset_t size);
+
+newt_list_t *
+newt_list_slice(newt_list_t *list, newt_slice_t *slice);
+
 extern const newt_mem_t newt_list_mem;
 
 /* newt-main.c */
@@ -358,10 +381,13 @@ yywrap(void);
 #define NEWT_COLLECT_INCREMENTAL	1
 
 int
-newt_poly_mark(newt_poly_t p, uint8_t do_note_cons);
+newt_poly_mark(newt_poly_t p, uint8_t do_note_list);
 
 newt_offset_t
 newt_collect(uint8_t style);
+
+int
+newt_mark_blob(void *addr, newt_offset_t size);
 
 int
 newt_mark_memory(const struct newt_mem *type, void *addr);
@@ -370,13 +396,13 @@ int
 newt_mark(const struct newt_mem *type, void *addr);
 
 int
-newt_move_offset(const struct newt_mem *type, newt_offset_t *ref);
+newt_move_offset(newt_offset_t *ref);
 
 int
-newt_move_memory(const struct newt_mem *type, void **ref);
+newt_move_memory(void **ref);
 
 int
-newt_poly_move(newt_poly_t *ref, uint8_t do_note_cons);
+newt_poly_move(newt_poly_t *ref, uint8_t do_note_list);
 
 int
 newt_move(const struct newt_mem *type, void **ref);
@@ -441,6 +467,9 @@ newt_poly(const void *addr, newt_type_t type);
 
 void
 newt_poly_print(newt_poly_t poly);
+
+bool
+newt_poly_equal(newt_poly_t a, newt_poly_t b);
 
 bool
 newt_slice_canon(newt_slice_t *slice);

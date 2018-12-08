@@ -178,7 +178,7 @@ newt_variable_move(void *addr)
 
 		newt_variable_t *next = newt_pool_ref(v->next);
 
-		ret = newt_move_memory(&newt_variable_mem, (void **) &next);
+		ret = newt_move_memory((void **) &next);
 		if (next != newt_pool_ref(v->next))
 			v->next = newt_pool_offset(next);
 		if (ret)
@@ -239,7 +239,7 @@ newt_frame_move(void *addr)
 		newt_frame_t *prev = newt_pool_ref(f->prev);
 		if (!prev)
 			break;
-		int ret = newt_move_memory(&newt_frame_mem, (void **) &prev);
+		int ret = newt_move_memory((void **) &prev);
 		if (prev != newt_pool_ref(f->prev))
 			f->prev = newt_pool_offset(prev);
 		if (ret)

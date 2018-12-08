@@ -47,9 +47,39 @@ newt_poly_print(newt_poly_t poly)
 	case newt_func:
 		printf("<function at %d>", newt_poly_to_uint(poly));
 		break;
+	case newt_list:
+		printf("[");
+		newt_list_t *list = newt_poly_to_list(poly);
+		newt_poly_t *data = newt_pool_ref(list->data);
+		for (newt_offset_t o = 0; o < list->size; o++) {
+			if (o)
+				printf(", ");
+			newt_poly_print(data[o]);
+		}
+		printf("]");
+		break;
 	default:
 		printf("?%d.%x?", newt_poly_type(poly), newt_poly_to_uint(poly));
 		break;
+	}
+}
+
+bool
+newt_poly_equal(newt_poly_t a, newt_poly_t b)
+{
+	if (a.u == b.u)
+		return true;
+	newt_type_t atype = newt_poly_type(a);
+	newt_type_t btype = newt_poly_type(b);
+	if (atype != btype)
+		return false;
+	switch (atype) {
+	case newt_string:
+		return !strcmp(newt_poly_to_string(a), newt_poly_to_string(b));
+	case newt_list:
+		return newt_list_equal(newt_poly_to_list(a), newt_poly_to_list(b));
+	default:
+		return false;
 	}
 }
 

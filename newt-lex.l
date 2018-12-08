@@ -63,6 +63,7 @@ static char *string_build(char *text, int leng);
 "-"	{ yylval.op = newt_op_minus; return MINUS; }
 "*"	{ yylval.op = newt_op_times; return TIMES; }
 "/"	{ yylval.op = newt_op_divide; return DIVIDE; }
+"//"	{ yylval.op = newt_op_div; return DIV; }
 "%"	{ yylval.op = newt_op_mod; return MOD; }
 
 "("	return OP;
