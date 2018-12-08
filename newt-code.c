@@ -363,6 +363,13 @@ newt_code_dump(newt_code_t *code)
 static newt_poly_t
 newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
 {
+	char		*as;
+	char		*bs;
+	newt_list_t	*al;
+	newt_list_t	*bl;
+	float		af;
+	float		bf;
+
 	switch (op) {
 	case newt_op_and:
 		return newt_bool(newt_true(a) && newt_true(b));
@@ -376,19 +383,27 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
 		break;
 	}
 	if (op == newt_op_array_fetch) {
-		switch (newt_poly_type(a)) {
-		case newt_list:
-			break;
-		case newt_string:
-			if (newt_is_float(b))
-				a = newt_string_to_poly(newt_string_make(newt_string_fetch(newt_poly_to_string(a), (int) newt_poly_to_float(b))));
-			break;
-		default:
-			break;
+		if (newt_is_float(b)) {
+			bf = newt_poly_to_float(b);
+			newt_offset_t bo = (newt_offset_t) bf;
+
+			switch (newt_poly_type(a)) {
+			case newt_list:
+				al = newt_poly_to_list(a);
+				if (bo < al->size)
+					a = newt_list_data(al)[bo];
+				break;
+			case newt_string:
+				as = newt_poly_to_string(a);
+				a = newt_string_to_poly(newt_string_make(newt_string_fetch(as, bo)));
+				break;
+			default:
+				break;
+			}
 		}
 	} else if (newt_is_float(a) && newt_is_float(b)) {
-		float	af = newt_poly_to_float(a);
-		float	bf = newt_poly_to_float(b);
+		af = newt_poly_to_float(a);
+		bf = newt_poly_to_float(b);
 		switch (op) {
 		case newt_op_plus:
 			af = af + bf;
@@ -425,8 +440,8 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
 		}
 		a = newt_float_to_poly(af);
 	} else if (newt_poly_type(a) == newt_list && newt_poly_type(b) == newt_list) {
-		newt_list_t *al = newt_poly_to_list(a);
-		newt_list_t *bl = newt_poly_to_list(b);
+		al = newt_poly_to_list(a);
+		bl = newt_poly_to_list(b);
 
 		switch(op) {
 		case newt_op_plus:
@@ -444,6 +459,23 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b)
 		default:
 			break;
 		}
+	} else if (newt_poly_type(a) == newt_string) {
+		as = newt_poly_to_string(a);
+
+		switch(op) {
+		case newt_op_plus:
+			if (newt_poly_type(b) == newt_string) {
+				bs = newt_poly_to_string(b);
+				as = newt_string_cat(as, bs);
+			}
+			break;
+		case newt_op_mod:
+			as = newt_string_interpolate(as, b);
+			break;
+		default:
+			break;
+		}
+		a = newt_string_to_poly(as);
 	}
 	return a;
 }

@@ -480,6 +480,9 @@ newt_null_mark(void *addr);
 void
 newt_null_move(void *addr);
 
+char *
+newt_poly_format(newt_poly_t a, char format);
+
 /* newt-string.c */
 
 char *
@@ -496,6 +499,9 @@ newt_string_cat(char *a, char *b);
 
 char *
 newt_string_slice(char *a, newt_slice_t *slice);
+
+char *
+newt_string_interpolate(char *a, newt_poly_t poly);
 
 extern const newt_mem_t newt_string_mem;
 
@@ -585,6 +591,12 @@ static inline newt_list_t *
 newt_poly_to_list(newt_poly_t poly)
 {
 	return newt_ref(poly);
+}
+
+static inline newt_poly_t *
+newt_list_data(newt_list_t *list)
+{
+	return newt_pool_ref(list->data);
 }
 
 static inline newt_poly_t

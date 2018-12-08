@@ -43,20 +43,33 @@ newt_string_fetch(char *string, int i)
 	return '\0';
 }
 
+static char *
+newt_string_catn(char *a, newt_offset_t aoff, newt_offset_t alen,
+		 char *b, newt_offset_t boff, newt_offset_t blen)
+{
+	char *new;
+	if (newt_is_pool_addr(a))
+		newt_poly_stash(newt_string_to_poly(a));
+	if (newt_is_pool_addr(b))
+		newt_poly_stash(newt_string_to_poly(b));
+	new = newt_alloc(alen + blen + 1);
+	if (newt_is_pool_addr(b))
+	    b = newt_poly_to_string(newt_poly_fetch());
+	if (newt_is_pool_addr(a))
+		a = newt_poly_to_string(newt_poly_fetch());
+	if (new) {
+		memcpy(new, a + aoff, alen);
+		memcpy(new + alen, b + boff, blen);
+		new[alen+blen] = '\0';
+	}
+	return new;
+}
+
 char *
 newt_string_cat(char *a, char *b)
 {
-	char *new;
-	newt_poly_stash(newt_string_to_poly(a));
-	newt_poly_stash(newt_string_to_poly(b));
-	new = newt_alloc(strlen(a) + strlen(b) + 1);
-	b = newt_poly_to_string(newt_poly_fetch());
-	a = newt_poly_to_string(newt_poly_fetch());
-	if (new) {
-		strcpy(new, a);
-		strcat(new, b);
-	}
-	return new;
+	return newt_string_catn(a, 0, strlen(a),
+				b, 0, strlen(b));
 }
 
 char *
@@ -72,6 +85,54 @@ newt_string_slice(char *a, newt_slice_t *slice)
 		r[i++] = a[slice->pos];
 	r[i] = '\0';
 	return r;
+}
+
+static char *
+newt_next_format(char *a)
+{
+	char *percent = strchr(a, '%');
+	if (percent)
+		return percent;
+	return a + strlen(a);
+}
+
+char *
+newt_string_interpolate(char *a, newt_poly_t poly)
+{
+	newt_poly_t	*data = &poly;
+	newt_offset_t	size = 1;
+	if (newt_poly_type(poly) == newt_list) {
+		newt_list_t *list = newt_poly_to_list(poly);
+		data = newt_list_data(list);
+		size = list->size;
+	}
+	char *percent = a;
+	char *result = NULL;
+	newt_offset_t o = 0;
+
+	while (*percent) {
+		char *next = newt_next_format(percent);
+		result = newt_string_catn(result, 0, result ? strlen(result) : 0,
+					  a, percent-a, next - percent);
+		percent = next;
+		if (*percent == '%') {
+			char *add;
+			percent++;
+			char format = *percent;
+			if (format)
+				percent++;
+			if (format == '%')
+				add = "%";
+			else {
+				newt_poly_t a = NEWT_ZERO;
+				if (o < size)
+					a = data[o++];
+				add = newt_poly_format(a, format);
+			}
+			result = newt_string_cat(result, add);
+		}
+	}
+	return result;
 }
 
 int

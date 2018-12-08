@@ -63,7 +63,7 @@ static newt_id_t formals[MAX_FORMALS];
 %token			IF ELSE ELIF
 %token			FOR WHILE
 %token			RETURN CONTINUE BREAK
-%token			RANGE IN
+%token			RANGE IN IS
 
 %%
 file	: file pcommand

@@ -114,6 +114,67 @@ newt_slice_canon(newt_slice_t *slice)
 	return true;
 }
 
+char *
+newt_poly_format(newt_poly_t a, char format)
+{
+	newt_type_t atype = newt_poly_type(a);
+	static char buf[12];
+	char format_string[3] = "%.";
+
+	format_string[1] = format;
+	switch (format) {
+	case 'd':
+	case 'i':
+	case 'u':
+	case 'x':
+	case 'X':
+		if (atype != newt_float)
+			return "<not a number>";
+		sprintf(buf, format_string, (int) newt_poly_to_float(a));
+		return buf;
+	case 'e':
+	case 'E':
+	case 'f':
+	case 'F':
+	case 'g':
+	case 'G':
+		if (atype != newt_float)
+			return "<not a number>";
+		sprintf(buf, format_string, newt_poly_to_float(a));
+		return buf;
+	case 'c':
+		switch (atype) {
+		case newt_float:
+			sprintf(buf, format_string, (int) newt_poly_to_float(a));
+			return buf;
+		case newt_string:
+			sprintf(buf, format_string, (int) newt_poly_to_string(a)[0]);
+			return buf;
+		default:
+			break;
+		}
+		break;
+	case 's':
+		if (atype == newt_string)
+			return newt_poly_to_string(a);
+		break;
+	default:
+		break;
+	}
+	switch (atype) {
+	case newt_float:
+		sprintf(buf, "%g", newt_poly_to_float(a));
+		return buf;
+	case newt_string:
+		return newt_poly_to_string(a);
+	case newt_list:
+		return "list";
+	case newt_func:
+		sprintf(buf, "<func %d>", newt_pool_offset(newt_poly_to_func(a)));
+		return buf;
+	}
+}
+
 void
 newt_null_mark(void *addr)
 {
