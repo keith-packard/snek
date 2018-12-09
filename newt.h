@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include <string.h>
 #include <math.h>
 #include <assert.h>
@@ -78,6 +79,7 @@ typedef enum {
 	newt_op_num,
 	newt_op_string,
 	newt_op_list,
+	newt_op_tuple,
 	newt_op_id,
 
 	newt_op_not,
@@ -99,8 +101,7 @@ typedef enum {
 
 	newt_op_call,
 
-	newt_op_array_fetch,
-	newt_op_array_store,
+	newt_op_array,
 	newt_op_slice,
 
 	newt_op_assign,
@@ -138,6 +139,7 @@ typedef struct newt_mem {
 typedef struct newt_list {
 	newt_offset_t	size;
 	newt_offset_t	alloc;
+	bool		readonly;
 	newt_offset_t	data;
 } newt_list_t;
 
@@ -208,6 +210,12 @@ newt_slice_step(newt_slice_t *slice)
 	slice->pos += slice->stride;
 }
 
+static inline bool
+newt_slice_identity(newt_slice_t *slice)
+{
+	return slice->start == 0 && slice->end == slice->len && slice->stride == 1;
+}
+
 #define NEWT_NAN_U	0x7fffffffu
 #define NEWT_NAN	((newt_poly_t) { .u = NEWT_NAN_U })
 #define NEWT_NULL_U	0xffffffffu
@@ -220,30 +228,6 @@ newt_slice_step(newt_slice_t *slice)
 #define NEWT_STACK	256
 extern newt_poly_t	newt_stack[NEWT_STACK];
 extern newt_offset_t	newt_stackp;
-
-static inline void
-newt_stack_push(newt_poly_t p)
-{
-	newt_stack[newt_stackp++] = p;
-}
-
-static inline newt_poly_t
-newt_stack_pop(void)
-{
-	return newt_stack[--newt_stackp];
-}
-
-static inline newt_poly_t
-newt_stack_pick(newt_offset_t off)
-{
-	return newt_stack[newt_stackp - off - 1];
-}
-
-static inline void
-newt_stack_drop(newt_offset_t off)
-{
-	newt_stackp -= off;
-}
 
 static inline bool
 newt_is_nan(newt_poly_t p)
@@ -298,7 +282,7 @@ newt_offset_t
 newt_code_add_string(char *string);
 
 newt_offset_t
-newt_code_add_list(newt_offset_t size);
+newt_code_add_op_list(newt_op_t op, newt_offset_t size);
 
 newt_offset_t
 newt_code_add_op_branch(newt_op_t op);
@@ -330,6 +314,13 @@ newt_code_run(newt_code_t *code);
 extern const newt_mem_t newt_code_mem;
 
 extern const newt_mem_t newt_stack_mem;
+
+/* newt-error.c */
+
+void
+newt_error(char *format, ...);
+
+extern bool newt_abort;
 
 /* newt-frame.c */
 
@@ -374,7 +365,7 @@ extern const newt_mem_t newt_func_mem;
 /* newt-list.c */
 
 newt_list_t *
-newt_list_make(newt_offset_t size);
+newt_list_make(newt_offset_t size, bool readonly);
 
 bool
 newt_list_append(newt_list_t *list, newt_list_t *append);
@@ -386,7 +377,7 @@ bool
 newt_list_equal(newt_list_t *a, newt_list_t *b);
 
 newt_list_t *
-newt_list_imm(newt_offset_t size);
+newt_list_imm(newt_offset_t size, bool readonly);
 
 newt_list_t *
 newt_list_slice(newt_list_t *list, newt_slice_t *slice);
@@ -494,7 +485,7 @@ newt_poly_t
 newt_poly(const void *addr, newt_type_t type);
 
 void
-newt_poly_print(newt_poly_t poly);
+newt_poly_print(FILE *file, newt_poly_t poly);
 
 bool
 newt_poly_equal(newt_poly_t a, newt_poly_t b);
@@ -534,6 +525,34 @@ newt_string_interpolate(char *a, newt_poly_t poly);
 extern const newt_mem_t newt_string_mem;
 
 /* inlines */
+
+static inline void
+newt_stack_push(newt_poly_t p)
+{
+	if (newt_stackp == NEWT_STACK) {
+		newt_error("stack overflow");
+		return;
+	}
+	newt_stack[newt_stackp++] = p;
+}
+
+static inline newt_poly_t
+newt_stack_pop(void)
+{
+	return newt_stack[--newt_stackp];
+}
+
+static inline newt_poly_t
+newt_stack_pick(newt_offset_t off)
+{
+	return newt_stack[newt_stackp - off - 1];
+}
+
+static inline void
+newt_stack_drop(newt_offset_t off)
+{
+	newt_stackp -= off;
+}
 
 static inline void *
 newt_pool_ref(newt_offset_t offset)

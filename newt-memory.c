@@ -613,7 +613,7 @@ newt_alloc(newt_offset_t size)
 	    newt_collect(NEWT_COLLECT_INCREMENTAL) < size &&
 	    newt_collect(NEWT_COLLECT_FULL) < size)
 	{
-//		newt_error(NEWT_OOM, "out of memory");
+		newt_error("out of memory");
 		return NULL;
 	}
 	addr = newt_pool + newt_top;

@@ -56,8 +56,7 @@ static const char *newt_op_names[] = {
 	[newt_op_uminus] = "uminus",
 	[newt_op_lnot] = "lnot",
 
-	[newt_op_array_fetch] = "array_fetch",
-	[newt_op_array_store] = "array_store",
+	[newt_op_array] = "array",
 	[newt_op_slice] = "slice",
 
 
@@ -268,9 +267,8 @@ newt_code_add_string(char *string)
 }
 
 newt_offset_t
-newt_code_add_list(newt_offset_t size)
+newt_code_add_op_list(newt_op_t op, newt_offset_t size)
 {
-	newt_op_t op = newt_op_list;
 	newt_offset_t offset;
 
 	offset = compile_extend(1, &op);
@@ -412,6 +410,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 	float		bf;
 	int		i;
 	bool		found;
+	newt_poly_t	ret = NEWT_NULL;
 
 	switch (op) {
 	case newt_op_eq:
@@ -425,7 +424,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 	default:
 		break;
 	}
-	if (op == newt_op_array_fetch) {
+	if (op == newt_op_array) {
 		if (newt_is_float(b)) {
 			bf = newt_poly_to_float(b);
 			newt_offset_t bo = (newt_offset_t) bf;
@@ -493,7 +492,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 		default:
 			break;
 		}
-		a = newt_float_to_poly(af);
+		ret = newt_float_to_poly(af);
 	} else if (newt_poly_type(b) == newt_list) {
 		bl = newt_poly_to_list(b);
 		switch (op) {
@@ -506,12 +505,16 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 					break;
 				}
 			}
-			a = (found == (op == newt_op_in)) ? NEWT_ONE : NEWT_ZERO;
+			ret = (found == (op == newt_op_in)) ? NEWT_ONE : NEWT_ZERO;
 			break;
 		default:
 			if (newt_poly_type(a) == newt_list) {
 				al = newt_poly_to_list(a);
 
+				if (al->readonly != bl->readonly) {
+					newt_error("can't mix tuple with list\n");
+					break;
+				}
 				switch(op) {
 				case newt_op_plus:
 					if (inplace)
@@ -520,7 +523,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 						al = newt_list_plus(al, bl);
 					if (!al)
 						return NEWT_ZERO;
-					a = newt_list_to_poly(al);
+					ret = newt_list_to_poly(al);
 					break;
 				default:
 					break;
@@ -544,9 +547,13 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 		default:
 			break;
 		}
-		a = newt_string_to_poly(as);
+		ret = newt_string_to_poly(as);
 	}
-	return a;
+	if (newt_is_null(ret)) {
+		newt_error("type mismatch: %p, %p\n", a, b);
+		return NEWT_ZERO;
+	}
+	return ret;
 }
 
 static newt_poly_t
@@ -649,19 +656,34 @@ newt_assign(newt_id_t id, newt_op_t op, newt_poly_t value)
 	newt_poly_t *ref = NULL;
 	if (id != NEWT_ID_NONE) {
 		ref = newt_id_ref(id, true);
+		if (!ref) {
+			newt_error("undefined \"%i\"", id);
+			return;
+		}
 	} else {
 		newt_poly_t ip = newt_stack_pop();
 		newt_poly_t lp = newt_stack_pop();
-		if (newt_poly_type(ip) == newt_float && newt_poly_type(lp) == newt_list) {
-			newt_list_t	*l = newt_poly_to_list(lp);
-			float		f = newt_poly_to_float(ip);
-
-			if (0 <= f && f <= l->size)
-				ref = &newt_list_data(l)[(newt_offset_t) f];
+		if (newt_poly_type(lp) != newt_list) {
+			newt_error("not a list: %p\n", lp);
+			return;
 		}
+		if (newt_poly_type(ip) != newt_float) {
+			newt_error("not a number: %p\n", ip);
+			return;
+		}
+		newt_list_t	*l = newt_poly_to_list(lp);
+		float		f = newt_poly_to_float(ip);
+
+		if (l->readonly) {
+			newt_error("cannot assign to tuple\n");
+			return;
+		}
+		if (f < 0 || l->size <= f) {
+			newt_error("list index out of range: %p\n", ip);
+			return;
+		}
+		ref = &newt_list_data(l)[(newt_offset_t) f];
 	}
-	if (!ref)
-		return;
 
 	if (op != newt_op_assign)
 		value = newt_binary(*ref, op - (newt_op_assign_plus - newt_op_plus), value, true);
@@ -716,8 +738,8 @@ newt_code_run(newt_code_t *code)
 	newt_offset_t	ip = 0;
 	newt_offset_t	o;
 
-	while (code) {
-		while (ip < code->size) {
+	while (code && !newt_abort) {
+		while (ip < code->size && !newt_abort) {
 #ifdef DEBUG_EXEC
 			newt_code_dump_instruction(code, ip);
 #endif
@@ -735,9 +757,10 @@ newt_code_run(newt_code_t *code)
 				a = newt_poly_offset(o, newt_string);
 				break;
 			case newt_op_list:
+			case newt_op_tuple:
 				memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
 				ip += sizeof (newt_offset_t);
-				newt_list_t *l = newt_list_imm(o);
+				newt_list_t *l = newt_list_imm(o, op == newt_op_tuple);
 				if (!l)
 					newt_stack_drop(o);
 				else
@@ -747,8 +770,11 @@ newt_code_run(newt_code_t *code)
 				memcpy(&id, &code->code[ip], sizeof(newt_id_t));
 				ip += sizeof (newt_id_t);
 				ref = newt_id_ref(id, false);
-				if (ref)
-					a = *ref;
+				if (!ref) {
+					newt_error("undefined: %i\n", id);
+					break;
+				}
+				a = *ref;
 				break;
 			case newt_op_uminus:
 			case newt_op_not:
@@ -774,7 +800,7 @@ newt_code_run(newt_code_t *code)
 			case newt_op_lxor:
 			case newt_op_land:
 			case newt_op_lor:
-			case newt_op_array_fetch:
+			case newt_op_array:
 				b = newt_stack_pop();
 				a = newt_binary(b, op, a, false);
 				break;
@@ -783,6 +809,7 @@ newt_code_run(newt_code_t *code)
 				a = newt_stack_pick(o);
 				if (newt_poly_type(a) != newt_func) {
 					newt_stack_drop(o);
+					newt_error("not a func: %p\n", a);
 					break;
 				}
 				if (!newt_func_push(newt_poly_to_func(a), o, code, ip - 1)) {

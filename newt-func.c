@@ -33,8 +33,10 @@ newt_func_alloc(newt_code_t *code, newt_offset_t nformal, newt_id_t *formals)
 bool
 newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt_offset_t ip)
 {
-	if (nactual != func->nformal)
+	if (nactual != func->nformal) {
+		newt_error("wrong number of args: wanted %d, got %d\n", func->nformal, nactual);
 		return false;
+	}
 
 	if (!newt_frame_push(code, ip))
 		return false;

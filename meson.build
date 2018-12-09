@@ -29,6 +29,7 @@ configure_file(output : 'config.h',
 
 cfiles=[
   'newt-code.c',
+  'newt-error.c',
   'newt-frame.c',
   'newt-func.c',
   'newt-list.c',

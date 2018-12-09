@@ -35,31 +35,32 @@ newt_poly(const void *addr, newt_type_t type)
 }
 
 void
-newt_poly_print(newt_poly_t poly)
+newt_poly_print(FILE *file, newt_poly_t poly)
 {
 	switch (newt_poly_type(poly)) {
 	case newt_float:
-		printf("%g", newt_poly_to_float(poly));
+		fprintf(file, "%g", newt_poly_to_float(poly));
 		break;
 	case newt_string:
-		printf("\"%s\"", newt_poly_to_string(poly));
+		fprintf(file, "\"%s\"", newt_poly_to_string(poly));
 		break;
 	case newt_func:
-		printf("<function at %d>", newt_poly_to_uint(poly));
+		fprintf(file, "<function at %d>", newt_poly_to_uint(poly));
 		break;
-	case newt_list:
-		printf("[");
+	case newt_list: {
 		newt_list_t *list = newt_poly_to_list(poly);
+		putc(list->readonly ? '(' : '[', file);
 		newt_poly_t *data = newt_pool_ref(list->data);
 		for (newt_offset_t o = 0; o < list->size; o++) {
 			if (o)
-				printf(", ");
-			newt_poly_print(data[o]);
+				fprintf(file, ", ");
+			newt_poly_print(file, data[o]);
 		}
-		printf("]");
+		putc(list->readonly ? ')' : ']', file);
 		break;
+	}
 	default:
-		printf("?%d.%x?", newt_poly_type(poly), newt_poly_to_uint(poly));
+		fprintf(file, "?%d.%x?", newt_poly_type(poly), newt_poly_to_uint(poly));
 		break;
 	}
 }

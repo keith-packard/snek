@@ -71,6 +71,7 @@ static newt_id_t formals[MAX_FORMALS];
 
 %%
 file	: file pcommand
+		{ newt_abort = false; }
 	|
 	;
 
@@ -78,8 +79,8 @@ pcommand: stat
 		{
 			newt_code_t *code = newt_code_finish();
 			newt_poly_t p = newt_code_run(code);
-			if ($1) {
-				newt_poly_print(p);
+			if ($1 && !newt_abort) {
+				newt_poly_print(stdout, p);
 				printf("\n");
 			}
 		}
@@ -200,7 +201,7 @@ expr	: OP expr CP
 	| expr OS expr CS
 		{
 			newt_code_set_push($1);
-			$$ = newt_code_add_op(newt_op_array_fetch);
+			$$ = newt_code_add_op(newt_op_array);
 		}
 	| expr OS opt_expr COLON opt_expr opt_stride CS
 		{
@@ -296,9 +297,12 @@ expr	: OP expr CP
 	| STRING
 		{ $$ = newt_code_add_string($1); }
 	| OS opt_actuals CS
-		{ $$ = newt_code_add_list($2); }
-	| OP actuals CP
-		{ $$ = newt_code_add_list($2); }
+		{ $$ = newt_code_add_op_list(newt_op_list, $2); }
+	| OP expr COMMA opt_actuals CP
+		{
+			newt_code_set_push($2);
+			$$ = newt_code_add_op_list(newt_op_tuple, $4 + 1);
+		}
 	;
 branch_false:
 		{ $$ = newt_code_add_op_branch(newt_op_branch_false); }
