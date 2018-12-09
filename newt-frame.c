@@ -113,23 +113,13 @@ newt_frame_pop(newt_offset_t *ip_p)
 	return code;
 }
 
-newt_poly_t
-newt_id_fetch(newt_id_t id)
+newt_poly_t *
+newt_id_ref(newt_id_t id, bool insert)
 {
-	newt_variable_t *v = newt_frame_lookup(id, false);
+	newt_variable_t *v = newt_frame_lookup(id, insert);
 	if (!v)
-		return NEWT_ZERO;
-	return v->value;
-}
-
-void
-newt_id_assign(newt_id_t id, newt_poly_t a)
-{
-	newt_poly_stash(a);
-	newt_variable_t *v = newt_frame_lookup(id, true);
-	a = newt_poly_fetch();
-	if (v)
-		v->value = a;
+		return NULL;
+	return &v->value;
 }
 
 void

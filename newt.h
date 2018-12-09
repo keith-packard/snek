@@ -49,7 +49,32 @@ typedef union {
 } newt_poly_t;
 
 typedef enum {
-	newt_op_nop,
+	newt_op_plus = 0,
+	newt_op_minus = 1,
+	newt_op_times = 2,
+	newt_op_divide = 3,
+	newt_op_div = 4,
+	newt_op_mod = 5,
+	newt_op_pow = 6,
+	newt_op_land = 7,
+	newt_op_lor = 8,
+	newt_op_lxor = 9,
+	newt_op_lshift = 10,
+	newt_op_rshift = 11,
+
+	newt_op_assign_plus = 12,
+	newt_op_assign_minus = 13,
+	newt_op_assign_times = 14,
+	newt_op_assign_divide = 15,
+	newt_op_assign_div = 16,
+	newt_op_assign_mod = 17,
+	newt_op_assign_pow = 18,
+	newt_op_assign_land = 19,
+	newt_op_assign_lor = 20,
+	newt_op_assign_lxor = 21,
+	newt_op_assign_lshift = 22,
+	newt_op_assign_rshift = 23,
+
 	newt_op_num,
 	newt_op_string,
 	newt_op_list,
@@ -69,19 +94,6 @@ typedef enum {
 	newt_op_in,
 	newt_op_not_in,
 
-	newt_op_plus,
-	newt_op_minus,
-	newt_op_times,
-	newt_op_divide,
-	newt_op_div,
-	newt_op_mod,
-	newt_op_pow,
-	newt_op_land,
-	newt_op_lor,
-	newt_op_lxor,
-	newt_op_lshift,
-	newt_op_rshift,
-
 	newt_op_uminus,
 	newt_op_lnot,
 
@@ -92,18 +104,8 @@ typedef enum {
 	newt_op_slice,
 
 	newt_op_assign,
-	newt_op_assign_plus,
-	newt_op_assign_minus,
-	newt_op_assign_times,
-	newt_op_assign_divide,
-	newt_op_assign_div,
-	newt_op_assign_mod,
-	newt_op_assign_land,
-	newt_op_assign_lor,
-	newt_op_assign_lxor,
-	newt_op_assign_lshift,
-	newt_op_assign_rshift,
-	newt_op_assign_pow,
+
+	newt_op_global,
 
 	newt_op_branch,
 	newt_op_branch_true,
@@ -213,8 +215,9 @@ newt_slice_step(newt_slice_t *slice)
 #define NEWT_GLOBAL_U	0xfffffffeu
 #define NEWT_GLOBAL	((newt_poly_t) { .u = NEWT_GLOBAL_U })
 #define NEWT_ZERO	((newt_poly_t) { .f = 0.0f })
+#define NEWT_ONE	((newt_poly_t) { .f = 1.0f })
 
-#define NEWT_STACK	32
+#define NEWT_STACK	256
 extern newt_poly_t	newt_stack[NEWT_STACK];
 extern newt_offset_t	newt_stackp;
 
@@ -347,11 +350,8 @@ newt_frame_push(newt_code_t *code, newt_offset_t ip);
 newt_code_t *
 newt_frame_pop(newt_offset_t *ip_p);
 
-newt_poly_t
-newt_id_fetch(newt_id_t id);
-
-void
-newt_id_assign(newt_id_t id, newt_poly_t a);
+newt_poly_t *
+newt_id_ref(newt_id_t id, bool insert);
 
 void
 newt_id_insert(newt_id_t id, newt_poly_t a);
@@ -377,7 +377,7 @@ newt_list_t *
 newt_list_make(newt_offset_t size);
 
 bool
-newt_list_cat(newt_list_t *list, newt_list_t *append);
+newt_list_append(newt_list_t *list, newt_list_t *append);
 
 newt_list_t *
 newt_list_plus(newt_list_t *a, newt_list_t *b);

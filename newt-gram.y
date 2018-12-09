@@ -43,8 +43,8 @@ static newt_id_t formals[MAX_FORMALS];
 %token  <number> 	NUMBER
 %token	<string>	STRING
 %token  <id>		NAME
-%token			INVALID
 %token			NL
+%token			INVALID
 
 %token			COLON COMMA SEMI
 
@@ -247,6 +247,8 @@ expr	: OP expr CP
 		{ goto bin_op; }
 	| expr MOD expr
 		{ goto bin_op; }
+	| expr POW expr
+		{ goto bin_op; }
 	| expr OR branch_true expr
 		{ newt_code_patch_branch($3, newt_code_current()); $$ = $4; }
 	| expr AND branch_false expr
@@ -293,7 +295,7 @@ expr	: OP expr CP
 		{ $$ = newt_code_add_number($1); }
 	| STRING
 		{ $$ = newt_code_add_string($1); }
-	| OS actuals CS
+	| OS opt_actuals CS
 		{ $$ = newt_code_add_list($2); }
 	| OP actuals CP
 		{ $$ = newt_code_add_list($2); }

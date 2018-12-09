@@ -59,7 +59,7 @@ newt_list_make(newt_offset_t size)
 }
 
 bool
-newt_list_cat(newt_list_t *list, newt_list_t *append)
+newt_list_append(newt_list_t *list, newt_list_t *append)
 {
 	newt_offset_t oldsize = list->size;
 	bool ret;

@@ -8,6 +8,10 @@ add_project_arguments(['-D_DEFAULT_SOURCE'], language: 'c')
 flex = find_program('flex')
 bison = find_program('bison')
 
+cc = meson.get_compiler('c')
+
+m_dep = cc.find_library('m', required : false)
+
 lgen = generator(flex,
 		 output : '@PLAINNAME@.c',
 		 arguments : ['-o', '@OUTPUT@', '@INPUT@'])
@@ -35,4 +39,7 @@ cfiles=[
   'newt-string.c'
 ]
 
-executable('newt', cfiles, lfiles, pfiles)
+executable('newt',
+	   cfiles, lfiles, pfiles,
+	   dependencies: [m_dep]
+	  )

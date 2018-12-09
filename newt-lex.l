@@ -15,7 +15,6 @@
  */
 
 #include "newt.h"
-#define YY_NO_INPUT
 
 static int current_indent;
 
@@ -78,6 +77,7 @@ static char *string_build(char *text, int leng);
 ">>"	{ yylval.op = newt_op_land; return RSHIFT; }
 "+"	{ yylval.op = newt_op_plus; return PLUS; }
 "-"	{ yylval.op = newt_op_minus; return MINUS; }
+"**"	{ yylval.op = newt_op_pow; return POW; }
 "*"	{ yylval.op = newt_op_times; return TIMES; }
 "/"	{ yylval.op = newt_op_divide; return DIVIDE; }
 "//"	{ yylval.op = newt_op_div; return DIV; }
@@ -105,10 +105,10 @@ range	return RANGE;
 or	return OR;
 and	return AND;
 is	{ yylval.op = newt_op_is; return IS; }
-"is[ \t]+not" { yylval.op = newt_op_is_not; return IS_NOT; }
+is[ \t]+not { yylval.op = newt_op_is_not; return IS_NOT; }
 in	{ yylval.op = newt_op_in; return IN; }
+not[ \t]+in { printf ("not in\n"); yylval.op = newt_op_not_in; return NOT_IN; }
 not	{ yylval.op = newt_op_not; return NOT; }
-"not[ \t]+in" { yylval.op = newt_op_not_in; return NOT_IN; }
 
 \"([^\n\\"]|\\\")*\" {
 	yylval.string = string_build(yytext, yyleng);
@@ -131,6 +131,7 @@ not	{ yylval.op = newt_op_not; return NOT; }
 	return NAME;
 }
 
+"#"	{ int c; while ((c = input()) != EOF) if (c == '\n') break; }
 .	{ return INVALID; }
 %%
 
