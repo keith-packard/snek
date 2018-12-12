@@ -19,6 +19,10 @@
 
 #define MAX_FORMALS	10
 
+bool newt_print_vals;
+
+extern int newt_current_indent;
+
 static int nformal;
 static newt_id_t formals[MAX_FORMALS];
 
@@ -73,20 +77,23 @@ static newt_id_t formals[MAX_FORMALS];
 %%
 file		: file pcommand
 			{ newt_abort = false; }
+		| file error { newt_current_indent = 0; } NL
+			{
+				newt_abort = false;
+				yyerrok;
+			}
 		|
 		;
 pcommand	: stat
 			{
 				newt_code_t *code = newt_code_finish();
 				newt_poly_t p = newt_code_run(code);
-				if ($1 && !newt_abort) {
+				if ($1 && !newt_abort && newt_print_vals) {
 					newt_poly_print(stdout, p);
-					printf("\n");
+					putchar('\n');
 				}
-				}
+			}
 		| def
-		| error NL
-			{ yyerrok; }
 		;
 def		: DEF { nformal = 0; } NAME OP opt_params CP mark COLON suite
 			{
@@ -142,6 +149,12 @@ small_stat	: expr
 			{ newt_code_add_forward(newt_forward_break); }
 		| CONTINUE
 			{ newt_code_add_forward(newt_forward_continue);	}
+		| GLOBAL globals
+		;
+globals		: globals NAME
+			{ newt_code_add_op_id(newt_op_global, $2); }
+		| NAME
+			{ newt_code_add_op_id(newt_op_global, $1); }
 		;
 compound_stat: if_stat
 		| while_stat
@@ -229,8 +242,18 @@ loop_end:
 		;
 suite		: simple_stat
 		| NL INDENT stats EXDENT
-			{ if ($2 != $4) YYERROR; }
-		;
+			{
+				newt_current_indent = $2;
+				if ($4 > $2) {
+					yyerror("mismatching indentation");
+					YYERROR;
+				}
+			}
+		| NL INDENT error EXDENT
+			{
+				newt_current_indent = $2;
+//				YYERROR;
+			}
 		;
 expr		: OP expr CP
 			{ $$ = $2; }

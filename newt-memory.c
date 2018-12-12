@@ -35,10 +35,6 @@ static newt_code_t		*stash_code;
 
 static const struct newt_root	newt_root[] = {
 	{
-		.type = &newt_stack_mem,
-		.addr = NULL,
-	},
-	{
 		.type = &newt_name_mem,
 		.addr = (void **) (void *) &newt_names,
 	},
@@ -89,10 +85,10 @@ static int	newt_printing, newt_print_cleared;
 
 struct newt_chunk {
 	newt_offset_t		old_offset;
-	union {
+//	union {
 		newt_offset_t	size;
 		newt_offset_t	new_offset;
-	};
+//	};
 };
 
 #ifdef NEWT_DYNAMIC
@@ -258,7 +254,7 @@ walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
 	for (i = 0; i < (int) NEWT_ROOT; i++) {
 		if (newt_root[i].type) {
 			void **a = newt_root[i].addr, *v;
-			if (a && (v = *a)) {
+			if (a == NULL || (v = *a) != NULL) {
 				visit_addr(newt_root[i].type, a);
 			}
 		} else {
@@ -286,6 +282,7 @@ static const struct newt_mem * const newt_mems[4] = {
 	[newt_list] = &newt_list_mem,
 	[newt_string] = &newt_string_mem,
 	[newt_func] = &newt_func_mem,
+	[newt_builtin] = &newt_builtin_mem,
 };
 
 static int
@@ -335,6 +332,7 @@ newt_collect(uint8_t style)
 		/* Find the sizes of the first chunk of objects to move */
 		reset_chunks();
 		walk(newt_mark_ref, newt_poly_mark_ref);
+		newt_run_mark();
 
 		/* Find the first moving object */
 		for (i = 0; i < chunk_last; i++) {
@@ -380,7 +378,7 @@ newt_collect(uint8_t style)
 		if (chunk_first < chunk_last) {
 			/* Relocate all references to the objects */
 			walk(newt_move, newt_poly_move);
-//			newt_atom_move();
+			newt_run_move();
 		}
 
 		/* If we ran into the end of the heap, then
@@ -502,7 +500,7 @@ move_map(newt_offset_t offset)
 
 #if DBG_MEM
 	if (newt_chunk[l].old_offset != offset)
-		newt_abort();
+		abort();
 #endif
 	return newt_chunk[l].new_offset;
 }
@@ -510,12 +508,12 @@ move_map(newt_offset_t offset)
 int
 newt_move_offset(newt_offset_t *ref)
 {
-	newt_offset_t	orig_offset = *ref;
+	newt_offset_t	orig_offset = *ref - 1;
 	newt_offset_t	offset;
 
 	offset = move_map(orig_offset);
 	if (offset != orig_offset)
-		*ref = offset;
+		*ref = offset + 1;
 
 	if (busy(newt_busy, offset))
 		return 1;
@@ -534,11 +532,11 @@ newt_move_memory(void **ref)
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
-	orig_offset = pool_offset(addr);
+	orig_offset = newt_pool_offset(addr);
 	offset = orig_offset;
 	ret = newt_move_offset(&offset);
 	if (offset != orig_offset)
-		*ref = newt_pool + offset;
+		*ref = newt_pool_ref(offset);
 
 	return ret;
 }
@@ -676,7 +674,7 @@ newt_print_mark_addr(void *addr)
 
 #if DBG_MEM
 	if (newt_collecting)
-		newt_abort();
+		abort();
 #endif
 
 	if (!newt_is_pool_addr(addr))

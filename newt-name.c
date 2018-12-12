@@ -15,27 +15,80 @@
 #include "newt.h"
 
 newt_name_t *newt_names;
-newt_id_t   newt_id;
+newt_id_t   newt_id = NEWT_BUILTIN_END;
+
+#define NEWT_BUILTIN_DATA
+#include "newt-builtin.h"
+
+static newt_id_t
+newt_name_id_builtin(char *name)
+{
+	ssize_t	l = 0, h = sizeof(newt_builtin_names) - 1;
+
+	while (l <= h) {
+		ssize_t m = (l + h) >> 1;
+
+		while (m > l && newt_builtin_names[m-1] != '\0')
+			m--;
+		if (strcmp((char *) &newt_builtin_names[m+1], name) < 0) {
+			l = m + 2;
+			while(l < sizeof (newt_builtin_names) - 1 && newt_builtin_names[l-1] != '\0')
+				l++;
+		} else {
+			h = m - 2;
+			while(h > 0 && newt_builtin_names[h-1] != '\0')
+				h--;
+		}
+	}
+	if (strcmp(name, (char *) &newt_builtin_names[l+1]) == 0)
+		return (newt_id_t) newt_builtin_names[l];
+	return 0;
+}
+
+const char *
+newt_name_string_builtin(newt_id_t id)
+{
+	ssize_t		i;
+
+	i = 0;
+	while (i < sizeof(newt_builtin_names)) {
+		if (newt_builtin_names[i] == id)
+			return (const char *) &newt_builtin_names[i+1];
+		i += strlen((const char *) &newt_builtin_names[i+1]) + 2;
+	}
+	return NULL;
+}
 
 newt_id_t
 newt_name_id(char *name)
 {
 	newt_name_t *n;
+	newt_id_t id;
+
+	if ((id = newt_name_id_builtin(name)))
+		return id;
+
 	for (n = newt_names; n; n = newt_pool_ref(n->next))
 		if (!strcmp(n->name, name))
 			return n->id;
 	n = newt_alloc(sizeof (newt_name_t) + strlen(name) + 1);
 	strcpy(n->name, name);
 	n->next = newt_pool_offset(newt_names);
-	n->id = ++newt_id;
+	n->id = newt_id++;
 	newt_names = n;
 	return n->id;
 }
 
-char *
+const char *
 newt_name_string(newt_id_t id)
 {
+	const char *b;
+
+	if ((b = newt_name_string_builtin(id)))
+		return b;
+
 	newt_name_t *n;
+
 	for (n = newt_names; n; n = newt_pool_ref(n->next))
 		if (n->id == id)
 			return n->name;

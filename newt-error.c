@@ -21,10 +21,11 @@ newt_error(char *format, ...)
 {
 	va_list		args;
 	char		c;
+	int		len;
 
 	newt_abort = true;
 	va_start(args, format);
-	fprintf(stderr, "Error ");
+	fprintf(stderr, "%s:%d ", newt_file, newt_line);
 	while ((c = *format++)) {
 		if (c == '%') {
 			switch ((c = *format++)) {
@@ -42,6 +43,10 @@ newt_error(char *format, ...)
 				break;
 			case 'g':
 				fprintf(stderr, "%g", va_arg(args, double));
+				break;
+			case 'S':
+				len = va_arg(args, int);
+				fwrite(va_arg(args, char *), 1, len, stderr);
 				break;
 			case 's':
 				fputs(va_arg(args, char *), stderr);

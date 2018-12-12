@@ -19,10 +19,38 @@
 #if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
 
 static const char *newt_op_names[] = {
+	[newt_op_plus] = "plus",
+	[newt_op_minus] = "minus",
+	[newt_op_times] = "times",
+	[newt_op_divide] = "divide",
+	[newt_op_div] = "div",
+	[newt_op_mod] = "mod",
+	[newt_op_pow] = "pow",
+	[newt_op_land] = "land",
+	[newt_op_lor] = "lor",
+	[newt_op_lxor] = "lxor",
+	[newt_op_lshift] = "lshift",
+	[newt_op_rshift] = "rshift",
+
+	[newt_op_assign_plus] = "assign_plus",
+	[newt_op_assign_minus] = "assign_minus",
+	[newt_op_assign_times] = "assign_times",
+	[newt_op_assign_divide] = "assign_divide",
+	[newt_op_assign_div] = "assign_div",
+	[newt_op_assign_mod] = "assign_mod",
+	[newt_op_assign_pow] = "assign_pow",
+	[newt_op_assign_land] = "assign_land",
+	[newt_op_assign_lor] = "assign_lor",
+	[newt_op_assign_lxor] = "assign_lxor",
+	[newt_op_assign_lshift] = "assign_lshift",
+	[newt_op_assign_rshift] = "assign_rshift",
+
 	[newt_op_num] = "num",
 	[newt_op_string] = "string",
 	[newt_op_list] = "list",
+	[newt_op_tuple] = "tuple",
 	[newt_op_id] = "id",
+
 
 	[newt_op_not] = "not",
 
@@ -38,46 +66,24 @@ static const char *newt_op_names[] = {
 	[newt_op_in] = "in",
 	[newt_op_not_in] = "not_in",
 
-	[newt_op_plus] = "plus",
-	[newt_op_minus] = "minus",
-	[newt_op_times] = "times",
-	[newt_op_divide] = "divide",
-	[newt_op_div] = "div",
-	[newt_op_mod] = "mod",
-	[newt_op_pow] = "pow",
-	[newt_op_land] = "land",
-	[newt_op_lor] = "lor",
-	[newt_op_lxor] = "lxor",
-	[newt_op_lshift] = "lshift",
-	[newt_op_rshift] = "rshift",
-
-	[newt_op_call] = "call",
-
 	[newt_op_uminus] = "uminus",
 	[newt_op_lnot] = "lnot",
+
+	[newt_op_call] = "call",
 
 	[newt_op_array] = "array",
 	[newt_op_slice] = "slice",
 
-
 	[newt_op_assign] = "assign",
-	[newt_op_assign_plus] = "assign_plus",
-	[newt_op_assign_minus] = "assign_minus",
-	[newt_op_assign_times] = "assign_times",
-	[newt_op_assign_divide] = "assign_divide",
-	[newt_op_assign_div] = "assign_div",
-	[newt_op_assign_mod] = "assign_mod",
-	[newt_op_assign_pow] = "assign_pow",
-	[newt_op_assign_land] = "assign_land",
-	[newt_op_assign_lor] = "assign_lor",
-	[newt_op_assign_lxor] = "assign_lxor",
-	[newt_op_assign_lshift] = "assign_lshift",
-	[newt_op_assign_rshift] = "assign_rshift",
 
+	[newt_op_global] = "global",
+
+	[newt_op_branch] = "branch",
 	[newt_op_branch_true] = "branch_true",
 	[newt_op_branch_false] = "branch_false",
-	[newt_op_branch] = "branch",
 	[newt_op_forward] = "forward",
+	[newt_op_for_start] = "for_start",
+	[newt_op_for_inc] = "for_inc",
 };
 
 newt_offset_t
@@ -104,11 +110,13 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 		printf("%s\n", (char *) newt_pool_ref(o));
 		break;
 	case newt_op_list:
+	case newt_op_tuple:
 		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
 		printf("%u\n", o);
 		ip += sizeof (newt_offset_t);
 		break;
 	case newt_op_id:
+	case newt_op_global:
 	case newt_op_assign:
 	case newt_op_assign_plus:
 	case newt_op_assign_minus:
@@ -267,22 +275,12 @@ newt_code_add_string(char *string)
 }
 
 newt_offset_t
-newt_code_add_op_list(newt_op_t op, newt_offset_t size)
+newt_code_add_op_offset(newt_op_t op, newt_offset_t o)
 {
 	newt_offset_t offset;
 
 	offset = compile_extend(1, &op);
-	compile_extend(sizeof (newt_offset_t), &size);
-	return offset;
-}
-
-newt_offset_t
-newt_code_add_op_branch(newt_op_t op)
-{
-	newt_offset_t offset;
-
-	offset = compile_extend(1, &op);
-	compile_extend(sizeof (newt_offset_t), NULL);
+	compile_extend(sizeof (newt_offset_t), &o);
 	return offset;
 }
 
@@ -367,7 +365,9 @@ newt_code_set_push(newt_offset_t offset)
 newt_code_t *
 newt_code_finish(void)
 {
+	newt_code_patch_forward(0, newt_forward_return, newt_code_current());
 	newt_code_t *code = newt_alloc(sizeof (newt_code_t) + compile_size);
+
 	if (code) {
 		memcpy(&code->code, compile, compile_size);
 		code->size = compile_size;
@@ -377,14 +377,6 @@ newt_code_finish(void)
 	}
 	compile_size = 0;
 	return code;
-}
-
-static bool
-newt_true(newt_poly_t a)
-{
-	if (newt_is_float(a))
-		return newt_poly_to_float(a) != 0.0f;
-	return !newt_is_null(a);
 }
 
 static float
@@ -493,30 +485,34 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 			break;
 		}
 		ret = newt_float_to_poly(af);
-	} else if (newt_poly_type(b) == newt_list) {
-		bl = newt_poly_to_list(b);
+	} else {
 		switch (op) {
 		case newt_op_in:
 		case newt_op_not_in:
-			found = false;
-			for (i = 0; i < bl->size; i++) {
-				if (newt_poly_equal(a, newt_list_data(bl)[i])) {
-					found = true;
-					break;
+			if (newt_poly_type(b) == newt_list) {
+				bl = newt_poly_to_list(b);
+				found = false;
+				for (i = 0; i < bl->size; i++) {
+					if (newt_poly_equal(a, newt_list_data(bl)[i])) {
+						found = true;
+						break;
+					}
 				}
+				ret = newt_bool(found == (op == newt_op_in));
 			}
-			ret = (found == (op == newt_op_in)) ? NEWT_ONE : NEWT_ZERO;
 			break;
-		default:
-			if (newt_poly_type(a) == newt_list) {
+		case newt_op_plus:
+			if (newt_poly_type(a) == newt_string && newt_poly_type(b) == newt_string) {
+				as = newt_poly_to_string(a);
+				bs = newt_poly_to_string(b);
+				as = newt_string_cat(as, bs);
+			} else if (newt_poly_type(a) == newt_list) {
 				al = newt_poly_to_list(a);
+				bl = newt_poly_to_list(b);
 
 				if (al->readonly != bl->readonly) {
 					newt_error("can't mix tuple with list\n");
-					break;
-				}
-				switch(op) {
-				case newt_op_plus:
+				} else {
 					if (inplace)
 						newt_list_append(al, bl);
 					else
@@ -524,33 +520,23 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 					if (!al)
 						return NEWT_ZERO;
 					ret = newt_list_to_poly(al);
-					break;
-				default:
-					break;
 				}
 			}
 			break;
-		}
-	} else if (newt_poly_type(a) == newt_string) {
-		as = newt_poly_to_string(a);
-
-		switch(op) {
-		case newt_op_plus:
-			if (newt_poly_type(b) == newt_string) {
-				bs = newt_poly_to_string(b);
-				as = newt_string_cat(as, bs);
-			}
-			break;
 		case newt_op_mod:
-			as = newt_string_interpolate(as, b);
+			if (newt_poly_type(a) == newt_string) {
+				as = newt_poly_to_string(a);
+				as = newt_string_interpolate(as, b);
+				if (as)
+					ret = newt_string_to_poly(as);
+			}
 			break;
 		default:
 			break;
 		}
-		ret = newt_string_to_poly(as);
 	}
 	if (newt_is_null(ret)) {
-		newt_error("type mismatch: %p, %p\n", a, b);
+		newt_error("type mismatch: %p %p\n", a, b);
 		return NEWT_ZERO;
 	}
 	return ret;
@@ -561,7 +547,7 @@ newt_unary(newt_op_t op, newt_poly_t a)
 {
 	switch (op) {
 	case newt_op_not:
-		return newt_bool(!newt_true(a));
+		return newt_bool(!newt_poly_true(a));
 	default:
 		break;
 	}
@@ -690,49 +676,71 @@ newt_assign(newt_id_t id, newt_op_t op, newt_poly_t value)
 	*ref = value;
 }
 
+static newt_poly_t
+newt_call_builtin(const newt_builtin_t *builtin, newt_offset_t nactual)
+{
+	newt_poly_t ret = NEWT_ZERO;
+	newt_poly_t *actuals = &newt_stack[newt_stackp - nactual];
+
+	if (builtin->nformal < 0) {
+		ret = (*builtin->funcv)(nactual, actuals);
+	} else if (nactual != builtin->nformal) {
+		newt_error("wrong number of args: wanted %d, got %d\n", builtin->nformal, nactual);
+	} else {
+		switch (builtin->nformal) {
+		case 0:
+			ret = builtin->func0();
+			break;
+		case 1:
+			ret = builtin->func1(actuals[0]);
+			break;
+		case 2:
+			ret = builtin->func2(actuals[0], actuals[1]);
+			break;
+		}
+	}
+	newt_stack_drop(nactual + 1);
+	return ret;
+}
+
 newt_poly_t	newt_stack[NEWT_STACK];
 newt_offset_t	newt_stackp = 0;
 static newt_poly_t 	a = NEWT_ZERO, b = NEWT_ZERO;
+static newt_code_t	*code;
 
-int
-newt_stack_size(void *addr)
+newt_poly_t
+newt_accumulator(void)
 {
-	(void) addr;
-	return 0;
+	return a;
 }
 
 void
-newt_stack_mark(void *addr)
+newt_run_mark(void)
 {
 	newt_offset_t s;
-	(void) addr;
 	for (s = 0; s < newt_stackp; s++)
 		newt_poly_mark(newt_stack[s], 1);
 	newt_poly_mark(a, 1);
 	newt_poly_mark(b, 1);
+	newt_mark(&newt_code_mem, code);
 }
 
 void
-newt_stack_move(void *addr)
+newt_run_move(void)
 {
 	newt_offset_t s;
-	(void) addr;
 	for (s = 0; s < newt_stackp; s++)
 		newt_poly_move(&newt_stack[s], 1);
 	newt_poly_move(&a, 1);
 	newt_poly_move(&b, 1);
+	newt_move(&newt_code_mem, (void **) &code);
 }
 
-const newt_mem_t newt_stack_mem = {
-	.size = newt_stack_size,
-	.mark = newt_stack_mark,
-	.move = newt_stack_move,
-	.name = "stack",
-};
-
 newt_poly_t
-newt_code_run(newt_code_t *code)
+newt_code_run(newt_code_t *code_in)
 {
+	code = code_in;
+
 	newt_poly_t	*ref = NULL;
 	newt_id_t	id;
 	newt_offset_t	ip = 0;
@@ -748,13 +756,13 @@ newt_code_run(newt_code_t *code)
 			op &= ~newt_op_push;
 			switch(op) {
 			case newt_op_num:
-				memcpy(&a, &code->code[ip], sizeof(float));
+				memcpy(&a.f, &code->code[ip], sizeof(float));
 				ip += sizeof(float);
 				break;
 			case newt_op_string:
 				memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
 				ip += sizeof (newt_offset_t);
-				a = newt_poly_offset(o, newt_string);
+				a = newt_offset_to_poly(o, newt_string);
 				break;
 			case newt_op_list:
 			case newt_op_tuple:
@@ -770,11 +778,15 @@ newt_code_run(newt_code_t *code)
 				memcpy(&id, &code->code[ip], sizeof(newt_id_t));
 				ip += sizeof (newt_id_t);
 				ref = newt_id_ref(id, false);
-				if (!ref) {
-					newt_error("undefined: %i\n", id);
+				if (ref) {
+					a = *ref;
 					break;
 				}
-				a = *ref;
+				if (id < NEWT_BUILTIN_END) {
+					a = newt_builtin_id_to_poly(id);
+					break;
+				}
+				newt_error("undefined: %i\n", id);
 				break;
 			case newt_op_uminus:
 			case newt_op_not:
@@ -806,20 +818,27 @@ newt_code_run(newt_code_t *code)
 				break;
 			case newt_op_call:
 				memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
+				ip += sizeof (newt_offset_t);
 				a = newt_stack_pick(o);
-				if (newt_poly_type(a) != newt_func) {
-					newt_stack_drop(o);
+				switch (newt_poly_type(a)) {
+				case newt_func:
+					if (!newt_func_push(newt_poly_to_func(a), o, code, ip - (1 + sizeof (newt_offset_t)))) {
+						newt_stack_drop(o + 1);
+						break;
+					}
+					a = newt_stack_pop();	/* get function back */
+					code = newt_pool_ref(newt_poly_to_func(a)->code);
+					ip = 0;
+					push = false;	/* will pick up push on return */
+					break;
+				case newt_builtin:
+					a = newt_call_builtin(newt_poly_to_builtin(a), o);
+					break;
+				default:
+					newt_stack_drop(o + 1);
 					newt_error("not a func: %p\n", a);
 					break;
 				}
-				if (!newt_func_push(newt_poly_to_func(a), o, code, ip - 1)) {
-					newt_stack_drop(o);
-					break;
-				}
-				newt_stack_drop(1);	/* drop function */
-				code = newt_pool_ref(newt_poly_to_func(a)->code);
-				ip = 0;
-				push = false;	/* will pick up push on return */
 				break;
 			case newt_op_slice:
 				a = newt_slice(a, code->code[ip]);
@@ -842,14 +861,19 @@ newt_code_run(newt_code_t *code)
 				newt_assign(id, op, a);
 				ip += sizeof (newt_id_t);
 				break;
+			case newt_op_global:
+				memcpy(&id, &code->code[ip], sizeof (newt_id_t));
+				newt_frame_mark_global(id);
+				ip += sizeof (newt_id_t);
+				break;
 			case newt_op_branch_false:
-				if (!newt_true(a))
+				if (!newt_poly_true(a))
 					memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
 				else
 					ip += sizeof (newt_offset_t);
 				break;
 			case newt_op_branch_true:
-				if (newt_true(a))
+				if (newt_poly_true(a))
 					memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
 				else
 					ip += sizeof (newt_offset_t);
@@ -863,10 +887,10 @@ newt_code_run(newt_code_t *code)
 			if (push)
 				newt_stack_push(a);
 #ifdef DEBUG_EXEC
-			printf("\t\ta= "); newt_poly_print(a);
+			printf("\t\ta= "); newt_poly_print(stdout, a);
 			for (int i = newt_stackp; i;) {
 				printf(", [%d]= ", newt_stackp - i);
-				newt_poly_print(newt_stack[--i]);
+				newt_poly_print(stdout, newt_stack[--i]);
 			}
 			printf("\n");
 #endif

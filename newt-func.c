@@ -43,8 +43,10 @@ newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt
 
 	/* Pop the arguments off the stack, assigning in reverse order */
 	while (nactual) {
-		--nactual;
-		newt_id_insert(func->formals[nactual], newt_stack_pop());
+		newt_poly_t *ref = newt_id_ref(func->formals[--nactual], true);
+		newt_poly_t a = newt_stack_pop();
+		if (ref)
+			*ref = a;
 	}
 	return true;
 }

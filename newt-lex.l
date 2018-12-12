@@ -16,123 +16,160 @@
 
 #include "newt.h"
 
-static int current_indent;
+int newt_current_indent;
+int newt_want_indent;
+
+char *newt_file;
+int newt_line;
 
 static char *string_build(char *text, int leng);
+
+//#define DEBUG_LEX
+#ifdef DEBUG_LEX
+static char tmp_token[8192];
+#define RETURN(x) do { memcpy(tmp_token, yytext, yyleng); tmp_token[yyleng] = '\0'; printf("token %-20.20s \"%s\"\n", #x, tmp_token); return x; } while(0)
+#else
+#define RETURN(x) return(x)
+#endif
 
 %}
 %x NEWLINE
 %%
-<INITIAL,NEWLINE>^" "+	{
+<NEWLINE>" "+[^ ] {
+		if (yytext[yyleng-1] != '#') {
+			int amount = yyleng-1;
+			if (amount > newt_current_indent) {
+				unput(yytext[yyleng-1]);
+				BEGIN(0);
+				yylval.ints = newt_current_indent;
+				newt_current_indent = amount;
+				RETURN(INDENT);
+			}
+			if (amount < newt_current_indent)
+			{
+				yylval.ints = amount;
+				yyless(0);
+				RETURN(EXDENT);
+			}
+		}
+		unput(yytext[yyleng-1]);
 		BEGIN(0);
-		if (yyleng > current_indent) {
-			yylval.ints = current_indent;
-			current_indent = yyleng;
-			return INDENT;
-		}
-		if (yyleng < current_indent) {
-			current_indent = yyleng;
-			yylval.ints = current_indent;
-			return EXDENT;
-		}
  	}
-<NEWLINE>. {
-	unput(yytext[0]);
-	BEGIN(0);
-	if (current_indent > 0) {
-		current_indent = 0;
-		yylval.ints = current_indent;
-		return EXDENT;
+<NEWLINE>(.|\n) {
+	if (yytext[yyleng-1] != '#') {
+		if (0 < newt_current_indent)
+		{
+			yylval.ints = 0;
+			yyless(0);
+			RETURN(EXDENT);
+		}
 	}
+	unput(yytext[yyleng-1]);
+	BEGIN(0);
  }
-<INITIAL,NEWLINE>\n	{ BEGIN(NEWLINE); return NL; }
+<NEWLINE><<EOF>> {
+	if (newt_current_indent)
+	{
+		yylval.ints = 0;
+		RETURN(EXDENT);
+	}
+	BEGIN(0);
+}
+<INITIAL>\n	{ BEGIN(NEWLINE); newt_line++; RETURN(NL); }
 
 " "	;
-":"	return COLON;
-";"	return SEMI;
-","	return COMMA;
-"="	{ yylval.op = newt_op_assign; return ASSIGN; }
-"+="	{ yylval.op = newt_op_assign_plus; return ASSIGN; }
-"-="	{ yylval.op = newt_op_assign_minus; return ASSIGN; }
-"*="	{ yylval.op = newt_op_assign_times; return ASSIGN; }
-"/="	{ yylval.op = newt_op_assign_divide; return ASSIGN; }
-"//="	{ yylval.op = newt_op_assign_div; return ASSIGN; }
-"%="	{ yylval.op = newt_op_assign_mod; return ASSIGN; }
-"&="	{ yylval.op = newt_op_assign_land; return ASSIGN; }
-"|="	{ yylval.op = newt_op_assign_lor; return ASSIGN; }
-"^="	{ yylval.op = newt_op_assign_lxor; return ASSIGN; }
-"<<="	{ yylval.op = newt_op_assign_lshift; return ASSIGN; }
-">>="	{ yylval.op = newt_op_assign_rshift; return ASSIGN; }
-"**="	{ yylval.op = newt_op_assign_pow; return ASSIGN; }
-"=="	{ yylval.op = newt_op_eq; return EQ; }
-"!="	{ yylval.op = newt_op_ne; return NE; }
-"<"	{ yylval.op = newt_op_lt; return LT; }
-">"	{ yylval.op = newt_op_gt; return GT; }
-"<="	{ yylval.op = newt_op_le; return LE; }
-">="	{ yylval.op = newt_op_ge; return GE; }
-"&"	{ yylval.op = newt_op_land; return LAND; }
-"|"	{ yylval.op = newt_op_land; return LOR; }
-"^"	{ yylval.op = newt_op_land; return LXOR; }
-"<<"	{ yylval.op = newt_op_land; return LSHIFT; }
-">>"	{ yylval.op = newt_op_land; return RSHIFT; }
-"+"	{ yylval.op = newt_op_plus; return PLUS; }
-"-"	{ yylval.op = newt_op_minus; return MINUS; }
-"**"	{ yylval.op = newt_op_pow; return POW; }
-"*"	{ yylval.op = newt_op_times; return TIMES; }
-"/"	{ yylval.op = newt_op_divide; return DIVIDE; }
-"//"	{ yylval.op = newt_op_div; return DIV; }
-"%"	{ yylval.op = newt_op_mod; return MOD; }
-"~"	{ yylval.op = newt_op_lnot; return LNOT; }
+":"	RETURN(COLON);
+";"	RETURN(SEMI);
+","	RETURN(COMMA);
+"="	{ yylval.op = newt_op_assign; RETURN(ASSIGN); }
+"+="	{ yylval.op = newt_op_assign_plus; RETURN(ASSIGN); }
+"-="	{ yylval.op = newt_op_assign_minus; RETURN(ASSIGN); }
+"*="	{ yylval.op = newt_op_assign_times; RETURN(ASSIGN); }
+"/="	{ yylval.op = newt_op_assign_divide; RETURN(ASSIGN); }
+"//="	{ yylval.op = newt_op_assign_div; RETURN(ASSIGN); }
+"%="	{ yylval.op = newt_op_assign_mod; RETURN(ASSIGN); }
+"&="	{ yylval.op = newt_op_assign_land; RETURN(ASSIGN); }
+"|="	{ yylval.op = newt_op_assign_lor; RETURN(ASSIGN); }
+"^="	{ yylval.op = newt_op_assign_lxor; RETURN(ASSIGN); }
+"<<="	{ yylval.op = newt_op_assign_lshift; RETURN(ASSIGN); }
+">>="	{ yylval.op = newt_op_assign_rshift; RETURN(ASSIGN); }
+"**="	{ yylval.op = newt_op_assign_pow; RETURN(ASSIGN); }
+"=="	{ yylval.op = newt_op_eq; RETURN(EQ); }
+"!="	{ yylval.op = newt_op_ne; RETURN(NE); }
+"<"	{ yylval.op = newt_op_lt; RETURN(LT); }
+">"	{ yylval.op = newt_op_gt; RETURN(GT); }
+"<="	{ yylval.op = newt_op_le; RETURN(LE); }
+">="	{ yylval.op = newt_op_ge; RETURN(GE); }
+"&"	{ yylval.op = newt_op_land; RETURN(LAND); }
+"|"	{ yylval.op = newt_op_land; RETURN(LOR); }
+"^"	{ yylval.op = newt_op_land; RETURN(LXOR); }
+"<<"	{ yylval.op = newt_op_land; RETURN(LSHIFT); }
+">>"	{ yylval.op = newt_op_land; RETURN(RSHIFT); }
+"+"	{ yylval.op = newt_op_plus; RETURN(PLUS); }
+"-"	{ yylval.op = newt_op_minus; RETURN(MINUS); }
+"**"	{ yylval.op = newt_op_pow; RETURN(POW); }
+"*"	{ yylval.op = newt_op_times; RETURN(TIMES); }
+"/"	{ yylval.op = newt_op_divide; RETURN(DIVIDE); }
+"//"	{ yylval.op = newt_op_div; RETURN(DIV); }
+"%"	{ yylval.op = newt_op_mod; RETURN(MOD); }
+"~"	{ yylval.op = newt_op_lnot; RETURN(LNOT); }
 
-"("	return OP;
-")"	return CP;
-"["	return OS;
-"]"	return CS;
+"("	RETURN(OP);
+")"	RETURN(CP);
+"["	RETURN(OS);
+"]"	RETURN(CS);
 
-def	return DEF;
-global	return GLOBAL;
-if	return IF;
-else	return ELSE;
-elif	return ELIF;
-for	return FOR;
-while	return WHILE;
-continue	return CONTINUE;
-break	return BREAK;
-return	return RETURN;
-True	{ yylval.number = 1.0; return NUMBER; }
-False	{ yylval.number = 0.0; return NUMBER; }
-range	return RANGE;
-or	return OR;
-and	return AND;
-is	{ yylval.op = newt_op_is; return IS; }
-is[ \t]+not { yylval.op = newt_op_is_not; return IS_NOT; }
-in	{ yylval.op = newt_op_in; return IN; }
-not[ \t]+in { printf ("not in\n"); yylval.op = newt_op_not_in; return NOT_IN; }
-not	{ yylval.op = newt_op_not; return NOT; }
+def	RETURN(DEF);
+global	RETURN(GLOBAL);
+if	RETURN(IF);
+else	RETURN(ELSE);
+elif	RETURN(ELIF);
+for	RETURN(FOR);
+while	RETURN(WHILE);
+continue	RETURN(CONTINUE);
+break	RETURN(BREAK);
+return	RETURN(RETURN);
+True	{ yylval.number = 1.0; RETURN(NUMBER); }
+False	{ yylval.number = 0.0; RETURN(NUMBER); }
+range	RETURN(RANGE);
+or	RETURN(OR);
+and	RETURN(AND);
+is	{ yylval.op = newt_op_is; RETURN(IS); }
+is[ \t]+not { yylval.op = newt_op_is_not; RETURN(IS_NOT); }
+in	{ yylval.op = newt_op_in; RETURN(IN); }
+not[ \t]+in { yylval.op = newt_op_not_in; RETURN(NOT_IN); }
+not	{ yylval.op = newt_op_not; RETURN(NOT); }
 
-\"([^\n\\"]|\\\")*\" {
+\"([^\n\"]|\\.)*\" {
 	yylval.string = string_build(yytext, yyleng);
-	return STRING;
+	RETURN(STRING);
 }
 
 \'([^\n\\']|\\\')*\' {
 	yylval.string = string_build(yytext, yyleng);
-	return STRING;
+	RETURN(STRING);
 }
 
 (([0-9][0-9_]*((\.[0-9_]*)?))|(\.[0-9][0-9_]*)|(\.([0-9][0-9_]*)?))(([Ee][-+]?[0-9_]+)?) {
 	char *under;
 	while ((under = strchr(yytext, '_')))
 		memmove(under, under + 1, strlen(under-1));
-	yylval.number = strtof(yytext, NULL); return NUMBER;
+	yylval.number = strtof(yytext, NULL); RETURN(NUMBER);
 }
 [A-Za-z_][A-Za-z0-9_]* {
 	yylval.id = newt_name_id(yytext);
-	return NAME;
+	RETURN(NAME);
 }
 
-"#"	{ int c; while ((c = input()) != EOF) if (c == '\n') break; }
-.	{ return INVALID; }
+"#"	{
+		int c;
+		while ((c = input()) != EOF)
+			if (c == '\n') {
+				++newt_line;
+				break;
+			}
+	}
+.	{ RETURN(INVALID); }
 %%
 
 static inline bool
@@ -148,8 +185,9 @@ string_char_len(char *s)
 	if (a != '\\')
 		return 1;
 	int len = 1;
-	while (len < 4 && isoctal(*s++))
+	do {
 		len++;
+	} while (len < 4 && isoctal(*s++));
 	return len;
 }
 

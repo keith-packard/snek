@@ -18,7 +18,7 @@ lgen = generator(flex,
 
 pgen = generator(bison,
 		 output : ['@BASENAME@.c', '@BASENAME@.h'],
-		 arguments : ['@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
+		 arguments : ['-v', '@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
 
 lfiles = lgen.process('newt-lex.l')
 pfiles = pgen.process('newt-gram.y')
@@ -27,7 +27,17 @@ conf_data = configuration_data()
 configure_file(output : 'config.h',
 	       configuration : conf_data)
 
-cfiles=[
+prog_python = import('python').find_installation('python3')
+
+newt_builtin_h = custom_target(
+  'newt-builtin.h',
+  output : 'newt-builtin.h',
+  input : 'newt-builtin.py',
+  command : [prog_python, '@INPUT@', '@OUTPUT@']
+	    )
+
+sources = [
+  'newt-builtin.c',
   'newt-code.c',
   'newt-error.c',
   'newt-frame.c',
@@ -37,10 +47,13 @@ cfiles=[
   'newt-memory.c',
   'newt-name.c',
   'newt-poly.c',
-  'newt-string.c'
+  'newt-string.c',
+  newt_builtin_h
 ]
 
-executable('newt',
-	   cfiles, lfiles, pfiles,
-	   dependencies: [m_dep]
-	  )
+newt = executable('newt',
+		  sources, lfiles, pfiles,
+		  dependencies: [m_dep]
+		 )
+
+subdir('test')

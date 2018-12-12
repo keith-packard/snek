@@ -23,10 +23,13 @@
 #include <math.h>
 #include <assert.h>
 
+#include "newt-builtin.h"
+
 #define NEWT_POOL		8192
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
 #define NEWT_ALLOC_ROUND	(1 << NEWT_ALLOC_SHIFT)
+#define NEWT_OFFSET_MASK	0x00fffffc
 
 #if NEWT_POOL <= 65536
 typedef uint16_t	newt_offset_t;
@@ -112,6 +115,8 @@ typedef enum {
 	newt_op_branch_true,
 	newt_op_branch_false,
 	newt_op_forward,
+	newt_op_for_start,
+	newt_op_for_inc,
 
 	newt_op_push = 0x80,
 } __attribute__((packed)) newt_op_t;
@@ -120,12 +125,14 @@ typedef enum {
 	newt_forward_return,
 	newt_forward_break,
 	newt_forward_continue,
+	newt_forward_if,
 } __attribute__((packed)) newt_forward_t;
 
 typedef enum {
 	newt_list = 0,
 	newt_string = 1,
 	newt_func = 2,
+	newt_builtin = 3,
 	newt_float = 4,
 } __attribute__((packed)) newt_type_t;
 
@@ -149,10 +156,12 @@ typedef struct newt_code {
 } newt_code_t;
 
 typedef struct newt_func {
+	newt_soffset_t	nformal;
 	newt_offset_t	code;
-	newt_offset_t	nformal;
 	newt_id_t	formals[0];
 } newt_func_t;
+
+#define NEWT_FUNC_VARARGS	NEWT_SOFFSET_NONE
 
 typedef struct newt_name {
 	newt_offset_t	next;
@@ -192,29 +201,21 @@ typedef struct newt_slice {
 
 #define NEWT_SLICE_DEFAULT	0x7fffffff	/* empty value provided [1:] */
 
-static inline void
-newt_slice_start(newt_slice_t *slice)
-{
-	slice->pos = slice->start;
-}
+typedef struct newt_builtin {
+	newt_offset_t	nformal;
+	union {
+		newt_poly_t	(*funcv)(int nactuals, ...);
+		newt_poly_t	(*func0)(void);
+		newt_poly_t	(*func1)(newt_poly_t a0);
+		newt_poly_t	(*func2)(newt_poly_t a0, newt_poly_t a1);
+		newt_poly_t	(*func3)(newt_poly_t a0, newt_poly_t a1, newt_poly_t a2);
+		newt_poly_t	(*func4)(newt_poly_t a0, newt_poly_t a1, newt_poly_t a2, newt_poly_t a3);
+	};
+} newt_builtin_t;
 
-static inline bool
-newt_slice_test(newt_slice_t *slice)
-{
-	return slice->stride > 0 ? slice->pos < slice->end : slice->pos > slice->end;
-}
+extern const newt_builtin_t newt_builtins[];
 
-static inline void
-newt_slice_step(newt_slice_t *slice)
-{
-	slice->pos += slice->stride;
-}
-
-static inline bool
-newt_slice_identity(newt_slice_t *slice)
-{
-	return slice->start == 0 && slice->end == slice->len && slice->stride == 1;
-}
+#define NEWT_BUILTIN_VARARGS	-1
 
 #define NEWT_NAN_U	0x7fffffffu
 #define NEWT_NAN	((newt_poly_t) { .u = NEWT_NAN_U })
@@ -257,6 +258,10 @@ extern uint8_t	newt_pool[NEWT_POOL + NEWT_POOL_EXTRA] __attribute__((aligned(NEW
 
 #include "newt-gram.h"
 
+/* newt-builtin.c */
+
+extern const newt_mem_t newt_builtin_mem;
+
 /* newt-code.c */
 
 #define NEWT_OP_SLICE_START	1
@@ -282,7 +287,7 @@ newt_offset_t
 newt_code_add_string(char *string);
 
 newt_offset_t
-newt_code_add_op_list(newt_op_t op, newt_offset_t size);
+newt_code_add_op_offset(newt_op_t op, newt_offset_t offset);
 
 newt_offset_t
 newt_code_add_op_branch(newt_op_t op);
@@ -308,12 +313,19 @@ newt_code_set_push(newt_offset_t offset);
 newt_code_t *
 newt_code_finish(void);
 
+void
+newt_run_mark(void);
+
+void
+newt_run_move(void);
+
 newt_poly_t
 newt_code_run(newt_code_t *code);
 
-extern const newt_mem_t newt_code_mem;
+newt_poly_t
+newt_accumulator(void);
 
-extern const newt_mem_t newt_stack_mem;
+extern const newt_mem_t newt_code_mem;
 
 /* newt-error.c */
 
@@ -344,9 +356,6 @@ newt_frame_pop(newt_offset_t *ip_p);
 newt_poly_t *
 newt_id_ref(newt_id_t id, bool insert);
 
-void
-newt_id_insert(newt_id_t id, newt_poly_t a);
-
 extern const newt_mem_t newt_frame_mem;
 
 /* newt-func.c */
@@ -361,6 +370,16 @@ newt_code_t *
 newt_func_pop(newt_offset_t *ip);
 
 extern const newt_mem_t newt_func_mem;
+
+/* newt-gram.y */
+
+extern bool newt_print_vals;
+
+/* newt-lex.l */
+
+extern int newt_want_indent, newt_current_indent;
+extern char *newt_file;
+extern int newt_line;
 
 /* newt-list.c */
 
@@ -467,7 +486,7 @@ newt_print_stop(void);
 newt_id_t
 newt_name_id(char *name);
 
-char *
+const char *
 newt_name_string(newt_id_t id);
 
 extern const newt_mem_t newt_name_mem;
@@ -491,7 +510,13 @@ bool
 newt_poly_equal(newt_poly_t a, newt_poly_t b);
 
 bool
+newt_poly_true(newt_poly_t a);
+
+bool
 newt_slice_canon(newt_slice_t *slice);
+
+int
+newt_null_size(void *addr);
 
 void
 newt_null_mark(void *addr);
@@ -539,6 +564,8 @@ newt_stack_push(newt_poly_t p)
 static inline newt_poly_t
 newt_stack_pop(void)
 {
+	if (!newt_stackp)
+		abort();
 	return newt_stack[--newt_stackp];
 }
 
@@ -552,6 +579,30 @@ static inline void
 newt_stack_drop(newt_offset_t off)
 {
 	newt_stackp -= off;
+}
+
+static inline void
+newt_slice_start(newt_slice_t *slice)
+{
+	slice->pos = slice->start;
+}
+
+static inline bool
+newt_slice_test(newt_slice_t *slice)
+{
+	return slice->stride > 0 ? slice->pos < slice->end : slice->pos > slice->end;
+}
+
+static inline void
+newt_slice_step(newt_slice_t *slice)
+{
+	slice->pos += slice->stride;
+}
+
+static inline bool
+newt_slice_identity(newt_slice_t *slice)
+{
+	return slice->start == 0 && slice->end == slice->len && slice->stride == 1;
 }
 
 static inline void *
@@ -587,15 +638,15 @@ newt_float_to_poly(float f)
 }
 
 static inline newt_poly_t
-newt_uint_to_value(uint32_t u)
+newt_offset_to_poly(uint32_t offset, newt_type_t type)
 {
-	return (newt_poly_t) { .u = 0xff000000 | u };
+	return (newt_poly_t) { .u = 0xff000000 | offset | type };
 }
 
 static inline uint32_t
-newt_poly_to_uint(newt_poly_t v)
+newt_poly_to_offset(newt_poly_t v)
 {
-	return v.u & 0x00ffffff;
+	return v.u & NEWT_OFFSET_MASK;
 }
 
 static inline float
@@ -668,4 +719,22 @@ static inline newt_poly_t
 newt_func_to_poly(newt_func_t *func)
 {
 	return newt_poly(func, newt_func);
+}
+
+static inline newt_poly_t
+newt_builtin_id_to_poly(newt_id_t id)
+{
+	return newt_offset_to_poly(id << NEWT_ALLOC_SHIFT, newt_builtin);
+}
+
+static inline newt_id_t
+newt_poly_to_builtin_id(newt_poly_t a)
+{
+	return newt_poly_to_offset(a) >> NEWT_ALLOC_SHIFT;
+}
+
+static inline const newt_builtin_t *
+newt_poly_to_builtin(newt_poly_t a)
+{
+	return newt_builtins + (newt_poly_to_builtin_id(a) - 1);
 }

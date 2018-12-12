@@ -19,19 +19,13 @@ newt_ref(newt_poly_t poly)
 {
 	if (newt_is_null(poly))
 		return NULL;
-	return newt_pool + (poly.u & 0x0fffffc);
-}
-
-newt_poly_t
-newt_poly_offset(newt_offset_t offset, newt_type_t type)
-{
-	return newt_uint_to_value(offset | type);
+	return newt_pool + newt_poly_to_offset(poly);
 }
 
 newt_poly_t
 newt_poly(const void *addr, newt_type_t type)
 {
-	return newt_poly_offset((const uint8_t *) addr - newt_pool, type);
+	return newt_offset_to_poly((const uint8_t *) addr - newt_pool, type);
 }
 
 void
@@ -45,7 +39,10 @@ newt_poly_print(FILE *file, newt_poly_t poly)
 		fprintf(file, "\"%s\"", newt_poly_to_string(poly));
 		break;
 	case newt_func:
-		fprintf(file, "<function at %d>", newt_poly_to_uint(poly));
+		fprintf(file, "<function at %d>", newt_poly_to_offset(poly));
+		break;
+	case newt_builtin:
+		fprintf(file, "<builtin %s>", newt_name_string(newt_poly_to_builtin_id(poly)));
 		break;
 	case newt_list: {
 		newt_list_t *list = newt_poly_to_list(poly);
@@ -60,7 +57,7 @@ newt_poly_print(FILE *file, newt_poly_t poly)
 		break;
 	}
 	default:
-		fprintf(file, "?%d.%x?", newt_poly_type(poly), newt_poly_to_uint(poly));
+		fprintf(file, "?%d.%x?", newt_poly_type(poly), newt_poly_to_offset(poly));
 		break;
 	}
 }
@@ -176,6 +173,27 @@ newt_poly_format(newt_poly_t a, char format)
 	default:
 		return "???";
 	}
+}
+
+bool
+newt_poly_true(newt_poly_t a)
+{
+	switch (newt_poly_type(a)) {
+	case newt_float:
+		return newt_poly_to_float(a) != 0.0f;
+	case newt_list:
+		return newt_poly_to_list(a)->size != 0;
+	case newt_string:
+		return strlen(newt_poly_to_string(a)) != 0;
+	default:
+		return false;
+	}
+}
+
+int
+newt_null_size(void *addr)
+{
+	return 0;
 }
 
 void

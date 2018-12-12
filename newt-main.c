@@ -21,15 +21,31 @@ yywrap(void)
 }
 
 extern char *yytext;
+extern int yyleng;
 
 void
 yyerror (char *msg)
 {
-    fprintf (stderr, "%s at \"%s\"\n", msg, yytext);
+	newt_error("%s at \"%S\"\n", msg, yyleng, yyleng, yytext);
 }
 
 int
 main (int argc, char **argv)
 {
-    return yyparse();
+#if YYDEBUG
+	extern int yydebug;
+
+	yydebug = 1;
+#endif
+	if (argc > 1) {
+		freopen(argv[1], "r", stdin);
+		newt_file = argv[1];
+	} else {
+		newt_file = "<stdin>";
+		newt_print_vals = true;
+	}
+	newt_line = 1;
+	if(yyparse())
+		return 2;
+	return 0;
 }
