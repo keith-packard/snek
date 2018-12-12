@@ -7,5 +7,7 @@ tests = [
   ]
 
 foreach t: tests
-  test(t, newt, workdir: meson.current_source_dir(), args: [t])
+  test('newt   ' + t, newt, workdir: meson.current_source_dir(), args: [t])
+  test('python ' + t, prog_python, workdir: meson.current_source_dir(), args: [t])
 endforeach
+

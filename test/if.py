@@ -8,5 +8,5 @@ def g(i):
     else:
         return 103
 
-if not (g(0) == 100 && g(1) == 101 && g(2) == 102 && g(3) == 103 && g("hello") = 103):
+if not (g(0) == 100 and g(1) == 101 and g(2) == 102 and g(3) == 103 and g("hello") == 103):
     exit(1)
