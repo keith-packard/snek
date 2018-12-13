@@ -47,6 +47,14 @@ static const struct newt_root	newt_root[] = {
 		.addr = (void **) (void *) &newt_frame,
 	},
 	{
+		.type = &newt_range_mem,
+		.addr = (void **) (void *) &newt_ranges,
+	},
+	{
+		.type = &newt_in_mem,
+		.addr = (void **) (void *) &newt_ins,
+	},
+	{
 		.type = &newt_name_mem,
 		.addr = (void **) (void *) &stash_name,
 	},

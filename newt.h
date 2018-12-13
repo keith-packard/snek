@@ -115,8 +115,10 @@ typedef enum {
 	newt_op_branch_true,
 	newt_op_branch_false,
 	newt_op_forward,
-	newt_op_for_start,
-	newt_op_for_inc,
+	newt_op_range_start,
+	newt_op_range_step,
+	newt_op_in_start,
+	newt_op_in_step,
 
 	newt_op_push = 0x80,
 } __attribute__((packed)) newt_op_t;
@@ -154,6 +156,21 @@ typedef struct newt_code {
 	newt_offset_t	size;
 	uint8_t		code[0];
 } newt_code_t;
+
+typedef struct newt_range {
+	newt_offset_t	prev;
+	newt_id_t	id;
+	float		current;
+	float		limit;
+	float		step;
+} newt_range_t;
+
+typedef struct newt_in {
+	newt_offset_t	prev;
+	newt_id_t	id;
+	newt_poly_t	array;
+	newt_offset_t	i;
+} newt_in_t;
 
 typedef struct newt_func {
 	newt_soffset_t	nformal;
@@ -304,6 +321,9 @@ newt_code_add_call(newt_offset_t nactual);
 newt_offset_t
 newt_code_add_slice(bool has_start, bool has_end, bool has_stride);
 
+newt_offset_t
+newt_code_add_range_start(newt_id_t id, newt_offset_t nactual);
+
 void
 newt_code_patch_branch(newt_offset_t branch, newt_offset_t target);
 
@@ -333,6 +353,26 @@ void
 newt_error(char *format, ...);
 
 extern bool newt_abort;
+
+/* newt-for.c */
+
+void
+newt_range_start(newt_id_t id, newt_offset_t nparam);
+
+bool
+newt_range_step(void);
+
+extern const newt_mem_t newt_range_mem;
+extern newt_range_t *newt_ranges;
+
+void
+newt_in_start(newt_id_t id);
+
+bool
+newt_in_step(void);
+
+extern const newt_mem_t newt_in_mem;
+extern newt_in_t *newt_ins;
 
 /* newt-frame.c */
 

@@ -14,6 +14,51 @@
 
 #include "newt.h"
 
+static int
+newt_op_extra_size(newt_op_t op)
+{
+	switch (op) {
+	case newt_op_num:
+		return sizeof (float);
+	case newt_op_string:
+		return sizeof (newt_offset_t);
+	case newt_op_list:
+		return sizeof (newt_offset_t);
+	case newt_op_id:
+	case newt_op_global:
+	case newt_op_assign:
+	case newt_op_assign_plus:
+	case newt_op_assign_minus:
+	case newt_op_assign_times:
+	case newt_op_assign_divide:
+	case newt_op_assign_div:
+	case newt_op_assign_mod:
+	case newt_op_assign_pow:
+	case newt_op_assign_land:
+	case newt_op_assign_lor:
+	case newt_op_assign_lxor:
+	case newt_op_assign_lshift:
+	case newt_op_assign_rshift:
+	case newt_op_in_start:
+		return sizeof (newt_id_t);
+	case newt_op_call:
+		return sizeof (newt_offset_t);
+	case newt_op_slice:
+		return 1;
+	case newt_op_branch:
+	case newt_op_branch_true:
+	case newt_op_branch_false:
+	case newt_op_forward:
+	case newt_op_range_step:
+	case newt_op_in_step:
+		return sizeof (newt_offset_t);
+	case newt_op_range_start:
+		return sizeof (newt_id_t) + sizeof (newt_offset_t);
+	default:
+		return 0;
+	}
+}
+
 //#define DEBUG_COMPILE
 //#define DEBUG_EXEC
 #if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
@@ -82,8 +127,10 @@ static const char *newt_op_names[] = {
 	[newt_op_branch_true] = "branch_true",
 	[newt_op_branch_false] = "branch_false",
 	[newt_op_forward] = "forward",
-	[newt_op_for_start] = "for_start",
-	[newt_op_for_inc] = "for_inc",
+	[newt_op_range_start] = "range_start",
+	[newt_op_range_step] = "range_step",
+	[newt_op_in_start] = "in_start",
+	[newt_op_in_step] = "in_step",
 };
 
 newt_offset_t
@@ -101,19 +148,16 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 	switch(op) {
 	case newt_op_num:
 		memcpy(&f, &code->code[ip], sizeof(float));
-		ip += sizeof(float);
 		printf("%g\n", f);
 		break;
 	case newt_op_string:
 		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
-		ip += sizeof (newt_offset_t);
 		printf("%s\n", (char *) newt_pool_ref(o));
 		break;
 	case newt_op_list:
 	case newt_op_tuple:
 		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
 		printf("%u\n", o);
-		ip += sizeof (newt_offset_t);
 		break;
 	case newt_op_id:
 	case newt_op_global:
@@ -130,8 +174,8 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 	case newt_op_assign_lxor:
 	case newt_op_assign_lshift:
 	case newt_op_assign_rshift:
+	case newt_op_in_start:
 		memcpy(&id, &code->code[ip], sizeof(newt_id_t));
-		ip += sizeof (newt_id_t);
 		if (id)
 			printf("%s\n", newt_name_string(id));
 		else
@@ -139,28 +183,36 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 		break;
 	case newt_op_call:
 		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
-		ip += sizeof (newt_offset_t);
 		printf("%d actuals\n", o);
 		break;
 	case newt_op_slice:
 		if (code->code[ip] & NEWT_OP_SLICE_START) printf(" start");
 		if (code->code[ip] & NEWT_OP_SLICE_END) printf(" end");
 		if (code->code[ip] & NEWT_OP_SLICE_STRIDE) printf(" stride");
-		ip++;
 		break;
 	case newt_op_branch:
 	case newt_op_branch_true:
 	case newt_op_branch_false:
 	case newt_op_forward:
+	case newt_op_range_step:
+	case newt_op_in_step:
 		memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
 		printf("%d\n", o);
-		ip += sizeof (newt_offset_t);
+		break;
+	case newt_op_range_start:
+		memcpy(&id, &code->code[ip], sizeof (newt_id_t));
+		if (id)
+			printf("%s\n", newt_name_string(id));
+		else
+			printf("<array>\n");
+		memcpy(&o, &code->code[ip + sizeof (newt_id_t)], sizeof (newt_offset_t));
+		printf(", %d\n", o);
 		break;
 	default:
 		printf("\n");
 		break;
 	}
-	return ip;
+	return ip + newt_op_extra_size(op);
 }
 
 void
@@ -197,34 +249,6 @@ compile_extend(newt_offset_t n, void *data)
 		memcpy(compile + compile_size, data, n);
 	compile_size += n;
 	return start;
-}
-
-static int
-newt_op_extra_size(newt_op_t op)
-{
-	switch (op) {
-	case newt_op_num:
-		return sizeof (float);
-	case newt_op_string:
-		return sizeof (newt_offset_t);
-	case newt_op_list:
-		return sizeof (newt_offset_t);
-	case newt_op_id:
-		return sizeof (newt_id_t);
-	case newt_op_call:
-		return sizeof (newt_offset_t);
-	case newt_op_slice:
-		return 1;
-	case newt_op_assign:
-		return sizeof (newt_id_t);
-	case newt_op_branch:
-	case newt_op_branch_true:
-	case newt_op_branch_false:
-	case newt_op_forward:
-		return sizeof (newt_offset_t);
-	default:
-		return 0;
-	}
 }
 
 newt_offset_t
@@ -323,6 +347,18 @@ newt_code_add_slice(bool has_start, bool has_end, bool has_stride)
 		   bit(has_end,   NEWT_OP_SLICE_END) |
 		   bit(has_stride, NEWT_OP_SLICE_STRIDE));
 	return compile_extend(2, insn);
+}
+
+newt_offset_t
+newt_code_add_range_start(newt_id_t id, newt_offset_t nactual)
+{
+	newt_op_t op = newt_op_range_start;
+	newt_offset_t offset;
+
+	offset = compile_extend(1, &op);
+	compile_extend(sizeof (newt_id_t), &id);
+	compile_extend(sizeof (newt_offset_t), &nactual);
+	return offset;
 }
 
 void
@@ -500,13 +536,17 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 				}
 				ret = newt_bool(found == (op == newt_op_in));
 			}
+			if (newt_poly_type(a) == newt_string && newt_poly_type(b) == newt_string) {
+				found = strstr(newt_poly_to_string(b), newt_poly_to_string(a)) != NULL;
+				ret = newt_bool(found == (op == newt_op_in));
+			}
 			break;
 		case newt_op_plus:
 			if (newt_poly_type(a) == newt_string && newt_poly_type(b) == newt_string) {
 				as = newt_poly_to_string(a);
 				bs = newt_poly_to_string(b);
-				as = newt_string_cat(as, bs);
-			} else if (newt_poly_type(a) == newt_list) {
+				ret = newt_string_to_poly(newt_string_cat(as, bs));
+			} else if (newt_poly_type(a) == newt_list && newt_poly_type(b) == newt_list) {
 				al = newt_poly_to_list(a);
 				bl = newt_poly_to_list(b);
 
@@ -880,6 +920,32 @@ newt_code_run(newt_code_t *code_in)
 				break;
 			case newt_op_branch:
 				memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
+				break;
+			case newt_op_range_start:
+				memcpy(&id, &code->code[ip], sizeof (newt_id_t));
+				ip += sizeof (newt_id_t);
+				memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
+				ip += sizeof (newt_offset_t);
+				newt_range_start(id, o);
+				newt_stack_drop(o);
+				break;
+			case newt_op_range_step:
+				if (!newt_range_step())
+					memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
+				else
+					ip += sizeof (newt_offset_t);
+				break;
+			case newt_op_in_start:
+				memcpy(&id, &code->code[ip], sizeof (newt_id_t));
+				ip += sizeof (newt_id_t);
+				newt_in_start(id);
+				newt_stack_pop();
+				break;
+			case newt_op_in_step:
+				if (!newt_in_step())
+					memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
+				else
+					ip += sizeof (newt_offset_t);
 				break;
 			default:
 				break;

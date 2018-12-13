@@ -218,21 +218,25 @@ while_else_stat	: while_else suite
 while_else	: ELSE COLON
 			{ $$ = newt_code_current(); }
 		;
-for_stat	: mark for suite loop_end mark else_stat
+for_stat	: for suite loop_end while_else_stat
 			{
-				newt_code_patch_branch($2, $5);
-				newt_code_patch_branch($4, $1);
-				newt_code_patch_forward($2, newt_forward_continue, $1);
-				newt_code_patch_forward($2, newt_forward_break, newt_code_current());
+				newt_code_patch_branch($1, $4);
+				newt_code_patch_branch($3, $1);
+				newt_code_patch_forward($1, newt_forward_continue, $1);
+				newt_code_patch_forward($1, newt_forward_break, newt_code_current());
 			}
 		;
 for		: FOR NAME IN RANGE OP actuals CP COLON
 			{
-				newt_code_add_op_offset(newt_op_for_start, $6);
-				$$ = newt_code_add_op_offset(newt_op_for_inc, 0);
+				newt_code_add_range_start($2, $6);
+				$$ = newt_code_add_op_offset(newt_op_range_step, 0);
 			}
 		| FOR NAME IN expr COLON
-			{ }
+			{
+				newt_code_set_push($4);
+				newt_code_add_op_id(newt_op_in_start, $2);
+				$$ = newt_code_add_op_offset(newt_op_in_step, 0);
+			}
 		;
 mark		:
 			{ $$ = newt_code_current(); }

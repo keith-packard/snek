@@ -1,4 +1,7 @@
 tests = [
+  'for-array.py',
+  'for-range.py',
+  'for-string.py',
   'global.py',
   'if.py',
   'while.py',

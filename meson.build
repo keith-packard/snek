@@ -40,6 +40,7 @@ sources = [
   'newt-builtin.c',
   'newt-code.c',
   'newt-error.c',
+  'newt-for.c',
   'newt-frame.c',
   'newt-func.c',
   'newt-list.c',
