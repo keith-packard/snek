@@ -1,5 +1,7 @@
 # Newt — a tiny python-inspired language for embedded computing
 
+![](https://i.imgur.com/C4MA4eN.gif)
+
 Newt is a tiny embeddable language targeting processors with only a
 few kB of flash and ram. Think of something that would have been
 running BASIC years ago and you'll have the idea. These processors are
