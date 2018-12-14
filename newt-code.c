@@ -23,6 +23,7 @@ newt_op_extra_size(newt_op_t op)
 	case newt_op_string:
 		return sizeof (newt_offset_t);
 	case newt_op_list:
+	case newt_op_tuple:
 		return sizeof (newt_offset_t);
 	case newt_op_id:
 	case newt_op_global:
@@ -178,6 +179,7 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 	case newt_op_assign_rshift:
 	case newt_op_in_start:
 		memcpy(&id, &code->code[ip], sizeof(newt_id_t));
+		printf("(%5d) ", id);
 		if (id)
 			printf("%s\n", newt_name_string(id));
 		else
@@ -464,11 +466,11 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 			case newt_list:
 				al = newt_poly_to_list(a);
 				if (bo < al->size)
-					a = newt_list_data(al)[bo];
+					ret = newt_list_data(al)[bo];
 				break;
 			case newt_string:
 				as = newt_poly_to_string(a);
-				a = newt_string_to_poly(newt_string_make(newt_string_fetch(as, bo)));
+				ret = newt_string_to_poly(newt_string_make(newt_string_fetch(as, bo)));
 				break;
 			default:
 				break;
@@ -557,7 +559,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 					newt_error("can't mix tuple with list\n");
 				} else {
 					if (inplace)
-						newt_list_append(al, bl);
+						al = newt_list_append(al, bl);
 					else
 						al = newt_list_plus(al, bl);
 					if (!al)
@@ -878,8 +880,8 @@ newt_code_run(newt_code_t *code_in)
 					a = newt_call_builtin(newt_poly_to_builtin(a), o);
 					break;
 				default:
-					newt_stack_drop(o + 1);
 					newt_error("not a func: %p\n", a);
+					newt_stack_drop(o + 1);
 					break;
 				}
 				break;

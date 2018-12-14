@@ -25,7 +25,9 @@
 
 #include "newt-builtin.h"
 
-#define NEWT_POOL		8192
+#define NEWT_DEBUG
+
+#define NEWT_POOL		32768
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
 #define NEWT_ALLOC_ROUND	(1 << NEWT_ALLOC_SHIFT)
@@ -354,6 +356,9 @@ extern const newt_mem_t newt_code_mem;
 void
 newt_error(char *format, ...);
 
+void
+newt_panic(char *message);
+
 extern bool newt_abort;
 
 /* newt-for.c */
@@ -428,7 +433,7 @@ extern int newt_line;
 newt_list_t *
 newt_list_make(newt_offset_t size, bool readonly);
 
-bool
+newt_list_t *
 newt_list_append(newt_list_t *list, newt_list_t *append);
 
 newt_list_t *
@@ -652,6 +657,12 @@ newt_pool_ref(newt_offset_t offset)
 {
 	if (offset == 0)
 		return NULL;
+
+#ifdef NEWT_DEBUG
+	if (((offset - 1) & (NEWT_ALLOC_ROUND-1)) != 0)
+		newt_panic("bad offset");
+#endif
+
 	return newt_pool + offset - 1;
 }
 
@@ -660,6 +671,12 @@ newt_pool_offset(const void *addr)
 {
 	if (addr == NULL)
 		return 0;
+
+#ifdef NEWT_DEBUG
+	if (((uintptr_t) addr & (NEWT_ALLOC_ROUND-1)) != 0)
+		newt_panic("bad address");
+#endif
+
 	return ((const uint8_t *) addr) - newt_pool + 1;
 }
 

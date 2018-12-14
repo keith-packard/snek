@@ -38,6 +38,9 @@ newt_error(char *format, ...)
 			case 'd':
 				fprintf(stderr, "%d", va_arg(args, int));
 				break;
+			case 'x':
+				fprintf(stderr, "%x", va_arg(args, int));
+				break;
 			case 'i':
 				fprintf(stderr, "%s", newt_name_string(va_arg(args, int)));
 				break;
@@ -59,4 +62,11 @@ newt_error(char *format, ...)
 			putc(c, stderr);
 	}
 	va_end(args);
+}
+
+void
+newt_panic(char *message)
+{
+	fprintf(stderr, "%s\n", message);
+	for (;;) { }
 }

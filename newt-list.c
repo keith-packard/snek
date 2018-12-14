@@ -20,7 +20,7 @@ newt_list_alloc(newt_offset_t size)
 	return size + (size >> 3) + (size < 9 ? 3 : 6);
 }
 
-static bool
+static newt_list_t *
 newt_list_resize(newt_list_t *list, newt_offset_t size)
 {
 	newt_offset_t alloc = list->readonly ? size : newt_list_alloc(size);
@@ -40,7 +40,7 @@ newt_list_resize(newt_list_t *list, newt_offset_t size)
 	list->data = newt_pool_offset(data);
 	list->size = size;
 	list->alloc = alloc;
-	return true;
+	return list;
 }
 
 newt_list_t *
@@ -54,32 +54,30 @@ newt_list_make(newt_offset_t size, bool readonly)
 
 	list->readonly = readonly;
 
-	if (!newt_list_resize(list, size))
+	list = newt_list_resize(list, size);
+	if (!list)
 		return NULL;
 
 	return list;
 }
 
-bool
+newt_list_t *
 newt_list_append(newt_list_t *list, newt_list_t *append)
 {
 	newt_offset_t oldsize = list->size;
-	bool ret;
 
 	if (list->readonly)
-		return false;
+		return NULL;
 
-	newt_poly_stash(newt_list_to_poly(list));
 	newt_poly_stash(newt_list_to_poly(append));
-	ret = newt_list_resize(list, list->size + append->size);
+	list = newt_list_resize(list, list->size + append->size);
 	append = newt_poly_to_list(newt_poly_fetch());
-	list = newt_poly_to_list(newt_poly_fetch());
 
-	if (ret)
+	if (list)
 		memcpy((newt_poly_t *) newt_pool_ref(list->data) + oldsize,
 		       newt_pool_ref(append->data),
 		       append->size * sizeof(newt_poly_t));
-	return ret;
+	return list;
 }
 
 newt_list_t *

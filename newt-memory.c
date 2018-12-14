@@ -452,9 +452,9 @@ newt_mark(const struct newt_mem *type, void *addr)
 }
 
 /*
- * Mark an object, unless it is a cons cell and
+ * Mark an object, unless it is a list and
  * do_note_list is set. In that case, just
- * set a bit in the cons note array; those
+ * set a bit in the list note array; those
  * will be marked in a separate pass to avoid
  * deep recursion in the collector
  */
@@ -474,7 +474,7 @@ newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
-	if (type == newt_list && do_note_list) {
+	if (type == newt_list && do_note_list && 0) {
 		note_list(pool_offset(addr));
 		return 1;
 	} else {
@@ -578,7 +578,7 @@ newt_poly_move(newt_poly_t *ref, uint8_t do_note_list)
 	orig_offset = pool_offset(addr);
 	offset = move_map(orig_offset);
 
-	if (newt_poly_type(p) == newt_list && do_note_list) {
+	if (newt_poly_type(p) == newt_list && do_note_list && 0) {
 		note_list(orig_offset);
 		ret = 1;
 	} else {
@@ -623,6 +623,7 @@ newt_alloc(newt_offset_t size)
 		return NULL;
 	}
 	addr = newt_pool + newt_top;
+	memset(addr, '\0', size);
 	newt_top += size;
 	return addr;
 }
