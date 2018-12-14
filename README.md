@@ -56,3 +56,29 @@ the active Newt code and an interactive pane where you can type
 interactive Newt commands to run. With that and some builtins to
 save/load projects the system should be usable through a terminal
 emulator running on another host, or through a local text interface.
+
+## Build and Run!
+
+### Dependencies
+To build Newt you need the next dependencies:
+
+  * (Meson)[https://mesonbuild.com/]
+  * Flex
+  * Bison
+
+### Building and install
+In the source of the project run:
+
+```
+$ meson build && cd build
+$ ninja install
+```
+
+### Running
+
+```
+$ ./newt
+
+```
+Then, just enjoy!
+
