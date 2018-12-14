@@ -21,6 +21,7 @@ int newt_want_indent;
 
 char *newt_file;
 int newt_line;
+static int newt_lex_line = 1;
 
 static char *string_build(char *text, int leng);
 
@@ -75,8 +76,12 @@ static char tmp_token[8192];
 	}
 	BEGIN(0);
 }
-<INITIAL>\n	{ BEGIN(NEWLINE); newt_line++; RETURN(NL); }
-
+<INITIAL>\n	{
+			BEGIN(NEWLINE);
+			newt_line = ++newt_lex_line;
+			yylval.ints = newt_lex_line;
+			RETURN(NL);
+		}
 " "	;
 ":"	RETURN(COLON);
 ";"	RETURN(SEMI);
@@ -119,7 +124,7 @@ static char tmp_token[8192];
 "["	RETURN(OS);
 "]"	RETURN(CS);
 
-def	RETURN(DEF);
+def	{ yylval.ints = newt_lex_line; RETURN(DEF); }
 global	RETURN(GLOBAL);
 if	RETURN(IF);
 else	RETURN(ELSE);
@@ -165,7 +170,8 @@ not	{ yylval.op = newt_op_not; RETURN(NOT); }
 		int c;
 		while ((c = input()) != EOF)
 			if (c == '\n') {
-				++newt_line;
+				newt_line = ++newt_lex_line;
+				BEGIN(NEWLINE);
 				break;
 			}
 	}

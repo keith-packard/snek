@@ -51,6 +51,7 @@ newt_op_extra_size(newt_op_t op)
 	case newt_op_forward:
 	case newt_op_range_step:
 	case newt_op_in_step:
+	case newt_op_line:
 		return sizeof (newt_offset_t);
 	case newt_op_range_start:
 		return sizeof (newt_id_t) + sizeof (newt_offset_t);
@@ -131,6 +132,7 @@ static const char *newt_op_names[] = {
 	[newt_op_range_step] = "range_step",
 	[newt_op_in_start] = "in_start",
 	[newt_op_in_step] = "in_step",
+	[newt_op_line] = "line",
 };
 
 newt_offset_t
@@ -196,6 +198,7 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 	case newt_op_forward:
 	case newt_op_range_step:
 	case newt_op_in_step:
+	case newt_op_line:
 		memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
 		printf("%d\n", o);
 		break;
@@ -946,6 +949,11 @@ newt_code_run(newt_code_t *code_in)
 					memcpy(&ip, &code->code[ip], sizeof (newt_offset_t));
 				else
 					ip += sizeof (newt_offset_t);
+				break;
+			case newt_op_line:
+				memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
+				newt_line = o;
+				ip += sizeof (newt_offset_t);
 				break;
 			default:
 				break;

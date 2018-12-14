@@ -120,6 +120,8 @@ typedef enum {
 	newt_op_in_start,
 	newt_op_in_step,
 
+	newt_op_line,
+
 	newt_op_push = 0x80,
 } __attribute__((packed)) newt_op_t;
 

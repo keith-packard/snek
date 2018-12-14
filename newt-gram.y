@@ -48,7 +48,7 @@ static newt_id_t formals[MAX_FORMALS];
 %token  <number> 	NUMBER
 %token	<string>	STRING
 %token  <id>		NAME
-%token			NL
+%token	<ints>		NL
 %token			INVALID
 
 %token			COLON COMMA SEMI
@@ -95,7 +95,7 @@ pcommand	: stat
 			}
 		| def
 		;
-def		: DEF { nformal = 0; } NAME OP opt_params CP mark COLON suite
+def		: DEF { nformal = 0; newt_code_add_op_offset(newt_op_line, $1); } NAME OP opt_params CP mark COLON suite
 			{
 				newt_code_t	*code = newt_code_finish();
 				newt_func_t	*func = newt_func_alloc(code, nformal, formals);
@@ -129,7 +129,7 @@ stat		: simple_stat
 		| NL
 			{ $$ = false; }
 		;
-simple_stat	: small_stats NL
+simple_stat	: small_stats nl
 		;
 small_stats	: small_stats SEMI small_stat
 		| small_stat
@@ -245,7 +245,7 @@ loop_end:
 			{ $$ = newt_code_add_op_offset(newt_op_branch, 0); }
 		;
 suite		: simple_stat
-		| NL INDENT stats EXDENT
+		| nl INDENT stats EXDENT
 			{
 				newt_current_indent = $2;
 				if ($4 > $2) {
@@ -253,7 +253,7 @@ suite		: simple_stat
 					YYERROR;
 				}
 			}
-		| NL INDENT error EXDENT
+		| nl INDENT error EXDENT
 			{
 				newt_current_indent = $2;
 //				YYERROR;
@@ -398,4 +398,6 @@ actuals		: actuals COMMA actual
 actual		: expr
 			{ newt_code_set_push($1); }
 		;
+nl		: NL
+			{ newt_code_add_op_offset(newt_op_line, $1); }
 %%
