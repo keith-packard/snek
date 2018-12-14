@@ -50,7 +50,6 @@ newt_builtin_printn(newt_poly_t a)
 		fputs(newt_poly_to_string(a), stdout);
 	else
 		newt_poly_print(stdout, a);
-	fflush(stdout);
 	return NEWT_ZERO;
 }
 
@@ -77,7 +76,14 @@ newt_builtin_time_sleep(newt_poly_t a)
 
 		nanosleep(&ts, NULL);
 	}
-	return NEWT_ZERO;
+	return NEWT_ONE;
+}
+
+static newt_poly_t
+newt_builtin_sys_stdout_flush(void)
+{
+	fflush(stdout);
+	return NEWT_ONE;
 }
 
 const newt_builtin_t newt_builtins[] = {
@@ -100,6 +106,10 @@ const newt_builtin_t newt_builtins[] = {
 	[NEWT_BUILTIN_time_sleep - 1] {
 		.nformal = 1,
 		.func1 = newt_builtin_time_sleep,
+	},
+	[NEWT_BUILTIN_sys_stdout_flush - 1] {
+		.nformal = 0,
+		.func0 = newt_builtin_sys_stdout_flush,
 	},
 };
 

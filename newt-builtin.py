@@ -5,6 +5,7 @@ builtins = [
     "len",
     "print",
     "printn",
+    "sys.stdout.flush",
     "time.sleep",
 ]
 
