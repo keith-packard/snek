@@ -71,7 +71,6 @@ In the source of the project run:
 
 ```
 $ meson build && cd build
-$ ninja install
 ```
 
 ### Running
