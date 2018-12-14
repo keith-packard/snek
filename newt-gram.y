@@ -68,7 +68,8 @@ static newt_id_t formals[MAX_FORMALS];
 %right	<op>		POW
 %left	<op>		OP CP OS CS
 
-%token			DEF GLOBAL
+%token	<ints>		DEF
+%token			GLOBAL IMPORT
 %token			IF ELSE ELIF
 %token			FOR WHILE
 %token			RETURN CONTINUE BREAK
@@ -94,6 +95,7 @@ pcommand	: stat
 				}
 			}
 		| def
+		| IMPORT NAME
 		;
 def		: DEF { nformal = 0; newt_code_add_op_offset(newt_op_line, $1); } NAME OP opt_params CP mark COLON suite
 			{

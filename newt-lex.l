@@ -134,6 +134,7 @@ while	RETURN(WHILE);
 continue	RETURN(CONTINUE);
 break	RETURN(BREAK);
 return	RETURN(RETURN);
+import	RETURN(IMPORT);
 True	{ yylval.number = 1.0; RETURN(NUMBER); }
 False	{ yylval.number = 0.0; RETURN(NUMBER); }
 range	RETURN(RANGE);
