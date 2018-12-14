@@ -156,7 +156,7 @@ not	{ yylval.op = newt_op_not; RETURN(NOT); }
 		memmove(under, under + 1, strlen(under-1));
 	yylval.number = strtof(yytext, NULL); RETURN(NUMBER);
 }
-[A-Za-z_][A-Za-z0-9_]* {
+[A-Za-z_][A-Za-z0-9_.]* {
 	yylval.id = newt_name_id(yytext);
 	RETURN(NAME);
 }

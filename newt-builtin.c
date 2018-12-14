@@ -13,6 +13,7 @@
  */
 
 #include "newt.h"
+#include <time.h>
 
 static newt_poly_t
 newt_builtin_exit(newt_poly_t a)
@@ -49,6 +50,7 @@ newt_builtin_printn(newt_poly_t a)
 		fputs(newt_poly_to_string(a), stdout);
 	else
 		newt_poly_print(stdout, a);
+	fflush(stdout);
 	return NEWT_ZERO;
 }
 
@@ -57,6 +59,24 @@ newt_builtin_print(newt_poly_t a)
 {
 	newt_builtin_printn(a);
 	putchar('\n');
+	return NEWT_ZERO;
+}
+
+static newt_poly_t
+newt_builtin_time_sleep(newt_poly_t a)
+{
+	if (newt_poly_type(a) == newt_float) {
+		float delay = newt_poly_to_float(a);
+		float secs = floorf(delay);
+		float ns = floorf((delay - secs) * 1e9 + 0.5);
+
+		struct timespec ts = {
+			.tv_sec = (time_t) secs,
+			.tv_nsec = ns
+		};
+
+		nanosleep(&ts, NULL);
+	}
 	return NEWT_ZERO;
 }
 
@@ -76,6 +96,10 @@ const newt_builtin_t newt_builtins[] = {
 	[NEWT_BUILTIN_printn - 1] {
 		.nformal = 1,
 		.func1 = newt_builtin_printn,
+	},
+	[NEWT_BUILTIN_time_sleep - 1] {
+		.nformal = 1,
+		.func1 = newt_builtin_time_sleep,
 	},
 };
 

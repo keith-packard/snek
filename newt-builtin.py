@@ -5,6 +5,7 @@ builtins = [
     "len",
     "print",
     "printn",
+    "time.sleep",
 ]
 
 
@@ -31,7 +32,7 @@ print("#else /* NEWT_BUILTIN_DATA */", file=fp)
 
 id = 1
 for name in sorted(builtins):
-    print("#define NEWT_BUILTIN_%s %d" % (name, id), file=fp)
+    print("#define NEWT_BUILTIN_%s %d" % (name.replace(".", "_"), id), file=fp)
     id += 1
 
 print("#define NEWT_BUILTIN_END %d" % (id), file=fp)
