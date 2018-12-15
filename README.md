@@ -40,11 +40,30 @@ have lexical scope, and you can refer to global variables with the
 
 ## To Do list
 
-Newt doesn't even do everything in this document yet, but its getting
-close. Still to do are:
+I think the basic Newt language is pretty complete at this point, but
+there are always improvements that can be made.
 
- * For statement (which requires generators)
- * Built-in functions (like print).
+ * Custom lexer. The flex generated one is rather large; a custom one
+   could be signficantly smaller
+
+ * Custom table-driven LL parser. I've got an LL parser generator, and
+   I think the language is pretty close to usable. This should be much
+   smaller than the bison parser, and shouldn't be any more difficult
+   to use.
+
+ * Documentation. We should be able to crib from existing Python
+   documentation where it applies, but it would be good to have a
+   comprehensive reference manual for the existing language
+
+ * Port to a microcontroller. Mostly to demonstrate that this is
+   possible.
+
+ * Develop a standard API for GPIOS, timers etc. I'm thinking
+   something similar to Lego Logo might actually work out pretty well?
+   It's pretty stateful, which seems “wrong”, but that does reduce the
+   amount of typing. Having something with more knowledge about the
+   hardware would be good; the Arduino API requires a lot of setup for
+   which pins are connected to what.
 
 ## A complete Newt system
 
@@ -82,3 +101,13 @@ $ ./newt
 ```
 Then, just enjoy!
 
+### Examples
+
+There are examples provided which work with both Python and Newt.
+
+## Contributions
+
+I'd love to receive more contributions in the form of patches,
+suggestions and bug reports. Please feel free to send mail or use the
+github process. If we get enough participation, I can host a mailing
+list easily enough.
