@@ -474,7 +474,7 @@ newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
-	if (type == newt_list && do_note_list && 0) {
+	if (type == newt_list && do_note_list) {
 		note_list(pool_offset(addr));
 		return 1;
 	} else {
@@ -578,7 +578,7 @@ newt_poly_move(newt_poly_t *ref, uint8_t do_note_list)
 	orig_offset = pool_offset(addr);
 	offset = move_map(orig_offset);
 
-	if (newt_poly_type(p) == newt_list && do_note_list && 0) {
+	if (newt_poly_type(p) == newt_list && do_note_list) {
 		note_list(orig_offset);
 		ret = 1;
 	} else {

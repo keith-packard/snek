@@ -42,7 +42,7 @@ bottom_y=0
 
 # delay between moves in seconds
 
-move_delay=0.250
+move_delay=0.0250
 
 # Distance between columns on the screen
 
