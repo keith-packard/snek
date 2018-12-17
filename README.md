@@ -81,9 +81,9 @@ emulator running on another host, or through a local text interface.
 ### Dependencies
 To build Newt you need the next dependencies:
 
-  * (Meson)[https://mesonbuild.com/]
-  * Flex
-  * Bison
+  * [Meson](https://mesonbuild.com/)
+  * [Flex](https://github.com/westes/flex)
+  * [Bison](https://www.gnu.org/software/bison/)
 
 ### Building and install
 In the source of the project run:
@@ -97,7 +97,6 @@ $ ninja
 
 ```
 $ ./newt
-
 ```
 Then, just enjoy!
 
