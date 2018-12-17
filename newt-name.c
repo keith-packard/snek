@@ -140,3 +140,9 @@ const newt_mem_t newt_name_mem = {
 	.move = newt_name_move,
 	.name = "name"
 };
+
+const newt_mem_t newt_builtin_mem = {
+	.size = newt_null_size,
+	.mark = newt_null_mark,
+	.move = newt_null_move
+};

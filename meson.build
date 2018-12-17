@@ -29,11 +29,15 @@ configure_file(output : 'config.h',
 
 prog_python = import('python').find_installation('python3')
 
+builtins = [
+  'newt-base.builtin'
+  ]
+
 newt_builtin_h = custom_target(
   'newt-builtin.h',
   output : 'newt-builtin.h',
-  input : 'newt-builtin.py',
-  command : [prog_python, '@INPUT@', '@OUTPUT@']
+  input : ['newt-builtin.py'] + builtins,
+  command : [prog_python, '@INPUT@', '-o', '@OUTPUT@']
 	    )
 
 sources = [
