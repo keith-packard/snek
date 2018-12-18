@@ -20,7 +20,6 @@ pgen = generator(bison,
 		 output : ['@BASENAME@.c', '@BASENAME@.h'],
 		 arguments : ['-v', '@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
 
-lfiles = lgen.process('newt-lex.l')
 pfiles = pgen.process('newt-gram.y')
 
 conf_data = configuration_data()
@@ -30,6 +29,7 @@ configure_file(output : 'config.h',
 prog_python = import('python').find_installation('python3')
 
 builtins = [
+  'newt-keyword.builtin',
   'newt-base.builtin'
   ]
 
@@ -47,6 +47,7 @@ sources = [
   'newt-for.c',
   'newt-frame.c',
   'newt-func.c',
+  'newt-lex.c',
   'newt-list.c',
   'newt-main.c',
   'newt-memory.c',
@@ -57,7 +58,7 @@ sources = [
 ]
 
 newt = executable('newt',
-		  sources, lfiles, pfiles,
+		  sources, pfiles,
 		  dependencies: [m_dep]
 		 )
 

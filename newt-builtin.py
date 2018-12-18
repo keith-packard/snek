@@ -9,12 +9,17 @@ class NewtBuiltin:
     name = ""
     id = 0
     nformal = 0
-    def __init__(self, name, nformal):
+    keyword = False
+    def __init__(self, name, param):
         global builtin_id
-        self.id = builtin_id
-        builtin_id += 1
         self.name = name
-        self.nformal = nformal
+        if param[0].isalpha():
+            self.keyword = param
+        else:
+            self.keyword = False
+            self.nformal = int(param)
+            self.id = builtin_id
+            builtin_id += 1
 
     def __eq__(self,other):
         return self.name == other.name
@@ -47,12 +52,15 @@ def load_builtins(filename):
     f = open(filename)
     for line in f.readlines():
         bits = line.split(",")
-        add_builtin(bits[0], int(bits[1]))
+        add_builtin(bits[0].strip(), bits[1].strip())
 
 def dump_names(fp):
     print("static const uint8_t newt_builtin_names[] = {", file=fp)
     for name in sorted(builtins):
-        print("\t%d, " % name.id, end='', file=fp)
+        if name.keyword:
+            print("\t(%s - 256) | 0x80, " % name.keyword, end='', file=fp)
+        else:
+            print("\t%d, " % name.id, end='', file=fp)
         for c in name.name:
             print("'%c', " % c, end='', file=fp)
         print("0,", file=fp)
@@ -60,6 +68,8 @@ def dump_names(fp):
 
 def dump_builtins(fp):
     for name in sorted(builtins):
+        if name.keyword:
+            continue
         print("extern newt_poly_t", file=fp)
         print("%s(" % name.func_name(), file=fp, end='')
         if name.nformal == -1:
@@ -75,6 +85,9 @@ def dump_builtins(fp):
     print("const newt_builtin_t newt_builtins[] = {", file=fp)
 
     for name in sorted(builtins):
+        if name.keyword:
+            continue
+
         print("\t[%s - 1] {" % name.cpp_name(), file=fp)
         print("\t\t.nformal=%d," % name.nformal, file=fp)
         print("\t\t%s = %s," % (name.func_field(), name.func_name()), file=fp)
@@ -84,6 +97,8 @@ def dump_builtins(fp):
 
 def dump_cpp(fp):
     for name in sorted(builtins):
+        if name.keyword:
+            continue
         print("#define %s %d" % (name.cpp_name(), name.id), file=fp)
 
     print("#define NEWT_BUILTIN_END %d" % (builtin_id), file=fp)

@@ -531,7 +531,7 @@ newt_print_stop(void);
 /* newt-name.c */
 
 newt_id_t
-newt_name_id(char *name);
+newt_name_id(char *name, bool *keyword);
 
 const char *
 newt_name_string(newt_id_t id);

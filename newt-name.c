@@ -21,7 +21,7 @@ newt_id_t   newt_id = NEWT_BUILTIN_END;
 #include "newt-builtin.h"
 
 static newt_id_t
-newt_name_id_builtin(char *name)
+newt_name_id_builtin(char *name, bool *keyword)
 {
 	ssize_t	l = 0, h = sizeof(newt_builtin_names) - 1;
 
@@ -40,8 +40,12 @@ newt_name_id_builtin(char *name)
 				h--;
 		}
 	}
-	if (strcmp(name, (char *) &newt_builtin_names[l+1]) == 0)
-		return (newt_id_t) newt_builtin_names[l];
+	if (strcmp(name, (char *) &newt_builtin_names[l+1]) == 0) {
+		newt_id_t id = newt_builtin_names[l];
+		if ((*keyword = ((id & 0x80) != 0)))
+			id = (id & ~0x80) + 256;
+		return id;
+	}
 	return 0;
 }
 
@@ -60,13 +64,15 @@ newt_name_string_builtin(newt_id_t id)
 }
 
 newt_id_t
-newt_name_id(char *name)
+newt_name_id(char *name, bool *keyword)
 {
 	newt_name_t *n;
 	newt_id_t id;
 
-	if ((id = newt_name_id_builtin(name)))
+	if ((id = newt_name_id_builtin(name, keyword)))
 		return id;
+
+	*keyword = false;
 
 	for (n = newt_names; n; n = newt_pool_ref(n->next))
 		if (!strcmp(n->name, name))
