@@ -42,6 +42,7 @@ class NewtBuiltin:
             return ".funcv"
         return ".func%d" % self.nformal
 
+headers=[]
 builtins = []
 
 def add_builtin(name, id):
@@ -49,10 +50,18 @@ def add_builtin(name, id):
     builtins += [NewtBuiltin(name, id)]
 
 def load_builtins(filename):
+    global headers
     f = open(filename)
     for line in f.readlines():
-        bits = line.split(",")
-        add_builtin(bits[0].strip(), bits[1].strip())
+        if line[0] == '#':
+            headers += [line]
+        else:
+            bits = line.split(",")
+            add_builtin(bits[0].strip(), bits[1].strip())
+
+def dump_headers(fp):
+    for line in headers:
+        print("%s" % line, file=fp)
 
 def dump_names(fp):
     print("static const uint8_t newt_builtin_names[] = {", file=fp)
@@ -132,6 +141,8 @@ def builtin_main():
     print(file=fp)
 
     print("#else /* NEWT_BUILTIN_DATA */", file=fp)
+
+    dump_headers(fp)
 
     dump_cpp(fp)
 

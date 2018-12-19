@@ -1,6 +1,4 @@
-exit, 1
 len, 1
 print, 1
 printn, 1
 sys.stdout.flush, 0
-time.sleep, 1

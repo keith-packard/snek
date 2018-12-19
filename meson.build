@@ -30,7 +30,8 @@ prog_python = import('python').find_installation('python3')
 
 builtins = [
   'newt-keyword.builtin',
-  'newt-base.builtin'
+  'newt-base.builtin',
+  'newt-posix.builtin'
   ]
 
 newt_builtin_h = custom_target(
@@ -53,6 +54,7 @@ sources = [
   'newt-memory.c',
   'newt-name.c',
   'newt-poly.c',
+  'newt-posix.c',
   'newt-string.c',
   newt_builtin_h
 ]
