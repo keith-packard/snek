@@ -27,7 +27,9 @@
 
 #define NEWT_DEBUG
 
+#ifndef NEWT_POOL
 #define NEWT_POOL		32768
+#endif
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
 #define NEWT_ALLOC_ROUND	(1 << NEWT_ALLOC_SHIFT)
