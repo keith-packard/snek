@@ -93,6 +93,7 @@ bail:
 static int
 newt_range_size(void *addr)
 {
+	(void) addr;
 	return sizeof(newt_range_t);
 }
 

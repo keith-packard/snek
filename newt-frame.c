@@ -127,6 +127,7 @@ newt_id_ref(newt_id_t id, bool insert)
 static int
 newt_variable_size(void *addr)
 {
+	(void) addr;
 	return sizeof (newt_variable_t);
 }
 

@@ -38,7 +38,7 @@ newt_string_make(char c)
 char
 newt_string_fetch(char *string, int i)
 {
-	if (i < strlen(string))
+	if (i < (int) strlen(string))
 		return string[i];
 	return '\0';
 }

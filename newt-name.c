@@ -23,16 +23,16 @@ newt_id_t   newt_id = NEWT_BUILTIN_END;
 static newt_id_t
 newt_name_id_builtin(char *name, bool *keyword)
 {
-	ssize_t	l = 0, h = sizeof(newt_builtin_names) - 1;
+	long l = 0, h = sizeof(newt_builtin_names) - 1;
 
 	while (l <= h) {
-		ssize_t m = (l + h) >> 1;
+		long m = (l + h) >> 1;
 
 		while (m > l && newt_builtin_names[m-1] != '\0')
 			m--;
 		if (strcmp((char *) &newt_builtin_names[m+1], name) < 0) {
 			l = m + 2;
-			while(l < sizeof (newt_builtin_names) - 1 && newt_builtin_names[l-1] != '\0')
+			while(l < (long) sizeof (newt_builtin_names) - 1 && newt_builtin_names[l-1] != '\0')
 				l++;
 		} else {
 			h = m - 2;
@@ -52,10 +52,10 @@ newt_name_id_builtin(char *name, bool *keyword)
 const char *
 newt_name_string_builtin(newt_id_t id)
 {
-	ssize_t		i;
+	long		i;
 
 	i = 0;
-	while (i < sizeof(newt_builtin_names)) {
+	while (i < (long) sizeof(newt_builtin_names)) {
 		if (newt_builtin_names[i] == id)
 			return (const char *) &newt_builtin_names[i+1];
 		i += strlen((const char *) &newt_builtin_names[i+1]) + 2;

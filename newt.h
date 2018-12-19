@@ -223,7 +223,7 @@ typedef struct newt_slice {
 #define NEWT_SLICE_DEFAULT	0x7fffffff	/* empty value provided [1:] */
 
 typedef struct newt_builtin {
-	newt_offset_t	nformal;
+	newt_soffset_t	nformal;
 	union {
 		newt_poly_t	(*funcv)(int nactuals, ...);
 		newt_poly_t	(*func0)(void);
@@ -455,7 +455,7 @@ int
 yylex(void);
 
 void
-yyerror (char *msg);
+yyerror (const char *msg);
 
 int
 yywrap(void);
@@ -612,7 +612,7 @@ static inline newt_poly_t
 newt_stack_pop(void)
 {
 	if (!newt_stackp)
-		abort();
+		newt_panic("stack underflow");
 	return newt_stack[--newt_stackp];
 }
 

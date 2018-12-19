@@ -24,7 +24,7 @@ extern char *yytext;
 extern int yyleng;
 
 void
-yyerror (char *msg)
+yyerror (const char *msg)
 {
 	newt_error("%s at \"%S\"\n", msg, yyleng, yyleng, yytext);
 }

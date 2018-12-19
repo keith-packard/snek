@@ -193,6 +193,7 @@ newt_poly_true(newt_poly_t a)
 int
 newt_null_size(void *addr)
 {
+	(void) addr;
 	return 0;
 }
 
