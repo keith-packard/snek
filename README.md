@@ -43,9 +43,6 @@ have lexical scope, and you can refer to global variables with the
 I think the basic Newt language is pretty complete at this point, but
 there are always improvements that can be made.
 
- * Custom lexer. The flex generated one is rather large; a custom one
-   could be signficantly smaller
-
  * Custom table-driven LL parser. I've got an LL parser generator, and
    I think the language is pretty close to usable. This should be much
    smaller than the bison parser, and shouldn't be any more difficult
@@ -55,15 +52,24 @@ there are always improvements that can be made.
    documentation where it applies, but it would be good to have a
    comprehensive reference manual for the existing language
 
- * Port to a microcontroller. Mostly to demonstrate that this is
-   possible.
-
  * Develop a standard API for GPIOS, timers etc. I'm thinking
    something similar to Lego Logo might actually work out pretty well?
    It's pretty stateful, which seems “wrong”, but that does reduce the
    amount of typing. Having something with more knowledge about the
    hardware would be good; the Arduino API requires a lot of setup for
    which pins are connected to what.
+
+## Recent Changes
+
+Here's some places that have seen recent work
+
+ * Custom lexer. This replaces the flex-generated lexer and saves a
+   pile of memory.
+
+ * Port to a microcontroller. I've got Newt running on an STM32L152
+   discovery board under AltOS. The whole system takes 37kB of flash
+   and 12kB of data. Still have a bit of work to get it onto a stock
+   Arduino.
 
 ## A complete Newt system
 
@@ -82,7 +88,6 @@ emulator running on another host, or through a local text interface.
 To build Newt you need the next dependencies:
 
   * [Meson](https://mesonbuild.com/)
-  * [Flex](https://github.com/westes/flex)
   * [Bison](https://www.gnu.org/software/bison/)
 
 ### Building and install
