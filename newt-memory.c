@@ -452,11 +452,9 @@ newt_mark(const struct newt_mem *type, void *addr)
 }
 
 /*
- * Mark an object, unless it is a list and
- * do_note_list is set. In that case, just
- * set a bit in the list note array; those
- * will be marked in a separate pass to avoid
- * deep recursion in the collector
+ * Mark an object, unless it is a list and do_note_list is set. In
+ * that case, just set a bit in the list note array; those will be
+ * marked in a separate pass to avoid deep recursion in the collector
  */
 int
 newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
@@ -631,7 +629,6 @@ newt_alloc(newt_offset_t size)
 void
 newt_poly_stash(newt_poly_t p)
 {
-	assert(stash_poly_ptr < NEWT_NUM_STASH);
 	stash_poly[stash_poly_ptr++] = p;
 }
 
@@ -640,7 +637,6 @@ newt_poly_fetch(void)
 {
 	newt_poly_t	p;
 
-	assert (stash_poly_ptr > 0);
 	p = stash_poly[--stash_poly_ptr];
 	stash_poly[stash_poly_ptr] = NEWT_NULL;
 	return p;
