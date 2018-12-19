@@ -40,16 +40,25 @@ int yyleng;
 #define RETURN_OP(_op, ret) do { yylval.op = (_op); RETURN (ret); } while(0)
 #define RETURN_INTS(_ints, ret) do { yylval.ints = (_ints); RETURN (ret); } while(0)
 
+static char ungetbuf[5];
+static int ungetcount;
+
+#ifndef NEWT_GETC
+#define NEWT_GETC() getchar()
+#endif
+
 static int
 lexchar(void)
 {
-	return getchar();
+	if (ungetcount)
+		return ((int) ungetbuf[--ungetcount]) & 0xff;
+	return NEWT_GETC();
 }
 
 static void
 unlexchar(int c)
 {
-	ungetc(c, stdin);
+	ungetbuf[ungetcount++] = c;
 }
 
 static int
@@ -81,20 +90,6 @@ is_name(int c, bool first)
 		if ('0' <= c && c <= '9')
 			return true;
 	}
-	return false;
-}
-
-static bool
-is_number(int c)
-{
-	if ('0' <= c && c <= '9')
-		return true;
-	if (c == '-' || c == '+')
-		return true;
-	if (c == '.')
-		return true;
-	if (c == 'e' || c == 'E')
-		return true;
 	return false;
 }
 
@@ -135,15 +130,97 @@ add_token(int c)
 	return true;
 }
 
+typedef enum nstate {
+	n_int,
+	n_frac,
+	n_expsign,
+	n_exp
+} nstate_t;
+
+typedef enum nclass {
+	c_digit,
+	c_dot,
+	c_e,
+	c_sign,
+	c_other,
+} nclass_t;
+
+static nclass_t
+cclass(int c)
+{
+	if ('0' <= c && c <= '9')
+		return c_digit;
+	if (c == '.')
+		return c_dot;
+	if (c == 'e' || c == 'E')
+		return c_e;
+	if (c == '-' || c == '+')
+		return c_sign;
+	return c_other;
+}
+
 static int
 number(int c)
 {
+	nstate_t n = n_int;
+	nclass_t t;
+
 	start_token();
-	do {
+	for (;;) {
 		if (!add_token(c))
 			RETURN(INVALID);
 		c = lexchar();
-	} while (is_number(c));
+		t = cclass(c);
+		switch (n) {
+		case n_int:
+			switch (t) {
+			case c_digit:
+				continue;
+			case c_dot:
+				n = n_frac;
+				continue;
+			case c_e:
+				n = n_expsign;
+				continue;
+			default:
+				break;
+			}
+			break;
+		case n_frac:
+			switch (t) {
+			case c_digit:
+				continue;
+			case c_e:
+				n = n_expsign;
+				continue;
+			default:
+				break;
+			}
+			break;
+		case n_expsign:
+			switch (t) {
+			case c_sign:
+				n = n_exp;
+				continue;
+			case c_digit:
+				n = n_exp;
+				continue;
+			default:
+				break;
+			}
+			break;
+		case n_exp:
+			switch (t) {
+			case c_digit:
+				continue;
+			default:
+				break;
+			}
+			break;
+		}
+		break;
+	}
+
 	unlexchar(c);
 	yylval.number = strtof(yytext, NULL);
 	RETURN(NUMBER);
@@ -377,7 +454,7 @@ yylex(void)
 			continue;
 		}
 
-		if ('0' <= c && c <= '9')
+		if (('0' <= c && c <= '9') || c == '.')
 			return number(c);
 
 		if (!is_name(c, true))
