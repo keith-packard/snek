@@ -420,18 +420,6 @@ newt_code_finish(void)
 	return code;
 }
 
-static float
-newt_bool_float(bool b)
-{
-	return b ? 1.0f : 0.0f;
-}
-
-static newt_poly_t
-newt_bool(bool b)
-{
-	return b ? NEWT_ONE : NEWT_ZERO;
-}
-
 static newt_poly_t
 newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 {
@@ -447,13 +435,13 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 
 	switch (op) {
 	case newt_op_eq:
-		return newt_bool(newt_poly_equal(a, b));
+		return newt_bool_to_poly(newt_poly_equal(a, b));
 	case newt_op_ne:
-		return newt_bool(!newt_poly_equal(a, b));
+		return newt_bool_to_poly(!newt_poly_equal(a, b));
 	case newt_op_is:
-		return newt_bool(a.u == b.u);
+		return newt_bool_to_poly(a.u == b.u);
 	case newt_op_is_not:
-		return newt_bool(a.u != b.u);
+		return newt_bool_to_poly(a.u != b.u);
 	default:
 		break;
 	}
@@ -481,51 +469,54 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 		bf = newt_poly_to_float(b);
 		switch (op) {
 		case newt_op_lt:
-			af = newt_bool_float(af < bf);
+			ret = newt_bool_to_poly(af < bf);
 			break;
 		case newt_op_gt:
-			af = newt_bool_float(af > bf);
+			ret = newt_bool_to_poly(af > bf);
 			break;
 		case newt_op_le:
-			af = newt_bool_float(af <= bf);
+			ret = newt_bool_to_poly(af <= bf);
 			break;
 		case newt_op_ge:
-			af = newt_bool_float(af >= bf);
-			break;
-		case newt_op_plus:
-			af = af + bf;
-			break;
-		case newt_op_minus:
-			af = af - bf;
-			break;
-		case newt_op_times:
-			af = af * bf;
-			break;
-		case newt_op_divide:
-			af = af / bf;
-			break;
-		case newt_op_div:
-			af = (float) ((int32_t) af / (int32_t) bf);
-			break;
-		case newt_op_mod:
-			af = (float) ((int32_t) af % (int32_t) bf);
-			break;
-		case newt_op_pow:
-			af = powf(af, bf);
-			break;
-		case newt_op_land:
-			af = (float) ((int32_t) af & (int32_t) bf);
-			break;
-		case newt_op_lor:
-			af = (float) ((int32_t) af | (int32_t) bf);
-			break;
-		case newt_op_lxor:
-			af = (float) ((int32_t) af ^ (int32_t) bf);
+			ret = newt_bool_to_poly(af >= bf);
 			break;
 		default:
-			break;
+			switch (op) {
+			case newt_op_plus:
+				af = af + bf;
+				break;
+			case newt_op_minus:
+				af = af - bf;
+				break;
+			case newt_op_times:
+				af = af * bf;
+				break;
+			case newt_op_divide:
+				af = af / bf;
+				break;
+			case newt_op_div:
+				af = (float) ((int32_t) af / (int32_t) bf);
+				break;
+			case newt_op_mod:
+				af = (float) ((int32_t) af % (int32_t) bf);
+				break;
+			case newt_op_pow:
+				af = powf(af, bf);
+				break;
+			case newt_op_land:
+				af = (float) ((int32_t) af & (int32_t) bf);
+				break;
+			case newt_op_lor:
+				af = (float) ((int32_t) af | (int32_t) bf);
+				break;
+			case newt_op_lxor:
+				af = (float) ((int32_t) af ^ (int32_t) bf);
+				break;
+			default:
+				break;
+			}
+			ret = newt_float_to_poly(af);
 		}
-		ret = newt_float_to_poly(af);
 	} else {
 		switch (op) {
 		case newt_op_in:
@@ -539,11 +530,11 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 						break;
 					}
 				}
-				ret = newt_bool(found == (op == newt_op_in));
+				ret = newt_bool_to_poly(found == (op == newt_op_in));
 			}
 			if (newt_poly_type(a) == newt_string && newt_poly_type(b) == newt_string) {
 				found = strstr(newt_poly_to_string(b), newt_poly_to_string(a)) != NULL;
-				ret = newt_bool(found == (op == newt_op_in));
+				ret = newt_bool_to_poly(found == (op == newt_op_in));
 			}
 			break;
 		case newt_op_plus:
@@ -592,7 +583,7 @@ newt_unary(newt_op_t op, newt_poly_t a)
 {
 	switch (op) {
 	case newt_op_not:
-		return newt_bool(!newt_poly_true(a));
+		return newt_bool_to_poly(!newt_poly_true(a));
 	default:
 		break;
 	}

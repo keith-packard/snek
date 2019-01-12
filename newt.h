@@ -799,3 +799,10 @@ newt_poly_to_builtin(newt_poly_t a)
 {
 	return newt_builtins + (newt_poly_to_builtin_id(a) - 1);
 }
+
+static inline newt_poly_t
+newt_bool_to_poly(bool b)
+{
+	return b ? NEWT_ONE : NEWT_ZERO;
+}
+
