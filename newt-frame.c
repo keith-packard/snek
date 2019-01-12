@@ -46,14 +46,7 @@ newt_variable_lookup(bool globals, newt_id_t id, bool insert)
 	return v;
 }
 
-static void
-newt_frame_ensure_globals(void)
-{
-	if (!newt_globals)
-		newt_globals = newt_alloc(sizeof (newt_frame_t));
-}
-
-newt_variable_t *
+static newt_variable_t *
 newt_frame_lookup(newt_id_t id, bool insert)
 {
 	newt_variable_t	*v = NULL;
@@ -62,8 +55,8 @@ newt_frame_lookup(newt_id_t id, bool insert)
 		if (!newt_is_global(v->value))
 			return v;
 	}
-	if (insert)
-		newt_frame_ensure_globals();
+	if (insert && !newt_globals)
+		newt_globals = newt_alloc(sizeof (newt_frame_t));
 	if (newt_globals && (v = newt_variable_lookup(true, id, insert)))
 		return v;
 	return v;

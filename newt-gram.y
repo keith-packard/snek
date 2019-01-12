@@ -104,10 +104,10 @@ def		: DEF { nformal = 0; newt_code_add_op_offset(newt_op_line, $1); } NAME OP o
 				newt_poly_t	poly = newt_func_to_poly(func);
 
 				newt_poly_stash(poly);
-				newt_variable_t *var = newt_frame_lookup($3, true);
+				newt_poly_t *ref = newt_id_ref($3, true);
 				poly = newt_poly_fetch();
-				if (var)
-					var->value = poly;
+				if (ref)
+					*ref = poly;
 			}
 		;
 opt_params	: params

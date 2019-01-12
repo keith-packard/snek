@@ -390,9 +390,6 @@ extern newt_frame_t	*newt_frame;
 
 extern const newt_mem_t newt_variable_mem;
 
-newt_variable_t *
-newt_frame_lookup(newt_offset_t name, bool insert);
-
 bool
 newt_frame_mark_global(newt_offset_t name);
 
