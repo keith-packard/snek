@@ -618,19 +618,6 @@ newt_poly_to_soffset(newt_poly_t a)
 	return 0;
 }
 
-static int
-newt_len(newt_poly_t a)
-{
-	switch (newt_poly_type(a)) {
-	case newt_string:
-		return strlen(newt_poly_to_string(a));
-	case newt_list:
-		return newt_poly_to_list(a)->size;
-	default:
-		return 0;
-	}
-}
-
 static newt_poly_t
 newt_slice(newt_poly_t a, uint8_t bits)
 {
@@ -663,7 +650,7 @@ newt_slice(newt_poly_t a, uint8_t bits)
 	if (used_a)
 		a = newt_stack_pop();
 
-	slice.len = newt_len(a);
+	slice.len = newt_poly_len(a);
 
 	if (!newt_slice_canon(&slice))
 		return a;

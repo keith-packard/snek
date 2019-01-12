@@ -191,6 +191,19 @@ newt_poly_true(newt_poly_t a)
 }
 
 int
+newt_poly_len(newt_poly_t a)
+{
+	switch (newt_poly_type(a)) {
+	case newt_string:
+		return strlen(newt_poly_to_string(a));
+	case newt_list:
+		return newt_poly_to_list(a)->size;
+	default:
+		return 0;
+	}
+}
+
+int
 newt_null_size(void *addr)
 {
 	(void) addr;

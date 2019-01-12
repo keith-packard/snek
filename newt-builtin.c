@@ -17,14 +17,7 @@
 newt_poly_t
 newt_builtin_len(newt_poly_t a)
 {
-	switch (newt_poly_type(a)) {
-	case newt_string:
-		return newt_float_to_poly(strlen(newt_poly_to_string(a)));
-	case newt_list:
-		return newt_float_to_poly(newt_poly_to_list(a)->size);
-	default:
-		return NEWT_ONE;
-	}
+	return newt_float_to_poly(newt_poly_len(a));
 }
 
 newt_poly_t
