@@ -43,7 +43,7 @@ newt_name_id_builtin(char *name, bool *keyword)
 	if (strcmp(name, (char *) &newt_builtin_names[l+1]) == 0) {
 		newt_id_t id = newt_builtin_names[l];
 		if ((*keyword = ((id & 0x80) != 0)))
-			id = (id & ~0x80) + 256;
+			id = (id & ~0x80);
 		return id;
 	}
 	return 0;

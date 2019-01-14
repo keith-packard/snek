@@ -65,7 +65,7 @@ newt_op_extra_size(newt_op_t op)
 //#define DEBUG_EXEC
 #if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
 
-static const char *newt_op_names[] = {
+const char * const newt_op_names[] = {
 	[newt_op_plus] = "plus",
 	[newt_op_minus] = "minus",
 	[newt_op_times] = "times",
@@ -234,11 +234,12 @@ newt_code_dump(newt_code_t *code)
 
 static uint8_t		*compile;
 static newt_offset_t	compile_size, compile_alloc;
+static newt_offset_t	compile_prev, compile_prev_prev;
 
 #define COMPILE_INC	32
 
 static newt_offset_t
-compile_extend(newt_offset_t n, void *data)
+compile_extend(newt_offset_t n, void *data, bool insn)
 {
 	newt_offset_t start = compile_size;
 
@@ -252,6 +253,10 @@ compile_extend(newt_offset_t n, void *data)
 	}
 	if (data)
 		memcpy(compile + compile_size, data, n);
+	if (insn) {
+		compile_prev_prev = compile_prev;
+		compile_prev = compile_size;
+	}
 	compile_size += n;
 	return start;
 }
@@ -263,16 +268,41 @@ newt_code_current(void)
 }
 
 newt_offset_t
+newt_code_prev_insn(void)
+{
+	return compile_prev;
+}
+
+newt_offset_t
+newt_code_prev_prev_insn(void)
+{
+	return compile_prev_prev;
+}
+
+uint8_t *
+newt_code_at(newt_offset_t offset)
+{
+	return compile + offset;
+}
+
+void
+newt_code_delete_prev(void)
+{
+	compile_size = compile_prev;
+	compile_prev = compile_prev_prev;
+}
+
+newt_offset_t
 newt_code_add_op(newt_op_t op)
 {
-	return compile_extend(1, &op);
+	return compile_extend(1, &op, true);
 }
 
 newt_offset_t
 newt_code_add_op_id(newt_op_t op, newt_id_t id)
 {
-	newt_offset_t offset = compile_extend(1, &op);
-	compile_extend(sizeof (newt_id_t), &id);
+	newt_offset_t offset = compile_extend(1, &op, true);
+	compile_extend(sizeof (newt_id_t), &id, false);
 	return offset;
 }
 
@@ -282,8 +312,8 @@ newt_code_add_number(float number)
 	newt_op_t op = newt_op_num;
 	newt_offset_t offset;
 
-	offset = compile_extend(1, &op);
-	compile_extend(sizeof(float), &number);
+	offset = compile_extend(1, &op, true);
+	compile_extend(sizeof(float), &number, false);
 	return offset;
 }
 
@@ -295,8 +325,8 @@ newt_code_add_string(char *string)
 	newt_offset_t s;
 
 	newt_poly_stash(newt_string_to_poly(string));
-	offset = compile_extend(1, &op);
-	strpos = compile_extend(sizeof (newt_offset_t), NULL);
+	offset = compile_extend(1, &op, true);
+	strpos = compile_extend(sizeof (newt_offset_t), NULL, false);
 	string = newt_poly_to_string(newt_poly_fetch());
 	s = newt_pool_offset(string);
 	memcpy(compile + strpos, &s, sizeof (newt_offset_t));
@@ -308,8 +338,8 @@ newt_code_add_op_offset(newt_op_t op, newt_offset_t o)
 {
 	newt_offset_t offset;
 
-	offset = compile_extend(1, &op);
-	compile_extend(sizeof (newt_offset_t), &o);
+	offset = compile_extend(1, &op, true);
+	compile_extend(sizeof (newt_offset_t), &o, false);
 	return offset;
 }
 
@@ -319,10 +349,10 @@ newt_code_add_forward(newt_forward_t forward)
 	newt_op_t op = newt_op_forward;
 	newt_offset_t offset;
 
-	offset = compile_extend(1, &op);
-	compile_extend(sizeof (newt_forward_t), &forward);
+	offset = compile_extend(1, &op, true);
+	compile_extend(sizeof (newt_forward_t), &forward, false);
 	if (sizeof (newt_forward_t) < sizeof (newt_offset_t))
-		compile_extend(sizeof (newt_offset_t) - sizeof (newt_forward_t), NULL);
+		compile_extend(sizeof (newt_offset_t) - sizeof (newt_forward_t), NULL, false);
 	return offset;
 }
 
@@ -332,8 +362,8 @@ newt_code_add_call(newt_offset_t nactual)
 	newt_offset_t	offset;
 	newt_op_t	op = newt_op_call;
 
-	offset = compile_extend(1, &op);
-	compile_extend(sizeof (newt_offset_t), &nactual);
+	offset = compile_extend(1, &op, true);
+	compile_extend(sizeof (newt_offset_t), &nactual, false);
 	return offset;
 }
 
@@ -351,7 +381,7 @@ newt_code_add_slice(bool has_start, bool has_end, bool has_stride)
 	insn[1] = (bit(has_start, NEWT_OP_SLICE_START) |
 		   bit(has_end,   NEWT_OP_SLICE_END) |
 		   bit(has_stride, NEWT_OP_SLICE_STRIDE));
-	return compile_extend(2, insn);
+	return compile_extend(2, insn, true);
 }
 
 newt_offset_t
@@ -360,9 +390,9 @@ newt_code_add_range_start(newt_id_t id, newt_offset_t nactual)
 	newt_op_t op = newt_op_range_start;
 	newt_offset_t offset;
 
-	offset = compile_extend(1, &op);
-	compile_extend(sizeof (newt_id_t), &id);
-	compile_extend(sizeof (newt_offset_t), &nactual);
+	offset = compile_extend(1, &op, true);
+	compile_extend(sizeof (newt_id_t), &id, false);
+	compile_extend(sizeof (newt_offset_t), &nactual, false);
 	return offset;
 }
 

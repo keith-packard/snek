@@ -20,14 +20,16 @@ int newt_want_indent;
 char *newt_file;
 int newt_line;
 
-static int newt_lex_line = 1;
-static bool newt_lex_newline = true;
-static bool newt_lex_exdent = false;
-static int newt_lex_indent = 0;
+int newt_ignore_nl;
+
+static int newt_lex_line;
+static bool newt_lex_midline;
+static bool newt_lex_exdent;
+static int newt_lex_indent;
 
 #define NEWT_MAX_TOKEN	63
 
-char yytext[NEWT_MAX_TOKEN + 1];
+char newt_lex_text[NEWT_MAX_TOKEN + 1];
 int yyleng;
 
 //#define DEBUG
@@ -37,8 +39,8 @@ int yyleng;
 #define RETURN(token) return(token)
 #endif
 
-#define RETURN_OP(_op, ret) do { yylval.op = (_op); RETURN (ret); } while(0)
-#define RETURN_INTS(_ints, ret) do { yylval.ints = (_ints); RETURN (ret); } while(0)
+#define RETURN_OP(_op, ret) do { newt_token_val.op = (_op); RETURN (ret); } while(0)
+#define RETURN_INTS(_ints, ret) do { newt_token_val.ints = (_ints); RETURN (ret); } while(0)
 
 static char ungetbuf[5];
 static int ungetcount;
@@ -71,7 +73,7 @@ check_equal(int plain_token, newt_op_t plain_op, newt_op_t assign_op)
 		RETURN_OP(plain_op, plain_token);
 	}
 	RETURN_OP(assign_op, ASSIGN);
-	yylval.op = assign_op;
+	newt_token_val.op = assign_op;
 	RETURN(ASSIGN);
 }
 
@@ -117,7 +119,7 @@ static void
 start_token(void)
 {
 	yyleng = 0;
-	yytext[0] = '\0';
+	newt_lex_text[0] = '\0';
 }
 
 static bool
@@ -125,8 +127,8 @@ add_token(int c)
 {
 	if (yyleng == NEWT_MAX_TOKEN)
 		return false;
-	yytext[yyleng++] = c;
-	yytext[yyleng] = '\0';
+	newt_lex_text[yyleng++] = c;
+	newt_lex_text[yyleng] = '\0';
 	return true;
 }
 
@@ -168,7 +170,7 @@ number(int c)
 	start_token();
 	for (;;) {
 		if (!add_token(c))
-			RETURN(INVALID);
+			RETURN(TOKEN_NONE);
 		c = lexchar();
 		t = cclass(c);
 		switch (n) {
@@ -222,7 +224,7 @@ number(int c)
 	}
 
 	unlexchar(c);
-	yylval.number = strtof(yytext, NULL);
+	newt_token_val.number = strtof(newt_lex_text, NULL);
 	RETURN(NUMBER);
 }
 
@@ -237,8 +239,8 @@ string(int q)
 		c = lexchar();
 		if (c == q) {
 			char *ret = newt_alloc(yyleng + 1);
-			strcpy(ret, yytext);
-			yylval.string = ret;
+			strcpy(ret, newt_lex_text);
+			newt_token_val.string = ret;
 			RETURN(STRING);
 		}
 		if (c == '\\') {
@@ -248,7 +250,7 @@ string(int q)
 				c = '\n';
 				break;
 			case 't':
-				c = '\n';
+				c = '\t';
 				break;
 			default:
 				if (is_octal(c)) {
@@ -265,7 +267,7 @@ string(int q)
 			}
 		}
 		if (!add_token(c))
-			RETURN(INVALID);
+			RETURN(TOKEN_NONE);
 	}
 }
 
@@ -287,25 +289,26 @@ trailing(char *next, newt_op_t without_op, int without, newt_op_t with_op, int w
 			while (n > next)
 				unlexchar(*--n);
 			yyleng = len;
-			yytext[len] = '\0';
+			newt_lex_text[len] = '\0';
 			RETURN_OP(without_op, without);
 		}
-		if (*++n == '\0')
+		if (*++n == '\0') {
 			RETURN_OP(with_op, with);
+		}
 		c = lexchar();
 	}
 }
 
 int
-yylex(void)
+newt_lex(void)
 {
 	int c, n;
 
 	for (;;) {
 		/* At begining of line, deal with indent changes */
-		if (newt_lex_newline) {
+		if (!newt_lex_midline) {
 
-			/* Find a non-blank, non-comment line */
+			/* Find a non-comment line */
 			for (;;) {
 				newt_lex_indent = 0;
 				while ((c = lexchar()) == ' ')
@@ -319,20 +322,18 @@ yylex(void)
 				if (c == '#') {
 					if (!comment())
 						RETURN(0);
-				} else if (c == '\n') {
-					++newt_lex_line;
 				} else {
 					break;
 				}
 			}
 
-			newt_lex_newline = false;
+			newt_lex_midline = true;
 
 			if (c != EOF)
 				unlexchar(c);
 
 			if (newt_lex_indent > newt_current_indent) {
-				yylval.ints = newt_current_indent;
+				newt_token_val.ints = newt_current_indent;
 				newt_current_indent = newt_lex_indent;
 				RETURN(INDENT);
 			}
@@ -347,7 +348,7 @@ yylex(void)
 
 		if (newt_lex_exdent) {
 			if (newt_lex_indent < newt_current_indent) {
-				yylval.ints = newt_lex_indent;
+				newt_token_val.ints = newt_lex_indent;
 				RETURN(EXDENT);
 			}
 			newt_lex_exdent = false;
@@ -360,11 +361,13 @@ yylex(void)
 
 		switch (c) {
 		case EOF:
-			RETURN(0);
+			RETURN(END);
 		case '\n':
 			++newt_lex_line;
-			newt_lex_newline = true;
+			newt_lex_midline = false;
 			newt_line = newt_lex_line;
+			if (newt_ignore_nl)
+				continue;
 			RETURN_INTS(newt_line, NL);
 		case ':':
 			RETURN(COLON);
@@ -381,9 +384,9 @@ yylex(void)
 		case ']':
 			RETURN(CS);
 		case '+':
-			return check_equal(PLUS, newt_op_plus, newt_op_assign_plus);
+			return check_equal(ADDOP, newt_op_plus, newt_op_assign_plus);
 		case '-':
-			return check_equal(MINUS, newt_op_minus, newt_op_assign_minus);
+			return check_equal(ADDOP, newt_op_minus, newt_op_assign_minus);
 		case '*':
 			n = lexchar();
 			if (n == '*') {
@@ -391,17 +394,17 @@ yylex(void)
 				return check_equal(POW, newt_op_pow, newt_op_assign_pow);
 			}
 			unlexchar(n);
-			return check_equal(TIMES, newt_op_times, newt_op_assign_times);
+			return check_equal(MULOP, newt_op_times, newt_op_assign_times);
 		case '/':
 			n = lexchar();
 			if (n == '/') {
 				add_token(n);
-				return check_equal(DIV, newt_op_div, newt_op_assign_div);
+				return check_equal(MULOP, newt_op_div, newt_op_assign_div);
 			}
 			unlexchar(n);
-			return check_equal(DIVIDE, newt_op_divide, newt_op_assign_divide);
+			return check_equal(MULOP, newt_op_divide, newt_op_assign_divide);
 		case '%':
-			return check_equal(MOD, newt_op_mod, newt_op_assign_mod);
+			return check_equal(MULOP, newt_op_mod, newt_op_assign_mod);
 		case '&':
 			return check_equal(LAND, newt_op_land, newt_op_assign_land);
 		case '|':
@@ -414,19 +417,19 @@ yylex(void)
 			n = lexchar();
 			if (n == '<') {
 				add_token(n);
-				return check_equal(LSHIFT, newt_op_lshift, newt_op_assign_lshift);
+				return check_equal(SHIFT, newt_op_lshift, newt_op_assign_lshift);
 			}
 			if (n == '=') {
 				add_token(n);
-				RETURN_OP(newt_op_le, LE);
+				RETURN_OP(newt_op_le, CMPOP);
 			}
 			unlexchar(n);
-			RETURN_OP(newt_op_lt, LT);
+			RETURN_OP(newt_op_lt, CMPOP);
 		case '=':
 			n = lexchar();
 			if (n == '=') {
 				add_token(n);
-				RETURN_OP(newt_op_eq, EQ);
+				RETURN_OP(newt_op_eq, CMPOP);
 			}
 			unlexchar(n);
 			RETURN_OP(newt_op_assign, ASSIGN);
@@ -434,21 +437,21 @@ yylex(void)
 			n = lexchar();
 			if (n == '>') {
 				add_token(n);
-				return check_equal(RSHIFT, newt_op_rshift, newt_op_assign_rshift);
+				return check_equal(SHIFT, newt_op_rshift, newt_op_assign_rshift);
 			}
 			if (n == '=') {
 				add_token(n);
-				RETURN_OP(newt_op_ge, GE);
+				RETURN_OP(newt_op_ge, CMPOP);
 			}
 			unlexchar(n);
-			RETURN_OP(newt_op_gt, GT);
+			RETURN_OP(newt_op_gt, CMPOP);
 		case '"':
 		case '\'':
 			return string(c);
 		case '#':
 			if (!comment())
-				RETURN(EOF);
-			newt_lex_newline = true;
+				RETURN(END);
+			newt_lex_midline = false;
 			continue;
 		case ' ':
 			continue;
@@ -458,42 +461,42 @@ yylex(void)
 			return number(c);
 
 		if (!is_name(c, true))
-			RETURN(INVALID);
+			RETURN(TOKEN_NONE);
 
 		start_token();
 		do {
 			if (!add_token(c))
-				RETURN(INVALID);
+				RETURN(TOKEN_NONE);
 			c = lexchar();
 		} while (is_name(c, false));
 		unlexchar(c);
 
-		if (!strcmp(yytext, "True")) {
-			yylval.number = 1.0;
+		if (!strcmp(newt_lex_text, "True")) {
+			newt_token_val.number = 1.0;
 			RETURN(NUMBER);
 		}
 
-		if (!strcmp(yytext, "False")) {
-			yylval.number = 0.0;
+		if (!strcmp(newt_lex_text, "False")) {
+			newt_token_val.number = 0.0;
 			RETURN(NUMBER);
 		}
 
 		bool keyword;
-		newt_id_t id = newt_name_id(yytext, &keyword);
+		newt_id_t id = newt_name_id(newt_lex_text, &keyword);
 
 		if (keyword) {
-			yylval.ints = newt_lex_line;
+			newt_token_val.ints = newt_lex_line;
 			switch (id) {
 			case IS:
-				return trailing("not", newt_op_is, IS, newt_op_is_not, IS_NOT);
+				return trailing("not", newt_op_is, CMPOP, newt_op_is_not, CMPOP);
 			case NOT:
-				return trailing("in", newt_op_not, NOT, newt_op_not_in, NOT_IN);
+				return trailing("in", newt_op_not, NOT, newt_op_not_in, CMPOP);
 			default:
 				return id;
 			}
 		}
 
-		yylval.id = id;
+		newt_token_val.id = id;
 		RETURN(NAME);
 	}
 }

@@ -67,7 +67,7 @@ def dump_names(fp):
     print("static const uint8_t newt_builtin_names[] = {", file=fp)
     for name in sorted(builtins):
         if name.keyword:
-            print("\t(%s - 256) | 0x80, " % name.keyword, end='', file=fp)
+            print("\t%s | 0x80, " % name.keyword, end='', file=fp)
         else:
             print("\t%d, " % name.id, end='', file=fp)
         for c in name.name:

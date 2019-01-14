@@ -15,28 +15,8 @@
 #include "newt.h"
 
 int
-yywrap(void)
-{
-    return 1;
-}
-
-extern char *yytext;
-extern int yyleng;
-
-void
-yyerror (const char *msg)
-{
-	newt_error("%s at \"%S\"\n", msg, yyleng, yyleng, yytext);
-}
-
-int
 main (int argc, char **argv)
 {
-#if YYDEBUG
-	extern int yydebug;
-
-	yydebug = 1;
-#endif
 	if (argc > 1) {
 		freopen(argv[1], "r", stdin);
 		newt_file = argv[1];
@@ -44,8 +24,5 @@ main (int argc, char **argv)
 		newt_file = "<stdin>";
 		newt_print_vals = true;
 	}
-	newt_line = 1;
-	if(yyparse())
-		return 2;
-	return 0;
+	return newt_parse() == newt_parse_success ? 0 : 1;
 }

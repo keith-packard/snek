@@ -281,11 +281,25 @@ extern uint8_t	newt_pool[NEWT_POOL + NEWT_POOL_EXTRA] __attribute__((aligned(NEW
 
 #include "newt-gram.h"
 
+typedef union {
+	bool		bools;
+	int		ints;
+	newt_op_t	op;
+	newt_offset_t	offset;
+	newt_id_t	id;
+	float		number;
+	char		*string;
+} newt_token_val_t;
+
+extern newt_token_val_t	newt_token_val;
+
 /* newt-builtin.c */
 
 extern const newt_mem_t newt_builtin_mem;
 
 /* newt-code.c */
+
+extern const char * const newt_op_names[];
 
 #define NEWT_OP_SLICE_START	1
 #define NEWT_OP_SLICE_END	2
@@ -293,6 +307,18 @@ extern const newt_mem_t newt_builtin_mem;
 
 newt_offset_t
 newt_code_current(void);
+
+newt_offset_t
+newt_code_prev_insn(void);
+
+newt_offset_t
+newt_code_prev_prev_insn(void);
+
+uint8_t *
+newt_code_at(newt_offset_t offset);
+
+void
+newt_code_delete_prev(void);
 
 newt_offset_t
 newt_code_add_op(newt_op_t op);
@@ -426,6 +452,8 @@ extern bool newt_print_vals;
 extern int newt_want_indent, newt_current_indent;
 extern char *newt_file;
 extern int newt_line;
+extern int newt_ignore_nl;
+extern char newt_lex_text[];
 
 /* newt-list.c */
 
@@ -449,15 +477,10 @@ newt_list_slice(newt_list_t *list, newt_slice_t *slice);
 
 extern const newt_mem_t newt_list_mem;
 
-/* newt-main.c */
-int
-yylex(void);
-
-void
-yyerror (const char *msg);
+/* newt-lex.c */
 
 int
-yywrap(void);
+newt_lex(void);
 
 /* newt-memory.c */
 
@@ -537,6 +560,16 @@ newt_name_string(newt_id_t id);
 
 extern const newt_mem_t newt_name_mem;
 extern newt_name_t *newt_names;
+
+/* newt-parse.c */
+
+typedef enum {
+	newt_parse_success,
+	newt_parse_error,
+} newt_parse_ret_t;
+
+newt_parse_ret_t
+newt_parse(void);
 
 /* newt-poly.c */
 

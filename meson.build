@@ -5,22 +5,17 @@ project('newt', 'c',
 
 add_project_arguments(['-D_DEFAULT_SOURCE'], language: 'c')
 
-flex = find_program('flex')
-bison = find_program('bison')
+lola = find_program('lola')
 
 cc = meson.get_compiler('c')
 
 m_dep = cc.find_library('m', required : false)
 
-lgen = generator(flex,
-		 output : '@PLAINNAME@.c',
+lgen = generator(lola,
+		 output : '@BASENAME@.h',
 		 arguments : ['-o', '@OUTPUT@', '@INPUT@'])
 
-pgen = generator(bison,
-		 output : ['@BASENAME@.c', '@BASENAME@.h'],
-		 arguments : ['-v', '@INPUT@', '--defines=@OUTPUT1@', '--output=@OUTPUT0@'])
-
-pfiles = pgen.process('newt-gram.y')
+lfiles = lgen.process('newt-gram.ll')
 
 conf_data = configuration_data()
 configure_file(output : 'config.h',
@@ -53,6 +48,7 @@ sources = [
   'newt-main.c',
   'newt-memory.c',
   'newt-name.c',
+  'newt-parse.c',
   'newt-poly.c',
   'newt-posix.c',
   'newt-string.c',
@@ -60,7 +56,7 @@ sources = [
 ]
 
 newt = executable('newt',
-		  sources, pfiles,
+		  sources, lfiles,
 		  dependencies: [m_dep]
 		 )
 
