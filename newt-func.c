@@ -34,7 +34,7 @@ bool
 newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt_offset_t ip)
 {
 	if (nactual != func->nformal) {
-		newt_error("wrong number of args: wanted %d, got %d\n", func->nformal, nactual);
+		newt_error("wrong number of args: wanted %d, got %d", func->nformal, nactual);
 		return false;
 	}
 

@@ -61,6 +61,7 @@ newt_error(char *format, ...)
 		} else
 			putc(c, stderr);
 	}
+	putc('\n', stderr);
 	va_end(args);
 }
 

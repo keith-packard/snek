@@ -547,7 +547,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 				bl = newt_poly_to_list(b);
 
 				if (al->readonly != bl->readonly) {
-					newt_error("can't mix tuple with list\n");
+					newt_error("can't mix tuple with list");
 				} else {
 					if (inplace)
 						al = newt_list_append(al, bl);
@@ -572,7 +572,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 		}
 	}
 	if (newt_is_null(ret)) {
-		newt_error("type mismatch: %p %p\n", a, b);
+		newt_error("type mismatch: %p %p", a, b);
 		return NEWT_ZERO;
 	}
 	return ret;
@@ -673,22 +673,22 @@ newt_assign(newt_id_t id, newt_op_t op, newt_poly_t value)
 		newt_poly_t ip = newt_stack_pop();
 		newt_poly_t lp = newt_stack_pop();
 		if (newt_poly_type(lp) != newt_list) {
-			newt_error("not a list: %p\n", lp);
+			newt_error("not a list: %p", lp);
 			return;
 		}
 		if (newt_poly_type(ip) != newt_float) {
-			newt_error("not a number: %p\n", ip);
+			newt_error("not a number: %p", ip);
 			return;
 		}
 		newt_list_t	*l = newt_poly_to_list(lp);
 		float		f = newt_poly_to_float(ip);
 
 		if (l->readonly) {
-			newt_error("cannot assign to tuple\n");
+			newt_error("cannot assign to tuple");
 			return;
 		}
 		if (f < 0 || l->size <= f) {
-			newt_error("list index out of range: %p\n", ip);
+			newt_error("list index out of range: %p", ip);
 			return;
 		}
 		ref = &newt_list_data(l)[(newt_offset_t) f];
@@ -708,7 +708,7 @@ newt_call_builtin(const newt_builtin_t *builtin, newt_offset_t nactual)
 	if (builtin->nformal < 0) {
 		ret = (*builtin->funcv)(nactual, actuals);
 	} else if (nactual != builtin->nformal) {
-		newt_error("wrong number of args: wanted %d, got %d\n", builtin->nformal, nactual);
+		newt_error("wrong number of args: wanted %d, got %d", builtin->nformal, nactual);
 	} else {
 		switch (builtin->nformal) {
 		case 0:
@@ -809,7 +809,7 @@ newt_code_run(newt_code_t *code_in)
 					a = newt_builtin_id_to_poly(id);
 					break;
 				}
-				newt_error("undefined: %i\n", id);
+				newt_error("undefined: %i", id);
 				break;
 			case newt_op_uminus:
 			case newt_op_not:
@@ -858,7 +858,7 @@ newt_code_run(newt_code_t *code_in)
 					a = newt_call_builtin(newt_poly_to_builtin(a), o);
 					break;
 				default:
-					newt_error("not a func: %p\n", a);
+					newt_error("not a func: %p", a);
 					newt_stack_drop(o + 1);
 					break;
 				}
