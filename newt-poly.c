@@ -39,7 +39,7 @@ newt_poly_print(FILE *file, newt_poly_t poly)
 		fprintf(file, "\"%s\"", newt_poly_to_string(poly));
 		break;
 	case newt_func:
-		fprintf(file, "<function at %d>", newt_poly_to_offset(poly));
+		fprintf(file, "<function at %u>", newt_poly_to_offset(poly));
 		break;
 	case newt_builtin:
 		fprintf(file, "<builtin %s>", newt_name_string(newt_poly_to_builtin_id(poly)));
@@ -50,8 +50,10 @@ newt_poly_print(FILE *file, newt_poly_t poly)
 		newt_poly_t *data = newt_pool_ref(list->data);
 		for (newt_offset_t o = 0; o < list->size; o++) {
 			if (o)
-				fprintf(file, ", ");
+				fprintf(file, " ");
 			newt_poly_print(file, data[o]);
+			if (o < list->size - 1 || (list->size == 1 && list->readonly))
+				fprintf(file, ",");
 		}
 		putc(list->readonly ? ')' : ']', file);
 		break;
