@@ -704,7 +704,7 @@ newt_offset_to_poly(uint32_t offset, newt_type_t type)
 	return (newt_poly_t) { .u = 0xff000000 | offset | type };
 }
 
-static inline uint32_t
+static inline newt_offset_t
 newt_poly_to_offset(newt_poly_t v)
 {
 	return v.u & NEWT_OFFSET_MASK;
