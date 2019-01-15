@@ -161,6 +161,8 @@ newt_parse(void)
 			return newt_parse_error;
 		case parse_return_syntax:
 			newt_error("Syntax error at \"%s\".", newt_lex_text);
+			skip_to_nl = true;
+			break;
 		default:
 			skip_to_nl = true;
 			break;
