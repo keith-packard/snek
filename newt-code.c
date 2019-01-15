@@ -207,9 +207,9 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 	case newt_op_range_start:
 		memcpy(&id, &code->code[ip], sizeof (newt_id_t));
 		if (id)
-			printf("%s\n", newt_name_string(id));
+			printf("%s", newt_name_string(id));
 		else
-			printf("<array>\n");
+			printf("<array>");
 		memcpy(&o, &code->code[ip + sizeof (newt_id_t)], sizeof (newt_offset_t));
 		printf(", %d\n", o);
 		break;
