@@ -83,6 +83,8 @@ def dump_builtins(fp):
         print("%s(" % name.func_name(), file=fp, end='')
         if name.nformal == -1:
             print("int nactuals, ...", end='', file=fp)
+        elif name.nformal == 0:
+            print("void", end='', file=fp)
         else:
             for a in range(name.nformal):
                 print("newt_poly_t a%d" % a, end='', file=fp)
