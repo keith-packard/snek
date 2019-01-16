@@ -27,7 +27,7 @@ struct newt_root {
 	void			**addr;
 };
 
-#define NEWT_NUM_STASH	6
+#define NEWT_NUM_STASH	3
 static newt_poly_t		stash_poly[NEWT_NUM_STASH];
 static int			stash_poly_ptr;
 static newt_name_t		*stash_name;
@@ -78,14 +78,6 @@ static const struct newt_root	newt_root[] = {
 		.type = NULL,
 		.addr = (void **) (void *) &stash_poly[2]
 	},
-	{
-		.type = NULL,
-		.addr = (void **) (void *) &stash_poly[3]
-	},
-	{
-		.type = NULL,
-		.addr = (void **) (void *) &stash_poly[4]
-	},
 };
 
 #define NEWT_ROOT	(sizeof (newt_root) / sizeof (newt_root[0]))
@@ -93,14 +85,12 @@ static const struct newt_root	newt_root[] = {
 #define NEWT_BUSY_SIZE		((NEWT_POOL + 31) / 32)
 #define NEWT_NCHUNK_EST(pool)	((pool) / 64)
 
-static int	newt_printing, newt_print_cleared;
-
 struct newt_chunk {
 	newt_offset_t		old_offset;
-//	union {
+	union {
 		newt_offset_t	size;
 		newt_offset_t	new_offset;
-//	};
+	};
 };
 
 #ifdef NEWT_DYNAMIC
@@ -330,11 +320,6 @@ newt_collect(uint8_t style)
 	if (style == NEWT_COLLECT_FULL)
 		newt_collect_counts = 0;
 
-#if 0
-	/* Clear references to all caches */
-	for (i = 0; i < NEWT_CACHE; i++)
-		*newt_cache[i] = NULL;
-#endif
 	if (style == NEWT_COLLECT_FULL) {
 		chunk_low = top = 0;
 	} else {
@@ -674,60 +659,4 @@ newt_code_fetch(void)
 	code = stash_code;
 	stash_code = 0;
 	return code;
-}
-
-int
-newt_print_mark_addr(void *addr)
-{
-	int	offset;
-
-#if DBG_MEM
-	if (newt_collecting)
-		abort();
-#endif
-
-	if (!newt_is_pool_addr(addr))
-		return 0;
-
-	if (!newt_print_cleared) {
-		newt_print_cleared = 1;
-		memset(newt_busy, '\0', NEWT_BUSY_SIZE);
-	}
-	offset = pool_offset(addr);
-	if (busy(newt_busy, offset))
-		return 1;
-	mark(newt_busy, offset);
-	return 0;
-}
-
-void
-newt_print_clear_addr(void *addr)
-{
-	int	offset;
-
-	if (!newt_is_pool_addr(addr))
-		return;
-
-	if (!newt_print_cleared)
-		return;
-	offset = pool_offset(addr);
-	clear(newt_busy, offset);
-}
-
-/* Notes that printing has started */
-void
-newt_print_start(void)
-{
-	newt_printing++;
-}
-
-/* Notes that printing has ended. Returns 1 if printing is still going on */
-int
-newt_print_stop(void)
-{
-	newt_printing--;
-	if (newt_printing != 0)
-		return 1;
-	newt_print_cleared = 0;
-	return 0;
 }
