@@ -1073,7 +1073,7 @@ const newt_mem_t newt_code_mem = {
 	.size = newt_code_size,
 	.mark = newt_code_mark,
 	.move = newt_code_move,
-	.name = "code",
+	NEWT_MEM_DECLARE_NAME("code")
 };
 
 static int
@@ -1099,5 +1099,5 @@ const newt_mem_t newt_compile_mem = {
 	.size = newt_compile_size,
 	.mark = newt_compile_mark,
 	.move = newt_compile_move,
-	.name = "compile",
+	NEWT_MEM_DECLARE_NAME("compile")
 };

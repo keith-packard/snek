@@ -88,5 +88,5 @@ const newt_mem_t newt_func_mem = {
 	.size = newt_func_size,
 	.mark = newt_func_mark,
 	.move = newt_func_move,
-	.name = "func"
+	NEWT_MEM_DECLARE_NAME("func")
 };

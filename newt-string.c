@@ -146,5 +146,5 @@ const newt_mem_t newt_string_mem = {
 	.size = newt_string_size,
 	.mark = newt_null_mark,
 	.move = newt_null_move,
-	.name = "string"
+	NEWT_MEM_DECLARE_NAME("string")
 };

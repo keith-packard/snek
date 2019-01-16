@@ -176,5 +176,5 @@ const newt_mem_t newt_list_mem = {
 	.size = newt_list_size,
 	.mark = newt_list_mark,
 	.move = newt_list_move,
-	.name = "list",
+	NEWT_MEM_DECLARE_NAME("list")
 };

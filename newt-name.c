@@ -144,11 +144,12 @@ const newt_mem_t newt_name_mem = {
 	.size = newt_name_size,
 	.mark = newt_name_mark,
 	.move = newt_name_move,
-	.name = "name"
+	NEWT_MEM_DECLARE_NAME("name")
 };
 
 const newt_mem_t newt_builtin_mem = {
 	.size = newt_null_size,
 	.mark = newt_null_mark,
-	.move = newt_null_move
+	.move = newt_null_move,
+	NEWT_MEM_DECLARE_NAME("builtin")
 };

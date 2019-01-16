@@ -148,8 +148,16 @@ typedef struct newt_mem {
 	int	(*size)(void *addr);
 	void	(*mark)(void *addr);
 	void	(*move)(void *addr);
+#ifndef NEWT_MEM_EXCLUDE_NAME
 	char	name[];
+#endif
 } newt_mem_t;
+
+#ifdef NEWT_MEM_EXCLUDE_NAME
+#define NEWT_MEM_DECLARE_NAME(_name)
+#else
+#define NEWT_MEM_DECLARE_NAME(_name)	.name = _name,
+#endif
 
 typedef struct newt_list {
 	newt_offset_t	size;

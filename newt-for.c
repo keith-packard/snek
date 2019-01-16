@@ -128,7 +128,7 @@ const newt_mem_t newt_range_mem = {
 	.size = newt_range_size,
 	.mark = newt_range_mark,
 	.move = newt_range_move,
-	.name = "range",
+	NEWT_MEM_DECLARE_NAME("range")
 };
 
 newt_in_t *newt_ins;
@@ -245,5 +245,5 @@ const newt_mem_t newt_in_mem = {
 	.size = newt_in_size,
 	.mark = newt_in_mark,
 	.move = newt_in_move,
-	.name = "in",
+	NEWT_MEM_DECLARE_NAME("in")
 };

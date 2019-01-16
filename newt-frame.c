@@ -166,7 +166,7 @@ const newt_mem_t newt_variable_mem = {
 	.size = newt_variable_size,
 	.mark = newt_variable_mark,
 	.move = newt_variable_move,
-	.name = "variable"
+	NEWT_MEM_DECLARE_NAME("variable")
 };
 
 static int
@@ -227,5 +227,5 @@ const newt_mem_t newt_frame_mem = {
 	.size = newt_frame_size,
 	.mark = newt_frame_mark,
 	.move = newt_frame_move,
-	.name = "frame"
+	NEWT_MEM_DECLARE_NAME("frame")
 };
