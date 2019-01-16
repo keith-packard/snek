@@ -249,7 +249,9 @@ extern const newt_builtin_t newt_builtins[];
 #define NEWT_ZERO	((newt_poly_t) { .f = 0.0f })
 #define NEWT_ONE	((newt_poly_t) { .f = 1.0f })
 
+#ifndef NEWT_STACK
 #define NEWT_STACK	256
+#endif
 extern newt_poly_t	newt_stack[NEWT_STACK];
 extern newt_offset_t	newt_stackp;
 
