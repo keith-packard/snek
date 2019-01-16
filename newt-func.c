@@ -38,7 +38,10 @@ newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt
 		return false;
 	}
 
-	if (!newt_frame_push(code, ip))
+	newt_poly_stash(newt_func_to_poly(func));
+	bool pushed = newt_frame_push(code, ip);
+	func = newt_poly_to_func(newt_poly_fetch());
+	if (!pushed)
 		return false;
 
 	/* Pop the arguments off the stack, assigning in reverse order */
