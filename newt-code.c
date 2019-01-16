@@ -232,7 +232,7 @@ newt_code_dump(newt_code_t *code)
 
 #endif
 
-static uint8_t		*compile;
+uint8_t			*newt_compile;
 static newt_offset_t	compile_size, compile_alloc;
 static newt_offset_t	compile_prev, compile_prev_prev;
 
@@ -247,12 +247,12 @@ compile_extend(newt_offset_t n, void *data, bool insn)
 		uint8_t *new_compile = newt_alloc(compile_alloc + COMPILE_INC);
 		if (!new_compile)
 			return 0xffff;
-		memcpy(new_compile, compile, compile_size);
+		memcpy(new_compile, newt_compile, compile_size);
 		compile_alloc += COMPILE_INC;
-		compile = new_compile;
+		newt_compile = new_compile;
 	}
 	if (data)
-		memcpy(compile + compile_size, data, n);
+		memcpy(newt_compile + compile_size, data, n);
 	if (insn) {
 		compile_prev_prev = compile_prev;
 		compile_prev = compile_size;
@@ -282,7 +282,7 @@ newt_code_prev_prev_insn(void)
 uint8_t *
 newt_code_at(newt_offset_t offset)
 {
-	return compile + offset;
+	return newt_compile + offset;
 }
 
 void
@@ -329,7 +329,7 @@ newt_code_add_string(char *string)
 	strpos = compile_extend(sizeof (newt_offset_t), NULL, false);
 	string = newt_poly_to_string(newt_poly_fetch());
 	s = newt_pool_offset(string);
-	memcpy(compile + strpos, &s, sizeof (newt_offset_t));
+	memcpy(newt_compile + strpos, &s, sizeof (newt_offset_t));
 	return offset;
 }
 
@@ -399,7 +399,7 @@ newt_code_add_range_start(newt_id_t id, newt_offset_t nactual)
 void
 newt_code_patch_branch(newt_offset_t branch, newt_offset_t target)
 {
-	memcpy(compile + branch + 1, &target, sizeof (newt_offset_t));
+	memcpy(newt_compile + branch + 1, &target, sizeof (newt_offset_t));
 }
 
 void
@@ -408,16 +408,16 @@ newt_code_patch_forward(newt_offset_t start, newt_forward_t forward, newt_offset
 	newt_offset_t ip = start;
 
 	while (ip < compile_size) {
-		newt_op_t op = compile[ip++];
+		newt_op_t op = newt_compile[ip++];
 		bool push = (op & newt_op_push) != 0;
 		newt_forward_t f;
 		op &= ~newt_op_push;
 		switch (op) {
 		case newt_op_forward:
-			memcpy(&f, &compile[ip], sizeof (newt_forward_t));
+			memcpy(&f, &newt_compile[ip], sizeof (newt_forward_t));
 			if (f == forward) {
-				compile[ip-1] = newt_op_branch | (push ? newt_op_push : 0);
-				memcpy(&compile[ip], &target, sizeof(newt_offset_t));
+				newt_compile[ip-1] = newt_op_branch | (push ? newt_op_push : 0);
+				memcpy(&newt_compile[ip], &target, sizeof(newt_offset_t));
 			}
 			break;
 		default:
@@ -430,7 +430,7 @@ newt_code_patch_forward(newt_offset_t start, newt_forward_t forward, newt_offset
 void
 newt_code_set_push(newt_offset_t offset)
 {
-	compile[offset] |= newt_op_push;
+	newt_compile[offset] |= newt_op_push;
 }
 
 newt_code_t *
@@ -440,7 +440,7 @@ newt_code_finish(void)
 	newt_code_t *code = newt_alloc(sizeof (newt_code_t) + compile_size);
 
 	if (code) {
-		memcpy(&code->code, compile, compile_size);
+		memcpy(&code->code, newt_compile, compile_size);
 		code->size = compile_size;
 #ifdef DEBUG_COMPILE
 		newt_code_dump(code);
