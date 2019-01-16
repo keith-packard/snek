@@ -63,6 +63,10 @@ static const struct newt_root	newt_root[] = {
 		.addr = (void **) (void *) &stash_code,
 	},
 	{
+		.type = &newt_compile_mem,
+		.addr = (void **) (void *) &newt_compile,
+	},
+	{
 		.type = NULL,
 		.addr = (void **) (void *) &stash_poly[0]
 	},

@@ -301,6 +301,8 @@ extern const newt_mem_t newt_builtin_mem;
 
 extern const char * const newt_op_names[];
 
+extern uint8_t	*newt_compile;
+
 #define NEWT_OP_SLICE_START	1
 #define NEWT_OP_SLICE_END	2
 #define NEWT_OP_SLICE_STRIDE	4
@@ -378,6 +380,7 @@ newt_poly_t
 newt_accumulator(void);
 
 extern const newt_mem_t newt_code_mem;
+extern const newt_mem_t newt_compile_mem;
 
 /* newt-error.c */
 

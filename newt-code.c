@@ -447,6 +447,8 @@ newt_code_finish(void)
 #endif
 	}
 	compile_size = 0;
+	compile_alloc = 0;
+	newt_compile = NULL;
 	return code;
 }
 
@@ -775,7 +777,8 @@ newt_run_mark(void)
 		newt_poly_mark(newt_stack[s], 1);
 	newt_poly_mark(a, 1);
 	newt_poly_mark(b, 1);
-	newt_mark(&newt_code_mem, code);
+	if (code)
+		newt_mark(&newt_code_mem, code);
 }
 
 void
@@ -786,7 +789,8 @@ newt_run_move(void)
 		newt_poly_move(&newt_stack[s], 1);
 	newt_poly_move(&a, 1);
 	newt_poly_move(&b, 1);
-	newt_move(&newt_code_mem, (void **) &code);
+	if (code)
+		newt_move(&newt_code_mem, (void **) &code);
 }
 
 newt_poly_t
@@ -1007,17 +1011,16 @@ newt_code_size(void *addr)
 }
 
 static void
-newt_code_mark(void *addr)
+code_mark(uint8_t *code, newt_offset_t size)
 {
-	newt_code_t	*code = addr;
-	newt_offset_t	ip = 0;
+	newt_offset_t ip = 0;
 
-	while (ip < code->size) {
-		newt_op_t op = code->code[ip++] & ~newt_op_push;
+	while (ip < size) {
+		newt_op_t op = code[ip++] & ~newt_op_push;
 		newt_offset_t o;
 		switch (op) {
 		case newt_op_string:
-			memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
+			memcpy(&o, &code[ip], sizeof (newt_offset_t));
 			newt_mark(&newt_string_mem, newt_pool_ref(o));
 			break;
 		default:
@@ -1028,21 +1031,20 @@ newt_code_mark(void *addr)
 }
 
 static void
-newt_code_move(void *addr)
+code_move(uint8_t *code, newt_offset_t size)
 {
-	newt_code_t	*code = addr;
 	newt_offset_t	ip = 0;
 
-	while (ip < code->size) {
-		newt_op_t op = code->code[ip++] & ~newt_op_push;
+	while (ip < size) {
+		newt_op_t op = code[ip++] & ~newt_op_push;
 		newt_offset_t o, p;
 		switch (op) {
 		case newt_op_string:
-			memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
+			memcpy(&o, &code[ip], sizeof (newt_offset_t));
 			p = o;
 			newt_move_offset(&p);
 			if (o != p)
-				memcpy(&code->code[ip], &p, sizeof (newt_offset_t));
+				memcpy(&code[ip], &p, sizeof (newt_offset_t));
 			break;
 		default:
 			break;
@@ -1051,9 +1053,51 @@ newt_code_move(void *addr)
 	}
 }
 
+static void
+newt_code_mark(void *addr)
+{
+	newt_code_t	*code = addr;
+
+	code_mark(code->code, code->size);
+}
+
+static void
+newt_code_move(void *addr)
+{
+	newt_code_t	*code = addr;
+
+	code_move(code->code, code->size);
+}
+
 const newt_mem_t newt_code_mem = {
 	.size = newt_code_size,
 	.mark = newt_code_mark,
 	.move = newt_code_move,
 	.name = "code",
+};
+
+static int
+newt_compile_size(void *addr)
+{
+	(void) addr;
+	return compile_alloc;
+}
+
+static void
+newt_compile_mark(void *addr)
+{
+	code_mark(addr, compile_size);
+}
+
+static void
+newt_compile_move(void *addr)
+{
+	code_move(addr, compile_size);
+}
+
+const newt_mem_t newt_compile_mem = {
+	.size = newt_compile_size,
+	.mark = newt_compile_mark,
+	.move = newt_compile_move,
+	.name = "compile",
 };
