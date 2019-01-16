@@ -28,9 +28,11 @@ newt_token_val_t newt_token_val;
 #define GRAMMAR_TABLE
 #include "newt-gram.h"
 
+#ifndef VALUE_STACK_SIZE
 #define VALUE_STACK_SIZE	128
+#endif
 
-static newt_token_val_t value_stack[128];
+static newt_token_val_t value_stack[VALUE_STACK_SIZE];
 static int value_stack_p = 0;
 
 static inline newt_token_val_t
@@ -115,7 +117,9 @@ _value_push_id(newt_id_t id, const char *file, int line)
 #define value_push_op(o) _value_push_op(o, __FILE__, __LINE__)
 #define value_push_id(o) _value_push_id(o, __FILE__, __LINE__)
 
+#ifndef PARSE_STACK_SIZE
 #define PARSE_STACK_SIZE 256
+#endif
 
 static inline token_t
 lex(void *lex_context)
