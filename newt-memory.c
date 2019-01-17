@@ -96,7 +96,7 @@ struct newt_chunk {
 #ifdef NEWT_DYNAMIC
 static uint8_t	*newt_busy;
 static struct newt_chunk *newt_chunk;
-static newt_poly_t NEWT_NCHUNK;
+static newt_offset_t	NEWT_NCHUNK;
 
 bool
 newt_mem_alloc(newt_poly_t pool_size)
@@ -125,6 +125,8 @@ static uint8_t	newt_busy[NEWT_BUSY_SIZE];
 static struct newt_chunk newt_chunk[NEWT_NCHUNK];
 
 #endif
+
+static newt_offset_t	newt_note_list;
 
 newt_offset_t		newt_top;
 
@@ -161,10 +163,10 @@ static inline int limit(int offset) {
 }
 
 static inline void
-note_list(newt_offset_t offset)
+note_list(newt_list_t *list)
 {
-//	newt_list_noted = 1;
-//	mark(newt_list_note, offset);
+	newt_list_set_note_next(list, newt_note_list);
+	newt_note_list = newt_pool_offset(list);
 }
 
 static newt_offset_t	chunk_low, chunk_high;
@@ -250,6 +252,7 @@ walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
 	newt_offset_t i;
 
 	memset(newt_busy, '\0', NEWT_BUSY_SIZE);
+	newt_note_list = 0;
 	for (i = 0; i < (int) NEWT_ROOT; i++) {
 		if (newt_root[i].type) {
 			void **a = newt_root[i].addr, *v;
@@ -263,19 +266,16 @@ walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
 			}
 		}
 	}
-#if 0
-	while (newt_list_noted) {
-		memcpy(newt_list_last, newt_list_note, NEWT_BUSY_SIZE);
-		memset(newt_list_note, '\0', NEWT_BUSY_SIZE);
-		newt_list_noted = 0;
-		for (i = 0; i < NEWT_POOL; i += NEWT_ALLOC_ROUND) {
-			if (busy(newt_list_last, i)) {
-				void *v = newt_pool + i;
-				visit_addr(&newt_list_mem, &v);
-			}
+	while (newt_note_list) {
+		newt_offset_t note = newt_note_list;
+		newt_note_list = 0;
+		while (note) {
+			newt_list_t *list = newt_pool_ref(note);
+			newt_list_set_note_next(list, 0);
+			visit_addr(&newt_list_mem, (void **) &list);
+			note = newt_list_note_next(list);
 		}
 	}
-#endif
 }
 
 
@@ -498,8 +498,8 @@ newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
 	if (!newt_is_pool_addr(addr))
 		return 1;
 
-	if (0 && type == newt_list && do_note_list) {
-		note_list(pool_offset(addr));
+	if (type == newt_list && do_note_list) {
+		note_list(addr);
 		return 1;
 	} else {
 		const struct newt_mem *mem;
@@ -615,8 +615,8 @@ newt_poly_move(newt_poly_t *ref, uint8_t do_note_list)
 	orig_offset = pool_offset(addr);
 	offset = move_map(orig_offset);
 
-	if (0 && newt_poly_type(p) == newt_list && do_note_list) {
-		note_list(orig_offset);
+	if (newt_poly_type(p) == newt_list && do_note_list && 0) {
+		note_list(addr);
 		ret = 1;
 	} else {
 		newt_type_t type = newt_poly_type(p);

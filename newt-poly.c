@@ -46,16 +46,16 @@ newt_poly_print(FILE *file, newt_poly_t poly)
 		break;
 	case newt_list: {
 		newt_list_t *list = newt_poly_to_list(poly);
-		putc(list->readonly ? '(' : '[', file);
+		putc(newt_list_readonly(list) ? '(' : '[', file);
 		newt_poly_t *data = newt_pool_ref(list->data);
 		for (newt_offset_t o = 0; o < list->size; o++) {
 			if (o)
 				fprintf(file, " ");
 			newt_poly_print(file, data[o]);
-			if (o < list->size - 1 || (list->size == 1 && list->readonly))
+			if (o < list->size - 1 || (list->size == 1 && newt_list_readonly(list)))
 				fprintf(file, ",");
 		}
-		putc(list->readonly ? ')' : ']', file);
+		putc(newt_list_readonly(list) ? ')' : ']', file);
 		break;
 	}
 	default:

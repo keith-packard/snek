@@ -578,7 +578,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 				al = newt_poly_to_list(a);
 				bl = newt_poly_to_list(b);
 
-				if (al->readonly != bl->readonly) {
+				if (newt_list_readonly(al) != newt_list_readonly(bl)) {
 					newt_error("can't mix tuple with list");
 				} else {
 					if (inplace)
@@ -715,7 +715,7 @@ newt_assign(newt_id_t id, newt_op_t op, newt_poly_t value)
 		newt_list_t	*l = newt_poly_to_list(lp);
 		float		f = newt_poly_to_float(ip);
 
-		if (l->readonly) {
+		if (newt_list_readonly(l)) {
 			newt_error("cannot assign to tuple");
 			return;
 		}

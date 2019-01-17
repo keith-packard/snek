@@ -36,7 +36,7 @@
 #endif
 
 #ifndef NEWT_POOL
-#define NEWT_POOL		32768
+#define NEWT_POOL		256
 #endif
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
@@ -170,9 +170,37 @@ typedef struct newt_mem {
 typedef struct newt_list {
 	newt_offset_t	size;
 	newt_offset_t	alloc;
-	bool		readonly;
+	newt_offset_t	note_next_and_readonly;
 	newt_offset_t	data;
 } newt_list_t;
+
+static inline bool
+newt_list_readonly(newt_list_t *list)
+{
+	return list->note_next_and_readonly & 1;
+}
+
+static inline newt_offset_t
+newt_list_note_next(newt_list_t *list)
+{
+	newt_offset_t offset = list->note_next_and_readonly & ~1;
+	if (offset)
+		offset -= 1;
+	return offset;
+}
+
+static inline void
+newt_list_set_readonly(newt_list_t *list, bool readonly)
+{
+	list->note_next_and_readonly = (list->note_next_and_readonly & ~1) | (readonly ? 1 : 0);
+}
+
+static inline void
+newt_list_set_note_next(newt_list_t *list, newt_offset_t note_next)
+{
+	note_next += note_next & 1;
+	list->note_next_and_readonly = (list->note_next_and_readonly & 1) | (note_next);
+}
 
 typedef struct newt_code {
 	newt_offset_t	size;

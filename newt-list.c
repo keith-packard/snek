@@ -23,7 +23,7 @@ newt_list_alloc(newt_offset_t size)
 static newt_list_t *
 newt_list_resize(newt_list_t *list, newt_offset_t size)
 {
-	newt_offset_t alloc = list->readonly ? size : newt_list_alloc(size);
+	newt_offset_t alloc = newt_list_readonly(list) ? size : newt_list_alloc(size);
 
 	newt_poly_stash(newt_list_to_poly(list));
 	newt_poly_t *data = newt_alloc(alloc * sizeof (newt_poly_t));
@@ -52,7 +52,7 @@ newt_list_make(newt_offset_t size, bool readonly)
 	if (!list)
 		return NULL;
 
-	list->readonly = readonly;
+	newt_list_set_readonly(list, readonly);
 
 	list = newt_list_resize(list, size);
 	if (!list)
@@ -66,7 +66,7 @@ newt_list_append(newt_list_t *list, newt_list_t *append)
 {
 	newt_offset_t oldsize = list->size;
 
-	if (list->readonly)
+	if (newt_list_readonly(list))
 		return NULL;
 
 	newt_poly_stash(newt_list_to_poly(append));
@@ -85,7 +85,7 @@ newt_list_plus(newt_list_t *a, newt_list_t *b)
 {
 	newt_poly_stash(newt_list_to_poly(a));
 	newt_poly_stash(newt_list_to_poly(b));
-	newt_list_t *n = newt_list_make(a->size + b->size, a->readonly);
+	newt_list_t *n = newt_list_make(a->size + b->size, newt_list_readonly(a));
 	b = newt_poly_to_list(newt_poly_fetch());
 	a = newt_poly_to_list(newt_poly_fetch());
 	if (!n)
@@ -129,11 +129,11 @@ newt_list_imm(newt_offset_t size, bool readonly)
 newt_list_t *
 newt_list_slice(newt_list_t *list, newt_slice_t *slice)
 {
-	if (list->readonly && newt_slice_identity(slice))
+	if (newt_list_readonly(list) && newt_slice_identity(slice))
 	    return list;
 
 	newt_poly_stash(newt_list_to_poly(list));
-	newt_list_t *n = newt_list_make(slice->count, list->readonly);
+	newt_list_t *n = newt_list_make(slice->count, newt_list_readonly(list));
 	list = newt_poly_to_list(newt_poly_fetch());
 	if (!n)
 		return NULL;
