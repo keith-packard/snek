@@ -3,7 +3,7 @@ project('newt', 'c',
 	default_options : ['buildtype=debug', 'c_std=c99']
        )
 
-add_project_arguments(['-D_DEFAULT_SOURCE'], language: 'c')
+add_project_arguments(['-D_DEFAULT_SOURCE', '-DNEWT_MEM_INCLUDE_NAME'], language: 'c')
 
 lola = find_program('lola')
 
