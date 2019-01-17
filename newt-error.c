@@ -17,7 +17,7 @@
 bool newt_abort;
 
 void
-newt_error(char *format, ...)
+newt_error_name(char *format, ...)
 {
 	va_list		args;
 	char		c;

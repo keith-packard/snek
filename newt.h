@@ -430,8 +430,12 @@ extern const newt_mem_t newt_compile_mem;
 
 /* newt-error.c */
 
+#ifndef newt_error_name
+#define newt_error_name newt_error
+#endif
+
 void
-newt_error(char *format, ...);
+newt_error_name(char *format, ...);
 
 void
 newt_panic(char *message);
