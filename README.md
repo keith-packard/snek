@@ -58,6 +58,11 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
+ * Port to Arduino Duemilanova, which is a system with only 32kB of
+   flash and 2kB of RAM. The whole language is included, but all error
+   messages are elided to save ram as the AVR processor cannot easily
+   read data from flash and so the compiler places strings in RAM.
+
  * Custom lexer. This replaces the flex-generated lexer and saves a
    pile of memory.
 
