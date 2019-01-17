@@ -9,6 +9,8 @@ command		: stat
 					newt_poly_print(stdout, p);
 					putchar('\n');
 				}
+				if (newt_abort)
+					return parse_return_error;
 			}@
 		| DEF
 			@{
