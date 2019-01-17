@@ -156,20 +156,26 @@ static void
 newt_list_mark(void *addr)
 {
 	newt_list_t *list = addr;
-	newt_poly_t *data = newt_pool_ref(list->data);
-	newt_mark_blob(data, list->alloc * sizeof (newt_poly_t));
-	for (newt_offset_t i = 0; i < list->size; i++)
-		newt_poly_mark(data[i], 1);
+	debug_memory("\t\tmark list size %d alloc %d data %d\n", list->size, list->alloc, list->data);
+	if (list->data) {
+		newt_poly_t *data = newt_pool_ref(list->data);
+		newt_mark_blob(data, list->alloc * sizeof (newt_poly_t));
+		for (newt_offset_t i = 0; i < list->size; i++)
+			newt_poly_mark(data[i], 1);
+	}
 }
 
 static void
 newt_list_move(void *addr)
 {
 	newt_list_t *list = addr;
-	newt_move_offset(&list->data);
-	newt_poly_t *data = newt_pool_ref(list->data);
-	for (newt_offset_t i = 0; i < list->size; i++)
-		newt_poly_move(&data[i], 1);
+	debug_memory("\t\tmove list size %d alloc %d data %d\n", list->size, list->alloc, list->data);
+	if (list->data) {
+		newt_move_block_offset(&list->data);
+		newt_poly_t *data = newt_pool_ref(list->data);
+		for (newt_offset_t i = 0; i < list->size; i++)
+			newt_poly_move(&data[i], 1);
+	}
 }
 
 const newt_mem_t newt_list_mem = {

@@ -70,7 +70,7 @@ newt_func_mark(void *addr)
 {
 	newt_func_t *func = addr;
 
-	newt_mark(&newt_code_mem, newt_pool_ref(func->code));
+	newt_mark_offset(&newt_code_mem, func->code);
 }
 
 static void
@@ -78,10 +78,8 @@ newt_func_move(void *addr)
 {
 	newt_func_t *func = addr;
 
-	newt_code_t *c = newt_pool_ref(func->code);
-	newt_move(&newt_code_mem, (void **) &c);
-	if (c != newt_pool_ref(func->code))
-		func->code = newt_pool_offset(c);
+	if (func->code)
+		newt_move_offset(&newt_code_mem, &func->code);
 }
 
 const newt_mem_t newt_func_mem = {

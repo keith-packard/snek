@@ -130,13 +130,12 @@ newt_variable_mark(void *addr)
 	newt_variable_t *v = addr;
 
 	for (;;) {
-		newt_variable_t *next = newt_pool_ref(v->next);
-
 		newt_poly_mark(v->value, 1);
-		if (!next)
+
+		if (!v->next)
 			break;
-		newt_mark_memory(&newt_variable_mem, next);
-		v = next;
+		newt_mark_block_offset(&newt_variable_mem, v->next);
+		v = newt_pool_ref(v->next);
 	}
 }
 
@@ -146,19 +145,11 @@ newt_variable_move(void *addr)
 	newt_variable_t *v = addr;
 
 	for (;;) {
-		int ret;
+		newt_poly_move(&v->value, true);
 
-		(void) newt_poly_move(&v->value, true);
-
-		newt_variable_t *next = newt_pool_ref(v->next);
-
-		ret = newt_move_memory((void **) &next);
-		if (next != newt_pool_ref(v->next))
-			v->next = newt_pool_offset(next);
-		if (ret)
+		if (!v->next || newt_move_block_offset(&v->next))
 			break;
-
-		v = next;
+		v = newt_pool_ref(v->next);
 	}
 }
 
@@ -182,14 +173,15 @@ newt_frame_mark(void *addr)
 	newt_frame_t *f = addr;
 
 	for (;;) {
-		newt_mark(&newt_variable_mem, newt_pool_ref(f->variables));
+		debug_memory("\t\tframe mark vars %d code %d prev %d\n",
+			     f->variables, f->code, f->prev);
+		if (f->variables)
+			newt_mark_offset(&newt_variable_mem, f->variables);
 		if (f->code)
-			newt_mark(&newt_code_mem, newt_pool_ref(f->code));
-		newt_frame_t *prev = newt_pool_ref(f->prev);
-		if (!prev)
+			newt_mark_offset(&newt_code_mem, f->code);
+		if (!f->prev || newt_mark_block_offset(&newt_frame_mem, f->prev))
 			break;
-		newt_mark_memory(&newt_frame_mem, prev);
-		f = prev;
+		f = newt_pool_ref(f->prev);
 	}
 }
 
@@ -199,27 +191,15 @@ newt_frame_move(void *addr)
 	newt_frame_t *f = addr;
 
 	for (;;) {
-		newt_variable_t *v = newt_pool_ref(f->variables);
-		if (v) {
-			newt_move(&newt_variable_mem, (void **) &v);
-			if (v != newt_pool_ref(f->variables))
-				f->variables = newt_pool_offset(v);
-		}
-		newt_code_t *c = newt_pool_ref(f->code);
-		if (c) {
-			newt_move(&newt_code_mem, (void **) &c);
-			if (c != newt_pool_ref(f->code))
-				f->code = newt_pool_offset(c);
-		}
-		newt_frame_t *prev = newt_pool_ref(f->prev);
-		if (!prev)
+		debug_memory("\t\tframe move vars %d code %d prev %d\n",
+			     f->variables, f->code, f->prev);
+		if (f->variables)
+			newt_move_offset(&newt_variable_mem, &f->variables);
+		if (f->code)
+			newt_move_offset(&newt_code_mem, &f->code);
+		if (!f->prev || newt_move_block_offset(&f->prev))
 			break;
-		int ret = newt_move_memory((void **) &prev);
-		if (prev != newt_pool_ref(f->prev))
-			f->prev = newt_pool_offset(prev);
-		if (ret)
-			break;
-		f = prev;
+		f = newt_pool_ref(f->prev);
 	}
 }
 

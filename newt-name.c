@@ -115,10 +115,10 @@ newt_name_mark(void *addr)
 	newt_name_t *n = addr;
 
 	for (;;) {
-		n = newt_pool_ref(n->next);
-		if (!n)
+		if (!n->next)
 			break;
-		newt_mark_memory(&newt_name_mem, n);
+		n = newt_pool_ref(n->next);
+		newt_mark_block_addr(&newt_name_mem, n);
 	}
 }
 
@@ -128,15 +128,11 @@ newt_name_move(void *addr)
 	newt_name_t *n = addr;
 
 	for (;;) {
-		newt_name_t *next = newt_pool_ref(n->next);
-		if (!next)
+		if (!n->next)
 			break;
-		int ret = newt_move_memory((void **) &next);
-		if (next != newt_pool_ref(n->next))
-			n->next = newt_pool_offset(next);
-		if (ret)
+		if (newt_move_block_offset(&n->next))
 			break;
-		n = next;
+		n = newt_pool_ref(n->next);
 	}
 }
 

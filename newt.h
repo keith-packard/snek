@@ -25,7 +25,15 @@
 
 #include "newt-builtin.h"
 
-#define NEWT_DEBUG
+#ifndef NEWT_DEBUG
+#define NEWT_DEBUG	1
+#endif
+
+#ifdef DEBUG_MEMORY
+#define debug_memory(fmt, ...) printf(fmt, ## args)
+#else
+#define debug_memory(fmt, ...)
+#endif
 
 #ifndef NEWT_POOL
 #define NEWT_POOL		32768
@@ -148,15 +156,15 @@ typedef struct newt_mem {
 	int	(*size)(void *addr);
 	void	(*mark)(void *addr);
 	void	(*move)(void *addr);
-#ifndef NEWT_MEM_EXCLUDE_NAME
+#ifdef NEWT_MEM_INCLUDE_NAME
 	char	name[];
 #endif
 } newt_mem_t;
 
-#ifdef NEWT_MEM_EXCLUDE_NAME
-#define NEWT_MEM_DECLARE_NAME(_name)
-#else
+#ifdef NEWT_MEM_INCLUDE_NAME
 #define NEWT_MEM_DECLARE_NAME(_name)	.name = _name,
+#else
+#define NEWT_MEM_DECLARE_NAME(_name)
 #endif
 
 typedef struct newt_list {
@@ -510,22 +518,31 @@ int
 newt_mark_blob(void *addr, newt_offset_t size);
 
 int
-newt_mark_memory(const struct newt_mem *type, void *addr);
+newt_mark_block_addr(const struct newt_mem *type, void *addr);
 
 int
-newt_mark(const struct newt_mem *type, void *addr);
+newt_mark_block_offset(const struct newt_mem *type, newt_offset_t offset);
 
 int
-newt_move_offset(newt_offset_t *ref);
+newt_mark_addr(const struct newt_mem *type, void *addr);
 
 int
-newt_move_memory(void **ref);
+newt_mark_offset(const struct newt_mem *type, newt_offset_t offset);
+
+int
+newt_move_block_offset(newt_offset_t *ref);
+
+int
+newt_move_block_addr(void **ref);
 
 int
 newt_poly_move(newt_poly_t *ref, uint8_t do_note_list);
 
 int
-newt_move(const struct newt_mem *type, void **ref);
+newt_move_addr(const struct newt_mem *type, void **ref);
+
+int
+newt_move_offset(const struct newt_mem *type, newt_offset_t *ref);
 
 int
 newt_marked(void *addr);
@@ -706,7 +723,7 @@ newt_pool_ref(newt_offset_t offset)
 	if (offset == 0)
 		return NULL;
 
-#ifdef NEWT_DEBUG
+#if NEWT_DEBUG
 	if (((offset - 1) & (NEWT_ALLOC_ROUND-1)) != 0)
 		newt_panic("bad offset");
 #endif
@@ -720,7 +737,7 @@ newt_pool_offset(const void *addr)
 	if (addr == NULL)
 		return 0;
 
-#ifdef NEWT_DEBUG
+#if NEWT_DEBUG
 	if (((uintptr_t) addr & (NEWT_ALLOC_ROUND-1)) != 0)
 		newt_panic("bad address");
 #endif

@@ -778,7 +778,7 @@ newt_run_mark(void)
 	newt_poly_mark(a, 1);
 	newt_poly_mark(b, 1);
 	if (code)
-		newt_mark(&newt_code_mem, code);
+		newt_mark_addr(&newt_code_mem, code);
 }
 
 void
@@ -790,7 +790,7 @@ newt_run_move(void)
 	newt_poly_move(&a, 1);
 	newt_poly_move(&b, 1);
 	if (code)
-		newt_move(&newt_code_mem, (void **) &code);
+		newt_move_addr(&newt_code_mem, (void **) &code);
 }
 
 newt_poly_t
@@ -1021,7 +1021,7 @@ code_mark(uint8_t *code, newt_offset_t size)
 		switch (op) {
 		case newt_op_string:
 			memcpy(&o, &code[ip], sizeof (newt_offset_t));
-			newt_mark(&newt_string_mem, newt_pool_ref(o));
+			newt_mark_offset(&newt_string_mem, o);
 			break;
 		default:
 			break;
@@ -1042,7 +1042,7 @@ code_move(uint8_t *code, newt_offset_t size)
 		case newt_op_string:
 			memcpy(&o, &code[ip], sizeof (newt_offset_t));
 			p = o;
-			newt_move_offset(&p);
+			newt_move_block_offset(&p);
 			if (o != p)
 				memcpy(&code[ip], &p, sizeof (newt_offset_t));
 			break;

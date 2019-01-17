@@ -103,10 +103,10 @@ newt_range_mark(void *addr)
 	newt_range_t *r = addr;
 
 	for (;;) {
-		r = newt_pool_ref(r->prev);
-		if (!r)
+		if (!r->prev)
 			break;
-		newt_mark_memory(&newt_range_mem, r);
+		newt_mark_block_offset(&newt_range_mem, r->prev);
+		r = newt_pool_ref(r->prev);
 	}
 }
 
@@ -116,11 +116,11 @@ newt_range_move(void *addr)
 	newt_range_t *r = addr;
 
 	for (;;) {
-		if (newt_move_offset(&r->prev))
+		if (!r->prev)
+			break;
+		if (newt_move_block_offset(&r->prev))
 			break;
 		r = newt_pool_ref(r->prev);
-		if (!r)
-			break;
 	}
 }
 
@@ -219,10 +219,11 @@ newt_in_mark(void *addr)
 
 	for (;;) {
 		newt_poly_mark(i->array, true);
-		i = newt_pool_ref(i->prev);
-		if (!i)
+
+		if (!i->prev)
 			break;
-		newt_mark_memory(&newt_in_mem, i);
+		i = newt_pool_ref(i->prev);
+		newt_mark_block_addr(&newt_in_mem, i);
 	}
 }
 
@@ -233,11 +234,11 @@ newt_in_move(void *addr)
 
 	for (;;) {
 		newt_poly_move(&i->array, 1);
-		if (newt_move_offset(&i->prev))
+		if (!i->prev)
+			break;
+		if (newt_move_block_offset(&i->prev))
 			break;
 		i = newt_pool_ref(i->prev);
-		if (!i)
-			break;
 	}
 }
 
