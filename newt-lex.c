@@ -30,7 +30,7 @@ static int newt_lex_indent;
 #define NEWT_MAX_TOKEN	63
 
 char newt_lex_text[NEWT_MAX_TOKEN + 1];
-int yyleng;
+static int newt_lex_len;
 
 //#define DEBUG
 #ifdef DEBUG
@@ -118,17 +118,17 @@ comment(void)
 static void
 start_token(void)
 {
-	yyleng = 0;
+	newt_lex_len = 0;
 	newt_lex_text[0] = '\0';
 }
 
 static bool
 add_token(int c)
 {
-	if (yyleng == NEWT_MAX_TOKEN)
+	if (newt_lex_len == NEWT_MAX_TOKEN)
 		return false;
-	newt_lex_text[yyleng++] = c;
-	newt_lex_text[yyleng] = '\0';
+	newt_lex_text[newt_lex_len++] = c;
+	newt_lex_text[newt_lex_len] = '\0';
 	return true;
 }
 
@@ -238,7 +238,7 @@ string(int q)
 	for (;;) {
 		c = lexchar();
 		if (c == q) {
-			char *ret = newt_alloc(yyleng + 1);
+			char *ret = newt_alloc(newt_lex_len + 1);
 			strcpy(ret, newt_lex_text);
 			newt_token_val.string = ret;
 			RETURN(STRING);
@@ -275,7 +275,7 @@ static int
 trailing(char *next, newt_op_t without_op, int without, newt_op_t with_op, int with)
 {
 	int c;
-	int len = yyleng;
+	int len = newt_lex_len;
 	char *n = next;
 
 	/* skip spaces between words */
@@ -288,7 +288,7 @@ trailing(char *next, newt_op_t without_op, int without, newt_op_t with_op, int w
 			unlexchar(c);
 			while (n > next)
 				unlexchar(*--n);
-			yyleng = len;
+			newt_lex_len = len;
 			newt_lex_text[len] = '\0';
 			RETURN_OP(without_op, without);
 		}
