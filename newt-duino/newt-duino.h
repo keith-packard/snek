@@ -27,15 +27,6 @@
 		sprintf_P(dst, __fmt__, ##args);		\
 	} while(0)
 
-#define sprintf(dst, fmt, args...) do {			\
-	if (__builtin_const_p(fmt)) { \
-		static const char PROGMEM __fmt__[] = __builtin_const_p(fmt) ? (fmt) : ""; \
-		sprintf_P(dst, __fmt__, ##args);		\
-	} else { \
-		sprintf(dst, fmt, ##args);	\
-	} \
-	} while(0)
-
 #define NEWT_BUILTIN_NAMES_DECLARATION(n) PROGMEM n
 #define NEWT_BUILTIN_NAMES(a)	((uint8_t) pgm_read_byte(&newt_builtin_names[a]))
 #define NEWT_BUILTIN_NAMES_CMP(a,b)	strcmp_P(a,b)

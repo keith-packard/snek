@@ -918,7 +918,9 @@ static inline void
 newt_list_set_note_next(newt_list_t *list, newt_offset_t note_next)
 {
 	note_next -= note_next & 1;
+#if NEWT_DEBUG
 	if (note_next & 3)
 		newt_panic("note_next bad alignment");
+#endif
 	list->note_next_and_readonly = (list->note_next_and_readonly & 3) | (note_next);
 }

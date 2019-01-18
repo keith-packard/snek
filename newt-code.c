@@ -61,8 +61,8 @@ newt_op_extra_size(newt_op_t op)
 	}
 }
 
-#define DEBUG_COMPILE
-#define DEBUG_EXEC
+//#define DEBUG_COMPILE
+//#define DEBUG_EXEC
 #if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
 
 const char * const newt_op_names[] = {
