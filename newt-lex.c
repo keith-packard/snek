@@ -445,6 +445,14 @@ newt_lex(void)
 			}
 			unlexchar(n);
 			RETURN_OP(newt_op_gt, CMPOP);
+		case '!':
+			n = lexchar();
+			if (n == '=') {
+				add_token(n);
+				RETURN_OP(newt_op_ne, CMPOP);
+			}
+			unlexchar(n);
+			break;
 		case '"':
 		case '\'':
 			return string(c);
