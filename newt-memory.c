@@ -247,12 +247,14 @@ reset_chunks(void)
 
 static void
 walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
-     int (*visit_poly)(newt_poly_t *p, uint8_t do_note_list))
+     int (*visit_poly)(newt_poly_t *p, uint8_t do_note_list),
+     void (*visit_run)(void))
 {
 	newt_offset_t i;
 
 	memset(newt_busy, '\0', NEWT_BUSY_SIZE);
 	newt_note_list = 0;
+	visit_run();
 	for (i = 0; i < (int) NEWT_ROOT; i++) {
 		if (newt_root[i].type) {
 			void **a = newt_root[i].addr, *v;
@@ -338,8 +340,7 @@ newt_collect(uint8_t style)
 		/* Find the sizes of the first chunk of objects to move */
 		reset_chunks();
 		debug_memory("mark\n");
-		walk(newt_mark_ref, newt_poly_mark_ref);
-		newt_run_mark();
+		walk(newt_mark_ref, newt_poly_mark_ref, newt_run_mark);
 		dump_busy();
 		debug_memory("done\n");
 
@@ -392,8 +393,7 @@ newt_collect(uint8_t style)
 		if (chunk_first < chunk_last) {
 			/* Relocate all references to the objects */
 			debug_memory("move\n");
-			walk(newt_move_addr, newt_poly_move);
-			newt_run_move();
+			walk(newt_move_addr, newt_poly_move, newt_run_move);
 			debug_memory("done\n");
 		}
 
