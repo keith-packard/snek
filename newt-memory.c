@@ -165,8 +165,11 @@ static inline int limit(int offset) {
 static inline void
 note_list(newt_list_t *list)
 {
-	newt_list_set_note_next(list, newt_note_list);
-	newt_note_list = newt_pool_offset(list);
+	if (!newt_list_noted(list)) {
+		newt_list_set_note_next(list, newt_note_list);
+		newt_list_set_noted(list, true);
+		newt_note_list = newt_pool_offset(list);
+	}
 }
 
 static newt_offset_t	chunk_low, chunk_high;
@@ -273,9 +276,10 @@ walk(int (*visit_addr)(const struct newt_mem *type, void **addr),
 		newt_note_list = 0;
 		while (note) {
 			newt_list_t *list = newt_pool_ref(note);
-			newt_list_set_note_next(list, 0);
 			visit_addr(&newt_list_mem, (void **) &list);
 			note = newt_list_note_next(list);
+			newt_list_set_note_next(list, 0);
+			newt_list_set_noted(list, false);
 		}
 	}
 }

@@ -174,34 +174,6 @@ typedef struct newt_list {
 	newt_offset_t	data;
 } newt_list_t;
 
-static inline bool
-newt_list_readonly(newt_list_t *list)
-{
-	return list->note_next_and_readonly & 1;
-}
-
-static inline newt_offset_t
-newt_list_note_next(newt_list_t *list)
-{
-	newt_offset_t offset = list->note_next_and_readonly & ~1;
-	if (offset)
-		offset -= 1;
-	return offset;
-}
-
-static inline void
-newt_list_set_readonly(newt_list_t *list, bool readonly)
-{
-	list->note_next_and_readonly = (list->note_next_and_readonly & ~1) | (readonly ? 1 : 0);
-}
-
-static inline void
-newt_list_set_note_next(newt_list_t *list, newt_offset_t note_next)
-{
-	note_next += note_next & 1;
-	list->note_next_and_readonly = (list->note_next_and_readonly & 1) | (note_next);
-}
-
 typedef struct newt_code {
 	newt_offset_t	size;
 	uint8_t		code[0];
@@ -909,3 +881,44 @@ newt_bool_to_poly(bool b)
 	return b ? NEWT_ONE : NEWT_ZERO;
 }
 
+static inline bool
+newt_list_readonly(newt_list_t *list)
+{
+	return (list->note_next_and_readonly & 1) != 0;
+}
+
+static inline bool
+newt_list_noted(newt_list_t *list)
+{
+	return (list->note_next_and_readonly & 2) != 0;
+}
+
+static inline newt_offset_t
+newt_list_note_next(newt_list_t *list)
+{
+	newt_offset_t offset = list->note_next_and_readonly & ~3;
+	if (offset)
+		offset++;
+	return offset;
+}
+
+static inline void
+newt_list_set_readonly(newt_list_t *list, bool readonly)
+{
+	list->note_next_and_readonly = (list->note_next_and_readonly & ~1) | (readonly ? 1 : 0);
+}
+
+static inline void
+newt_list_set_noted(newt_list_t *list, bool noted)
+{
+	list->note_next_and_readonly = (list->note_next_and_readonly & ~3) | (noted ? 2 : 0);
+}
+
+static inline void
+newt_list_set_note_next(newt_list_t *list, newt_offset_t note_next)
+{
+	note_next -= note_next & 1;
+	if (note_next & 3)
+		newt_panic("note_next bad alignment");
+	list->note_next_and_readonly = (list->note_next_and_readonly & 3) | (note_next);
+}
