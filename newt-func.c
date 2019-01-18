@@ -50,8 +50,10 @@ newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt
 		newt_poly_t *ref = newt_id_ref(func->formals[--nactual], true);
 		newt_poly_t a = newt_stack_pop();
 		func = newt_poly_to_func(newt_poly_fetch());
+#if NEWT_DEBUG
 		if (!ref)
 			newt_panic("missing formal");
+#endif
 		*ref = a;
 	}
 	return true;

@@ -16,8 +16,12 @@
 
 bool newt_abort;
 
+#ifndef ERROR_FETCH_FORMAT_CHAR
+#define ERROR_FETCH_FORMAT_CHAR(a) (*(a))
+#endif
+
 void
-newt_error_name(char *format, ...)
+newt_error_name(const char *format, ...)
 {
 	va_list		args;
 	char		c;
@@ -26,9 +30,9 @@ newt_error_name(char *format, ...)
 	newt_abort = true;
 	va_start(args, format);
 	fprintf(stderr, "%s:%d ", newt_file, newt_line);
-	while ((c = *format++)) {
+	while ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
 		if (c == '%') {
-			switch ((c = *format++)) {
+			switch ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
 			case '\0':
 				--format;
 				break;
@@ -65,9 +69,11 @@ newt_error_name(char *format, ...)
 	va_end(args);
 }
 
+#if NEWT_DEBUG
 void
-newt_panic(char *message)
+newt_panic(const char *message)
 {
-	fprintf(stderr, "%s\n", message);
-	for (;;) { }
+	newt_error("%s\n", message);
+	abort();
 }
+#endif

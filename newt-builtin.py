@@ -64,7 +64,7 @@ def dump_headers(fp):
         print("%s" % line, file=fp)
 
 def dump_names(fp):
-    print("static const uint8_t newt_builtin_names[] = {", file=fp)
+    print("static const uint8_t NEWT_BUILTIN_NAMES_DECLARATION(newt_builtin_names)[] = {", file=fp)
     for name in sorted(builtins):
         if name.keyword:
             print("\t%s | 0x80, " % name.keyword, end='', file=fp)
@@ -133,6 +133,10 @@ def builtin_main():
         fp = open(args.output, mode='w')
 
     print("#ifdef NEWT_BUILTIN_DATA", file=fp)
+
+    print("#ifndef NEWT_BUILTIN_NAMES_DECLARATION", file=fp)
+    print("#define NEWT_BUILTIN_NAMES_DECLARATION(n) n", file=fp)
+    print("#endif", file=fp)
 
     dump_names(fp)
 

@@ -20,6 +20,20 @@ newt_id_t   newt_id = NEWT_BUILTIN_END;
 #define NEWT_BUILTIN_DATA
 #include "newt-builtin.h"
 
+#ifndef NEWT_BUILTIN_NAMES
+#define NEWT_BUILTIN_NAMES(a) (newt_builtin_names[a])
+#endif
+
+#ifndef NEWT_BUILTIN_NAMES_CMP
+#define NEWT_BUILTIN_NAMES_CMP(a,b) strcmp(a,b)
+#endif
+#ifndef newt_builtin_names_return
+#define newt_builtin_names_return(a) ((const char *) (a))
+#endif
+#ifndef newt_builtin_names_len
+#define newt_builtin_names_len(a) strlen((const char *) (a))
+#endif
+
 static newt_id_t
 newt_name_id_builtin(char *name, bool *keyword)
 {
@@ -28,26 +42,27 @@ newt_name_id_builtin(char *name, bool *keyword)
 	while (l <= h) {
 		long m = (l + h) >> 1;
 
-		while (m > l && newt_builtin_names[m-1] != '\0')
+		while (m > l && NEWT_BUILTIN_NAMES(m-1) != '\0')
 			m--;
-		if (strcmp((char *) &newt_builtin_names[m+1], name) < 0) {
+		if (NEWT_BUILTIN_NAMES_CMP(name, (const char *) &newt_builtin_names[m+1]) > 0) {
 			l = m + 2;
-			while(l < (long) sizeof (newt_builtin_names) - 1 && newt_builtin_names[l-1] != '\0')
+			while(l < (long) sizeof (newt_builtin_names) - 1 && NEWT_BUILTIN_NAMES(l-1) != '\0')
 				l++;
 		} else {
 			h = m - 2;
-			while(h > 0 && newt_builtin_names[h-1] != '\0')
+			while(h > 0 && NEWT_BUILTIN_NAMES(h-1) != '\0')
 				h--;
 		}
 	}
-	if (strcmp(name, (char *) &newt_builtin_names[l+1]) == 0) {
-		newt_id_t id = newt_builtin_names[l];
+	if (NEWT_BUILTIN_NAMES_CMP(name, (const char *) &newt_builtin_names[l+1]) == 0) {
+		newt_id_t id = NEWT_BUILTIN_NAMES(l);
 		if ((*keyword = ((id & 0x80) != 0)))
 			id = (id & ~0x80);
 		return id;
 	}
 	return 0;
 }
+
 
 const char *
 newt_name_string_builtin(newt_id_t id)
@@ -57,8 +72,8 @@ newt_name_string_builtin(newt_id_t id)
 	i = 0;
 	while (i < (long) sizeof(newt_builtin_names)) {
 		if (newt_builtin_names[i] == id)
-			return (const char *) &newt_builtin_names[i+1];
-		i += strlen((const char *) &newt_builtin_names[i+1]) + 2;
+			return newt_builtin_names_return(&newt_builtin_names[i+1]);
+		i += newt_builtin_names_len((const char *) &newt_builtin_names[i+1]) + 2;
 	}
 	return NULL;
 }
@@ -98,7 +113,7 @@ newt_name_string(newt_id_t id)
 	for (n = newt_names; n; n = newt_pool_ref(n->next))
 		if (n->id == id)
 			return n->name;
-	return "<unknown>";
+	return NULL;
 }
 
 static int

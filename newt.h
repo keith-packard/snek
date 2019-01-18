@@ -435,10 +435,16 @@ extern const newt_mem_t newt_compile_mem;
 #endif
 
 void
-newt_error_name(char *format, ...);
+newt_error_name(const char *format, ...);
 
+#if NEWT_DEBUG
 void
-newt_panic(char *message);
+newt_panic(const char *message);
+#endif
+
+#ifndef sprintf_const
+#define sprintf_const sprintf
+#endif
 
 extern bool newt_abort;
 
@@ -708,8 +714,10 @@ newt_stack_push(newt_poly_t p)
 static inline newt_poly_t
 newt_stack_pop(void)
 {
+#if NEWT_DEBUG
 	if (!newt_stackp)
 		newt_panic("stack underflow");
+#endif
 	return newt_stack[--newt_stackp];
 }
 
