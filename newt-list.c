@@ -23,6 +23,11 @@ newt_list_alloc(newt_offset_t size)
 static newt_list_t *
 newt_list_resize(newt_list_t *list, newt_offset_t size)
 {
+	if (list->alloc >= size) {
+		list->size = size;
+		return list;
+	}
+
 	newt_offset_t alloc = newt_list_readonly(list) ? size : newt_list_alloc(size);
 
 	newt_poly_stash(newt_list_to_poly(list));
