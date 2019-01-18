@@ -61,8 +61,8 @@ newt_op_extra_size(newt_op_t op)
 	}
 }
 
-//#define DEBUG_COMPILE
-//#define DEBUG_EXEC
+#define DEBUG_COMPILE
+#define DEBUG_EXEC
 #if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
 
 const char * const newt_op_names[] = {
@@ -452,6 +452,11 @@ newt_code_finish(void)
 	return code;
 }
 
+newt_poly_t	newt_stack[NEWT_STACK];
+newt_offset_t	newt_stackp = 0;
+static newt_poly_t 	a = NEWT_ZERO, b = NEWT_ZERO;
+static newt_code_t	*code;
+
 static newt_poly_t
 newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 {
@@ -692,43 +697,55 @@ newt_slice(newt_poly_t a, uint8_t bits)
 }
 
 static void
-newt_assign(newt_id_t id, newt_op_t op, newt_poly_t value)
+newt_assign(newt_id_t id, newt_op_t op)
 {
-	newt_poly_t *ref = NULL;
-	if (id != NEWT_ID_NONE) {
-		ref = newt_id_ref(id, true);
-		if (!ref) {
-			newt_error("undefined \"%i\"", id);
-			return;
-		}
-	} else {
-		newt_poly_t ip = newt_stack_pop();
-		newt_poly_t lp = newt_stack_pop();
-		if (newt_poly_type(lp) != newt_list) {
-			newt_error("not a list: %p", lp);
-			return;
-		}
-		if (newt_poly_type(ip) != newt_float) {
-			newt_error("not a number: %p", ip);
-			return;
-		}
-		newt_list_t	*l = newt_poly_to_list(lp);
-		float		f = newt_poly_to_float(ip);
+	newt_poly_t *ref;
 
-		if (newt_list_readonly(l)) {
-			newt_error("cannot assign to tuple");
-			return;
+	for (;;) {
+		if (id != NEWT_ID_NONE) {
+			ref = newt_id_ref(id, true);
+			if (!ref) {
+				newt_error("undefined \"%i\"", id);
+				return;
+			}
+		} else {
+			newt_poly_t ip = newt_stack_pop();
+			newt_poly_t lp = newt_stack_pop();
+
+			if (newt_poly_type(lp) != newt_list) {
+				newt_error("not a list: %p", lp);
+				return;
+			}
+			if (newt_poly_type(ip) != newt_float) {
+				newt_error("not a number: %p", ip);
+				return;
+			}
+			newt_list_t	*l = newt_poly_to_list(lp);
+			float		f = newt_poly_to_float(ip);
+
+			if (newt_list_readonly(l)) {
+				newt_error("cannot assign to tuple");
+				return;
+			}
+			if (f < 0 || l->size <= f) {
+				newt_error("list index out of range: %p", ip);
+				return;
+			}
+			ref = &newt_list_data(l)[(newt_offset_t) f];
 		}
-		if (f < 0 || l->size <= f) {
-			newt_error("list index out of range: %p", ip);
-			return;
-		}
-		ref = &newt_list_data(l)[(newt_offset_t) f];
+
+		if (op == newt_op_assign)
+			break;
+
+		/* Recover the two values popped from the stack so
+		 * that they will be popped again
+		 */
+		if (id != NEWT_ID_NONE)
+			newt_stackp += 2;
+		a = newt_binary(*ref, op - (newt_op_assign_plus - newt_op_plus), a, true);
+		op = newt_op_assign;
 	}
-
-	if (op != newt_op_assign)
-		value = newt_binary(*ref, op - (newt_op_assign_plus - newt_op_plus), value, true);
-	*ref = value;
+	*ref = a;
 }
 
 static newt_poly_t
@@ -757,11 +774,6 @@ newt_call_builtin(const newt_builtin_t *builtin, newt_offset_t nactual)
 	newt_stack_drop(nactual + 1);
 	return ret;
 }
-
-newt_poly_t	newt_stack[NEWT_STACK];
-newt_offset_t	newt_stackp = 0;
-static newt_poly_t 	a = NEWT_ZERO, b = NEWT_ZERO;
-static newt_code_t	*code;
 
 newt_poly_t
 newt_accumulator(void)
@@ -915,7 +927,7 @@ newt_code_run(newt_code_t *code_in)
 			case newt_op_assign_lshift:
 			case newt_op_assign_rshift:
 				memcpy(&id, &code->code[ip], sizeof (newt_id_t));
-				newt_assign(id, op, a);
+				newt_assign(id, op);
 				ip += sizeof (newt_id_t);
 				break;
 			case newt_op_global:
