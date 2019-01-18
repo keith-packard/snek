@@ -30,13 +30,13 @@
 #endif
 
 #ifdef DEBUG_MEMORY
-#define debug_memory(fmt, ...) printf(fmt, ## args)
+#define debug_memory(fmt, args...) printf(fmt, ## args)
 #else
-#define debug_memory(fmt, ...)
+#define debug_memory(fmt, args...)
 #endif
 
 #ifndef NEWT_POOL
-#define NEWT_POOL		256
+#define NEWT_POOL		32768
 #endif
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
