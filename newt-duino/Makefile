@@ -28,7 +28,7 @@ SRC = \
 OBJ = $(SRC:.c=.o)
 
 CC=avr-gcc
-CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -I..
+CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -I.. -g -fno-jump-tables
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
 	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7c0 \
