@@ -586,7 +586,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 				if (newt_list_readonly(al) != newt_list_readonly(bl)) {
 					newt_error("can't mix tuple with list");
 				} else {
-					if (inplace)
+					if (inplace && !newt_list_readonly(al))
 						al = newt_list_append(al, bl);
 					else
 						al = newt_list_plus(al, bl);
