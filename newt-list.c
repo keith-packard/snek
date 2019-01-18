@@ -150,7 +150,7 @@ newt_list_slice(newt_list_t *list, newt_slice_t *slice)
 	return n;
 }
 
-static int
+static newt_offset_t
 newt_list_size(void *addr)
 {
 	(void) addr;

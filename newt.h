@@ -153,11 +153,11 @@ typedef enum {
 } __attribute__((packed)) newt_type_t;
 
 typedef struct newt_mem {
-	int	(*size)(void *addr);
-	void	(*mark)(void *addr);
-	void	(*move)(void *addr);
+	newt_offset_t	(*size)(void *addr);
+	void		(*mark)(void *addr);
+	void		(*move)(void *addr);
 #ifdef NEWT_MEM_INCLUDE_NAME
-	char	name[];
+	char		name[];
 #endif
 } newt_mem_t;
 
@@ -518,43 +518,43 @@ newt_lex(void);
 #define NEWT_COLLECT_FULL		0
 #define NEWT_COLLECT_INCREMENTAL	1
 
-int
+bool
 newt_poly_mark(newt_poly_t p, uint8_t do_note_list);
 
 newt_offset_t
 newt_collect(uint8_t style);
 
-int
+bool
 newt_mark_blob(void *addr, newt_offset_t size);
 
-int
+bool
 newt_mark_block_addr(const struct newt_mem *type, void *addr);
 
-int
+bool
 newt_mark_block_offset(const struct newt_mem *type, newt_offset_t offset);
 
-int
+bool
 newt_mark_addr(const struct newt_mem *type, void *addr);
 
-int
+bool
 newt_mark_offset(const struct newt_mem *type, newt_offset_t offset);
 
-int
+bool
 newt_move_block_offset(newt_offset_t *ref);
 
-int
+bool
 newt_move_block_addr(void **ref);
 
-int
+bool
 newt_poly_move(newt_poly_t *ref, uint8_t do_note_list);
 
-int
+bool
 newt_move_addr(const struct newt_mem *type, void **ref);
 
-int
+bool
 newt_move_offset(const struct newt_mem *type, newt_offset_t *ref);
 
-int
+bool
 newt_marked(void *addr);
 
 void *
@@ -577,18 +577,6 @@ newt_code_stash(newt_code_t *code);
 
 newt_code_t *
 newt_code_fetch(void);
-
-int
-newt_print_mark_addr(void *addr);
-
-void
-newt_print_clear_addr(void *addr);
-
-void
-newt_print_start(void);
-
-int
-newt_print_stop(void);
 
 /* newt-name.c */
 
@@ -637,7 +625,7 @@ newt_poly_len(newt_poly_t a);
 bool
 newt_slice_canon(newt_slice_t *slice);
 
-int
+newt_offset_t
 newt_null_size(void *addr);
 
 void
@@ -774,7 +762,7 @@ newt_float_to_poly(float f)
 }
 
 static inline newt_poly_t
-newt_offset_to_poly(uint32_t offset, newt_type_t type)
+newt_offset_to_poly(newt_offset_t offset, newt_type_t type)
 {
 	return (newt_poly_t) { .u = 0xff000000 | offset | type };
 }

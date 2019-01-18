@@ -90,11 +90,11 @@ bail:
 	return false;
 }
 
-static int
+static newt_offset_t
 newt_range_size(void *addr)
 {
 	(void) addr;
-	return sizeof(newt_range_t);
+	return (newt_offset_t) sizeof(newt_range_t);
 }
 
 static void
@@ -205,7 +205,7 @@ bail:
 	return false;
 }
 
-static int
+static newt_offset_t
 newt_in_size(void *addr)
 {
 	(void) addr;

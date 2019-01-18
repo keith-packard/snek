@@ -205,7 +205,7 @@ newt_poly_len(newt_poly_t a)
 	}
 }
 
-int
+newt_offset_t
 newt_null_size(void *addr)
 {
 	(void) addr;

@@ -117,7 +117,7 @@ newt_id_ref(newt_id_t id, bool insert)
 	return &v->value;
 }
 
-static int
+static newt_offset_t
 newt_variable_size(void *addr)
 {
 	(void) addr;
@@ -162,7 +162,7 @@ const newt_mem_t newt_variable_mem = {
 	NEWT_MEM_DECLARE_NAME("variable")
 };
 
-static int
+static newt_offset_t
 newt_frame_size(void *addr)
 {
 	(void) addr;

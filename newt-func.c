@@ -59,12 +59,12 @@ newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt
 	return true;
 }
 
-static int
+static newt_offset_t
 newt_func_size(void *addr)
 {
 	newt_func_t *func = addr;
 
-	return sizeof (newt_func_t) + func->nformal * sizeof (newt_id_t);
+	return (newt_offset_t) sizeof (newt_func_t) + func->nformal * (newt_offset_t) sizeof (newt_id_t);
 }
 
 static void

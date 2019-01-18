@@ -135,11 +135,11 @@ newt_string_interpolate(char *a, newt_poly_t poly)
 	return result;
 }
 
-int
+newt_offset_t
 newt_string_size(void *addr)
 {
 	char *string = addr;
-	return strlen(string) + 1;
+	return (newt_offset_t) strlen(string) + 1;
 }
 
 const newt_mem_t newt_string_mem = {

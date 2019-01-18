@@ -116,12 +116,12 @@ newt_name_string(newt_id_t id)
 	return NULL;
 }
 
-static int
+static newt_offset_t
 newt_name_size(void *addr)
 {
 	newt_name_t *n = addr;
 
-	return sizeof (newt_name_t) + strlen(n->name) + 1;
+	return (newt_offset_t) sizeof (newt_name_t) + (newt_offset_t) strlen(n->name) + 1;
 }
 
 static void

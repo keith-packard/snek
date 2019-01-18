@@ -1014,12 +1014,12 @@ newt_code_run(newt_code_t *code_in)
 	return a;
 }
 
-static int
+static newt_offset_t
 newt_code_size(void *addr)
 {
 	newt_code_t *code = addr;
 
-	return sizeof (newt_code_t) + code->size;
+	return (newt_offset_t) sizeof (newt_code_t) + code->size;
 }
 
 static void
@@ -1088,7 +1088,7 @@ const newt_mem_t newt_code_mem = {
 	NEWT_MEM_DECLARE_NAME("code")
 };
 
-static int
+static newt_offset_t
 newt_compile_size(void *addr)
 {
 	(void) addr;
