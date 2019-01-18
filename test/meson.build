@@ -1,4 +1,5 @@
 tests = [
+  'list.py',
   'for-array.py',
   'for-range.py',
   'for-string.py',

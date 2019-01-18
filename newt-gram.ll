@@ -424,7 +424,7 @@ opt-expr	:	@{
 				value_push_bool(false);
 			}@
 		;
-expr-prim	: OP @{ ++newt_ignore_nl; }@ expr opt-tuple CP @{ --newt_ignore_nl; }@
+expr-prim	: OP @{ ++newt_ignore_nl; }@ opt-tuple CP @{ --newt_ignore_nl; }@
 			@{
 				bool tuple = value_pop().bools;
 
@@ -451,7 +451,14 @@ expr-prim	: OP @{ ++newt_ignore_nl; }@ expr opt-tuple CP @{ --newt_ignore_nl; }@
 				newt_code_add_string(newt_token_val.string);
 			}@
 		;
-opt-tuple	: COMMA
+opt-tuple	: expr opt-tuple-p
+		|
+			@{
+				value_push_int(-1);
+				value_push_bool(true);
+			}@
+		;
+opt-tuple-p	: COMMA
 			@{
 				newt_code_set_push(newt_code_prev_insn());
 			}@
