@@ -1081,7 +1081,7 @@ newt_code_move(void *addr)
 	code_move(code->code, code->size);
 }
 
-const newt_mem_t newt_code_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_code_mem) = {
 	.size = newt_code_size,
 	.mark = newt_code_mark,
 	.move = newt_code_move,
@@ -1089,7 +1089,7 @@ const newt_mem_t newt_code_mem = {
 };
 
 static newt_offset_t
-newt_compile_size(void *addr)
+_newt_compile_size(void *addr)
 {
 	(void) addr;
 	return compile_alloc;
@@ -1107,8 +1107,8 @@ newt_compile_move(void *addr)
 	code_move(addr, compile_size);
 }
 
-const newt_mem_t newt_compile_mem = {
-	.size = newt_compile_size,
+const newt_mem_t NEWT_MEM_DECLARE(newt_compile_mem) = {
+	.size = _newt_compile_size,
 	.mark = newt_compile_mark,
 	.move = newt_compile_move,
 	NEWT_MEM_DECLARE_NAME("compile")

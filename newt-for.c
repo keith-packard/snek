@@ -124,7 +124,7 @@ newt_range_move(void *addr)
 	}
 }
 
-const newt_mem_t newt_range_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_range_mem) = {
 	.size = newt_range_size,
 	.mark = newt_range_mark,
 	.move = newt_range_move,
@@ -242,7 +242,7 @@ newt_in_move(void *addr)
 	}
 }
 
-const newt_mem_t newt_in_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_in_mem) = {
 	.size = newt_in_size,
 	.mark = newt_in_mark,
 	.move = newt_in_move,

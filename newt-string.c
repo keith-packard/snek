@@ -142,9 +142,9 @@ newt_string_size(void *addr)
 	return (newt_offset_t) strlen(string) + 1;
 }
 
-const newt_mem_t newt_string_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_string_mem) = {
 	.size = newt_string_size,
-	.mark = newt_null_mark,
-	.move = newt_null_move,
+	.mark = newt_null_mark_move,
+	.move = newt_null_mark_move,
 	NEWT_MEM_DECLARE_NAME("string")
 };

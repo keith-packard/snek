@@ -161,6 +161,13 @@ typedef struct newt_mem {
 #endif
 } newt_mem_t;
 
+#ifndef NEWT_MEM_DECLARE
+#define NEWT_MEM_DECLARE(n) n
+#define NEWT_MEM_SIZE(m)	((m)->size)
+#define NEWT_MEM_MARK(m)	((m)->mark)
+#define NEWT_MEM_MOVE(m)	((m)->move)
+#endif
+
 #ifdef NEWT_MEM_INCLUDE_NAME
 #define NEWT_MEM_DECLARE_NAME(_name)	.name = _name,
 #else
@@ -629,10 +636,9 @@ newt_offset_t
 newt_null_size(void *addr);
 
 void
-newt_null_mark(void *addr);
+newt_null_mark_move(void *addr);
 
-void
-newt_null_move(void *addr);
+extern const newt_mem_t newt_null_mem;
 
 char *
 newt_poly_format(newt_poly_t a, char format);
@@ -800,7 +806,7 @@ newt_size_round(int size)
 static inline int
 newt_size(const newt_mem_t *mem, void *addr)
 {
-	return newt_size_round(mem->size(addr));
+	return newt_size_round(NEWT_MEM_SIZE(mem)(addr));
 }
 
 static inline newt_poly_t

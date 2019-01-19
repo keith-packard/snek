@@ -64,7 +64,7 @@ def dump_headers(fp):
         print("%s" % line, file=fp)
 
 def dump_names(fp):
-    print("static const uint8_t NEWT_BUILTIN_NAMES_DECLARATION(newt_builtin_names)[] = {", file=fp)
+    print("static const uint8_t NEWT_BUILTIN_NAMES_DECLARE(newt_builtin_names)[] = {", file=fp)
     for name in sorted(builtins):
         if name.keyword:
             print("\t%s | 0x80, " % name.keyword, end='', file=fp)
@@ -93,7 +93,7 @@ def dump_builtins(fp):
         print(");", file=fp)
         print(file=fp)
 
-    print("const newt_builtin_t newt_builtins[] = {", file=fp)
+    print("const newt_builtin_t NEWT_BUILTIN_DECLARE(newt_builtins)[] = {", file=fp)
 
     for name in sorted(builtins):
         if name.keyword:
@@ -103,7 +103,6 @@ def dump_builtins(fp):
         print("\t\t.nformal=%d," % name.nformal, file=fp)
         print("\t\t%s = %s," % (name.func_field(), name.func_name()), file=fp)
         print("\t},", file=fp)
-
     print("};", file=fp)
 
 def dump_cpp(fp):
@@ -134,13 +133,23 @@ def builtin_main():
 
     print("#ifdef NEWT_BUILTIN_DATA", file=fp)
 
-    print("#ifndef NEWT_BUILTIN_NAMES_DECLARATION", file=fp)
-    print("#define NEWT_BUILTIN_NAMES_DECLARATION(n) n", file=fp)
+    print("#ifndef NEWT_BUILTIN_NAMES_DECLARE", file=fp)
+    print("#define NEWT_BUILTIN_NAMES_DECLARE(n) n", file=fp)
     print("#endif", file=fp)
 
     dump_names(fp)
 
     print(file=fp)
+
+    print("#ifndef NEWT_BUILTIN_DECLARE", file=fp)
+    print("#define NEWT_BUILTIN_DECLARE(n) n", file=fp)
+    print("#define NEWT_BUILTIN_NFORMAL(b) ((b)->nformal)", file=fp)
+    print("#define NEWT_BUILTIN_FUNC0(b) ((b)->func0)", file=fp)
+    print("#define NEWT_BUILTIN_FUNC1(b) ((b)->func1)", file=fp)
+    print("#define NEWT_BUILTIN_FUNC2(b) ((b)->func2)", file=fp)
+    print("#define NEWT_BUILTIN_FUNC3(b) ((b)->func3)", file=fp)
+    print("#define NEWT_BUILTIN_FUNC4(b) ((b)->func4)", file=fp)
+    print("#endif", file=fp)
 
     dump_builtins(fp)
 

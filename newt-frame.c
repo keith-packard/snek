@@ -155,7 +155,7 @@ newt_variable_move(void *addr)
 	}
 }
 
-const newt_mem_t newt_variable_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_variable_mem) = {
 	.size = newt_variable_size,
 	.mark = newt_variable_mark,
 	.move = newt_variable_move,
@@ -205,7 +205,7 @@ newt_frame_move(void *addr)
 	}
 }
 
-const newt_mem_t newt_frame_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_frame_mem) = {
 	.size = newt_frame_size,
 	.mark = newt_frame_mark,
 	.move = newt_frame_move,

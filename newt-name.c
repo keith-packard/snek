@@ -151,7 +151,7 @@ newt_name_move(void *addr)
 	}
 }
 
-const newt_mem_t newt_name_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_name_mem) = {
 	.size = newt_name_size,
 	.mark = newt_name_mark,
 	.move = newt_name_move,

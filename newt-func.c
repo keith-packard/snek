@@ -84,7 +84,7 @@ newt_func_move(void *addr)
 		newt_move_offset(&newt_code_mem, &func->code);
 }
 
-const newt_mem_t newt_func_mem = {
+const newt_mem_t NEWT_MEM_DECLARE(newt_func_mem) = {
 	.size = newt_func_size,
 	.mark = newt_func_mark,
 	.move = newt_func_move,

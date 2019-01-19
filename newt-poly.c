@@ -213,13 +213,14 @@ newt_null_size(void *addr)
 }
 
 void
-newt_null_mark(void *addr)
+newt_null_mark_move(void *addr)
 {
 	(void) addr;
 }
 
-void
-newt_null_move(void *addr)
-{
-	(void) addr;
-}
+const newt_mem_t NEWT_MEM_DECLARE(newt_null_mem) = {
+	.size = newt_null_size,
+	.mark = newt_null_mark_move,
+	.move = newt_null_mark_move,
+	NEWT_MEM_DECLARE_NAME("null")
+};
