@@ -248,7 +248,7 @@ typedef struct newt_slice {
 #define NEWT_SLICE_DEFAULT	0x7fffffff	/* empty value provided [1:] */
 
 typedef struct newt_builtin {
-	newt_soffset_t	nformal;
+	int8_t nformal;
 	union {
 		newt_poly_t	(*funcv)(int nactuals, ...);
 		newt_poly_t	(*func0)(void);
