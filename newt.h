@@ -320,74 +320,53 @@ extern newt_token_val_t	newt_token_val;
 
 /* newt-builtin.c */
 
-extern const newt_mem_t newt_builtin_mem;
-
 /* newt-code.c */
 
 extern const char * const newt_op_names[];
 
-extern uint8_t	*newt_compile;
+extern uint8_t		*newt_compile;
+extern newt_offset_t	newt_compile_size;
+extern newt_offset_t	newt_compile_prev, newt_compile_prev_prev;
 
 #define NEWT_OP_SLICE_START	1
 #define NEWT_OP_SLICE_END	2
 #define NEWT_OP_SLICE_STRIDE	4
 
-newt_offset_t
-newt_code_current(void);
-
-newt_offset_t
-newt_code_prev_insn(void);
-
-newt_offset_t
-newt_code_prev_prev_insn(void);
-
-uint8_t *
-newt_code_at(newt_offset_t offset);
-
 void
-newt_code_delete_prev(void);
-
-newt_offset_t
 newt_code_add_op(newt_op_t op);
 
-newt_offset_t
+void
 newt_code_add_op_id(newt_op_t op, newt_id_t id);
 
-newt_offset_t
+void
 newt_code_add_op_array(newt_op_t op);
 
-newt_offset_t
+void
 newt_code_add_number(float number);
 
-newt_offset_t
+void
 newt_code_add_string(char *string);
 
-newt_offset_t
+void
 newt_code_add_op_offset(newt_op_t op, newt_offset_t offset);
 
-newt_offset_t
+void
 newt_code_add_op_branch(newt_op_t op);
 
-newt_offset_t
+void
 newt_code_add_forward(newt_forward_t forward);
 
 void
 newt_code_patch_forward(newt_offset_t start, newt_forward_t forward, newt_offset_t target);
 
-newt_offset_t
-newt_code_add_call(newt_offset_t nactual);
-
-newt_offset_t
+void
 newt_code_add_slice(bool has_start, bool has_end, bool has_stride);
 
-newt_offset_t
+void
 newt_code_add_range_start(newt_id_t id, newt_offset_t nactual);
 
 void
 newt_code_patch_branch(newt_offset_t branch, newt_offset_t target);
-
-void
-newt_code_set_push(newt_offset_t offset);
 
 newt_code_t *
 newt_code_finish(void);
@@ -917,4 +896,41 @@ newt_list_set_note_next(newt_list_t *list, newt_offset_t note_next)
 		newt_panic("note_next bad alignment");
 #endif
 	list->note_next_and_readonly = (list->note_next_and_readonly & 3) | (note_next);
+}
+
+static inline newt_offset_t
+newt_code_current(void)
+{
+	return newt_compile_size;
+}
+
+static inline newt_offset_t
+newt_code_prev_insn(void)
+{
+	return newt_compile_prev;
+}
+
+static inline newt_offset_t
+newt_code_prev_prev_insn(void)
+{
+	return newt_compile_prev_prev;
+}
+
+static inline uint8_t *
+newt_code_at(newt_offset_t offset)
+{
+	return newt_compile + offset;
+}
+
+static inline void
+newt_code_set_push(newt_offset_t offset)
+{
+	newt_compile[offset] |= newt_op_push;
+}
+
+static inline void
+newt_code_delete_prev(void)
+{
+	newt_compile_size = newt_compile_prev;
+	newt_compile_prev = newt_compile_prev_prev;
 }

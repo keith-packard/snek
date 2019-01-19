@@ -233,138 +233,79 @@ newt_code_dump(newt_code_t *code)
 #endif
 
 uint8_t			*newt_compile;
-static newt_offset_t	compile_size, compile_alloc;
-static newt_offset_t	compile_prev, compile_prev_prev;
+newt_offset_t		newt_compile_size;
+newt_offset_t		newt_compile_prev, newt_compile_prev_prev;
+
+static newt_offset_t	compile_alloc;
 
 #define COMPILE_INC	32
 
-static newt_offset_t
-compile_extend(newt_offset_t n, void *data, bool insn)
+static void
+compile_extend(newt_offset_t n, void *data)
 {
-	newt_offset_t start = compile_size;
-
-	if (compile_size + n > compile_alloc) {
+	if (newt_compile_size + n > compile_alloc) {
 		uint8_t *new_compile = newt_alloc(compile_alloc + COMPILE_INC);
 		if (!new_compile)
-			return 0xffff;
-		memcpy(new_compile, newt_compile, compile_size);
+			return;
+		memcpy(new_compile, newt_compile, newt_compile_size);
 		compile_alloc += COMPILE_INC;
 		newt_compile = new_compile;
 	}
 	if (data)
-		memcpy(newt_compile + compile_size, data, n);
-	if (insn) {
-		compile_prev_prev = compile_prev;
-		compile_prev = compile_size;
-	}
-	compile_size += n;
-	return start;
-}
-
-newt_offset_t
-newt_code_current(void)
-{
-	return compile_size;
-}
-
-newt_offset_t
-newt_code_prev_insn(void)
-{
-	return compile_prev;
-}
-
-newt_offset_t
-newt_code_prev_prev_insn(void)
-{
-	return compile_prev_prev;
-}
-
-uint8_t *
-newt_code_at(newt_offset_t offset)
-{
-	return newt_compile + offset;
+		memcpy(newt_compile + newt_compile_size, data, n);
+	newt_compile_size += n;
 }
 
 void
-newt_code_delete_prev(void)
-{
-	compile_size = compile_prev;
-	compile_prev = compile_prev_prev;
-}
-
-newt_offset_t
 newt_code_add_op(newt_op_t op)
 {
-	return compile_extend(1, &op, true);
+	newt_compile_prev_prev = newt_compile_prev;
+	newt_compile_prev = newt_compile_size;
+	compile_extend(1, &op);
 }
 
-newt_offset_t
+void
 newt_code_add_op_id(newt_op_t op, newt_id_t id)
 {
-	newt_offset_t offset = compile_extend(1, &op, true);
-	compile_extend(sizeof (newt_id_t), &id, false);
-	return offset;
+	newt_code_add_op(op);
+	compile_extend(sizeof (newt_id_t), &id);
 }
 
-newt_offset_t
+void
 newt_code_add_number(float number)
 {
-	newt_op_t op = newt_op_num;
-	newt_offset_t offset;
-
-	offset = compile_extend(1, &op, true);
-	compile_extend(sizeof(float), &number, false);
-	return offset;
+	newt_code_add_op(newt_op_num);
+	compile_extend(sizeof(float), &number);
 }
 
-newt_offset_t
+void
 newt_code_add_string(char *string)
 {
-	newt_op_t op = newt_op_string;
-	newt_offset_t offset, strpos;
 	newt_offset_t s;
+	newt_offset_t strpos;
 
 	newt_poly_stash(newt_string_to_poly(string));
-	offset = compile_extend(1, &op, true);
-	strpos = compile_extend(sizeof (newt_offset_t), NULL, false);
-	string = newt_poly_to_string(newt_poly_fetch());
-	s = newt_pool_offset(string);
+	newt_code_add_op(newt_op_string);
+	strpos = newt_compile_size;
+	compile_extend(sizeof (newt_offset_t), NULL);
+	s = newt_poly_to_offset(newt_poly_fetch());
 	memcpy(newt_compile + strpos, &s, sizeof (newt_offset_t));
-	return offset;
 }
 
-newt_offset_t
+void
 newt_code_add_op_offset(newt_op_t op, newt_offset_t o)
 {
-	newt_offset_t offset;
-
-	offset = compile_extend(1, &op, true);
-	compile_extend(sizeof (newt_offset_t), &o, false);
-	return offset;
+	newt_code_add_op(op);
+	compile_extend(sizeof (newt_offset_t), &o);
 }
 
-newt_offset_t
+void
 newt_code_add_forward(newt_forward_t forward)
 {
-	newt_op_t op = newt_op_forward;
-	newt_offset_t offset;
-
-	offset = compile_extend(1, &op, true);
-	compile_extend(sizeof (newt_forward_t), &forward, false);
+	newt_code_add_op(newt_op_forward);
+	compile_extend(sizeof (newt_forward_t), &forward);
 	if (sizeof (newt_forward_t) < sizeof (newt_offset_t))
-		compile_extend(sizeof (newt_offset_t) - sizeof (newt_forward_t), NULL, false);
-	return offset;
-}
-
-newt_offset_t
-newt_code_add_call(newt_offset_t nactual)
-{
-	newt_offset_t	offset;
-	newt_op_t	op = newt_op_call;
-
-	offset = compile_extend(1, &op, true);
-	compile_extend(sizeof (newt_offset_t), &nactual, false);
-	return offset;
+		compile_extend(sizeof (newt_offset_t) - sizeof (newt_forward_t), NULL);
 }
 
 static inline uint8_t
@@ -373,27 +314,23 @@ bit(bool val, uint8_t pos)
 	return val ? pos : 0;
 }
 
-newt_offset_t
+void
 newt_code_add_slice(bool has_start, bool has_end, bool has_stride)
 {
-	uint8_t	insn[2];
-	insn[0] = newt_op_slice;
-	insn[1] = (bit(has_start, NEWT_OP_SLICE_START) |
+	newt_code_add_op(newt_op_slice);
+	uint8_t param;
+	param = (bit(has_start, NEWT_OP_SLICE_START) |
 		   bit(has_end,   NEWT_OP_SLICE_END) |
 		   bit(has_stride, NEWT_OP_SLICE_STRIDE));
-	return compile_extend(2, insn, true);
+	compile_extend(1, &param);
 }
 
-newt_offset_t
+void
 newt_code_add_range_start(newt_id_t id, newt_offset_t nactual)
 {
-	newt_op_t op = newt_op_range_start;
-	newt_offset_t offset;
-
-	offset = compile_extend(1, &op, true);
-	compile_extend(sizeof (newt_id_t), &id, false);
-	compile_extend(sizeof (newt_offset_t), &nactual, false);
-	return offset;
+	newt_code_add_op(newt_op_range_start);
+	compile_extend(sizeof (newt_id_t), &id);
+	compile_extend(sizeof (newt_offset_t), &nactual);
 }
 
 void
@@ -407,7 +344,7 @@ newt_code_patch_forward(newt_offset_t start, newt_forward_t forward, newt_offset
 {
 	newt_offset_t ip = start;
 
-	while (ip < compile_size) {
+	while (ip < newt_compile_size) {
 		newt_op_t op = newt_compile[ip++];
 		bool push = (op & newt_op_push) != 0;
 		newt_forward_t f;
@@ -427,26 +364,20 @@ newt_code_patch_forward(newt_offset_t start, newt_forward_t forward, newt_offset
 	}
 }
 
-void
-newt_code_set_push(newt_offset_t offset)
-{
-	newt_compile[offset] |= newt_op_push;
-}
-
 newt_code_t *
 newt_code_finish(void)
 {
 	newt_code_patch_forward(0, newt_forward_return, newt_code_current());
-	newt_code_t *code = newt_alloc(sizeof (newt_code_t) + compile_size);
+	newt_code_t *code = newt_alloc(sizeof (newt_code_t) + newt_compile_size);
 
 	if (code) {
-		memcpy(&code->code, newt_compile, compile_size);
-		code->size = compile_size;
+		memcpy(&code->code, newt_compile, newt_compile_size);
+		code->size = newt_compile_size;
 #ifdef DEBUG_COMPILE
 		newt_code_dump(code);
 #endif
 	}
-	compile_size = 0;
+	newt_compile_size = 0;
 	compile_alloc = 0;
 	newt_compile = NULL;
 	return code;
@@ -775,20 +706,14 @@ newt_call_builtin(const newt_builtin_t *builtin, newt_offset_t nactual)
 	return ret;
 }
 
-newt_poly_t
-newt_accumulator(void)
-{
-	return a;
-}
-
 void
 newt_run_mark(void)
 {
 	newt_offset_t s;
 	for (s = 0; s < newt_stackp; s++)
-		newt_poly_mark(newt_stack[s], 1);
-	newt_poly_mark(a, 1);
-	newt_poly_mark(b, 1);
+		newt_poly_mark(newt_stack[s]);
+	newt_poly_mark(a);
+	newt_poly_mark(b);
 	if (code)
 		newt_mark_addr(&newt_code_mem, code);
 }
@@ -798,9 +723,9 @@ newt_run_move(void)
 {
 	newt_offset_t s;
 	for (s = 0; s < newt_stackp; s++)
-		newt_poly_move(&newt_stack[s], 1);
-	newt_poly_move(&a, 1);
-	newt_poly_move(&b, 1);
+		newt_poly_move(&newt_stack[s]);
+	newt_poly_move(&a);
+	newt_poly_move(&b);
 	if (code)
 		newt_move_addr(&newt_code_mem, (void **) &code);
 }
@@ -1098,13 +1023,13 @@ _newt_compile_size(void *addr)
 static void
 newt_compile_mark(void *addr)
 {
-	code_mark(addr, compile_size);
+	code_mark(addr, newt_compile_size);
 }
 
 static void
 newt_compile_move(void *addr)
 {
-	code_move(addr, compile_size);
+	code_move(addr, newt_compile_size);
 }
 
 const newt_mem_t NEWT_MEM_DECLARE(newt_compile_mem) = {
