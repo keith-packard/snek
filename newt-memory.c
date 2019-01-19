@@ -33,7 +33,13 @@ static uint8_t			stash_poly_ptr;
 static newt_name_t		*stash_name;
 static newt_code_t		*stash_code;
 
-static const struct newt_root	newt_root[] = {
+#ifndef NEWT_ROOT_DECLARE
+#define NEWT_ROOT_DECLARE(n) n
+#define NEWT_ROOT_TYPE(n) ((n)->type)
+#define NEWT_ROOT_ADDR(n) ((n)->addr)
+#endif
+
+static const struct newt_root	NEWT_ROOT_DECLARE(newt_root)[] = {
 	{
 		.type = &newt_name_mem,
 		.addr = (void **) (void *) &newt_names,
@@ -257,7 +263,7 @@ reset_chunks(void)
 
 static void
 walk(bool (*visit_addr)(const struct newt_mem *type, void **addr),
-     bool (*visit_poly)(newt_poly_t *p, uint8_t do_note_list),
+     bool (*visit_poly)(newt_poly_t *p),
      void (*visit_run)(void))
 {
 	newt_offset_t i;
@@ -266,15 +272,15 @@ walk(bool (*visit_addr)(const struct newt_mem *type, void **addr),
 	newt_note_list = 0;
 	visit_run();
 	for (i = 0; i < (int) NEWT_ROOT; i++) {
-		if (newt_root[i].type) {
-			void **a = newt_root[i].addr, *v;
+		if (NEWT_ROOT_TYPE(&newt_root[i])) {
+			void **a = NEWT_ROOT_ADDR(&newt_root[i]), *v;
 			if (a == NULL || (v = *a) != NULL) {
-				visit_addr(newt_root[i].type, a);
+				visit_addr(NEWT_ROOT_TYPE(&newt_root[i]), a);
 			}
 		} else {
-			newt_poly_t *a = (newt_poly_t *) newt_root[i].addr, p;
+			newt_poly_t *a = (newt_poly_t *) NEWT_ROOT_ADDR(&newt_root[i]), p;
 			if (a && !newt_is_null(p = *a)) {
-				visit_poly(a, 0);
+				visit_poly(a);
 			}
 		}
 	}
@@ -296,7 +302,7 @@ static const struct newt_mem * const newt_mems[4] = {
 	[newt_list] = &newt_list_mem,
 	[newt_string] = &newt_string_mem,
 	[newt_func] = &newt_func_mem,
-	[newt_builtin] = &newt_builtin_mem,
+	[newt_builtin] = &newt_null_mem,
 };
 
 static bool
@@ -306,9 +312,9 @@ newt_mark_ref(const struct newt_mem *type, void **ref)
 }
 
 static bool
-newt_poly_mark_ref(newt_poly_t *p, uint8_t do_note_list)
+newt_poly_mark_ref(newt_poly_t *p)
 {
-	return newt_poly_mark(*p, do_note_list);
+	return newt_poly_mark(*p);
 }
 
 newt_offset_t newt_last_top;
@@ -478,7 +484,7 @@ newt_mark_addr(const struct newt_mem *type, void *addr)
 	bool ret;
 	ret = newt_mark_block_addr(type, addr);
 	if (!ret)
-		type->mark(addr);
+		NEWT_MEM_MARK(type)(addr);
 	return ret;
 }
 
@@ -489,12 +495,13 @@ newt_mark_offset(const struct newt_mem *type, newt_offset_t offset)
 }
 
 /*
- * Mark an object, unless it is a list and do_note_list is set. In
- * that case, just set a bit in the list note array; those will be
- * marked in a separate pass to avoid deep recursion in the collector
+ * Mark an object, unless it is a list. In that case, just set a bit
+ * in the list note array; those will be marked in a separate pass to
+ * avoid deep recursion in the collector
  */
+
 bool
-newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
+newt_poly_mark(newt_poly_t p)
 {
 	newt_type_t	type;
 	void		*addr;
@@ -509,7 +516,7 @@ newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
 	if (!newt_is_pool_addr(addr))
 		return true;
 
-	if (type == newt_list && do_note_list) {
+	if (type == newt_list) {
 		note_list(addr);
 		return true;
 	} else {
@@ -518,7 +525,7 @@ newt_poly_mark(newt_poly_t p, uint8_t do_note_list)
 		mem = newt_mems[type];
 		ret = newt_mark_block_addr(mem, addr);
 		if (!ret)
-			mem->mark(addr);
+			NEWT_MEM_MARK(mem)(addr);
 
 		return ret;
 	}
@@ -608,7 +615,7 @@ newt_move_offset(const struct newt_mem *type, newt_offset_t *ref)
 }
 
 bool
-newt_poly_move(newt_poly_t *ref, uint8_t do_note_list)
+newt_poly_move(newt_poly_t *ref)
 {
 	newt_poly_t	p = *ref;
 	bool		ret;
@@ -626,7 +633,7 @@ newt_poly_move(newt_poly_t *ref, uint8_t do_note_list)
 	orig_offset = pool_offset(addr);
 	offset = move_map(orig_offset);
 
-	if (newt_poly_type(p) == newt_list && do_note_list && 0) {
+	if (newt_poly_type(p) == newt_list) {
 		note_list(addr);
 		ret = 1;
 	} else {

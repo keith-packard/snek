@@ -505,7 +505,7 @@ newt_lex(void);
 #define NEWT_COLLECT_INCREMENTAL	1
 
 bool
-newt_poly_mark(newt_poly_t p, uint8_t do_note_list);
+newt_poly_mark(newt_poly_t p);
 
 newt_offset_t
 newt_collect(uint8_t style);
@@ -532,7 +532,7 @@ bool
 newt_move_block_addr(void **ref);
 
 bool
-newt_poly_move(newt_poly_t *ref, uint8_t do_note_list);
+newt_poly_move(newt_poly_t *ref);
 
 bool
 newt_move_addr(const struct newt_mem *type, void **ref);

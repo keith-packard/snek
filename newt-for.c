@@ -218,7 +218,7 @@ newt_in_mark(void *addr)
 	newt_in_t	*i = addr;
 
 	for (;;) {
-		newt_poly_mark(i->array, true);
+		newt_poly_mark(i->array);
 
 		if (!i->prev)
 			break;
@@ -233,7 +233,7 @@ newt_in_move(void *addr)
 	newt_in_t	*i = addr;
 
 	for (;;) {
-		newt_poly_move(&i->array, 1);
+		newt_poly_move(&i->array);
 		if (!i->prev)
 			break;
 		if (newt_move_block_offset(&i->prev))

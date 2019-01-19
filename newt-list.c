@@ -166,7 +166,7 @@ newt_list_mark(void *addr)
 		newt_poly_t *data = newt_pool_ref(list->data);
 		newt_mark_blob(data, list->alloc * sizeof (newt_poly_t));
 		for (newt_offset_t i = 0; i < list->size; i++)
-			newt_poly_mark(data[i], 1);
+			newt_poly_mark(data[i]);
 	}
 }
 
@@ -179,7 +179,7 @@ newt_list_move(void *addr)
 		newt_move_block_offset(&list->data);
 		newt_poly_t *data = newt_pool_ref(list->data);
 		for (newt_offset_t i = 0; i < list->size; i++)
-			newt_poly_move(&data[i], 1);
+			newt_poly_move(&data[i]);
 	}
 }
 
