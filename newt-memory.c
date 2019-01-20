@@ -151,6 +151,11 @@ static inline newt_offset_t pool_offset(void *addr) {
 	return ((uint8_t *) addr) - newt_pool;
 }
 
+/* Address of an offset within the pool */
+static inline void *pool_addr(newt_offset_t offset) {
+	return newt_pool + offset;
+}
+
 static inline newt_offset_t tag_byte(newt_offset_t offset) {
 	return offset >> (NEWT_ALLOC_SHIFT + 3);
 }
@@ -679,7 +684,7 @@ newt_alloc(newt_offset_t size)
 		newt_error("out of memory");
 		return NULL;
 	}
-	addr = newt_pool + newt_top;
+	addr = pool_addr(newt_top);
 	memset(addr, '\0', size);
 	debug_memory("Alloc %d size %d\n", newt_top, size);
 	newt_top += size;
