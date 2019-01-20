@@ -29,6 +29,8 @@
 #define NEWT_DEBUG	1
 #endif
 
+// #define DEBUG_MEMORY
+
 #ifdef DEBUG_MEMORY
 #define debug_memory(fmt, args...) printf(fmt, ## args)
 #else
