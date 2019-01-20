@@ -133,9 +133,11 @@ static uint8_t			newt_busy[NEWT_BUSY_SIZE];
 static struct newt_chunk	newt_chunk[NEWT_NCHUNK];
 
 #if NEWT_NCHUNK < 127
-typedef uint8_t newt_chunk_t;
+typedef int8_t newt_chunk_t;
+typedef uint8_t newt_uchunk_t;
 #else
-typedef newt_offset_t newt_chunk_t;
+typedef newt_soffset_t newt_chunk_t;
+typedef newt_offset_t newt_uchunk_t;
 #endif
 
 #endif
@@ -194,7 +196,7 @@ find_chunk(newt_offset_t offset)
 	l = chunk_first;
 	r = chunk_last - 1;
 	while (l <= r) {
-		newt_chunk_t m = (l + r) >> 1;
+		newt_chunk_t m = ((newt_uchunk_t) (l + r)) >> 1;
 		if (newt_chunk[m].old_offset < offset)
 			l = m + 1;
 		else
