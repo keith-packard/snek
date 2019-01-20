@@ -624,7 +624,7 @@ newt_move_addr(const struct newt_mem *type, void **ref)
 	bool ret;
 	ret = newt_move_block_addr(ref);
 	if (!ret)
-		type->move(*ref);
+		NEWT_MEM_MOVE(type)(*ref);
 
 	return ret;
 }
@@ -635,7 +635,7 @@ newt_move_offset(const struct newt_mem *type, newt_offset_t *ref)
 	bool ret;
 	ret = newt_move_block_offset(ref);
 	if (!ret)
-		type->move(newt_pool_ref(*ref));
+		NEWT_MEM_MOVE(type)(newt_pool_ref(*ref));
 	return ret;
 }
 
