@@ -294,13 +294,18 @@ walk(bool (*visit_addr)(const struct newt_mem *type, void **addr),
 	while (newt_note_list) {
 		newt_offset_t note = newt_note_list;
 		newt_note_list = 0;
+		debug_memory("processing list %d\n", pool_offset(newt_pool_ref(note)));
 		while (note) {
 			newt_list_t *list = newt_pool_ref(note);
+			debug_memory("\tprocess list %d\n", pool_offset(list));
 			visit_addr(&newt_list_mem, (void **) &list);
 			note = newt_list_note_next(list);
+			debug_memory("\t\tprocessed, list is now %d next now %d\n",
+				     pool_offset(list), note);
 			newt_list_set_note_next(list, 0);
 			newt_list_set_noted(list, false);
 		}
+		debug_memory("done procesing list\n");
 	}
 }
 
@@ -454,8 +459,10 @@ newt_mark_blob(void *addr, newt_offset_t size)
 {
 	newt_offset_t offset;
 
+#if NEWT_DEBUG
 	if (!newt_is_pool_addr(addr))
 		return true;
+#endif
 
 	offset = pool_offset(addr);
 	if (busy(offset))
@@ -588,8 +595,10 @@ newt_move_block_addr(void **ref)
 	newt_offset_t	offset, orig_offset;
 	bool		ret;
 
+#if NEWT_DEBUG
 	if (!newt_is_pool_addr(addr))
-		return true;
+		newt_panic("non-pool address");
+#endif
 
 	orig_offset = newt_pool_offset(addr);
 	offset = orig_offset;
@@ -666,8 +675,10 @@ newt_poly_move(newt_poly_t *ref)
 bool
 newt_marked(void *addr)
 {
+#if NEWT_DEBUG
 	if (!newt_is_pool_addr(addr))
-		return true;
+		newt_panic("non-pool address");
+#endif
 	return busy(pool_offset(addr));
 }
 
