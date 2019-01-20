@@ -671,7 +671,7 @@ newt_assign(newt_id_t id, newt_op_t op)
 		/* Recover the two values popped from the stack so
 		 * that they will be popped again
 		 */
-		if (id != NEWT_ID_NONE)
+		if (id == NEWT_ID_NONE)
 			newt_stackp += 2;
 		a = newt_binary(*ref, op - (newt_op_assign_plus - newt_op_plus), a, true);
 		op = newt_op_assign;
