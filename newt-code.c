@@ -288,7 +288,7 @@ newt_code_add_string(char *string)
 	newt_code_add_op(newt_op_string);
 	strpos = newt_compile_size;
 	compile_extend(sizeof (newt_offset_t), NULL);
-	s = newt_poly_to_offset(newt_poly_fetch());
+	s = newt_pool_offset(newt_poly_to_string(newt_poly_fetch()));
 	memcpy(newt_compile + strpos, &s, sizeof (newt_offset_t));
 }
 
