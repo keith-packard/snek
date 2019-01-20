@@ -179,14 +179,20 @@ static inline bool busy(newt_offset_t offset) {
 static inline int min(int a, int b) { return a < b ? a : b; }
 static inline int max(int a, int b) { return a > b ? a : b; }
 
-static inline void
-note_list(newt_list_t *list)
+static inline bool
+note_list(newt_list_t *list_old, newt_list_t *list_new)
 {
-	if (!newt_list_noted(list)) {
-		newt_list_set_note_next(list, newt_note_list);
-		newt_list_set_noted(list, true);
-		newt_note_list = newt_pool_offset(list);
+	if (!newt_list_noted(list_new)) {
+		debug_memory("\tnote list %d -> %d\n", pool_offset(list_old), pool_offset(list_new));
+		newt_list_set_note_next(list_new, newt_note_list);
+		newt_list_set_noted(list_new, true);
+		newt_note_list = newt_pool_offset(list_old);
+		return false;
 	}
+	debug_memory("\tnote list %d -> %d already noted (noted %d busy %d)\n",
+		     pool_offset(list_old), pool_offset(list_new),
+		     newt_list_noted(list_new), busy(pool_offset(list_old)));
+	return true;
 }
 
 static newt_offset_t	chunk_low, chunk_high;
@@ -527,22 +533,25 @@ newt_poly_mark(newt_poly_t p)
 		return true;
 
 	addr = newt_ref(p);
+
+	if (type == newt_list)
+		debug_memory("\tmark list %d\n", pool_offset(addr));
+
+#ifdef NEWT_DEBUG
 	if (!newt_is_pool_addr(addr))
-		return true;
+		newt_panic("non-pool addr in heap");
+#endif
 
-	if (type == newt_list) {
-		note_list(addr);
-		return true;
-	} else {
-		const struct newt_mem *mem;
+	const struct newt_mem *mem;
 
-		mem = newt_mems[type];
-		ret = newt_mark_block_addr(mem, addr);
-		if (!ret)
-			NEWT_MEM_MARK(mem)(addr);
-
-		return ret;
+	mem = newt_mems[type];
+	ret = newt_mark_block_addr(mem, addr);
+	if (!ret) {
+		NEWT_MEM_MARK(mem)(addr);
+		if (type == newt_list)
+			note_list(addr, addr);
 	}
+	return ret;
 }
 
 /*
@@ -643,30 +652,33 @@ newt_poly_move(newt_poly_t *ref)
 		return true;
 
 	addr = newt_ref(p);
+
+	if (type == newt_list)
+		debug_memory("\tmove list %d\n", pool_offset(addr));
+
+#if NEWT_DEBUG
 	if (!newt_is_pool_addr(addr))
-		return true;
+		newt_panic("non-pool address");
+#endif
 
 	orig_offset = pool_offset(addr);
 	offset = move_map(orig_offset);
 
-	if (newt_poly_type(p) == newt_list) {
-		note_list(addr);
-		ret = 1;
-	} else {
-		newt_type_t type = newt_poly_type(p);
-		const struct newt_mem *mem;
+	const struct newt_mem *mem;
 
-		mem = newt_mems[type];
+	mem = newt_mems[type];
 
-		/* inline newt_move to save stack space */
-		ret = newt_move_block_addr(&addr);
-		if (!ret)
-			mem->move(addr);
+	/* inline newt_move to save stack space */
+	ret = newt_move_block_addr(&addr);
+	if (!ret) {
+		NEWT_MEM_MOVE(mem)(addr);
+		if (type == newt_list)
+			note_list(pool_addr(orig_offset), addr);
 	}
 
 	/* Re-write the poly value */
 	if (offset != orig_offset) {
-		newt_poly_t np = newt_poly(newt_pool + offset, newt_poly_type(p));
+		newt_poly_t np = newt_poly(pool_addr(offset), newt_poly_type(p));
 		*ref = np;
 	}
 	return ret;
