@@ -130,7 +130,11 @@ newt_variable_mark(void *addr)
 	newt_variable_t *v = addr;
 
 	for (;;) {
-		debug_memory("\t\tmark variable %s\n", newt_name_string(v->id));
+		debug_memory("\t\tmark variable %s %d: %d",
+			     newt_name_string(v->id),
+			     newt_poly_type(v->value),
+			     newt_is_float(v->value) ?
+			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
 		newt_poly_mark(v->value);
 
 		if (!v->next)
@@ -146,8 +150,17 @@ newt_variable_move(void *addr)
 	newt_variable_t *v = addr;
 
 	for (;;) {
-		debug_memory("\t\tmove variable %s\n", newt_name_string(v->id));
+		debug_memory("\t\tmove variable %s %d: %d\n",
+			     newt_name_string(v->id),
+			     newt_poly_type(v->value),
+			     newt_is_float(v->value) ?
+			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
 		newt_poly_move(&v->value);
+		debug_memory("\t\tmoved variable %s %d: %d\n",
+			     newt_name_string(v->id),
+			     newt_poly_type(v->value),
+			     newt_is_float(v->value) ?
+			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
 
 		if (!v->next || newt_move_block_offset(&v->next))
 			break;
