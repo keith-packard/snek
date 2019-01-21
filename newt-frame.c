@@ -151,7 +151,8 @@ newt_variable_mark(void *addr)
 			     newt_poly_type(v->value),
 			     newt_is_float(v->value) ?
 			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
-		newt_poly_mark(v->value);
+		if (!newt_is_global(v->value))
+			newt_poly_mark(v->value);
 
 		if (!v->next)
 			break;
@@ -171,7 +172,8 @@ newt_variable_move(void *addr)
 			     newt_poly_type(v->value),
 			     newt_is_float(v->value) ?
 			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
-		newt_poly_move(&v->value);
+		if (!newt_is_global(v->value))
+			newt_poly_move(&v->value);
 		debug_memory("\t\tmoved variable %s %d: %d\n",
 			     newt_name_string(v->id),
 			     newt_poly_type(v->value),
