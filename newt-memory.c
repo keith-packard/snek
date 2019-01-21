@@ -537,7 +537,7 @@ newt_poly_mark(newt_poly_t p)
 	if (type == newt_list)
 		debug_memory("\tmark list %d\n", pool_offset(addr));
 
-#ifdef NEWT_DEBUG
+#if NEWT_DEBUG
 	if (!newt_is_pool_addr(addr))
 		newt_panic("non-pool addr in heap");
 #endif
