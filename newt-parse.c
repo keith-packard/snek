@@ -140,6 +140,11 @@ lex(void *lex_context)
 	return newt_lex();
 }
 
+#define PARSE_ACTION_BOTTOM do {			\
+		if (newt_abort)				\
+			return parse_return_error;	\
+	} while (0)
+
 #define PARSE_CODE
 #include "newt-gram.h"
 
@@ -168,6 +173,7 @@ newt_parse(void)
 			skip_to_nl = true;
 			break;
 		case parse_return_error:
+		case parse_return_oom:
 			break;
 		default:
 			skip_to_nl = true;

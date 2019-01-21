@@ -72,7 +72,8 @@ newt_func_mark(void *addr)
 {
 	newt_func_t *func = addr;
 
-	newt_mark_offset(&newt_code_mem, func->code);
+	if (func->code)
+		newt_mark_offset(&newt_code_mem, func->code);
 }
 
 static void

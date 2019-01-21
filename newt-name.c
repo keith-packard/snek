@@ -93,6 +93,8 @@ newt_name_id(char *name, bool *keyword)
 		if (!strcmp(n->name, name))
 			return n->id;
 	n = newt_alloc(sizeof (newt_name_t) + strlen(name) + 1);
+	if (!n)
+		return NEWT_ID_NONE;
 	strcpy(n->name, name);
 	n->next = newt_pool_offset(newt_names);
 	n->id = newt_id++;

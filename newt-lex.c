@@ -239,6 +239,8 @@ string(int q)
 		c = lexchar();
 		if (c == q) {
 			char *ret = newt_alloc(newt_lex_len + 1);
+			if (!ret)
+				RETURN(TOKEN_NONE);
 			strcpy(ret, newt_lex_text);
 			newt_token_val.string = ret;
 			RETURN(STRING);
