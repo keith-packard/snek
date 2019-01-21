@@ -47,10 +47,25 @@ command		: stat
 				if (ref)
 					*ref = poly;
 			}@
+		| DEL
+			@{
+				nformal = 0;
+			}@
+		  formals
+			@{
+				uint8_t i;
+				for (i = 0; i < nformal; i++)
+					if (!newt_id_del(formals[i])) {
+						newt_error("%i: undefined", formals[i]);
+						break;
+					}
+			}@
 		| IMPORT NAME
 		;
-opt-formals	: formal formals-p
+opt-formals	: formals
 		|
+		;
+formals		: formal formals-p
 		;
 formals-p	: COMMA formal formals-p
 		|

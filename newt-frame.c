@@ -117,6 +117,22 @@ newt_id_ref(newt_id_t id, bool insert)
 	return &v->value;
 }
 
+bool
+newt_id_del(newt_id_t id)
+{
+	newt_variable_t	*v;
+	newt_offset_t	*next;
+
+	for (next = &newt_globals->variables; *next; next = &v->next) {
+		v = newt_pool_ref(*next);
+		if (v->id == id) {
+			*next = v->next;
+			return true;
+		}
+	}
+	return false;
+}
+
 static newt_offset_t
 newt_variable_size(void *addr)
 {

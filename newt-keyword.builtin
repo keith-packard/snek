@@ -1,5 +1,5 @@
 def, DEF
-def, DEF
+del, DEL
 global, GLOBAL
 if, IF
 else, ELSE
