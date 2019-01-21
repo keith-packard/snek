@@ -447,6 +447,9 @@ newt_frame_pop(newt_offset_t *ip_p);
 newt_poly_t *
 newt_id_ref(newt_id_t id, bool insert);
 
+bool
+newt_id_del(newt_id_t id);
+
 extern const newt_mem_t newt_frame_mem;
 
 /* newt-func.c */
