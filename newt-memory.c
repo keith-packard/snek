@@ -338,6 +338,7 @@ newt_poly_mark_ref(newt_poly_t *p)
 newt_offset_t newt_last_top;
 uint8_t newt_collect_counts;
 
+#ifdef DEBUG_MEMORY
 static void dump_busy(void)
 {
 	newt_offset_t i;
@@ -346,6 +347,9 @@ static void dump_busy(void)
 		if (busy(i))
 			debug_memory("\tBusy %d\n", i);
 }
+#else
+#define dump_busy()
+#endif
 
 newt_offset_t
 newt_collect(uint8_t style)
