@@ -741,7 +741,7 @@ newt_code_run(newt_code_t *code_in)
 	newt_offset_t	o;
 
 	while (code && !newt_abort) {
-		while (ip < code->size && !newt_abort) {
+		while (!newt_abort && ip < code->size) {
 #ifdef DEBUG_EXEC
 			newt_code_dump_instruction(code, ip);
 #endif
