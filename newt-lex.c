@@ -25,7 +25,8 @@ int newt_ignore_nl;
 static int newt_lex_line;
 static bool newt_lex_midline;
 static bool newt_lex_exdent;
-static int newt_lex_indent;
+
+int newt_lex_indent;
 
 #define NEWT_MAX_TOKEN	63
 
@@ -301,7 +302,7 @@ trailing(char *next, newt_op_t without_op, int without, newt_op_t with_op, int w
 	}
 }
 
-int
+token_t
 newt_lex(void)
 {
 	int c, n;

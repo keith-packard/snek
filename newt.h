@@ -501,7 +501,9 @@ extern const newt_mem_t newt_list_mem;
 
 /* newt-lex.c */
 
-int
+extern int newt_lex_indent;
+
+token_t
 newt_lex(void);
 
 /* newt-memory.c */

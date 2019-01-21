@@ -131,10 +131,20 @@ lex(void *lex_context)
 		*skip_to_nl = false;
 		for (;;) {
 			token = newt_lex();
-			if (token == END)
-				return token;
-			if (token == NL)
-				break;
+			switch(token) {
+			case END:
+				return END;
+			case NL:
+				if (newt_current_indent == 0)
+					break;
+				continue;
+			case EXDENT:
+				newt_current_indent = newt_token_val.ints;
+				continue;
+			default:
+				continue;
+			}
+			break;
 		}
 	}
 	return newt_lex();
