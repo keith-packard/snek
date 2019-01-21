@@ -679,26 +679,37 @@ newt_assign(newt_id_t id, newt_op_t op)
 	*ref = a;
 }
 
+#ifndef NEWT_BUILTIN_FUNCV
+#define NEWT_BUILTIN_NFORMAL(b)	((b)->nformal)
+#define NEWT_BUILTIN_FUNCV(b)	((b)->funcv)
+#define NEWT_BUILTIN_FUNC0(b) 	((b)->func0)
+#define NEWT_BUILTIN_FUNC1(b) 	((b)->func1)
+#define NEWT_BUILTIN_FUNC2(b) 	((b)->func2)
+#define NEWT_BUILTIN_FUNC3(b) 	((b)->func3)
+#define NEWT_BUILTIN_FUNC4(b) 	((b)->func4)
+#endif
+
 static newt_poly_t
 newt_call_builtin(const newt_builtin_t *builtin, newt_offset_t nactual)
 {
 	newt_poly_t ret = NEWT_ZERO;
 	newt_poly_t *actuals = &newt_stack[newt_stackp - nactual];
+	newt_offset_t nformal = NEWT_BUILTIN_NFORMAL(builtin);
 
-	if (builtin->nformal < 0) {
-		ret = (*builtin->funcv)(nactual, actuals);
-	} else if (nactual != builtin->nformal) {
-		newt_error("wrong number of args: wanted %d, got %d", builtin->nformal, nactual);
+	if (nformal < 0) {
+		ret = NEWT_BUILTIN_FUNCV(builtin)(nactual, actuals);
+	} else if (nactual != nformal) {
+		newt_error("wrong number of args: wanted %d, got %d", nformal, nactual);
 	} else {
-		switch (builtin->nformal) {
+		switch (nformal) {
 		case 0:
-			ret = builtin->func0();
+			ret = NEWT_BUILTIN_FUNC0(builtin)();
 			break;
 		case 1:
-			ret = builtin->func1(actuals[0]);
+			ret = NEWT_BUILTIN_FUNC1(builtin)(actuals[0]);
 			break;
 		case 2:
-			ret = builtin->func2(actuals[0], actuals[1]);
+			ret = NEWT_BUILTIN_FUNC2(builtin)(actuals[0], actuals[1]);
 			break;
 		}
 	}

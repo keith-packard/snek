@@ -33,11 +33,12 @@
 
 #define NEWT_BUILTIN_DECLARE(n)	PROGMEM n
 #define NEWT_BUILTIN_NFORMAL(b) ((int8_t) pgm_read_byte(&(b)->nformal))
-#define NEWT_BUILTIN_FUNC0(b) 	((newt_poly_t(*)(void) pgm_read_word(&(b)->func0))
-#define NEWT_BUILTIN_FUNC1(b) 	((newt_poly_t(*)(newt_poly_t) pgm_read_word(&(b)->func1))
-#define NEWT_BUILTIN_FUNC2(b) 	((newt_poly_t(*)(newt_poly_t, newt_poly_t) pgm_read_word(&(b)->func2))
-#define NEWT_BUILTIN_FUNC3(b) 	((newt_poly_t(*)(newt_poly_t, newt_poly_t, newt_poly_t) pgm_read_word(&(b)->func3))
-#define NEWT_BUILTIN_FUNC4(b) 	((newt_poly_t(*)(newt_poly_t, newt_poly_t, newt_poly_t, newt_poly_t) pgm_read_word(&(b)->func4))
+#define NEWT_BUILTIN_FUNCV(b)	((newt_poly_t(*)(newt_offset_t, newt_poly_t *)) pgm_read_word(&(b)->funcv))
+#define NEWT_BUILTIN_FUNC0(b) 	((newt_poly_t(*)(void)) pgm_read_word(&(b)->func0))
+#define NEWT_BUILTIN_FUNC1(b) 	((newt_poly_t(*)(newt_poly_t)) pgm_read_word(&(b)->func1))
+#define NEWT_BUILTIN_FUNC2(b) 	((newt_poly_t(*)(newt_poly_t, newt_poly_t)) pgm_read_word(&(b)->func2))
+#define NEWT_BUILTIN_FUNC3(b) 	((newt_poly_t(*)(newt_poly_t, newt_poly_t, newt_poly_t)) pgm_read_word(&(b)->func3))
+#define NEWT_BUILTIN_FUNC4(b) 	((newt_poly_t(*)(newt_poly_t, newt_poly_t, newt_poly_t, newt_poly_t)) pgm_read_word(&(b)->func4))
 
 #define NEWT_ROOT_DECLARE(n) PROGMEM n
 #define NEWT_ROOT_TYPE(n) ((const newt_mem_t *) pgm_read_word(&(n)->type))

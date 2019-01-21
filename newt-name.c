@@ -34,25 +34,36 @@ newt_id_t   newt_id = NEWT_BUILTIN_END;
 #define newt_builtin_names_len(a) strlen((const char *) (a))
 #endif
 
+#if NEWT_BUILTIN_NAMES_SIZE < 128
+typedef int8_t newt_bi_index_t;
+typedef uint8_t newt_ubi_index_t;
+#else
+#if NEWT_BUILTIN_NAMES_SIZE < 32768
+typedef int16_t newt_bi_index_t;
+typedef uint16_t newt_ubi_index_t;
+#else
+#define int32_t newt_bi_index_t;
+typedef uint32_t newt_ubi_index_t;
+#endif
+#endif
+
 static newt_id_t
 newt_name_id_builtin(char *name, bool *keyword)
 {
-	long l = 0, h = sizeof(newt_builtin_names) - 1;
+	newt_bi_index_t l = 1, h = sizeof(newt_builtin_names) - 1;
 
 	while (l <= h) {
-		long m = (l + h) >> 1;
+		newt_bi_index_t m = ((newt_ubi_index_t) (l + h)) >> 1;
 
-		while (m > l && NEWT_BUILTIN_NAMES(m-1) != '\0')
+		while (NEWT_BUILTIN_NAMES(m-1) != '\0')
 			m--;
+
 		if (NEWT_BUILTIN_NAMES_CMP(name, (const char *) &newt_builtin_names[m+1]) > 0) {
 			l = m + 2;
-			while(l < (long) sizeof (newt_builtin_names) - 1 && NEWT_BUILTIN_NAMES(l-1) != '\0')
+			while (NEWT_BUILTIN_NAMES(l-1) != '\0')
 				l++;
-		} else {
+		} else
 			h = m - 2;
-			while(h > 0 && NEWT_BUILTIN_NAMES(h-1) != '\0')
-				h--;
-		}
 	}
 	if (NEWT_BUILTIN_NAMES_CMP(name, (const char *) &newt_builtin_names[l+1]) == 0) {
 		newt_id_t id = NEWT_BUILTIN_NAMES(l);
