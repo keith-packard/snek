@@ -20,7 +20,7 @@ bool newt_print_val;
 
 #define MAX_FORMALS	10
 
-static int nformal;
+static uint8_t nformal;
 static newt_id_t formals[MAX_FORMALS];
 
 newt_token_val_t newt_token_val;
