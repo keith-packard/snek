@@ -87,13 +87,13 @@ newt_string_slice(char *a, newt_slice_t *slice)
 	return r;
 }
 
-static char *
+static uint8_t
 newt_next_format(char *a)
 {
 	char *percent = strchr(a, '%');
 	if (percent)
-		return percent;
-	return a + strlen(a);
+		return percent - a;
+	return strlen(a);
 }
 
 char *
@@ -106,30 +106,34 @@ newt_string_interpolate(char *a, newt_poly_t poly)
 		data = newt_list_data(list);
 		size = list->size;
 	}
-	char *percent = a;
+	uint8_t percent = 0;
 	char *result = NULL;
 	newt_offset_t o = 0;
 
-	while (*percent) {
-		char *next = newt_next_format(percent);
+	while (a[percent]) {
+		uint8_t next = newt_next_format(a + percent) + percent;
+		newt_poly_stash(newt_string_to_poly(a));
 		result = newt_string_catn(result, 0, result ? strlen(result) : 0,
-					  a, percent-a, next - percent);
+					  a, percent, next-percent);
 		percent = next;
-		if (*percent == '%') {
+		a = newt_poly_to_string(newt_poly_fetch());
+		if (a[percent] == '%') {
 			char *add;
 			percent++;
-			char format = *percent;
+			char format = a[percent];
 			if (format)
 				percent++;
 			if (format == '%')
 				add = "%";
 			else {
-				newt_poly_t a = NEWT_ZERO;
+				newt_poly_t v = NEWT_ZERO;
 				if (o < size)
-					a = data[o++];
-				add = newt_poly_format(a, format);
+					v = data[o++];
+				add = newt_poly_format(v, format);
 			}
+			newt_poly_stash(newt_string_to_poly(a));
 			result = newt_string_cat(result, add);
+			a = newt_poly_to_string(newt_poly_fetch());
 		}
 	}
 	return result;
