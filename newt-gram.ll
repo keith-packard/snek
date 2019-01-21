@@ -37,7 +37,11 @@ command		: stat
 		  OP opt-formals CP COLON suite
 			@{
 				newt_code_t	*code = newt_code_finish();
+				if (!code)
+					break;
 				newt_func_t	*func = newt_func_alloc(code, nformal, formals);
+				if (!func)
+					break;
 				newt_poly_t	poly = newt_func_to_poly(func);
 				newt_id_t	id = value_pop().id;
 
