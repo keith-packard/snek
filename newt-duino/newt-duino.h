@@ -1,5 +1,5 @@
 #include <avr/pgmspace.h>
-#define NEWT_POOL	900
+#define NEWT_POOL	1024
 #define NEWT_DEBUG	0
 #define strtof(a,b) strtod(a,b)
 #define VALUE_STACK_SIZE	8
