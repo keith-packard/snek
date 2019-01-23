@@ -497,7 +497,7 @@ newt_mark_block_addr(const struct newt_mem *type, void *addr)
 	bool ret;
 	ret = newt_mark_blob(addr, newt_size(type, addr));
 	if (!ret)
-		debug_memory("\tmark %s %d\n", type->name, pool_offset(addr));
+		debug_memory("\tmark %s %d %d\n", type->name, pool_offset(addr), newt_size(type, addr));
 	return ret;
 }
 
@@ -694,16 +694,6 @@ newt_poly_move(newt_poly_t *ref)
 		*ref = np;
 	}
 	return ret;
-}
-
-bool
-newt_marked(void *addr)
-{
-#if NEWT_DEBUG
-	if (!newt_is_pool_addr(addr))
-		newt_panic("non-pool address");
-#endif
-	return busy(pool_offset(addr));
 }
 
 void *

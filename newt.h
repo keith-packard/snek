@@ -550,9 +550,6 @@ newt_move_addr(const struct newt_mem *type, void **ref);
 bool
 newt_move_offset(const struct newt_mem *type, newt_offset_t *ref);
 
-bool
-newt_marked(void *addr);
-
 void *
 newt_alloc(newt_offset_t size);
 
