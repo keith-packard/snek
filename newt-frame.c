@@ -24,25 +24,79 @@ static inline newt_frame_t *newt_pick_frame(bool globals)
 	return newt_frame;
 }
 
+static newt_frame_t *
+newt_frame_realloc(bool globals, newt_offset_t nvariables)
+{
+	newt_frame_t *frame = newt_alloc(sizeof (newt_frame_t) +
+					 nvariables * sizeof (newt_variable_t));
+
+	if (!frame)
+		return NULL;
+
+	newt_frame_t *old_frame = newt_pick_frame(globals);
+
+	frame->prev = old_frame->prev;
+	frame->code = old_frame->code;
+	frame->ip = old_frame->ip;
+	frame->nvariables = nvariables;
+	return frame;
+}
+
+static inline newt_variable_t *
+newt_variable_insert(bool globals)
+{
+	newt_frame_t	*old_frame = newt_pick_frame(globals);
+	newt_frame_t	*frame;
+	newt_offset_t	nvariables = old_frame->nvariables + 1;
+
+	frame = newt_frame_realloc(globals, old_frame->nvariables + 1);
+	if (!frame)
+		return NULL;
+	old_frame = newt_pick_frame(globals);
+	memcpy(frame->variables,
+	       old_frame->variables,
+	       old_frame->nvariables * sizeof (newt_variable_t));
+
+	if (globals)
+		newt_globals = frame;
+	else
+		newt_frame = frame;
+	return &frame->variables[nvariables-1];
+}
+
+static inline void
+newt_variable_delete(newt_offset_t i)
+{
+	newt_frame_t	*frame;
+
+	frame = newt_frame_realloc(true, newt_globals->nvariables - 1);
+	memcpy(&frame->variables[0],
+	       &newt_globals->variables[0],
+	       i * sizeof (newt_variable_t));
+	memcpy(&frame->variables[i],
+	       &newt_globals->variables[i+1],
+	       newt_globals->nvariables - i - 1);
+}
+
 static newt_variable_t *
 newt_variable_lookup(bool globals, newt_id_t id, bool insert)
 {
-	newt_variable_t	*v;
+	newt_offset_t	i;
+	newt_frame_t	*frame;
 
-	for (v = newt_pool_ref(newt_pick_frame(globals)->variables); v; v = newt_pool_ref(v->next)) {
-		if (v->id == id)
-			return v;
+	frame = newt_pick_frame(globals);
+	for (i = 0; i < frame->nvariables; i++) {
+		if (frame->variables[i].id == id)
+			return &frame->variables[i];
 	}
 	if (!insert)
 		return NULL;
 
-	v = newt_alloc(sizeof (newt_variable_t));
+	newt_variable_t *v = newt_variable_insert(globals);
 	if (!v)
 		return NULL;
 
 	v->id = id;
-	v->next = newt_pick_frame(globals)->variables;
-	newt_pick_frame(globals)->variables = newt_pool_offset(v);
 	return v;
 }
 
@@ -76,21 +130,22 @@ newt_frame_mark_global(newt_id_t id)
 	return true;
 }
 
-bool
-newt_frame_push(newt_code_t *code, newt_offset_t ip)
+newt_frame_t *
+newt_frame_push(newt_code_t *code, newt_offset_t ip, newt_offset_t nformal)
 {
 	newt_frame_t *f;
 
 	newt_code_stash(code);
-	f = newt_alloc(sizeof (newt_frame_t));
+	f = newt_alloc(sizeof (newt_frame_t) + nformal * sizeof (newt_variable_t));
 	code = newt_code_fetch();
 	if (!f)
-		return false;
+		return NULL;
+	f->nvariables = nformal;
 	f->code = newt_pool_offset(code);
 	f->ip = ip;
 	f->prev = newt_pool_offset(newt_frame);
 	newt_frame = f;
-	return true;
+	return f;
 }
 
 newt_code_t *
@@ -120,84 +175,23 @@ newt_id_ref(newt_id_t id, bool insert)
 bool
 newt_id_del(newt_id_t id)
 {
-	newt_variable_t	*v;
-	newt_offset_t	*next;
+	newt_offset_t i;
 
-	for (next = &newt_globals->variables; *next; next = &v->next) {
-		v = newt_pool_ref(*next);
-		if (v->id == id) {
-			*next = v->next;
+	for (i = 0; i < newt_globals->nvariables; i++)
+		if (newt_globals->variables[i].id == id) {
+			newt_variable_delete(i);
 			return true;
 		}
-	}
+
 	return false;
 }
 
 static newt_offset_t
-newt_variable_size(void *addr)
-{
-	(void) addr;
-	return sizeof (newt_variable_t);
-}
-
-static void
-newt_variable_mark(void *addr)
-{
-	newt_variable_t *v = addr;
-
-	for (;;) {
-		debug_memory("\t\tmark variable %s %d: %d",
-			     newt_name_string(v->id),
-			     newt_poly_type(v->value),
-			     newt_is_float(v->value) ?
-			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
-		if (!newt_is_global(v->value))
-			newt_poly_mark(v->value);
-
-		if (!v->next)
-			break;
-		newt_mark_block_offset(&newt_variable_mem, v->next);
-		v = newt_pool_ref(v->next);
-	}
-}
-
-static void
-newt_variable_move(void *addr)
-{
-	newt_variable_t *v = addr;
-
-	for (;;) {
-		debug_memory("\t\tmove variable %s %d: %d\n",
-			     newt_name_string(v->id),
-			     newt_poly_type(v->value),
-			     newt_is_float(v->value) ?
-			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
-		if (!newt_is_global(v->value))
-			newt_poly_move(&v->value);
-		debug_memory("\t\tmoved variable %s %d: %d\n",
-			     newt_name_string(v->id),
-			     newt_poly_type(v->value),
-			     newt_is_float(v->value) ?
-			     (int) newt_poly_to_float(v->value) : newt_poly_to_offset(v->value));
-
-		if (!v->next || newt_move_block_offset(&v->next))
-			break;
-		v = newt_pool_ref(v->next);
-	}
-}
-
-const newt_mem_t NEWT_MEM_DECLARE(newt_variable_mem) = {
-	.size = newt_variable_size,
-	.mark = newt_variable_mark,
-	.move = newt_variable_move,
-	NEWT_MEM_DECLARE_NAME("variable")
-};
-
-static newt_offset_t
 newt_frame_size(void *addr)
 {
-	(void) addr;
-	return sizeof (newt_frame_t);
+	newt_frame_t *frame = addr;
+
+	return sizeof (newt_frame_t) + frame->nvariables * sizeof (newt_variable_t);
 }
 
 static void
@@ -208,8 +202,10 @@ newt_frame_mark(void *addr)
 	for (;;) {
 		debug_memory("\t\tframe mark vars %d code %d prev %d\n",
 			     f->variables, f->code, f->prev);
-		if (f->variables)
-			newt_mark_offset(&newt_variable_mem, f->variables);
+		newt_offset_t i;
+		for (i = 0; i < f->nvariables; i++)
+			if (!newt_is_global(f->variables[i].value))
+				newt_poly_mark(f->variables[i].value);
 		if (f->code)
 			newt_mark_offset(&newt_code_mem, f->code);
 		if (!f->prev || newt_mark_block_offset(&newt_frame_mem, f->prev))
@@ -226,8 +222,10 @@ newt_frame_move(void *addr)
 	for (;;) {
 		debug_memory("\t\tframe move vars %d code %d prev %d\n",
 			     f->variables, f->code, f->prev);
-		if (f->variables)
-			newt_move_offset(&newt_variable_mem, &f->variables);
+		newt_offset_t i;
+		for (i = 0; i < f->nvariables; i++)
+			if (!newt_is_global(f->variables[i].value))
+				newt_poly_move(&f->variables[i].value);
 		if (f->code)
 			newt_move_offset(&newt_code_mem, &f->code);
 		if (!f->prev || newt_move_block_offset(&f->prev))

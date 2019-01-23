@@ -39,22 +39,16 @@ newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt
 	}
 
 	newt_poly_stash(newt_func_to_poly(func));
-	bool pushed = newt_frame_push(code, ip);
+	newt_frame_t *frame = newt_frame_push(code, ip, func->nformal);
 	func = newt_poly_to_func(newt_poly_fetch());
-	if (!pushed)
+	if (!frame)
 		return false;
 
 	/* Pop the arguments off the stack, assigning in reverse order */
 	while (nactual) {
-		newt_poly_stash(newt_func_to_poly(func));
-		newt_poly_t *ref = newt_id_ref(func->formals[--nactual], true);
-		newt_poly_t a = newt_stack_pop();
-		func = newt_poly_to_func(newt_poly_fetch());
-#if NEWT_DEBUG
-		if (!ref)
-			newt_panic("missing formal");
-#endif
-		*ref = a;
+		newt_variable_t *v = &frame->variables[--nactual];
+		v->id = func->formals[nactual];
+		v->value = newt_stack_pop();
 	}
 	return true;
 }

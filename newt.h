@@ -38,7 +38,7 @@
 #endif
 
 #ifndef NEWT_POOL
-#define NEWT_POOL		32768
+#define NEWT_POOL		(32 * 1024)
 #endif
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
@@ -218,7 +218,6 @@ typedef struct newt_name {
 } newt_name_t;
 
 typedef struct newt_variable {
-	newt_offset_t	next;
 	newt_id_t	id;
 	newt_poly_t	value;
 } newt_variable_t;
@@ -227,7 +226,8 @@ typedef struct newt_frame {
 	newt_offset_t	prev;
 	newt_offset_t	code;
 	newt_offset_t	ip;
-	newt_offset_t	variables;
+	newt_offset_t	nvariables;
+	newt_variable_t	variables[0];
 } newt_frame_t;
 
 
@@ -441,8 +441,8 @@ extern const newt_mem_t newt_variable_mem;
 bool
 newt_frame_mark_global(newt_offset_t name);
 
-bool
-newt_frame_push(newt_code_t *code, newt_offset_t ip);
+newt_frame_t *
+newt_frame_push(newt_code_t *code, newt_offset_t ip, newt_offset_t nformal);
 
 newt_code_t *
 newt_frame_pop(newt_offset_t *ip_p);
