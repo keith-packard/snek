@@ -529,15 +529,6 @@ actuals-p	: COMMA expr
 		  actuals-p
 		|
 		;
-opt-comma	: COMMA
-			@{
-				value_push_bool(true);
-			}@
-		|
-			@{
-				value_push_bool(false);
-			}@
-		;
 nl		: NL
 			@{
 				newt_code_add_op_offset(newt_op_line, newt_token_val.ints);
