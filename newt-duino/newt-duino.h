@@ -48,7 +48,7 @@
 static inline const char *
 avr_newt_builtin_names_return(const uint8_t *bits)
 {
-	static char ret[32];
+	static char ret[NEWT_BUILTIN_NAMES_MAX_LEN + 1];
 	int i;
 	char c;
 	char *r = ret;
