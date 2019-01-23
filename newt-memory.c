@@ -27,7 +27,7 @@ struct newt_root {
 	void			**addr;
 };
 
-#define NEWT_NUM_STASH	3
+#define NEWT_NUM_STASH	5
 static newt_poly_t		stash_poly[NEWT_NUM_STASH];
 static uint8_t			stash_poly_ptr;
 static newt_name_t		*stash_name;
@@ -83,6 +83,14 @@ static const struct newt_root	NEWT_ROOT_DECLARE(newt_root)[] = {
 	{
 		.type = NULL,
 		.addr = (void **) (void *) &stash_poly[2]
+	},
+	{
+		.type = NULL,
+		.addr = (void **) (void *) &stash_poly[3]
+	},
+	{
+		.type = NULL,
+		.addr = (void **) (void *) &stash_poly[4]
 	},
 };
 
