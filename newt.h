@@ -560,12 +560,6 @@ newt_poly_t
 newt_poly_fetch(void);
 
 void
-newt_name_stash(newt_name_t *name);
-
-newt_name_t *
-newt_name_fetch(void);
-
-void
 newt_code_stash(newt_code_t *code);
 
 newt_code_t *

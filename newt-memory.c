@@ -30,7 +30,6 @@ struct newt_root {
 #define NEWT_NUM_STASH	5
 static newt_poly_t		stash_poly[NEWT_NUM_STASH];
 static uint8_t			stash_poly_ptr;
-static newt_name_t		*stash_name;
 static newt_code_t		*stash_code;
 
 #ifndef NEWT_ROOT_DECLARE
@@ -59,10 +58,6 @@ static const struct newt_root	NEWT_ROOT_DECLARE(newt_root)[] = {
 	{
 		.type = &newt_in_mem,
 		.addr = (void **) (void *) &newt_ins,
-	},
-	{
-		.type = &newt_name_mem,
-		.addr = (void **) (void *) &stash_name,
 	},
 	{
 		.type = &newt_code_mem,
@@ -730,21 +725,6 @@ newt_poly_fetch(void)
 	p = stash_poly[--stash_poly_ptr];
 	stash_poly[stash_poly_ptr] = NEWT_NULL;
 	return p;
-}
-
-void
-newt_name_stash(newt_name_t *name)
-{
-	stash_name = name;
-}
-
-newt_name_t *
-newt_name_fetch(void)
-{
-	newt_name_t	*name;
-	name = stash_name;
-	stash_name = 0;
-	return name;
 }
 
 void
