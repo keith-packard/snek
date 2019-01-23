@@ -402,7 +402,7 @@ newt_code_line(newt_code_t *code)
 
 newt_poly_t	newt_stack[NEWT_STACK];
 newt_offset_t	newt_stackp = 0;
-static newt_poly_t 	a = NEWT_ZERO, b = NEWT_ZERO;
+static newt_poly_t 	a = NEWT_ZERO;
 static newt_code_t	*code;
 
 static newt_poly_t
@@ -569,19 +569,12 @@ newt_unary(newt_op_t op, newt_poly_t a)
 	switch (op) {
 	case newt_op_not:
 		return newt_bool_to_poly(!newt_poly_true(a));
+	case newt_op_uminus:
+		if (newt_is_float(a))
+			return newt_float_to_poly(-newt_poly_to_float(a));
+		break;
 	default:
 		break;
-	}
-	if (newt_is_float(a)) {
-		float af = newt_poly_to_float(a);
-		switch (op) {
-		case newt_op_uminus:
-			af = -af;
-			break;
-		default:
-			break;
-		}
-		a = newt_float_to_poly(af);
 	}
 	return a;
 }
@@ -734,14 +727,19 @@ newt_call_builtin(const newt_builtin_t *builtin, newt_offset_t nactual)
 	return ret;
 }
 
-void
-newt_run_mark(void)
+static void
+newt_run_do(bool (*poly)(newt_poly_t *p))
 {
 	newt_offset_t s;
 	for (s = 0; s < newt_stackp; s++)
-		newt_poly_mark(newt_stack[s]);
-	newt_poly_mark(a);
-	newt_poly_mark(b);
+		poly(&newt_stack[s]);
+	poly(&a);
+}
+
+void
+newt_run_mark(void)
+{
+	newt_run_do(newt_poly_mark_ref);
 	if (code)
 		newt_mark_addr(&newt_code_mem, code);
 }
@@ -749,11 +747,7 @@ newt_run_mark(void)
 void
 newt_run_move(void)
 {
-	newt_offset_t s;
-	for (s = 0; s < newt_stackp; s++)
-		newt_poly_move(&newt_stack[s]);
-	newt_poly_move(&a);
-	newt_poly_move(&b);
+	newt_run_do(newt_poly_move);
 	if (code)
 		newt_move_addr(&newt_code_mem, (void **) &code);
 }
@@ -835,8 +829,8 @@ newt_code_run(newt_code_t *code_in)
 			case newt_op_land:
 			case newt_op_lor:
 			case newt_op_array:
-				b = newt_stack_pop();
-				a = newt_binary(b, op, a, false);
+				a = newt_binary(newt_stack_pick(0), op, a, false);
+				newt_stack_drop(1);
 				break;
 			case newt_op_call:
 				memcpy(&o, &code->code[ip], sizeof (newt_offset_t));

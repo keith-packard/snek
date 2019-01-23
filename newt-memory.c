@@ -332,7 +332,7 @@ newt_mark_ref(const struct newt_mem *type, void **ref)
 	return newt_mark_addr(type, *ref);
 }
 
-static bool
+bool
 newt_poly_mark_ref(newt_poly_t *p)
 {
 	return newt_poly_mark(*p);

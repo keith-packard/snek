@@ -38,7 +38,7 @@
 #endif
 
 #ifndef NEWT_POOL
-#define NEWT_POOL		(32 * 1024)
+#define NEWT_POOL		(4 * 1024)
 #endif
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
@@ -516,6 +516,9 @@ newt_lex(void);
 
 bool
 newt_poly_mark(newt_poly_t p);
+
+bool
+newt_poly_mark_ref(newt_poly_t *p);
 
 newt_offset_t
 newt_collect(uint8_t style);
