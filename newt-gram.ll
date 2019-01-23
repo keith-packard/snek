@@ -18,12 +18,13 @@ command		: stat
 			@{
 				newt_code_t *code = newt_code_finish();
 				newt_poly_t p = newt_code_run(code);
-				if (newt_print_val && !newt_abort && newt_print_vals) {
-					newt_poly_print(stdout, p);
-					putchar('\n');
-				}
 				if (newt_abort)
 					return parse_return_error;
+				if (newt_print_val && newt_print_vals) {
+					newt_poly_print(stdout, p);
+					putchar('\n');
+					newt_print_val = false;
+				}
 			}@
 		| DEF
 			@{
@@ -87,9 +88,7 @@ stats-p		: stat stats-p
 stat		: simple-stat
 			@{ newt_print_val = true; }@
 		| compound-stat
-			@{ newt_print_val = false; }@
 		| NL
-			@{ newt_print_val = false; }@
 		;
 simple-stat	: small-stat small-stats-p nl
 		;
@@ -145,11 +144,11 @@ assign-expr-p	: ASSIGN
 			}@
 		|
 		;
-globals		:
+globals		: NAME
 			@{
 				newt_code_add_op_id(newt_op_global, newt_token_val.id);
 			}@
-		  NAME globals
+		  globals
 		|
 		;
 compound-stat	: if-stat
