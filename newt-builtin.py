@@ -63,6 +63,13 @@ def dump_headers(fp):
     for line in headers:
         print("%s" % line, file=fp)
 
+def dump_max_len(fp):
+    max_len = 0
+    for name in builtins:
+        if len(name.name) > max_len:
+            max_len = len(name.name)
+    print("#define NEWT_BUILTIN_NAMES_MAX_LEN %d" % max_len, file=fp)
+
 def dump_names(fp):
     print("static const uint8_t NEWT_BUILTIN_NAMES_DECLARE(newt_builtin_names)[] = {", file=fp)
     total = 0
@@ -163,6 +170,8 @@ def builtin_main():
     print(file=fp)
 
     print("#else /* NEWT_BUILTIN_DATA */", file=fp)
+
+    dump_max_len(fp)
 
     dump_headers(fp)
 
