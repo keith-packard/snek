@@ -26,8 +26,24 @@ uart_init(void)
 {
 	UBRR0H = (uint8_t) (UART_BAUD_SCALE >> 8);
 	UBRR0L = (uint8_t) (UART_BAUD_SCALE);
-	UCSR0B = (1 << RXEN0) | (1 << TXEN0);
-	UCSR0C = (1 << UCSZ00) | (1 << UCSZ01);
+	UCSR0A = ((1 << TXC0) |
+		  (0 << U2X0) |
+		  (0 << MPCM0));
+	UCSR0B = ((0 << RXCIE0) |
+		  (0 << TXCIE0) |
+		  (0 << UDRIE0) |
+		  (1 << RXEN0) |
+		  (1 << TXEN0) |
+		  (0 << UCSZ02) |
+		  (0 << TXB80));
+	UCSR0C = ((0 << UMSEL01) |
+		  (0 << UMSEL00) |
+		  (0 << UPM01) |
+		  (0 << UPM00) |
+		  (0 << USBS0) |
+		  (1 << UCSZ00) |
+		  (1 << UCSZ01) |
+		  (0 << UCPOL0));
 }
 
 /*
@@ -37,47 +53,12 @@ uart_init(void)
 int
 uart_putchar(char c, FILE *stream)
 {
-
-  if (c == '\n')
-    uart_putchar('\r', stream);
-  while (!(UCSR0A & (1 << UDRE0)));
-  UDR0 = c;
-  return 0;
+	if (c == '\n')
+		uart_putchar('\r', stream);
+	while (!(UCSR0A & (1 << UDRE0)));
+	UDR0 = c;
+	return 0;
 }
-
-/*
- * Receive a character from the UART Rx.
- *
- * This features a simple line-editor that allows to delete and
- * re-edit the characters entered, until either CR or NL is entered.
- * Printable characters entered will be echoed using uart_putchar().
- *
- * Editing characters:
- *
- * . \b (BS) or \177 (DEL) delete the previous character
- * . ^u kills the entire input buffer
- * . ^w deletes the previous word
- * . ^r sends a CR, and then reprints the buffer
- * . \t will be replaced by a single space
- *
- * All other control characters will be ignored.
- *
- * The internal line buffer is RX_BUFSIZE (80) characters long, which
- * includes the terminating \n (but no terminating \0).  If the buffer
- * is full (i. e., at RX_BUFSIZE-1 characters in order to keep space for
- * the trailing \n), any further input attempts will send a \a to
- * uart_putchar() (BEL character), although line editing is still
- * allowed.
- *
- * Input errors while talking to the UART will cause an immediate
- * return of -1 (error indication).  Notably, this will be caused by a
- * framing error (e. g. serial line "break" condition), by an input
- * overrun, and by a parity error (if parity was enabled and automatic
- * parity recognition is supported by hardware).
- *
- * Successive calls to uart_getchar() will be satisfied from the
- * internal buffer until that buffer is emptied again.
- */
 
 #define RX_BUFSIZE	64
 
@@ -120,13 +101,9 @@ uart_getchar(FILE *stream)
 	if (rxp == 0) {
 		uart_putchar('>', stream);
 		uart_putchar(' ', stream);
-		for (cp = b;;)
-		{
-			loop_until_bit_is_set(UCSR0A, RXC0);
-			if (UCSR0A & _BV(FE0))
-				return _FDEV_EOF;
-			if (UCSR0A & _BV(DOR0))
-				return _FDEV_ERR;
+		cp = b;
+		for (;;) {
+			while ((UCSR0A & (1 << RXC0)) == 0);
 			c = UDR0;
 			/* behaviour similar to Unix stty ICRNL */
 			if (c == '\r')
@@ -141,10 +118,8 @@ uart_getchar(FILE *stream)
 			else if (c == '\t')
 				c = ' ';
 
-			if ((c >= (uint8_t)' ' && c <= (uint8_t)'\x7e') ||
-			    c >= (uint8_t)'\xa0')
-			{
-				if (cp == b + RX_BUFSIZE - 1)
+			if (c >= (uint8_t)' ') {
+				if (cp >= b + RX_BUFSIZE - 1)
 					uart_putchar('\a', stream);
 				else
 				{
@@ -156,9 +131,6 @@ uart_getchar(FILE *stream)
 
 			switch (c)
 			{
-			case 'c' & 0x1f:
-				return -1;
-
 			case '\b':
 			case '\x7f':
 				if (cp > b)
@@ -170,24 +142,8 @@ uart_getchar(FILE *stream)
 				}
 				break;
 
-			case 'r' & 0x1f:
-				uart_putchar('\r', stream);
-				for (cp2 = b; cp2 < cp; cp2++)
-					uart_putchar(*cp2, stream);
-				break;
-
 			case 'u' & 0x1f:
 				while (cp > b)
-				{
-					uart_putchar('\b', stream);
-					uart_putchar(' ', stream);
-					uart_putchar('\b', stream);
-					cp--;
-				}
-				break;
-
-			case 'w' & 0x1f:
-				while (cp > b && cp[-1] != ' ')
 				{
 					uart_putchar('\b', stream);
 					uart_putchar(' ', stream);
@@ -212,6 +168,7 @@ int main (void)
 {
 	uart_init();
 	stderr = stdout = stdin = &uart_str;
+	fprintf(stdout, "Welcome to Newt\n");
 	newt_print_vals = true;
 	newt_parse();
 }
