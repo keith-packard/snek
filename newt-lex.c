@@ -22,7 +22,7 @@ int newt_line;
 
 int newt_ignore_nl;
 
-static int newt_lex_line;
+static int newt_lex_line = 1;
 static bool newt_lex_midline;
 static bool newt_lex_exdent;
 
