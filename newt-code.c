@@ -383,6 +383,23 @@ newt_code_finish(void)
 	return code;
 }
 
+newt_offset_t
+newt_code_line(newt_code_t *code)
+{
+	newt_offset_t	ip;
+	newt_offset_t	line = 0;
+	newt_op_t	op;
+
+	for (ip = 0; ip < code->size; ip += newt_op_extra_size(op)) {
+		op = code->code[ip++];
+		if (op == newt_op_line) {
+			memcpy(&line, &code->code[ip], sizeof (newt_offset_t));
+			break;
+		}
+	}
+	return line;
+}
+
 newt_poly_t	newt_stack[NEWT_STACK];
 newt_offset_t	newt_stackp = 0;
 static newt_poly_t 	a = NEWT_ZERO, b = NEWT_ZERO;

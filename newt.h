@@ -373,6 +373,9 @@ newt_code_patch_branch(newt_offset_t branch, newt_offset_t target);
 newt_code_t *
 newt_code_finish(void);
 
+newt_offset_t
+newt_code_line(newt_code_t *code);
+
 void
 newt_run_mark(void);
 

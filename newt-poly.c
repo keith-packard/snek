@@ -28,6 +28,15 @@ newt_poly(const void *addr, newt_type_t type)
 	return newt_offset_to_poly((const uint8_t *) addr - newt_pool, type);
 }
 
+static inline newt_offset_t
+newt_func_line(newt_func_t *func)
+{
+	newt_code_t	*code = newt_pool_ref(func->code);
+	if (code)
+		return newt_code_line(code);
+	return 0;
+}
+
 void
 newt_poly_print(FILE *file, newt_poly_t poly)
 {
@@ -39,7 +48,7 @@ newt_poly_print(FILE *file, newt_poly_t poly)
 		fprintf(file, "\"%s\"", newt_poly_to_string(poly));
 		break;
 	case newt_func:
-		fprintf(file, "<function at %u>", newt_poly_to_offset(poly));
+		fprintf(file, "<function at %d>", newt_func_line(newt_poly_to_func(poly)));
 		break;
 	case newt_builtin:
 		fprintf(file, "<builtin %s>", newt_name_string(newt_poly_to_builtin_id(poly)));
