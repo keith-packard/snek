@@ -15,18 +15,6 @@
 #include "newt.h"
 
 char *
-newt_string_copy(char *string)
-{
-	char *new;
-	newt_poly_stash(newt_string_to_poly(string));
-	new = newt_alloc(strlen(string) + 1);
-	string = newt_poly_to_string(newt_poly_fetch());
-	if (new)
-		strcpy(new, string);
-	return new;
-}
-
-char *
 newt_string_make(char c)
 {
 	char *new = newt_alloc(2);
@@ -54,7 +42,7 @@ newt_string_catn(char *a, newt_offset_t aoff, newt_offset_t alen,
 		newt_poly_stash(newt_string_to_poly(b));
 	new = newt_alloc(alen + blen + 1);
 	if (newt_is_pool_addr(b))
-	    b = newt_poly_to_string(newt_poly_fetch());
+		b = newt_poly_to_string(newt_poly_fetch());
 	if (newt_is_pool_addr(a))
 		a = newt_poly_to_string(newt_poly_fetch());
 	if (new) {

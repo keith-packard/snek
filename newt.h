@@ -629,9 +629,6 @@ newt_poly_format(newt_poly_t a, char format);
 /* newt-string.c */
 
 char *
-newt_string_copy(char *string);
-
-char *
 newt_string_make(char c);
 
 char
