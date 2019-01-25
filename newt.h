@@ -38,7 +38,7 @@
 #endif
 
 #ifndef NEWT_POOL
-#define NEWT_POOL		(4 * 1024)
+#define NEWT_POOL		(12 * 256)
 #endif
 #define NEWT_POOL_EXTRA		0
 #define NEWT_ALLOC_SHIFT	2
@@ -214,7 +214,6 @@ typedef struct newt_func {
 
 typedef struct newt_name {
 	newt_offset_t	next;
-	newt_id_t	id;
 	char		name[0];
 } newt_name_t;
 

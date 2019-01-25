@@ -100,32 +100,39 @@ newt_name_id(char *name, bool *keyword)
 
 	*keyword = false;
 
-	for (n = newt_names; n; n = newt_pool_ref(n->next))
+	id = newt_id;
+	for (n = newt_names; n; n = newt_pool_ref(n->next)) {
 		if (!strcmp(n->name, name))
-			return n->id;
+			return id;
+		id--;
+	}
 	n = newt_alloc(sizeof (newt_name_t) + strlen(name) + 1);
 	if (!n)
 		return NEWT_ID_NONE;
 	strcpy(n->name, name);
 	n->next = newt_pool_offset(newt_names);
-	n->id = newt_id++;
+	newt_id++;
 	newt_names = n;
-	return n->id;
+	return newt_id;
 }
 
 const char *
-newt_name_string(newt_id_t id)
+newt_name_string(newt_id_t match_id)
 {
 	const char *b;
 
-	if ((b = newt_name_string_builtin(id)))
+	if ((b = newt_name_string_builtin(match_id)))
 		return b;
 
 	newt_name_t *n;
 
-	for (n = newt_names; n; n = newt_pool_ref(n->next))
-		if (n->id == id)
+	newt_id_t id = newt_id;
+
+	for (n = newt_names; n; n = newt_pool_ref(n->next)) {
+		if (id == match_id)
 			return n->name;
+		id--;
+	}
 	return NULL;
 }
 
