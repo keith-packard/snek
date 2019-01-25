@@ -14,7 +14,7 @@
 
 #include "newt.h"
 
-static int
+static uint8_t
 newt_op_extra_size(newt_op_t op)
 {
 	switch (op) {
