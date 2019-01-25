@@ -25,6 +25,8 @@ newt_ref(newt_poly_t poly)
 newt_poly_t
 newt_poly(const void *addr, newt_type_t type)
 {
+	if (addr == NULL)
+		return NEWT_ZERO;
 	return newt_offset_to_poly((const uint8_t *) addr - newt_pool, type);
 }
 

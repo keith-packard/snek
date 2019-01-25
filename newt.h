@@ -495,7 +495,7 @@ newt_list_plus(newt_list_t *a, newt_list_t *b);
 bool
 newt_list_equal(newt_list_t *a, newt_list_t *b);
 
-newt_list_t *
+newt_poly_t
 newt_list_imm(newt_offset_t size, bool readonly);
 
 newt_list_t *

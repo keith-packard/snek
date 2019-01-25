@@ -117,18 +117,20 @@ newt_list_equal(newt_list_t *a, newt_list_t *b)
 	return true;
 }
 
-newt_list_t *
+newt_poly_t
 newt_list_imm(newt_offset_t size, bool readonly)
 {
 	newt_list_t	*list = newt_list_make(size, readonly);
 
-	if (!list)
-		return NULL;
+	if (!list) {
+		newt_stack_drop(size);
+		return NEWT_ZERO;
+	}
 
 	newt_poly_t	*data = newt_pool_ref(list->data);
 	while (size--)
 		data[size] = newt_stack_pop();
-	return list;
+	return newt_list_to_poly(list);
 }
 
 newt_list_t *
