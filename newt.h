@@ -94,6 +94,7 @@ typedef enum {
 	newt_op_assign_rshift = 23,
 
 	newt_op_num,
+	newt_op_int,
 	newt_op_string,
 	newt_op_list,
 	newt_op_tuple,

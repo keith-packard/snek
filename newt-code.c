@@ -20,6 +20,8 @@ newt_op_extra_size(newt_op_t op)
 	switch (op) {
 	case newt_op_num:
 		return sizeof (float);
+	case newt_op_int:
+		return sizeof (int8_t);
 	case newt_op_string:
 		return sizeof (newt_offset_t);
 	case newt_op_list:
@@ -93,6 +95,7 @@ const char * const newt_op_names[] = {
 	[newt_op_assign_rshift] = "assign_rshift",
 
 	[newt_op_num] = "num",
+	[newt_op_int] = "int",
 	[newt_op_string] = "string",
 	[newt_op_list] = "list",
 	[newt_op_tuple] = "tuple",
@@ -142,6 +145,7 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 	float		f;
 	newt_id_t	id;
 	newt_offset_t	o;
+	int8_t		i8;
 
 	printf("%6d:  ", ip);
 	newt_op_t op = code->code[ip++];
@@ -152,6 +156,10 @@ newt_code_dump_instruction(newt_code_t *code, newt_offset_t ip)
 	case newt_op_num:
 		memcpy(&f, &code->code[ip], sizeof(float));
 		printf("%g\n", f);
+		break;
+	case newt_op_int:
+		memcpy(&i8, &code->code[ip], sizeof(int8_t));
+		printf("%d\n", i8);
 		break;
 	case newt_op_string:
 		memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
@@ -274,8 +282,14 @@ newt_code_add_op_id(newt_op_t op, newt_id_t id)
 void
 newt_code_add_number(float number)
 {
-	newt_code_add_op(newt_op_num);
-	compile_extend(sizeof(float), &number);
+	int8_t i8 = (int8_t) number;
+	if ((float) i8 == number) {
+		newt_code_add_op(newt_op_int);
+		compile_extend(sizeof(int8_t), &i8);
+	} else {
+		newt_code_add_op(newt_op_num);
+		compile_extend(sizeof(float), &number);
+	}
 }
 
 void
@@ -774,6 +788,10 @@ newt_code_run(newt_code_t *code_in)
 			case newt_op_num:
 				memcpy(&a.f, &code->code[ip], sizeof(float));
 				ip += sizeof(float);
+				break;
+			case newt_op_int:
+				a.f = (int8_t) code->code[ip];
+				ip += 1;
 				break;
 			case newt_op_string:
 				memcpy(&o, &code->code[ip], sizeof(newt_offset_t));
