@@ -419,6 +419,15 @@ newt_offset_t	newt_stackp = 0;
 static newt_poly_t 	a = NEWT_ZERO;
 static newt_code_t	*code;
 
+static newt_soffset_t
+newt_poly_to_soffset(newt_poly_t a)
+{
+	if (newt_is_float(a))
+		return (newt_soffset_t) newt_poly_to_float(a);
+	newt_error("not a number %p", a);
+	return 0;
+}
+
 static newt_poly_t
 newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 {
@@ -594,15 +603,44 @@ newt_unary(newt_op_t op, newt_poly_t a)
 }
 
 static newt_soffset_t
-newt_poly_to_soffset(newt_poly_t a)
+newt_pop_soffset(void)
 {
-	if (newt_is_float(a))
-		return (newt_soffset_t) newt_poly_to_float(a);
-	return 0;
+	return newt_poly_to_soffset(newt_stack_pop());
 }
 
-static newt_poly_t
-newt_slice(newt_poly_t a, uint8_t bits)
+static bool
+newt_slice_canon(newt_slice_t *slice)
+{
+	if (slice->start == NEWT_SLICE_DEFAULT)
+		slice->start = 0;
+	if (slice->stride == NEWT_SLICE_DEFAULT)
+		slice->stride = 1;
+	if (slice->end == NEWT_SLICE_DEFAULT) {
+		if (slice->stride < 0)
+			slice->end = -slice->len - 1;
+		else
+			slice->end = slice->len;
+	}
+	if (slice->start < 0) {
+		slice->start = slice->len + slice->start;
+		if (slice->start < 0)
+			slice->start = 0;
+	}
+	if (slice->end < 0) {
+		slice->end = slice->len + slice->end;
+	}
+	if (slice->start > slice->len)
+		return false;
+	if (slice->end > slice->len)
+		return false;
+	if (slice->stride == 0)
+		return false;
+	slice->count = (slice->end - slice->start) / abs(slice->stride);
+	return true;
+}
+
+static void
+newt_slice(uint8_t bits)
 {
 	newt_slice_t	slice = {
 		.start = NEWT_SLICE_DEFAULT,
@@ -613,31 +651,20 @@ newt_slice(newt_poly_t a, uint8_t bits)
 		.count = 0,
 		.pos = 0,
 	};
-	bool used_a = false;
 
-	if (bits & NEWT_OP_SLICE_STRIDE) {
-		slice.stride = newt_poly_to_soffset(a);
-		used_a = true;
-	}
+	if (bits & NEWT_OP_SLICE_STRIDE)
+		slice.stride = newt_pop_soffset();
 
-	if (bits & NEWT_OP_SLICE_END) {
-		slice.end = newt_poly_to_soffset(used_a ? newt_stack_pop() : a);
-		used_a = true;
-	}
+	if (bits & NEWT_OP_SLICE_END)
+		slice.end = newt_pop_soffset();
 
-	if (bits & NEWT_OP_SLICE_START) {
-		slice.start = newt_poly_to_soffset(used_a ? newt_stack_pop() : a);
-		used_a = true;
-	}
+	if (bits & NEWT_OP_SLICE_START)
+		slice.start = newt_pop_soffset();
 
-	if (used_a)
-		a = newt_stack_pop();
-
-	slice.len = newt_poly_len(a);
+	slice.len = newt_poly_len(a = newt_stack_pop());
 
 	if (!newt_slice_canon(&slice))
-		return a;
-
+		return;
 	switch (newt_poly_type(a)) {
 	case newt_string:
 		a = newt_string_to_poly(newt_string_slice(newt_poly_to_string(a), &slice));
@@ -648,7 +675,6 @@ newt_slice(newt_poly_t a, uint8_t bits)
 	default:
 		break;
 	}
-	return a;
 }
 
 static void
@@ -875,7 +901,7 @@ newt_code_run(newt_code_t *code_in)
 				}
 				break;
 			case newt_op_slice:
-				a = newt_slice(a, code->code[ip]);
+				newt_slice(code->code[ip]);
 				ip++;
 				break;
 			case newt_op_assign:

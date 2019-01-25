@@ -92,37 +92,6 @@ newt_poly_equal(newt_poly_t a, newt_poly_t b)
 	}
 }
 
-bool
-newt_slice_canon(newt_slice_t *slice)
-{
-	if (slice->start == NEWT_SLICE_DEFAULT)
-		slice->start = 0;
-	if (slice->stride == NEWT_SLICE_DEFAULT)
-		slice->stride = 1;
-	if (slice->end == NEWT_SLICE_DEFAULT) {
-		if (slice->stride < 0)
-			slice->end = -slice->len - 1;
-		else
-			slice->end = slice->len;
-	}
-	if (slice->start < 0) {
-		slice->start = slice->len + slice->start;
-		if (slice->start < 0)
-			slice->start = 0;
-	}
-	if (slice->end < 0) {
-		slice->end = slice->len + slice->end;
-	}
-	if (slice->start > slice->len)
-		return false;
-	if (slice->end > slice->len)
-		return false;
-	if (slice->stride == 0)
-		return false;
-	slice->count = (slice->end - slice->start) / abs(slice->stride);
-	return true;
-}
-
 char *
 newt_poly_format(newt_poly_t a, char format)
 {

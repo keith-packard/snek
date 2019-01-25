@@ -413,6 +413,7 @@ expr-array-p	: OS
 			@{
 				bool slice = value_pop().bools;
 				if (slice) {
+					newt_code_set_push(newt_code_prev_insn());
 					bool stride = value_pop().bools;
 					bool end = value_pop().bools;
 					bool start = value_pop().bools;

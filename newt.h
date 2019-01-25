@@ -613,9 +613,6 @@ newt_poly_true(newt_poly_t a);
 int
 newt_poly_len(newt_poly_t a);
 
-bool
-newt_slice_canon(newt_slice_t *slice);
-
 newt_offset_t
 newt_null_size(void *addr);
 
