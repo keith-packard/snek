@@ -34,10 +34,7 @@ newt_frame_realloc(bool globals, newt_offset_t nvariables)
 		return NULL;
 
 	newt_frame_t *old_frame = newt_pick_frame(globals);
-
-	frame->prev = old_frame->prev;
-	frame->code = old_frame->code;
-	frame->ip = old_frame->ip;
+	memcpy(frame, old_frame, sizeof (newt_frame_t));
 	frame->nvariables = nvariables;
 	return frame;
 }
