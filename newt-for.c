@@ -36,12 +36,12 @@ newt_range_start(newt_id_t id, newt_offset_t nparam)
 		limit = newt_stack_pop_float();
 		current = newt_stack_pop_soffset();
 		if (step == 0) {
-			newt_error("zero step");
+			newt_error("zero range step");
 			return;
 		}
 		break;
 	default:
-		newt_error("range needs 1-3 params");
+		newt_error("invalid range: %d", nparam);
 		newt_stack_drop(nparam);
 		return;
 	}
@@ -177,7 +177,7 @@ newt_in_step(void)
 			value = newt_string_to_poly(newt_string_make(c));
 		break;
 	default:
-		newt_error("%p is not iterable", array);
+		newt_error("not iterable: %p", array);
 		goto bail;
 	}
 	if (newt_is_null(value))

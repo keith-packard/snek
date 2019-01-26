@@ -385,8 +385,8 @@ newt_run_move(void);
 newt_poly_t
 newt_code_run(newt_code_t *code);
 
-newt_poly_t
-newt_accumulator(void);
+void
+newt_undefined(newt_id_t id);
 
 extern const newt_mem_t newt_code_mem;
 extern const newt_mem_t newt_compile_mem;

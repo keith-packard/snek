@@ -61,7 +61,7 @@ command		: stat
 				uint8_t i;
 				for (i = 0; i < nformal; i++)
 					if (!newt_id_del(formals[i])) {
-						newt_error("%i: undefined", formals[i]);
+						newt_undefined(formals[i]);
 						break;
 					}
 			}@
