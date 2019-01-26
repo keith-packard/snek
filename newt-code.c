@@ -419,13 +419,32 @@ newt_offset_t	newt_stackp = 0;
 static newt_poly_t 	a = NEWT_ZERO;
 static newt_code_t	*code;
 
-static newt_soffset_t
-newt_poly_to_soffset(newt_poly_t a)
+float
+newt_poly_get_float(newt_poly_t a)
 {
 	if (newt_is_float(a))
-		return (newt_soffset_t) newt_poly_to_float(a);
+		return newt_poly_to_float(a);
 	newt_error("not a number %p", a);
-	return 0;
+	return 0.0f;
+}
+
+
+newt_soffset_t
+newt_poly_get_soffset(newt_poly_t a)
+{
+	return (newt_soffset_t) newt_poly_get_float(a);
+}
+
+float
+newt_stack_pop_float(void)
+{
+	return newt_poly_get_float(newt_stack_pop());
+}
+
+newt_soffset_t
+newt_stack_pop_soffset(void)
+{
+	return (newt_soffset_t) newt_stack_pop_float();
 }
 
 static newt_poly_t
@@ -458,7 +477,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 	newt_type_t	bt = newt_poly_type(b);
 
 	if (op == newt_op_array) {
-		newt_soffset_t bo = newt_poly_to_soffset(b);
+		newt_soffset_t bo = newt_poly_get_soffset(b);
 
 		switch (at) {
 		case newt_list:
@@ -597,12 +616,6 @@ newt_unary(newt_op_t op, newt_poly_t a)
 	return a;
 }
 
-static newt_soffset_t
-newt_pop_soffset(void)
-{
-	return newt_poly_to_soffset(newt_stack_pop());
-}
-
 static bool
 newt_slice_canon(newt_slice_t *slice)
 {
@@ -648,13 +661,13 @@ newt_slice(uint8_t bits)
 	};
 
 	if (bits & NEWT_OP_SLICE_STRIDE)
-		slice.stride = newt_pop_soffset();
+		slice.stride = newt_stack_pop_soffset();
 
 	if (bits & NEWT_OP_SLICE_END)
-		slice.end = newt_pop_soffset();
+		slice.end = newt_stack_pop_soffset();
 
 	if (bits & NEWT_OP_SLICE_START)
-		slice.start = newt_pop_soffset();
+		slice.start = newt_stack_pop_soffset();
 
 	slice.len = newt_poly_len(a = newt_stack_pop());
 
@@ -698,7 +711,7 @@ newt_assign(newt_id_t id, newt_op_t op)
 				newt_error("cannot assign to tuple");
 				return;
 			}
-			newt_soffset_t	o = newt_poly_to_soffset(ip);
+			newt_soffset_t	o = newt_poly_get_soffset(ip);
 			if (o < 0 || l->size <= o) {
 				newt_error("list index out of range: %p", ip);
 				return;
@@ -934,7 +947,6 @@ newt_code_run(newt_code_t *code_in)
 				memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
 				ip += sizeof (newt_offset_t);
 				newt_range_start(id, o);
-				newt_stack_drop(o);
 				break;
 			case newt_op_range_step:
 				if (!newt_range_step())
@@ -946,7 +958,6 @@ newt_code_run(newt_code_t *code_in)
 				memcpy(&id, &code->code[ip], sizeof (newt_id_t));
 				ip += sizeof (newt_id_t);
 				newt_in_start(id);
-				newt_stack_pop();
 				break;
 			case newt_op_in_step:
 				if (!newt_in_step())

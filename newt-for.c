@@ -19,35 +19,30 @@ newt_range_t *newt_ranges;
 void
 newt_range_start(newt_id_t id, newt_offset_t nparam)
 {
-	newt_poly_t	current = newt_float_to_poly(0.0f);
-	newt_poly_t	limit = newt_float_to_poly(0.0f);
-	newt_poly_t	step = newt_float_to_poly(1.0f);
+	float current = 0.0f;
+	float limit = 0.0f;
+	float step = 1.0f;
 
 	switch (nparam) {
-	case 0:
-		newt_error("range needs at least one argument");
-		return;
 	case 1:
-		limit = newt_stack_pick(0);
+		limit = newt_stack_pop_float();
 		break;
 	case 2:
-		current = newt_stack_pick(1);
-		limit = newt_stack_pick(0);
+		limit = newt_stack_pop_float();
+		current = newt_stack_pop_float();
+		break;
+	case 3:
+		step = newt_stack_pop_float();
+		limit = newt_stack_pop_float();
+		current = newt_stack_pop_soffset();
+		if (step == 0) {
+			newt_error("zero step");
+			return;
+		}
 		break;
 	default:
-		current = newt_stack_pick(2);
-		limit = newt_stack_pick(1);
-		step = newt_stack_pick(0);
-		break;
-	}
-
-	if (!newt_is_float(current) || !newt_is_float(limit) || !newt_is_float(step)) {
-		newt_error("range() requires numeric parameters");
-		return;
-	}
-
-	if (newt_poly_to_float(step) == 0) {
-		newt_error("range() arg 3 must not be zero");
+		newt_error("range needs 1-3 params");
+		newt_stack_drop(nparam);
 		return;
 	}
 
@@ -55,13 +50,14 @@ newt_range_start(newt_id_t id, newt_offset_t nparam)
 		return;
 
 	newt_range_t *r = newt_alloc(sizeof(newt_range_t));
+
 	if (!r)
 		return;
 
 	r->id = id;
-	r->limit = newt_poly_to_float(limit);
-	r->step = newt_poly_to_float(step);
-	r->current = newt_poly_to_float(current) - r->step;
+	r->current = current - step;
+	r->limit = limit;
+	r->step = step;
 
 	r->prev = newt_pool_offset(newt_ranges);
 	newt_ranges = r;
@@ -136,27 +132,20 @@ newt_in_t *newt_ins;
 void
 newt_in_start(newt_id_t id)
 {
-	newt_poly_t	array = newt_stack_pick(0);
-
-	switch (newt_poly_type(array)) {
-	case newt_list:
-	case newt_string:
-		break;
-	default:
-		newt_error("%p is not iterable", array);
-		break;
+	/* make sure the variable is in the frame */
+	if (!newt_id_ref(id, true)) {
+		newt_stack_drop(1);
+		return;
 	}
 
-	/* make sure the variable is in the frame */
-	if (!newt_id_ref(id, true))
-		return;
-
 	newt_in_t *i = newt_alloc(sizeof(newt_in_t));
-	if (!i)
+	if (!i) {
+		newt_stack_drop(1);
 		return;
+	}
 
 	i->id = id;
-	i->array = array;
+	i->array = newt_stack_pop();
 	i->i = 0;
 
 	i->prev = newt_pool_offset(newt_ins);
@@ -188,6 +177,7 @@ newt_in_step(void)
 			value = newt_string_to_poly(newt_string_make(c));
 		break;
 	default:
+		newt_error("%p is not iterable", array);
 		goto bail;
 	}
 	if (newt_is_null(value))

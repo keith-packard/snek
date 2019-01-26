@@ -676,6 +676,12 @@ newt_stack_drop(newt_offset_t off)
 	newt_stackp -= off;
 }
 
+newt_soffset_t
+newt_stack_pop_soffset(void);
+
+float
+newt_stack_pop_float(void);
+
 static inline void
 newt_slice_start(newt_slice_t *slice)
 {
