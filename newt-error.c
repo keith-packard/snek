@@ -25,7 +25,6 @@ newt_error_name(const char *format, ...)
 {
 	va_list		args;
 	char		c;
-	int		len;
 
 	newt_abort = true;
 	va_start(args, format);
@@ -33,15 +32,18 @@ newt_error_name(const char *format, ...)
 	while ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
 		if (c == '%') {
 			switch ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
+#if 0
 			case '\0':
 				--format;
 				break;
 			case '%':
 				putc(c, stderr);
 				break;
+#endif
 			case 'd':
 				fprintf(stderr, "%d", va_arg(args, int));
 				break;
+#if 0
 			case 'x':
 				fprintf(stderr, "%x", va_arg(args, int));
 				break;
@@ -55,12 +57,18 @@ newt_error_name(const char *format, ...)
 				len = va_arg(args, int);
 				fwrite(va_arg(args, char *), 1, len, stderr);
 				break;
+#endif
 			case 's':
 				fputs(va_arg(args, char *), stderr);
 				break;
 			case 'p':
 				newt_poly_print(stderr, va_arg(args, newt_poly_t));
 				break;
+#if NEWT_DEBUG
+			default:
+				newt_panic("bad newt_error format");
+				break;
+#endif
 			}
 		} else
 			putc(c, stderr);

@@ -681,7 +681,7 @@ newt_slice(uint8_t bits)
 void
 newt_undefined(newt_id_t id)
 {
-	newt_error("undefined: %i", id);
+	newt_error("undefined: %s", newt_name_string(id));
 }
 
 static void
