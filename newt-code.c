@@ -447,6 +447,16 @@ newt_stack_pop_soffset(void)
 	return (newt_soffset_t) newt_stack_pop_float();
 }
 
+static newt_poly_t *
+newt_list_ref(newt_list_t *list, newt_soffset_t o)
+{
+	if (o < 0 || list->size <= o) {
+		newt_error("list index out of range: %d", o);
+		return NULL;
+	}
+	return &newt_list_data(list)[o];
+}
+
 static newt_poly_t
 newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 {
@@ -459,6 +469,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 	int		i;
 	bool		found;
 	newt_poly_t	ret = NEWT_NULL;
+	newt_poly_t	*ref;
 
 	switch (op) {
 	case newt_op_eq:
@@ -481,9 +492,9 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 
 		switch (at) {
 		case newt_list:
-			al = newt_poly_to_list(a);
-			if (0 <= bo && bo < al->size)
-				ret = newt_list_data(al)[bo];
+			ref = newt_list_ref(newt_poly_to_list(a), bo);
+			if (ref)
+				ret = *ref;
 			break;
 		case newt_string:
 			as = newt_poly_to_string(a);
@@ -712,11 +723,9 @@ newt_assign(newt_id_t id, newt_op_t op)
 				return;
 			}
 			newt_soffset_t	o = newt_poly_get_soffset(ip);
-			if (o < 0 || l->size <= o) {
-				newt_error("list index out of range: %p", ip);
+			ref = newt_list_ref(l, o);
+			if (!ref)
 				return;
-			}
-			ref = &newt_list_data(l)[o];
 		}
 
 		if (op == newt_op_assign)
