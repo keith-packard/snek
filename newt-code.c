@@ -887,11 +887,10 @@ newt_code_run(newt_code_t *code_in)
 				break;
 			case newt_op_call:
 				memcpy(&o, &code->code[ip], sizeof (newt_offset_t));
-				ip += sizeof (newt_offset_t);
 				a = newt_stack_pick(o);
 				switch (newt_poly_type(a)) {
 				case newt_func:
-					if (!newt_func_push(newt_poly_to_func(a), o, code, ip - (1 + sizeof (newt_offset_t)))) {
+					if (!newt_func_push(newt_poly_to_func(a), o, code, ip - 1)) {
 						newt_stack_drop(o + 1);
 						break;
 					}
@@ -902,6 +901,7 @@ newt_code_run(newt_code_t *code_in)
 					break;
 				case newt_builtin:
 					a = newt_call_builtin(newt_poly_to_builtin(a), o);
+					ip += sizeof (newt_offset_t);
 					break;
 				default:
 					newt_error("not a func: %p", a);
@@ -995,17 +995,9 @@ newt_code_run(newt_code_t *code_in)
 		}
 		code = newt_frame_pop(&ip);
 		if (code) {
-			newt_op_t op = code->code[ip++];
-			bool push = (op & newt_op_push) != 0;
-			op &= ~newt_op_push;
-			switch (op) {
-			case newt_op_call:
-				ip += sizeof (newt_offset_t);
-				break;
-			default:
-				break;
-			}
-			if (push)
+			newt_op_t op = code->code[ip];
+			ip += sizeof (newt_offset_t) + 1;
+			if ((op & newt_op_push) != 0)
 				newt_stack_push(a);
 		}
 	}
