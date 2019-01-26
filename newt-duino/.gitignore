@@ -1,0 +1,6 @@
+*.o
+newt-duino
+newt-duino.hex
+newt-duino.map
+newt-builtin.h
+newt-gram.h
