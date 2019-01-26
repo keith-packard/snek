@@ -261,6 +261,12 @@ typedef struct newt_builtin {
 	};
 } newt_builtin_t;
 
+typedef struct newt_buf {
+	int	(*put_c)(int c, void *closure);
+	int	(*put_s)(const char *s, void *closure);
+	void	*closure;
+} newt_buf_t;
+
 extern const newt_builtin_t newt_builtins[];
 
 #define NEWT_BUILTIN_VARARGS	-1
@@ -563,6 +569,12 @@ newt_poly_t
 newt_poly_fetch(void);
 
 void
+newt_string_stash(const char *s);
+
+char *
+newt_string_fetch(void);
+
+void
 newt_code_stash(newt_code_t *code);
 
 newt_code_t *
@@ -620,8 +632,12 @@ newt_null_mark_move(void *addr);
 
 extern const newt_mem_t newt_null_mem;
 
-char *
-newt_poly_format(newt_poly_t a, char format);
+void
+newt_poly_format(newt_buf_t *buf, newt_poly_t a, char format);
+
+/* newt-print.c */
+void
+newt_print(newt_buf_t *buf, newt_poly_t poly);
 
 /* newt-string.c */
 
@@ -629,7 +645,7 @@ char *
 newt_string_make(char c);
 
 char
-newt_string_fetch(char *string, int i);
+newt_string_get(char *string, int i);
 
 char *
 newt_string_cat(char *a, char *b);

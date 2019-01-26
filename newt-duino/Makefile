@@ -20,6 +20,7 @@ NEWT_SRC = \
 	newt-name.c \
 	newt-parse.c \
 	newt-poly.c \
+	newt-print.c \
 	newt-string.c
 
 SRC = \

@@ -51,6 +51,7 @@ sources = [
   'newt-parse.c',
   'newt-poly.c',
   'newt-posix.c',
+  'newt-print.c',
   'newt-string.c',
   newt_builtin_h
 ]

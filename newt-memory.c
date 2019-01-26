@@ -728,6 +728,18 @@ newt_poly_fetch(void)
 }
 
 void
+newt_string_stash(const char *s)
+{
+	newt_poly_stash(newt_string_to_poly((char *) s));
+}
+
+char *
+newt_string_fetch(void)
+{
+	return newt_poly_to_string(newt_poly_fetch());
+}
+
+void
 newt_code_stash(newt_code_t *code)
 {
 	stash_code = code;

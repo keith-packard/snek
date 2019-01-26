@@ -42,37 +42,12 @@ newt_func_line(newt_func_t *func)
 void
 newt_poly_print(FILE *file, newt_poly_t poly)
 {
-	switch (newt_poly_type(poly)) {
-	case newt_float:
-		fprintf(file, "%g", newt_poly_to_float(poly));
-		break;
-	case newt_string:
-		fprintf(file, "\"%s\"", newt_poly_to_string(poly));
-		break;
-	case newt_func:
-		fprintf(file, "<function at %d>", newt_func_line(newt_poly_to_func(poly)));
-		break;
-	case newt_builtin:
-		fprintf(file, "<builtin %s>", newt_name_string(newt_poly_to_builtin_id(poly)));
-		break;
-	case newt_list: {
-		newt_list_t *list = newt_poly_to_list(poly);
-		putc(newt_list_readonly(list) ? '(' : '[', file);
-		newt_poly_t *data = newt_pool_ref(list->data);
-		for (newt_offset_t o = 0; o < list->size; o++) {
-			if (o)
-				fprintf(file, " ");
-			newt_poly_print(file, data[o]);
-			if (o < list->size - 1 || (list->size == 1 && newt_list_readonly(list)))
-				fprintf(file, ",");
-		}
-		putc(newt_list_readonly(list) ? ')' : ']', file);
-		break;
-	}
-	default:
-		fprintf(file, "?%d.%x?", newt_poly_type(poly), newt_poly_to_offset(poly));
-		break;
-	}
+	newt_buf_t buf = {
+		.put_c = (int(*) (int, void *)) fputc,
+		.put_s = (int(*) (const char *, void *)) fputs,
+		.closure = file
+	};
+	newt_poly_format(&buf, poly, 'g');
 }
 
 bool
@@ -91,69 +66,6 @@ newt_poly_equal(newt_poly_t a, newt_poly_t b)
 		return newt_list_equal(newt_poly_to_list(a), newt_poly_to_list(b));
 	default:
 		return false;
-	}
-}
-
-char *
-newt_poly_format(newt_poly_t a, char format)
-{
-	newt_type_t atype = newt_poly_type(a);
-	static char buf[14];
-	char format_string[3] = "%.";
-
-	format_string[1] = format;
-	switch (format) {
-	case 'd':
-	case 'i':
-	case 'u':
-	case 'x':
-	case 'X':
-		if (atype != newt_float)
-			break;
-		sprintf(buf, format_string, (int) newt_poly_to_float(a));
-		return buf;
-	case 'e':
-	case 'E':
-	case 'f':
-	case 'F':
-	case 'g':
-	case 'G':
-		if (atype != newt_float)
-			break;
-		sprintf(buf, format_string, newt_poly_to_float(a));
-		return buf;
-	case 'c':
-		switch (atype) {
-		case newt_float:
-			sprintf(buf, format_string, (int) newt_poly_to_float(a));
-			return buf;
-		case newt_string:
-			sprintf(buf, format_string, (int) newt_poly_to_string(a)[0]);
-			return buf;
-		default:
-			break;
-		}
-		break;
-	case 's':
-		if (atype == newt_string)
-			return newt_poly_to_string(a);
-		break;
-	default:
-		break;
-	}
-	switch (atype) {
-	case newt_float:
-		sprintf_const(buf, "%g", newt_poly_to_float(a));
-		return buf;
-	case newt_string:
-		return newt_poly_to_string(a);
-	case newt_list:
-		return "list";
-	case newt_func:
-		sprintf_const(buf, "<func %d>", newt_pool_offset(newt_poly_to_func(a)));
-		return buf;
-	default:
-		return "???";
 	}
 }
 

@@ -172,7 +172,7 @@ newt_in_step(void)
 		break;
 	case newt_string:
 		s = newt_poly_to_string(array);
-		char c = newt_string_fetch(s, newt_ins->i);
+		char c = newt_string_get(s, newt_ins->i);
 		if (c)
 			value = newt_string_to_poly(newt_string_make(c));
 		break;

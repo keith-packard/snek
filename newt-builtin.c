@@ -34,7 +34,7 @@ newt_poly_t
 newt_builtin_print(newt_poly_t a)
 {
 	newt_builtin_printn(a);
-	putchar('\n');
+	putc('\n', stdout);
 	return NEWT_ZERO;
 }
 

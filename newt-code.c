@@ -498,7 +498,7 @@ newt_binary(newt_poly_t a, newt_op_t op, newt_poly_t b, bool inplace)
 			break;
 		case newt_string:
 			as = newt_poly_to_string(a);
-			ret = newt_string_to_poly(newt_string_make(newt_string_fetch(as, bo)));
+			ret = newt_string_to_poly(newt_string_make(newt_string_get(as, bo)));
 			break;
 		default:
 			break;
