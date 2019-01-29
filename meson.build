@@ -58,7 +58,8 @@ sources = [
 
 snek = executable('snek',
 		  sources, lfiles,
-		  dependencies: [m_dep]
+		  dependencies: [m_dep],
+		  install: true
 		 )
 
 subdir('test')
