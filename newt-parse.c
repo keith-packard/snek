@@ -71,13 +71,13 @@ _value_push(newt_token_val_t value, const char *file, int line)
 }
 
 static inline bool
-_value_push_int(int value, const char *file, int line)
+_value_push_offset(newt_offset_t value, const char *file, int line)
 {
 	(void) file; (void) line;
 #ifdef VALUE_DEBUG
-	printf("value push int %d\n", value);
+	printf("value push offset %u\n", (unsigned) value);
 #endif
-	return _value_push((newt_token_val_t) { .ints = value }, file, line);
+	return _value_push((newt_token_val_t) { .offset = value }, file, line);
 }
 
 static inline bool
@@ -88,16 +88,6 @@ _value_push_bool(bool value, const char *file, int line)
 	printf("value push bool %d\n", value);
 #endif
 	return _value_push((newt_token_val_t) { .bools = value }, file, line);
-}
-
-static inline bool
-_value_push_op(newt_op_t op, const char *file, int line)
-{
-	(void) file; (void) line;
-#ifdef VALUE_DEBUG
-	printf("value push op %d\n", op);
-#endif
-	return _value_push((newt_token_val_t) { .op = op }, file, line);
 }
 
 static inline bool
@@ -114,6 +104,7 @@ _value_push_id(newt_id_t id, const char *file, int line)
 #define value_push(a) _value_push(a, __FILE__, __LINE__)
 #define value_push_int(i) _value_push_int(i, __FILE__, __LINE__)
 #define value_push_bool(b) _value_push_bool(b, __FILE__, __LINE__)
+#define value_push_offset(o) _value_push_offset(o, __FILE__, __LINE__)
 #define value_push_op(o) _value_push_op(o, __FILE__, __LINE__)
 #define value_push_id(o) _value_push_id(o, __FILE__, __LINE__)
 
@@ -139,7 +130,7 @@ lex(void *lex_context)
 					break;
 				continue;
 			case EXDENT:
-				newt_current_indent = newt_token_val.ints;
+				newt_current_indent = newt_token_val.indent;
 				continue;
 			default:
 				continue;

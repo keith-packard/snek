@@ -14,24 +14,23 @@
 
 #include "newt.h"
 
-int newt_current_indent;
-int newt_want_indent;
+uint8_t newt_current_indent;
 
 char *newt_file;
-int newt_line;
+newt_offset_t newt_line;
 
-int newt_ignore_nl;
+uint8_t newt_ignore_nl;
 
-static int newt_lex_line = 1;
+static newt_offset_t newt_lex_line = 1;
 static bool newt_lex_midline;
 static bool newt_lex_exdent;
 
-int newt_lex_indent;
+uint8_t newt_lex_indent;
 
 #define NEWT_MAX_TOKEN	63
 
 char newt_lex_text[NEWT_MAX_TOKEN + 1];
-static int newt_lex_len;
+static uint8_t newt_lex_len;
 
 //#define DEBUG
 #ifdef DEBUG
@@ -41,10 +40,9 @@ static int newt_lex_len;
 #endif
 
 #define RETURN_OP(_op, ret) do { newt_token_val.op = (_op); RETURN (ret); } while(0)
-#define RETURN_INTS(_ints, ret) do { newt_token_val.ints = (_ints); RETURN (ret); } while(0)
 
 static char ungetbuf[5];
-static int ungetcount;
+static uint8_t ungetcount;
 
 #ifndef NEWT_GETC
 #define NEWT_GETC() getchar()
@@ -59,13 +57,13 @@ lexchar(void)
 }
 
 static void
-unlexchar(int c)
+unlexchar(char c)
 {
 	ungetbuf[ungetcount++] = c;
 }
 
-static int
-check_equal(int plain_token, newt_op_t plain_op, newt_op_t assign_op)
+static token_t
+check_equal(token_t plain_token, newt_op_t plain_op, newt_op_t assign_op)
 {
 	int n = lexchar();
 
@@ -97,7 +95,7 @@ is_name(int c, bool first)
 }
 
 static bool
-is_octal(int c)
+is_octal(char c)
 {
 	if ('0' <= c && c <= '7')
 		return true;
@@ -274,11 +272,11 @@ string(int q)
 	}
 }
 
-static int
-trailing(char *next, newt_op_t without_op, int without, newt_op_t with_op, int with)
+static token_t
+trailing(char *next, newt_op_t without_op, token_t without, newt_op_t with_op, token_t with)
 {
 	int c;
-	int len = newt_lex_len;
+	uint8_t len = newt_lex_len;
 	char *n = next;
 
 	/* skip spaces between words */
@@ -336,7 +334,7 @@ newt_lex(void)
 				unlexchar(c);
 
 			if (newt_lex_indent > newt_current_indent) {
-				newt_token_val.ints = newt_current_indent;
+				newt_token_val.indent = newt_current_indent;
 				newt_current_indent = newt_lex_indent;
 				RETURN(INDENT);
 			}
@@ -351,7 +349,7 @@ newt_lex(void)
 
 		if (newt_lex_exdent) {
 			if (newt_lex_indent < newt_current_indent) {
-				newt_token_val.ints = newt_lex_indent;
+				newt_token_val.indent = newt_lex_indent;
 				RETURN(EXDENT);
 			}
 			newt_lex_exdent = false;
@@ -371,7 +369,8 @@ newt_lex(void)
 			newt_line = newt_lex_line;
 			if (newt_ignore_nl)
 				continue;
-			RETURN_INTS(newt_line, NL);
+			newt_token_val.line = newt_line;
+			RETURN(NL);
 		case ':':
 			RETURN(COLON);
 		case ';':
@@ -496,7 +495,7 @@ newt_lex(void)
 		newt_id_t id = newt_name_id(newt_lex_text, &keyword);
 
 		if (keyword) {
-			newt_token_val.ints = newt_lex_line;
+			newt_token_val.line = newt_lex_line;
 			switch (id) {
 			case IS:
 				return trailing("not", newt_op_is, CMPOP, newt_op_is_not, CMPOP);

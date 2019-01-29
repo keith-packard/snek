@@ -31,23 +31,31 @@ newt_func_alloc(newt_code_t *code, newt_offset_t nformal, newt_id_t *formals)
 }
 
 bool
-newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt_offset_t ip)
+newt_func_push(newt_func_t *func, uint8_t nposition, uint8_t nnamed, newt_code_t *code, newt_offset_t ip)
 {
-	if (nactual != func->nformal) {
-		newt_error("wrong number of args: wanted %d, got %d", func->nformal, nactual);
+	if (nposition != func->nformal) {
+		newt_error("wrong number of args: wanted %d, got %d", func->nformal, nposition);
 		return false;
 	}
 
 	newt_poly_stash(newt_func_to_poly(func));
-	newt_frame_t *frame = newt_frame_push(code, ip, func->nformal);
+	uint8_t nparam = nposition + nnamed;
+	newt_frame_t *frame = newt_frame_push(code, ip, nparam);
 	func = newt_poly_to_func(newt_poly_fetch());
 	if (!frame)
 		return false;
 
+	newt_variable_t *v = &frame->variables[nparam];
+
+	while (nnamed--) {
+		v--;
+		v->value = newt_stack_pop();
+		v->id = newt_stack_pop_soffset();
+	}
 	/* Pop the arguments off the stack, assigning in reverse order */
-	while (nactual) {
-		newt_variable_t *v = &frame->variables[--nactual];
-		v->id = func->formals[nactual];
+	while (nposition--) {
+		v--;
+		v->id = func->formals[nposition];
 		v->value = newt_stack_pop();
 	}
 	return true;

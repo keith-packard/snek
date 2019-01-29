@@ -1,9 +1,9 @@
 import time
 import sys
 
-def clear(): print("\033[2J")
+def clear(): print("\033[2J", end='')
 
-def display_string(x, y, str): print("\033[%d;%dH%s" % (y, x, str))
+def display_string(x, y, str): print("\033[%d;%dH%s" % (y, x, str), end='')
 
 # A piece for position 'num' is num + 1 + num stars centered in a
 # field of max * 2 + 1 characters with spaces on either side. This

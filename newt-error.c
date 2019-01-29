@@ -62,7 +62,7 @@ newt_error_name(const char *format, ...)
 				fputs(va_arg(args, char *), stderr);
 				break;
 			case 'p':
-				newt_poly_print(stderr, va_arg(args, newt_poly_t));
+				newt_poly_print(stderr, va_arg(args, newt_poly_t), 'r');
 				break;
 #if NEWT_DEBUG
 			default:

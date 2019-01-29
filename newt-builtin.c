@@ -21,20 +21,24 @@ newt_builtin_len(newt_poly_t a)
 }
 
 newt_poly_t
-newt_builtin_printn(newt_poly_t a)
+newt_builtin_print(uint8_t nposition, uint8_t nnamed, newt_poly_t *args)
 {
-	if (newt_poly_type(a) == newt_string)
-		fputs(newt_poly_to_string(a), stdout);
-	else
-		newt_poly_print(stdout, a);
-	return NEWT_ZERO;
-}
+	while (nposition--) {
+		newt_poly_t arg = *args++;
+		newt_poly_print(stdout, arg, 's');
+	}
+	newt_poly_t end = NEWT_NULL;
 
-newt_poly_t
-newt_builtin_print(newt_poly_t a)
-{
-	newt_builtin_printn(a);
-	putc('\n', stdout);
+	while (nnamed--) {
+		newt_id_t id = (newt_id_t) ((*args++).f);
+		newt_poly_t value = *args++;
+		if (id == NEWT_BUILTIN_end)
+			end = value;
+	}
+	if (!newt_is_null(end))
+		newt_poly_print(stdout, end, 's');
+	else
+		putc('\n', stdout);
 	return NEWT_ZERO;
 }
 

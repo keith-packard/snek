@@ -123,6 +123,7 @@ typedef enum {
 	newt_op_slice,
 
 	newt_op_assign,
+	newt_op_assign_named,
 
 	newt_op_global,
 
@@ -252,7 +253,8 @@ typedef struct newt_slice {
 typedef struct newt_builtin {
 	int8_t nformal;
 	union {
-		newt_poly_t	(*funcv)(int nactuals, ...);
+		newt_poly_t	(*funcv)(uint8_t nposition, uint8_t nnamed,
+					 newt_poly_t *args);
 		newt_poly_t	(*func0)(void);
 		newt_poly_t	(*func1)(newt_poly_t a0);
 		newt_poly_t	(*func2)(newt_poly_t a0, newt_poly_t a1);
@@ -316,9 +318,12 @@ extern uint8_t	newt_pool[NEWT_POOL + NEWT_POOL_EXTRA] __attribute__((aligned(NEW
 
 typedef union {
 	bool		bools;
-	int		ints;
+	int16_t		_ints;
+	uint8_t		indent;
+	newt_offset_t	line;
 	newt_op_t	op;
 	newt_offset_t	offset;
+	newt_soffset_t	soffset;
 	newt_id_t	id;
 	float		number;
 	char		*string;
@@ -327,6 +332,9 @@ typedef union {
 extern newt_token_val_t	newt_token_val;
 
 /* newt-builtin.c */
+
+#define NEWT_BUILTIN_DECLS
+#include "newt-builtin.h"
 
 /* newt-code.c */
 
@@ -457,6 +465,9 @@ newt_poly_t *
 newt_id_ref(newt_id_t id, bool insert);
 
 bool
+newt_id_is_local(newt_id_t id);
+
+bool
 newt_id_del(newt_id_t id);
 
 extern const newt_mem_t newt_frame_mem;
@@ -467,7 +478,7 @@ newt_func_t *
 newt_func_alloc(newt_code_t *code, newt_offset_t nparam, newt_id_t *formals);
 
 bool
-newt_func_push(newt_func_t *func, newt_offset_t nactual, newt_code_t *code, newt_offset_t ip);
+newt_func_push(newt_func_t *func, uint8_t nposition, uint8_t nnamed, newt_code_t *code, newt_offset_t ip);
 
 newt_code_t *
 newt_func_pop(newt_offset_t *ip);
@@ -480,10 +491,10 @@ extern bool newt_print_vals;
 
 /* newt-lex.l */
 
-extern int newt_want_indent, newt_current_indent;
+extern uint8_t newt_current_indent;
 extern char *newt_file;
-extern int newt_line;
-extern int newt_ignore_nl;
+extern newt_offset_t newt_line;
+extern uint8_t newt_ignore_nl;
 extern char newt_lex_text[];
 
 /* newt-list.c */
@@ -510,7 +521,7 @@ extern const newt_mem_t newt_list_mem;
 
 /* newt-lex.c */
 
-extern int newt_lex_indent;
+extern uint8_t newt_lex_indent;
 
 token_t
 newt_lex(void);
@@ -613,7 +624,7 @@ newt_poly_t
 newt_poly(const void *addr, newt_type_t type);
 
 void
-newt_poly_print(FILE *file, newt_poly_t poly);
+newt_poly_print(FILE *file, newt_poly_t poly, char format);
 
 bool
 newt_poly_equal(newt_poly_t a, newt_poly_t b);
@@ -874,48 +885,85 @@ newt_bool_to_poly(bool b)
 	return b ? NEWT_ONE : NEWT_ZERO;
 }
 
+static inline newt_offset_t
+newt_offset_value(newt_offset_t offset)
+{
+	offset = offset & ~3;
+	if (offset)
+		offset -= 3;
+	return offset;
+}
+
+static inline bool
+newt_offset_flag_0(newt_offset_t offset)
+{
+	return offset & 1;
+}
+
+static inline bool
+newt_offset_flag_1(newt_offset_t offset)
+{
+	return !!(offset & 2);
+}
+
+static inline newt_offset_t
+newt_offset_set_flag_0(newt_offset_t offset, bool flag)
+{
+	return (offset & ~1) | (flag ? 1 : 0);
+}
+
+static inline newt_offset_t
+newt_offset_set_flag_1(newt_offset_t offset, bool flag)
+{
+	return (offset & ~2) | (flag ? 2 : 0);
+}
+
+static inline newt_offset_t
+newt_offset_set_value(newt_offset_t offset, newt_offset_t value)
+{
+	if (value)
+		value += 3;
+#if NEWT_DEBUG
+	if (value & 3)
+		newt_panic("note_next bad alignment");
+#endif
+	return value | (offset & 3);
+}
+
 static inline bool
 newt_list_readonly(newt_list_t *list)
 {
-	return (list->note_next_and_readonly & 1) != 0;
+	return newt_offset_flag_0(list->note_next_and_readonly);
 }
 
 static inline bool
 newt_list_noted(newt_list_t *list)
 {
-	return (list->note_next_and_readonly & 2) != 0;
+	return newt_offset_flag_1(list->note_next_and_readonly);
 }
 
 static inline newt_offset_t
 newt_list_note_next(newt_list_t *list)
 {
-	newt_offset_t offset = list->note_next_and_readonly & ~3;
-	if (offset)
-		offset++;
-	return offset;
+	return newt_offset_value(list->note_next_and_readonly);
 }
 
 static inline void
 newt_list_set_readonly(newt_list_t *list, bool readonly)
 {
-	list->note_next_and_readonly = (list->note_next_and_readonly & ~1) | (readonly ? 1 : 0);
+	list->note_next_and_readonly = newt_offset_set_flag_0(list->note_next_and_readonly, readonly);
 }
 
 static inline void
 newt_list_set_noted(newt_list_t *list, bool noted)
 {
-	list->note_next_and_readonly = (list->note_next_and_readonly & ~3) | (noted ? 2 : 0);
+	list->note_next_and_readonly = newt_offset_set_flag_1(list->note_next_and_readonly, noted);
 }
 
 static inline void
 newt_list_set_note_next(newt_list_t *list, newt_offset_t note_next)
 {
-	note_next -= note_next & 1;
-#if NEWT_DEBUG
-	if (note_next & 3)
-		newt_panic("note_next bad alignment");
-#endif
-	list->note_next_and_readonly = (list->note_next_and_readonly & 3) | (note_next);
+	list->note_next_and_readonly = newt_offset_set_value(list->note_next_and_readonly, note_next);
 }
 
 static inline newt_offset_t

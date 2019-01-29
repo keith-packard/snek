@@ -89,14 +89,14 @@ def dump_names(fp):
     print("};", file=fp)
     print("#define NEWT_BUILTIN_NAMES_SIZE %d" % total, file=fp)
 
-def dump_builtins(fp):
+def dump_decls(fp):
     for name in sorted(builtins):
-        if name.keyword:
+        if name.keyword or name.nformal == -2:
             continue
         print("extern newt_poly_t", file=fp)
         print("%s(" % name.func_name(), file=fp, end='')
         if name.nformal == -1:
-            print("int nactuals, ...", end='', file=fp)
+            print("uint8_t nposition, uint8_t nnamed, newt_poly_t *args", end='', file=fp)
         elif name.nformal == 0:
             print("void", end='', file=fp)
         else:
@@ -107,10 +107,11 @@ def dump_builtins(fp):
         print(");", file=fp)
         print(file=fp)
 
+def dump_builtins(fp):
     print("const newt_builtin_t NEWT_BUILTIN_DECLARE(newt_builtins)[] = {", file=fp)
 
     for name in sorted(builtins):
-        if name.keyword:
+        if name.keyword or name.nformal == -2:
             continue
 
         print("\t[%s - 1] {" % name.cpp_name(), file=fp)
@@ -146,7 +147,7 @@ def builtin_main():
         fp = open(args.output, mode='w')
 
     print("#ifdef NEWT_BUILTIN_DATA", file=fp)
-
+    print("#undef NEWT_BUILTIN_DATA", file=fp)
     print("#ifndef NEWT_BUILTIN_NAMES_DECLARE", file=fp)
     print("#define NEWT_BUILTIN_NAMES_DECLARE(n) n", file=fp)
     print("#endif", file=fp)
@@ -171,12 +172,18 @@ def builtin_main():
 
     print("#else /* NEWT_BUILTIN_DATA */", file=fp)
 
+    print("#ifdef NEWT_BUILTIN_DECLS", file=fp)
+    print("#undef NEWT_BUILTIN_DECLS", file=fp)
+    dump_decls(fp)
+    print("#else /* NEWT_BUILTIN_DECLS */", file=fp)
+
     dump_max_len(fp)
 
     dump_headers(fp)
 
     dump_cpp(fp)
 
+    print("#endif /* NEWT_BUILTIN_DECLS */", file=fp)
     print("#endif /* NEWT_BUILTIN_DATA */", file=fp)
 
 builtin_main()

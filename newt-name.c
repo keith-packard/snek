@@ -74,7 +74,6 @@ newt_name_id_builtin(char *name, bool *keyword)
 	return 0;
 }
 
-
 const char *
 newt_name_string_builtin(newt_id_t id)
 {

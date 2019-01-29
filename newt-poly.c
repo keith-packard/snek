@@ -40,14 +40,14 @@ newt_func_line(newt_func_t *func)
 }
 
 void
-newt_poly_print(FILE *file, newt_poly_t poly)
+newt_poly_print(FILE *file, newt_poly_t poly, char format)
 {
 	newt_buf_t buf = {
 		.put_c = (int(*) (int, void *)) fputc,
 		.put_s = (int(*) (const char *, void *)) fputs,
 		.closure = file
 	};
-	newt_poly_format(&buf, poly, 'g');
+	newt_poly_format(&buf, poly, format);
 }
 
 bool

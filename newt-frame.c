@@ -170,6 +170,12 @@ newt_id_ref(newt_id_t id, bool insert)
 }
 
 bool
+newt_id_is_local(newt_id_t id)
+{
+	return newt_variable_lookup(false, id, false) != NULL;
+}
+
+bool
 newt_id_del(newt_id_t id)
 {
 	newt_offset_t i;
