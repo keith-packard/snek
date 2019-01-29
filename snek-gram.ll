@@ -149,12 +149,16 @@ assign-expr-p	: ASSIGN
 			}@
 		|
 		;
-globals		: NAME
+globals		: global globals-p
+		|
+		;
+globals-p	: COMMA global globals-p
+		|
+		;
+global		: NAME
 			@{
 				snek_code_add_op_id(snek_op_global, snek_token_val.id);
 			}@
-		  globals
-		|
 		;
 compound-stat	: if-stat
 		| while-stat
