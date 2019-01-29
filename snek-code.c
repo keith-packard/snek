@@ -23,7 +23,6 @@ snek_op_extra_size(snek_op_t op)
 	case snek_op_int:
 		return sizeof (int8_t);
 	case snek_op_string:
-		return sizeof (snek_offset_t);
 	case snek_op_list:
 	case snek_op_tuple:
 		return sizeof (snek_offset_t);
