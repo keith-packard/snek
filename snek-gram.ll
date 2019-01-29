@@ -390,7 +390,8 @@ expr-shift-p	: SHIFT @ goto binop_first; @ expr-add @ goto binop_second; @ expr-
 		;
 expr-add	: expr-mul expr-add-p
 		;
-expr-add-p	: ADDOP @ goto binop_first; @ expr-mul @ goto binop_second; @ expr-add-p
+expr-add-p	: PLUS @ goto binop_first; @ expr-mul @ goto binop_second; @ expr-add-p
+		| MINUS @ goto binop_first; @ expr-mul @ goto binop_second; @ expr-add-p
 		|
 		;
 expr-mul	: expr-unary expr-mul-p
@@ -399,7 +400,13 @@ expr-mul-p	: MULOP @ goto binop_first; @ expr-unary @ goto binop_second; @ expr-
 		|
 		;
 expr-unary	: LNOT @ goto unop_first; @ expr-unary @ goto unop_second; @
-		| ADDOP @ goto unop_first; @ expr-unary @ goto unop_second; @
+		| MINUS
+			@{
+				snek_token_val.op = snek_op_uminus;
+				goto unop_first;
+			}@
+		  expr-unary @ goto unop_second; @
+		| PLUS expr-unary
 		| expr-pow
 		;
 

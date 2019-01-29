@@ -386,9 +386,9 @@ snek_lex(void)
 		case ']':
 			RETURN(CS);
 		case '+':
-			return check_equal(ADDOP, snek_op_plus, snek_op_assign_plus);
+			return check_equal(PLUS, snek_op_plus, snek_op_assign_plus);
 		case '-':
-			return check_equal(ADDOP, snek_op_minus, snek_op_assign_minus);
+			return check_equal(MINUS, snek_op_minus, snek_op_assign_minus);
 		case '*':
 			n = lexchar();
 			if (n == '*') {
