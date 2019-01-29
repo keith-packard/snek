@@ -301,11 +301,11 @@ snek_code_add_string(char *string)
 	snek_offset_t s;
 	snek_offset_t strpos;
 
-	snek_poly_stash(snek_string_to_poly(string));
+	snek_string_stash(string);
 	snek_code_add_op(snek_op_string);
 	strpos = snek_compile_size;
 	compile_extend(sizeof (snek_offset_t), NULL);
-	s = snek_pool_offset(snek_poly_to_string(snek_poly_fetch()));
+	s = snek_pool_offset(snek_string_fetch());
 	memcpy(snek_compile + strpos, &s, sizeof (snek_offset_t));
 }
 

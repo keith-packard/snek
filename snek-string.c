@@ -37,14 +37,14 @@ snek_string_catn(char *a, snek_offset_t aoff, snek_offset_t alen,
 {
 	char *new;
 	if (snek_is_pool_addr(a))
-		snek_poly_stash(snek_string_to_poly(a));
+		snek_string_stash(a);
 	if (snek_is_pool_addr(b))
-		snek_poly_stash(snek_string_to_poly(b));
+		snek_string_stash(b);
 	new = snek_alloc(alen + blen + 1);
 	if (snek_is_pool_addr(b))
-		b = snek_poly_to_string(snek_poly_fetch());
+		b = snek_string_fetch();
 	if (snek_is_pool_addr(a))
-		a = snek_poly_to_string(snek_poly_fetch());
+		a = snek_string_fetch();
 	if (new) {
 		memcpy(new, a + aoff, alen);
 		memcpy(new + alen, b + boff, blen);
@@ -63,9 +63,9 @@ snek_string_cat(char *a, char *b)
 char *
 snek_string_slice(char *a, snek_slice_t *slice)
 {
-	snek_poly_stash(snek_string_to_poly(a));
+	snek_string_stash(a);
 	char	*r = snek_alloc(slice->len + 1);
-	a = snek_poly_to_string(snek_poly_fetch());
+	a = snek_string_fetch();
 	if (!r)
 		return NULL;
 	snek_offset_t i = 0;
@@ -177,7 +177,11 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 				snek_poly_t v = SNEK_ZERO;
 				if (o < size)
 					v = data[o++];
+				snek_poly_stash(poly);
+				snek_string_stash(a);
 				snek_poly_format(&buf, v, format);
+				a = snek_string_fetch();
+				poly = snek_poly_fetch();
 			}
 		}
 	}
