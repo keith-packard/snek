@@ -319,10 +319,7 @@ snek_code_add_op_offset(snek_op_t op, snek_offset_t o)
 void
 snek_code_add_forward(snek_forward_t forward)
 {
-	snek_code_add_op(snek_op_forward);
-	compile_extend(sizeof (snek_forward_t), &forward);
-	if (sizeof (snek_forward_t) < sizeof (snek_offset_t))
-		compile_extend(sizeof (snek_offset_t) - sizeof (snek_forward_t), NULL);
+	snek_code_add_op_offset(snek_op_forward, (snek_offset_t) forward);
 }
 
 static inline uint8_t
@@ -363,14 +360,14 @@ snek_code_patch_forward(snek_offset_t start, snek_forward_t forward, snek_offset
 
 	while (ip < snek_compile_size) {
 		snek_op_t op = snek_compile[ip++];
-		bool push = (op & snek_op_push) != 0;
-		snek_forward_t f;
+		snek_op_t push = op & snek_op_push;
 		op &= ~snek_op_push;
+		snek_offset_t f;
 		switch (op) {
 		case snek_op_forward:
-			memcpy(&f, &snek_compile[ip], sizeof (snek_forward_t));
-			if (f == forward) {
-				snek_compile[ip-1] = snek_op_branch | (push ? snek_op_push : 0);
+			memcpy(&f, &snek_compile[ip], sizeof (snek_offset_t));
+			if ((snek_forward_t) f == forward) {
+				snek_compile[ip-1] = snek_op_branch | push;
 				memcpy(&snek_compile[ip], &target, sizeof(snek_offset_t));
 			}
 			break;
