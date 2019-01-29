@@ -136,6 +136,8 @@ typedef enum {
 	snek_op_in_start,
 	snek_op_in_step,
 
+	snek_op_nop,
+
 	snek_op_line,
 
 	snek_op_push = 0x80,

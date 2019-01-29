@@ -1,4 +1,5 @@
 tests = [
+  'andor.py',
   'list.py',
   'for-array.py',
   'for-range.py',

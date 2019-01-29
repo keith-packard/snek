@@ -137,6 +137,7 @@ const char * const snek_op_names[] = {
 	[snek_op_range_step] = "range_step",
 	[snek_op_in_start] = "in_start",
 	[snek_op_in_step] = "in_step",
+	[snek_op_nop] = "nop",
 	[snek_op_line] = "line",
 };
 

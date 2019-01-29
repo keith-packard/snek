@@ -311,12 +311,14 @@ expr		: expr-and expr-or-p
 		;
 expr-or-p	: OR
 			@{
-				snek_code_add_op_offset(snek_op_branch_false, 0);
+				snek_code_add_op_offset(snek_op_branch_true, 0);
 				value_push_offset(snek_compile_prev);
 			}@
 		  expr-and
 			@{
+			short_second:
 				snek_code_patch_branch(value_pop().offset, snek_code_current());
+				snek_code_add_op(snek_op_nop);
 			}@
 		  expr-or-p
 		|
@@ -325,12 +327,12 @@ expr-and	: expr-not expr-and-p
 		;
 expr-and-p	: AND
 			@{
-				snek_code_add_op_offset(snek_op_branch_true, 0);
+				snek_code_add_op_offset(snek_op_branch_false, 0);
 				value_push_offset(snek_compile_prev);
 			}@
 		  expr-not
 			@{
-				snek_code_patch_branch(value_pop().offset, snek_code_current());
+				goto short_second;
 			}@
 		  expr-and-p
 		|
