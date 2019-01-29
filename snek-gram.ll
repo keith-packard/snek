@@ -29,7 +29,7 @@ command		: stat
 		| DEF
 			@{
 				nformal = 0;
-				snek_code_add_op_offset(snek_op_line, snek_token_val.line);
+				goto add_line;
 			}@
 		  NAME
 			@{
@@ -573,6 +573,9 @@ actuals-p	: COMMA expr actual-p actuals-p
 		;
 nl		: NL
 			@{
-				snek_code_add_op_offset(snek_op_line, snek_token_val.line);
+				if (snek_compile_size) {
+			add_line:
+					snek_code_add_op_offset(snek_op_line, snek_line);
+				}
 			}@
 		;
