@@ -110,7 +110,6 @@ comment(void)
 	while ((c = lexchar() != '\n'))
 		if (c == EOF)
 			return false;
-	++snek_lex_line;
 	return true;
 }
 
@@ -323,6 +322,7 @@ snek_lex(void)
 				if (c == '#') {
 					if (!comment())
 						RETURN(0);
+					++snek_lex_line;
 				} else {
 					break;
 				}
@@ -460,7 +460,7 @@ snek_lex(void)
 		case '#':
 			if (!comment())
 				RETURN(END);
-			snek_lex_midline = false;
+			unlexchar('\n');
 			continue;
 		case ' ':
 			continue;
