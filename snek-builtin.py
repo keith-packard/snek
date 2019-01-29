@@ -67,7 +67,8 @@ def load_builtins(filename):
     f = open(filename)
     for line in f.readlines():
         if line[0] == '#':
-            headers += [line]
+            if len(line) > 1 and line[1] != ' ':
+                headers += [line]
         else:
             bits = line.split(",")
             add_builtin(bits[0].strip(), bits[1].strip())
