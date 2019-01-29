@@ -280,7 +280,7 @@ trailing(char *next, snek_op_t without_op, token_t without, snek_op_t with_op, t
 	char *n = next;
 
 	/* skip spaces between words */
-	while ((c = getchar()) == ' ')
+	while ((c = lexchar()) == ' ')
 		add_token(c);
 
 	/* match trailing word if present */
@@ -369,7 +369,6 @@ snek_lex(void)
 			snek_line = snek_lex_line;
 			if (snek_ignore_nl)
 				continue;
-			snek_token_val.line = snek_line;
 			RETURN(NL);
 		case ':':
 			RETURN(COLON);
