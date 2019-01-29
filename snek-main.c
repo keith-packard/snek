@@ -14,13 +14,16 @@
 
 #include "snek.h"
 
+FILE	*snek_posix_input;
+
 int
 main (int argc, char **argv)
 {
 	if (argc > 1) {
-		freopen(argv[1], "r", stdin);
+		snek_posix_input = fopen(argv[1], "r");
 		snek_file = argv[1];
 	} else {
+		snek_posix_input = stdin;
 		snek_file = "<stdin>";
 		snek_print_vals = true;
 	}
