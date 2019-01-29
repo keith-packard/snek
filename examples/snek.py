@@ -44,7 +44,7 @@ def put_snak():
                 break
         else:
             break
-    showp(snak, '$')
+    showp(snak, SNAK)
 
 def showxy(x, y, str):
     stdscr.addstr(y, x, str)
