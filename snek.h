@@ -705,12 +705,20 @@ snek_stack_pop(void)
 static inline snek_poly_t
 snek_stack_pick(snek_offset_t off)
 {
+#if SNEK_DEBUG
+	if (off >= snek_stackp)
+		snek_panic("stack underflow");
+#endif
 	return snek_stack[snek_stackp - off - 1];
 }
 
 static inline void
 snek_stack_drop(snek_offset_t off)
 {
+#if SNEK_DEBUG
+	if (off > snek_stackp)
+		snek_panic("stack underflow");
+#endif
 	snek_stackp -= off;
 }
 
