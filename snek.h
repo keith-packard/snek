@@ -38,7 +38,7 @@
 #endif
 
 #ifndef SNEK_POOL
-#define SNEK_POOL		(12 * 256)
+#define SNEK_POOL		(32 * 1024)
 #endif
 #define SNEK_POOL_EXTRA		0
 #define SNEK_ALLOC_SHIFT	2

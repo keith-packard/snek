@@ -1,3 +1,20 @@
+/*
+ * Copyright © 2019 Keith Packard <keithp@keithp.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ */
+
+#ifndef _SNECK_DUINO_H_
+#define _SNECK_DUINO_H_
+
 #include <avr/pgmspace.h>
 #define SNEK_POOL	1024
 #define SNEK_DEBUG	0
@@ -74,3 +91,5 @@ avr_snek_builtin_names_len(const uint8_t *a)
 #define SNEK_MEM_SIZE(m)	((snek_offset_t (*)(void *addr)) pgm_read_word(&(m)->size))
 #define SNEK_MEM_MARK(m)	((void (*)(void *addr)) pgm_read_word(&(m)->mark))
 #define SNEK_MEM_MOVE(m)	((void (*)(void *addr)) pgm_read_word(&(m)->move))
+
+#endif /* _SNEK_DUINO_H_ */
