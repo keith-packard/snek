@@ -1,6 +1,6 @@
 # Snek — a tiny python-inspired language for embedded computing
 
-![](https:snek.svg)
+![Snek picture](snek.svg)
 
 Snek is a tiny embeddable language targeting processors with only a
 few kB of flash and ram. Think of something that would have been
