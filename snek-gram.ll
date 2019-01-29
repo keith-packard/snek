@@ -165,7 +165,7 @@ if-stat		: if suite elif-stats
 				snek_offset_t elif_off = value_pop().offset;
 				snek_offset_t if_off = value_pop().offset;
 				snek_code_patch_branch(if_off, elif_off);
-				snek_code_patch_forward(if_off, snek_forward_if, snek_code_current());
+				snek_code_patch_forward(if_off, snek_compile_size, snek_forward_if, snek_code_current());
 			}@
 		;
 if		: IF expr COLON
@@ -214,8 +214,8 @@ while-stat	:
 			}@
 		  WHILE expr COLON
 			@{
-				/* push 1 - while_off */
 				snek_code_add_op_offset(snek_op_branch_false, 0);
+				/* push 1 - while_off */
 				value_push_offset(snek_compile_prev);
 			}@
 		  suite
@@ -228,6 +228,7 @@ while-stat	:
 			}@
 		  while-else-stat
 			@{
+			patch_loop:;
 				snek_offset_t while_else_stat_off = value_pop().offset;
 				snek_offset_t loop_end_off = value_pop().offset;
 				snek_offset_t while_off = value_pop().offset;
@@ -235,8 +236,8 @@ while-stat	:
 
 				snek_code_patch_branch(while_off, while_else_stat_off);
 				snek_code_patch_branch(loop_end_off, top_off);
-				snek_code_patch_forward(while_off, snek_forward_continue, top_off);
-				snek_code_patch_forward(while_off, snek_forward_break, snek_code_current());
+				snek_code_patch_forward(while_off, loop_end_off, snek_forward_continue, top_off);
+				snek_code_patch_forward(while_off, loop_end_off, snek_forward_break, snek_code_current());
 			}@
 		;
 while-else-stat	: ELSE COLON suite
@@ -244,22 +245,15 @@ while-else-stat	: ELSE COLON suite
 		;
 for-stat	: for suite
 			@{
-				/* push 1 - loop_end_off */
 				snek_code_add_op_offset(snek_op_branch, 0);
+				/* push 2 - loop_end_off */
 				value_push_offset(snek_compile_prev);
-				/* push 2 - while_else_stat_off */
+				/* push 3 - while_else_stat_off */
 				value_push_offset(snek_code_current());
 			}@
 		  while-else-stat
 			@{
-				snek_offset_t while_else_stat_off = value_pop().offset;
-				snek_offset_t loop_end_off = value_pop().offset;
-				snek_offset_t for_off = value_pop().offset;
-
-				snek_code_patch_branch(for_off, while_else_stat_off);
-				snek_code_patch_branch(loop_end_off, for_off);
-				snek_code_patch_forward(for_off, snek_forward_continue, for_off);
-				snek_code_patch_forward(for_off, snek_forward_break, snek_code_current());
+				goto patch_loop;
 			}@
 		;
 for		: FOR NAME
@@ -276,8 +270,12 @@ for-p		: RANGE
 				snek_offset_t num = value_pop().offset;
 				snek_id_t id = value_pop().id;
 				snek_code_add_range_start(id, num);
-				/* push 0 - for_off */
 				snek_code_add_op_offset(snek_op_range_step, 0);
+
+			for_push_prevs:
+				/* push 0 - for_off */
+				value_push_offset(snek_compile_prev);
+				/* push 1 - top_off */
 				value_push_offset(snek_compile_prev);
 			}@
 		| expr COLON
@@ -285,9 +283,9 @@ for-p		: RANGE
 				snek_id_t id = value_pop().id;
 				snek_code_set_push(snek_code_prev_insn());
 				snek_code_add_op_id(snek_op_in_start, id);
-				/* push 0 - for_off */
 				snek_code_add_op_offset(snek_op_in_step, 0);
-				value_push_offset(snek_compile_prev);
+
+				goto for_push_prevs;
 			}@
 		;
 suite		: simple-stat

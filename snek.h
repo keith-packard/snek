@@ -375,7 +375,7 @@ void
 snek_code_add_forward(snek_forward_t forward);
 
 void
-snek_code_patch_forward(snek_offset_t start, snek_forward_t forward, snek_offset_t target);
+snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t forward, snek_offset_t target);
 
 void
 snek_code_add_slice(bool has_start, bool has_end, bool has_stride);

@@ -354,11 +354,11 @@ snek_code_patch_branch(snek_offset_t branch, snek_offset_t target)
 }
 
 void
-snek_code_patch_forward(snek_offset_t start, snek_forward_t forward, snek_offset_t target)
+snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t forward, snek_offset_t target)
 {
 	snek_offset_t ip = start;
 
-	while (ip < snek_compile_size) {
+	while (ip < stop) {
 		snek_op_t op = snek_compile[ip++];
 		snek_op_t push = op & snek_op_push;
 		op &= ~snek_op_push;
@@ -381,7 +381,9 @@ snek_code_patch_forward(snek_offset_t start, snek_forward_t forward, snek_offset
 snek_code_t *
 snek_code_finish(void)
 {
-	snek_code_patch_forward(0, snek_forward_return, snek_code_current());
+	if (snek_compile_size == 0)
+		return NULL;
+	snek_code_patch_forward(0, snek_compile_size, snek_forward_return, snek_code_current());
 	snek_code_t *code = snek_alloc(sizeof (snek_code_t) + snek_compile_size);
 
 	if (code) {
