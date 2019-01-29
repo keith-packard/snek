@@ -48,3 +48,20 @@ snek_builtin_sys_stdout_flush(void)
 	fflush(stdout);
 	return SNEK_ONE;
 }
+
+snek_poly_t
+snek_builtin_ord(snek_poly_t a)
+{
+	if (snek_poly_type(a) != snek_string) {
+		snek_error("expected string");
+		return SNEK_ZERO;
+	}
+	return snek_float_to_poly(snek_poly_to_string(a)[0]);
+}
+
+snek_poly_t
+snek_builtin_chr(snek_poly_t a)
+{
+	snek_soffset_t s = snek_poly_get_soffset(a);
+	return snek_string_to_poly(snek_string_make(s));
+}

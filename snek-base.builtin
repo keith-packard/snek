@@ -2,3 +2,5 @@ len, 1
 print, -1
 sys.stdout.flush, 0
 end, -2
+ord, 1
+chr, 1
