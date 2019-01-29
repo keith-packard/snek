@@ -58,6 +58,17 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
+ * Rename. This project started out called 'newt', but a friend
+   suggested it might be better named 'snek'.
+
+ * Add named parameters. Now you can use name=value in both formals
+   and actuals. There's a bit more work to do here for error
+   detection, but I'd like to make it smaller first as the arduino
+   binary is up over 32kB again.
+
+ * Refactoring and shrinking the code. This reduced the arduino binary
+   to just over 31kB.
+
  * Port to Arduino Duemilanova, which is a system with only 32kB of
    flash and 2kB of RAM. The whole language is included, but all error
    messages are elided to save ram as the AVR processor cannot easily
