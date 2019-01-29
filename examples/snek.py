@@ -27,7 +27,8 @@ cols = 80
 dx = 0
 dy = 0
 
-SNEK = 'S'
+HEAD = '@'
+TAIL = '+'
 SNAK = '$'
 
 def _x(p): return p % cols
@@ -69,6 +70,7 @@ def move_snek():
         new = _p(nx, ny)
         if grow > 0:
             tail = snek
+            showxy(0,0,"Score %d---" % (len(snek) + 1))
             grow -= 1
         else:
             tail = snek[:-1]
@@ -77,7 +79,9 @@ def move_snek():
                 return hit_snek
         snek = [new] + tail
         showp(old, ' ')
-        showp(new, 'S')
+        if tail:
+            showp(tail[0], TAIL)
+        showp(new, HEAD)
         if new == snak:
             return hit_snak
     return miss
@@ -109,7 +113,7 @@ def main():
     for y in range(1,lines-1):
         showxy(0, y, '|')
         showxy(cols-1, y, '|')
-    showp(snek[0], 'S')
+    showp(snek[0], HEAD)
     while True:
         stdscr.move(_y(snek[0]), _x(snek[0]))
         stdscr.refresh()
@@ -129,6 +133,9 @@ def main():
             dy = 0
         elif c == ord('q') or c == ord('x'):
             done("quit")
+        elif c == ord('p'):
+            while stdscr.getch() != ord('p'):
+                time.sleep(.1)
         hit = move_snek()
         if hit == hit_wall:
             done("hit the wall")
@@ -136,7 +143,6 @@ def main():
             done("hit yourself")
         if hit == hit_snak:
             grow = 5
-            showxy(0,0,"Score %d---" % (len(snek) + 5))
             put_snak()
 
 main()
