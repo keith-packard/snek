@@ -575,7 +575,10 @@ actual-p	: ASSIGN
 			}@
 		|
 			@{
-				value_push_offset(value_pop().offset + 1);
+				snek_offset_t offset = value_pop().offset;
+				if (offset >= 256)
+					return parse_return_syntax;
+				value_push_offset(offset + 1);
 				snek_code_set_push(snek_code_prev_insn());
 			}@
 		;
