@@ -69,6 +69,7 @@ snek_builtin_curses_initscr(void)
 		perror("tcsetattr");
 		exit(1);
 	}
+	printf("\033[?47h");
 	return SNEK_ONE;
 }
 
@@ -99,6 +100,7 @@ snek_builtin_curses_nocbreak(void)
 snek_poly_t
 snek_builtin_curses_endwin(void)
 {
+	printf("\033[?47l");
 	tcsetattr(0, TCSAFLUSH, &termios_save);
 	return SNEK_ONE;
 }
