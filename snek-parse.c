@@ -105,7 +105,6 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define value_push_int(i) _value_push_int(i, __FILE__, __LINE__)
 #define value_push_bool(b) _value_push_bool(b, __FILE__, __LINE__)
 #define value_push_offset(o) _value_push_offset(o, __FILE__, __LINE__)
-#define value_push_op(o) _value_push_op(o, __FILE__, __LINE__)
 #define value_push_id(o) _value_push_id(o, __FILE__, __LINE__)
 
 #ifndef PARSE_STACK_SIZE
