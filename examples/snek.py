@@ -1,0 +1,129 @@
+#!/usr/bin/snek
+
+import random
+import curses
+import time
+
+stdscr = 0
+
+snek = []
+grow = 0
+snak = 0
+lines = 25
+cols = 80
+dx = 0
+dy = 0
+
+SNEK = 'S'
+SNAK = '$'
+
+def _x(p): return p % cols
+def _y(p): return p // cols
+def _p(x,y): return x + y * cols
+
+def put_snak():
+    global snek, snak
+    while True:
+        snak = _p(random.randrange(cols-2)+1, random.randrange(lines-2)+1)
+        for s in snek:
+            if snak == s:
+                break
+        else:
+            break
+    showp(snak, '$')
+
+def showxy(x, y, str):
+    stdscr.addstr(y, x, str)
+
+def showp(pos, str):
+    showxy(_x(pos), _y(pos), str)
+
+miss = 0
+hit_wall = 1
+hit_snek = 2
+hit_snak = 3
+
+def move_snek():
+    global snek, grow
+    global dx, dy
+    if dx or dy:
+        old = snek[len(snek)-1]
+        sp = snek[0]
+        nx = _x(sp) + dx
+        ny = _y(sp) + dy
+        if nx < 1 or nx >= cols-1 or ny < 1 or ny >= lines-1:
+            return hit_wall
+        new = _p(nx, ny)
+        if grow > 0:
+            tail = snek
+            grow -= 1
+        else:
+            tail = snek[:-1]
+        for t in tail:
+            if new == t:
+                return hit_snek
+        snek = [new] + tail
+        showp(old, ' ')
+        showp(new, 'S')
+        if new == snak:
+            return hit_snak
+    return miss
+
+def done(msg):
+    stdscr.move(lines-1, 0)
+    stdscr.refresh()
+    stdscr.nodelay(False)
+    curses.nocbreak()
+    curses.echo()
+    curses.endwin()
+    print("You %s. Score %d" % (msg, len(snek)))
+    exit(0)
+
+def main():
+    global snek, dx, dy, snak, grow
+    global stdscr, lines, cols
+    stdscr = curses.initscr()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.nodelay(True)
+    stdscr.erase()
+    random.seed()
+    snek = [_p(1,1)]
+    put_snak()
+    for x in range(1,cols-1):
+        showxy(x, 0, '-')
+        showxy(x, lines-1, '-')
+    for y in range(1,lines-1):
+        showxy(0, y, '|')
+        showxy(cols-1, y, '|')
+    showp(snek[0], 'S')
+    while True:
+        stdscr.move(_y(snek[0]), _x(snek[0]))
+        stdscr.refresh()
+        time.sleep(.1)
+        c = stdscr.getch()
+        if c == ord('h'):
+            dx = -1
+            dy = 0
+        elif c == ord('j'):
+            dx = 0
+            dy = 1
+        elif c == ord('k'):
+            dx = 0
+            dy = -1
+        elif c == ord('l'):
+            dx = 1
+            dy = 0
+        elif c == ord('q') or c == ord('x'):
+            done("quit")
+        hit = move_snek()
+        if hit == hit_wall:
+            done("hit the wall")
+        elif hit == hit_snek:
+            done("hit yourself")
+        if hit == hit_snak:
+            grow = 5
+            showxy(0,0,"Score %d---" % (len(snek) + 5))
+            put_snak()
+
+main()
