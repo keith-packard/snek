@@ -508,6 +508,9 @@ snek_list_append(snek_list_t *list, snek_list_t *append);
 snek_list_t *
 snek_list_plus(snek_list_t *a, snek_list_t *b);
 
+snek_list_t *
+snek_list_times(snek_list_t *a, snek_soffset_t count);
+
 bool
 snek_list_equal(snek_list_t *a, snek_list_t *b);
 
@@ -584,6 +587,12 @@ snek_string_stash(const char *s);
 
 char *
 snek_string_fetch(void);
+
+void
+snek_list_stash(snek_list_t *list);
+
+snek_list_t *
+snek_list_fetch(void);
 
 void
 snek_code_stash(snek_code_t *code);

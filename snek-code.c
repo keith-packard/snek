@@ -506,7 +506,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 		default:
 			break;
 		}
-	} else if (snek_is_float(a) && snek_is_float(b)) {
+	} else if (at == snek_float && bt == snek_float) {
 		af = snek_poly_to_float(a);
 		bf = snek_poly_to_float(b);
 		switch (op) {
@@ -595,6 +595,13 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 						al = snek_list_plus(al, bl);
 					ret = snek_list_to_poly(al);
 				}
+			}
+			break;
+		case snek_op_times:
+			if (at == snek_list && bt == snek_float) {
+				al = snek_poly_to_list(a);
+				snek_soffset_t bo = snek_poly_get_soffset(b);
+				ret = snek_list_to_poly(snek_list_times(al, bo));
 			}
 			break;
 		case snek_op_mod:

@@ -740,6 +740,18 @@ snek_string_fetch(void)
 }
 
 void
+snek_list_stash(snek_list_t *l)
+{
+	snek_poly_stash(snek_list_to_poly(l));
+}
+
+snek_list_t *
+snek_list_fetch(void)
+{
+	return snek_poly_to_list(snek_poly_fetch());
+}
+
+void
 snek_code_stash(snek_code_t *code)
 {
 	stash_code = code;

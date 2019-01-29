@@ -30,9 +30,9 @@ snek_list_resize(snek_list_t *list, snek_offset_t size)
 
 	snek_offset_t alloc = snek_list_readonly(list) ? size : snek_list_alloc(size);
 
-	snek_poly_stash(snek_list_to_poly(list));
+	snek_list_stash(list);
 	snek_poly_t *data = snek_alloc(alloc * sizeof (snek_poly_t));
-	list = snek_poly_to_list(snek_poly_fetch());
+	list = snek_list_fetch();
 
 	if (!data)
 		return false;
@@ -74,9 +74,9 @@ snek_list_append(snek_list_t *list, snek_list_t *append)
 	if (snek_list_readonly(list))
 		return NULL;
 
-	snek_poly_stash(snek_list_to_poly(append));
+	snek_list_stash(append);
 	list = snek_list_resize(list, list->size + append->size);
-	append = snek_poly_to_list(snek_poly_fetch());
+	append = snek_list_fetch();
 
 	if (list)
 		memcpy((snek_poly_t *) snek_pool_ref(list->data) + oldsize,
@@ -88,11 +88,11 @@ snek_list_append(snek_list_t *list, snek_list_t *append)
 snek_list_t *
 snek_list_plus(snek_list_t *a, snek_list_t *b)
 {
-	snek_poly_stash(snek_list_to_poly(a));
-	snek_poly_stash(snek_list_to_poly(b));
+	snek_list_stash(a);
+	snek_list_stash(b);
 	snek_list_t *n = snek_list_make(a->size + b->size, snek_list_readonly(a));
-	b = snek_poly_to_list(snek_poly_fetch());
-	a = snek_poly_to_list(snek_poly_fetch());
+	b = snek_list_fetch();
+	a = snek_list_fetch();
 	if (!n)
 		return NULL;
 	memcpy(snek_pool_ref(n->data),
@@ -101,6 +101,26 @@ snek_list_plus(snek_list_t *a, snek_list_t *b)
 	memcpy((snek_poly_t *) snek_pool_ref(n->data) + a->size,
 	       snek_pool_ref(b->data),
 	       b->size * sizeof(snek_poly_t));
+	return n;
+}
+
+snek_list_t *
+snek_list_times(snek_list_t *a, snek_soffset_t count)
+{
+	if (count < 0)
+		count = 0;
+	snek_list_stash(a);
+	snek_offset_t size = a->size;
+	snek_list_t *n = snek_list_make(size * count, snek_list_readonly(a));
+	a = snek_list_fetch();
+	if (!n)
+		return NULL;
+	snek_poly_t *src = snek_pool_ref(a->data);
+	snek_poly_t *dst = snek_pool_ref(n->data);
+	while (count--) {
+		memcpy(dst, src, size * sizeof (snek_poly_t));
+		dst += size;
+	}
 	return n;
 }
 
@@ -139,9 +159,9 @@ snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 	if (snek_list_readonly(list) && snek_slice_identity(slice))
 	    return list;
 
-	snek_poly_stash(snek_list_to_poly(list));
+	snek_list_stash(list);
 	snek_list_t *n = snek_list_make(slice->count, snek_list_readonly(list));
-	list = snek_poly_to_list(snek_poly_fetch());
+	list = snek_list_fetch();
 	if (!n)
 		return NULL;
 	snek_offset_t i = 0;
