@@ -69,6 +69,7 @@ def dump_max_len(fp):
         if len(name.name) > max_len:
             max_len = len(name.name)
     print("#define SNEK_BUILTIN_NAMES_MAX_LEN %d" % max_len, file=fp)
+    print("#define SNEK_BUILTIN_NAMES_MAX_ARGS %d" % max_args(), file=fp)
 
 def dump_names(fp):
     print("static const uint8_t SNEK_BUILTIN_NAMES_DECLARE(snek_builtin_names)[] = {", file=fp)
@@ -88,6 +89,15 @@ def dump_names(fp):
         total += 1
     print("};", file=fp)
     print("#define SNEK_BUILTIN_NAMES_SIZE %d" % total, file=fp)
+
+def max_args():
+    max = 0
+    for name in sorted(builtins):
+        if name.keyword or name.nformal == -2:
+            continue
+        if name.nformal > max:
+            max = name.nformal
+    return max
 
 def dump_decls(fp):
     for name in sorted(builtins):
@@ -156,14 +166,10 @@ def builtin_main():
 
     print(file=fp)
 
+    max_formals = max_args()
+
     print("#ifndef SNEK_BUILTIN_DECLARE", file=fp)
     print("#define SNEK_BUILTIN_DECLARE(n) n", file=fp)
-    print("#define SNEK_BUILTIN_NFORMAL(b) ((b)->nformal)", file=fp)
-    print("#define SNEK_BUILTIN_FUNC0(b) ((b)->func0)", file=fp)
-    print("#define SNEK_BUILTIN_FUNC1(b) ((b)->func1)", file=fp)
-    print("#define SNEK_BUILTIN_FUNC2(b) ((b)->func2)", file=fp)
-    print("#define SNEK_BUILTIN_FUNC3(b) ((b)->func3)", file=fp)
-    print("#define SNEK_BUILTIN_FUNC4(b) ((b)->func4)", file=fp)
     print("#endif", file=fp)
 
     dump_builtins(fp)
@@ -180,6 +186,13 @@ def builtin_main():
     dump_max_len(fp)
 
     dump_headers(fp)
+
+    print("#ifndef SNEK_BUILTIN_NFORMAL", file=fp)
+    print("#define SNEK_BUILTIN_NFORMAL(b) ((b)->nformal)", file=fp)
+    print("#define SNEK_BUILTIN_FUNCV(b) ((b)->funcv)", file=fp)
+    for f in range(max_formals+1):
+        print("#define SNEK_BUILTIN_FUNC%d(b) ((b)->func%d)" % (f, f), file=fp)
+    print("#endif", file=fp)
 
     dump_cpp(fp)
 

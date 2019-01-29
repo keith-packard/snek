@@ -741,16 +741,6 @@ snek_assign(snek_id_t id, snek_op_t op)
 	*ref = a;
 }
 
-#ifndef SNEK_BUILTIN_FUNCV
-#define SNEK_BUILTIN_NFORMAL(b)	((b)->nformal)
-#define SNEK_BUILTIN_FUNCV(b)	((b)->funcv)
-#define SNEK_BUILTIN_FUNC0(b) 	((b)->func0)
-#define SNEK_BUILTIN_FUNC1(b) 	((b)->func1)
-#define SNEK_BUILTIN_FUNC2(b) 	((b)->func2)
-#define SNEK_BUILTIN_FUNC3(b) 	((b)->func3)
-#define SNEK_BUILTIN_FUNC4(b) 	((b)->func4)
-#endif
-
 static void
 snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnamed)
 {
@@ -769,9 +759,16 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 		case 1:
 			a = SNEK_BUILTIN_FUNC1(builtin)(actuals[0]);
 			break;
+#if SNEK_BUILTIN_NAMES_MAX_ARGS >= 2
 		case 2:
 			a = SNEK_BUILTIN_FUNC2(builtin)(actuals[0], actuals[1]);
 			break;
+#endif
+#if SNEK_BUILTIN_NAMES_MAX_ARGS >= 3
+		case 3:
+			a = SNEK_BUILTIN_FUNC3(builtin)(actuals[0], actuals[1], actuals[2]);
+			break;
+#endif
 		}
 	}
 }
