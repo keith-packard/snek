@@ -1,2 +1,17 @@
 exit, 1
 time.sleep, 1
+curses.initscr, 0
+curses.noecho, 0
+curses.echo, 0
+curses.cbreak, 0
+curses.nocbreak, 0
+curses.endwin, 0
+stdscr.nodelay, 1
+stdscr.erase, 0
+stdscr.addstr, 3
+stdscr.move, 2
+stdscr.refresh, 0
+stdscr.getch, 0
+random.seed, 0
+random.randrange, 1
+#include <snek-posix.h>

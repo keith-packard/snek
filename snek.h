@@ -806,6 +806,12 @@ snek_poly_to_float(snek_poly_t v)
 	return v.f;
 }
 
+extern float
+snek_poly_get_float(snek_poly_t a);
+
+extern snek_soffset_t
+snek_poly_get_soffset(snek_poly_t a);
+
 static inline int
 snek_is_pool_addr(const void *addr) {
 	const uint8_t *a = addr;
