@@ -16,39 +16,39 @@ start		: command start
 		;
 command		: stat
 			@{
-				newt_code_t *code = newt_code_finish();
-				newt_poly_t p = newt_code_run(code);
-				if (newt_abort)
+				snek_code_t *code = snek_code_finish();
+				snek_poly_t p = snek_code_run(code);
+				if (snek_abort)
 					return parse_return_error;
-				if (newt_print_val && newt_print_vals) {
-					newt_poly_print(stdout, p, 'r');
+				if (snek_print_val && snek_print_vals) {
+					snek_poly_print(stdout, p, 'r');
 					putchar('\n');
-					newt_print_val = false;
+					snek_print_val = false;
 				}
 			}@
 		| DEF
 			@{
 				nformal = 0;
-				newt_code_add_op_offset(newt_op_line, newt_token_val.line);
+				snek_code_add_op_offset(snek_op_line, snek_token_val.line);
 			}@
 		  NAME
 			@{
-				value_push(newt_token_val);
+				value_push(snek_token_val);
 	 		}@
 		  OP opt-formals CP COLON suite
 			@{
-				newt_code_t	*code = newt_code_finish();
+				snek_code_t	*code = snek_code_finish();
 				if (!code)
 					break;
-				newt_func_t	*func = newt_func_alloc(code, nformal, formals);
+				snek_func_t	*func = snek_func_alloc(code, nformal, formals);
 				if (!func)
 					break;
-				newt_poly_t	poly = newt_func_to_poly(func);
-				newt_id_t	id = value_pop().id;
+				snek_poly_t	poly = snek_func_to_poly(func);
+				snek_id_t	id = value_pop().id;
 
-				newt_poly_stash(poly);
-				newt_poly_t *ref = newt_id_ref(id, true);
-				poly = newt_poly_fetch();
+				snek_poly_stash(poly);
+				snek_poly_t *ref = snek_id_ref(id, true);
+				poly = snek_poly_fetch();
 				if (ref)
 					*ref = poly;
 			}@
@@ -60,8 +60,8 @@ command		: stat
 			@{
 				uint8_t i;
 				for (i = 0; i < nformal; i++)
-					if (!newt_id_del(formals[i])) {
-						newt_undefined(formals[i]);
+					if (!snek_id_del(formals[i])) {
+						snek_undefined(formals[i]);
 						break;
 					}
 			}@
@@ -77,13 +77,13 @@ formals-p	: COMMA formal formals-p
 		;
 formal		: NAME 
 			@{
-				formals[nformal++] = newt_token_val.id;
+				formals[nformal++] = snek_token_val.id;
 			}@
 		  opt-named-p
 		;
 opt-named-p	: ASSIGN expr
 			@{
-				newt_code_add_op_id(newt_op_assign_named, formals[--nformal]);
+				snek_code_add_op_id(snek_op_assign_named, formals[--nformal]);
 			}@
 		|
 		;
@@ -91,7 +91,7 @@ opt-stats	: stat opt-stats
 		|
 		;
 stat		: simple-stat
-			@{ newt_print_val = true; }@
+			@{ snek_print_val = true; }@
 		| compound-stat
 		| NL
 		;
@@ -102,56 +102,56 @@ small-stats-p	: SEMI small-stat small-stats-p
 		;
 small-stat	: assign-expr
 		| RETURN expr
-			@{ newt_code_add_forward(newt_forward_return); }@
+			@{ snek_code_add_forward(snek_forward_return); }@
 		| BREAK
-			@{ newt_code_add_forward(newt_forward_break); }@
+			@{ snek_code_add_forward(snek_forward_break); }@
 		| CONTINUE
-			@{ newt_code_add_forward(newt_forward_continue); }@
+			@{ snek_code_add_forward(snek_forward_continue); }@
 		| GLOBAL globals
 		;
 assign-expr	: expr assign-expr-p
 		;
 assign-expr-p	: ASSIGN
 			@{
-				newt_offset_t prev_offset = newt_code_prev_insn();
-				uint8_t *prev = newt_code_at(prev_offset);
-				newt_id_t id;
+				snek_offset_t prev_offset = snek_code_prev_insn();
+				uint8_t *prev = snek_code_at(prev_offset);
+				snek_id_t id;
 
 				/* look at the previous instruction to figure out what
 				 * it was -- an id or an array. All others are illegal
 				 */
 				switch (*prev) {
-				case newt_op_id:
-					memcpy(&id, prev + 1, sizeof (newt_id_t));
+				case snek_op_id:
+					memcpy(&id, prev + 1, sizeof (snek_id_t));
 					break;
-				case newt_op_array:
-					newt_code_set_push(newt_code_prev_prev_insn());
-					id = NEWT_ID_NONE;
+				case snek_op_array:
+					snek_code_set_push(snek_code_prev_prev_insn());
+					id = SNEK_ID_NONE;
 					break;
 				default:
 					return parse_return_syntax;
 				}
 				value_push_id(id);
-				value_push_offset(newt_token_val.op);
+				value_push_offset(snek_token_val.op);
 
 				/* eliminate the previous instruction having
 				 * extracted the useful information from it
 				 */
-				newt_code_delete_prev();
+				snek_code_delete_prev();
 			}@
 		  expr
 			@{
-				newt_op_t op = value_pop().offset;
-				newt_id_t id = value_pop().id;
+				snek_op_t op = value_pop().offset;
+				snek_id_t id = value_pop().id;
 				
 				/* add the assignment operator */
-				newt_code_add_op_id(op, id);
+				snek_code_add_op_id(op, id);
 			}@
 		|
 		;
 globals		: NAME
 			@{
-				newt_code_add_op_id(newt_op_global, newt_token_val.id);
+				snek_code_add_op_id(snek_op_global, snek_token_val.id);
 			}@
 		  globals
 		|
@@ -162,81 +162,81 @@ compound-stat	: if-stat
 		;
 if-stat		: if suite elif-stats
 			@{
-				newt_offset_t elif_off = value_pop().offset;
-				newt_offset_t if_off = value_pop().offset;
-				newt_code_patch_branch(if_off, elif_off);
-				newt_code_patch_forward(if_off, newt_forward_if, newt_code_current());
+				snek_offset_t elif_off = value_pop().offset;
+				snek_offset_t if_off = value_pop().offset;
+				snek_code_patch_branch(if_off, elif_off);
+				snek_code_patch_forward(if_off, snek_forward_if, snek_code_current());
 			}@
 		;
 if		: IF expr COLON
 			@{
-				newt_code_add_op_offset(newt_op_branch_false, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_branch_false, 0);
+				value_push_offset(snek_compile_prev);
 			}@
 		;
 elif-stats	: elif elif_expr suite elif-stats
 			@{
-				newt_offset_t elif_stats_off = value_pop().offset;
-				newt_offset_t elif_expr_off = value_pop().offset;
-				newt_offset_t elif_off = value_pop().offset;
-				newt_code_patch_branch(elif_expr_off, elif_stats_off);
+				snek_offset_t elif_stats_off = value_pop().offset;
+				snek_offset_t elif_expr_off = value_pop().offset;
+				snek_offset_t elif_off = value_pop().offset;
+				snek_code_patch_branch(elif_expr_off, elif_stats_off);
 				value_push_offset(elif_off);
 			}@
 		| else-stat
 		;
 elif		: ELIF
 			@{
-				newt_code_add_forward(newt_forward_if);
-				value_push_offset(newt_code_current());
+				snek_code_add_forward(snek_forward_if);
+				value_push_offset(snek_code_current());
 			}@
 		;
 elif_expr	: expr COLON
 			@{
-				newt_code_add_op_offset(newt_op_branch_false, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_branch_false, 0);
+				value_push_offset(snek_compile_prev);
 			}@
 		;
 else-stat	: ELSE COLON
 			@{
-				newt_code_add_forward(newt_forward_if);
-				value_push_offset(newt_code_current());
+				snek_code_add_forward(snek_forward_if);
+				value_push_offset(snek_code_current());
 			}@
 		  suite
 		|
 			@{
-				value_push_offset(newt_code_current());
+				value_push_offset(snek_code_current());
 			}@
 		;
 while-stat	:
 			@{
 				/* push 0 - top_off */
-				value_push_offset(newt_code_current());
+				value_push_offset(snek_code_current());
 			}@
 		  WHILE expr COLON
 			@{
 				/* push 1 - while_off */
-				newt_code_add_op_offset(newt_op_branch_false, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_branch_false, 0);
+				value_push_offset(snek_compile_prev);
 			}@
 		  suite
 			@{
 				/* push 2 - loop_end_off */
-				newt_code_add_op_offset(newt_op_branch, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_branch, 0);
+				value_push_offset(snek_compile_prev);
 				/* push 3 - while_else_stat_off */
-				value_push_offset(newt_code_current());
+				value_push_offset(snek_code_current());
 			}@
 		  while-else-stat
 			@{
-				newt_offset_t while_else_stat_off = value_pop().offset;
-				newt_offset_t loop_end_off = value_pop().offset;
-				newt_offset_t while_off = value_pop().offset;
-				newt_offset_t top_off = value_pop().offset;
+				snek_offset_t while_else_stat_off = value_pop().offset;
+				snek_offset_t loop_end_off = value_pop().offset;
+				snek_offset_t while_off = value_pop().offset;
+				snek_offset_t top_off = value_pop().offset;
 
-				newt_code_patch_branch(while_off, while_else_stat_off);
-				newt_code_patch_branch(loop_end_off, top_off);
-				newt_code_patch_forward(while_off, newt_forward_continue, top_off);
-				newt_code_patch_forward(while_off, newt_forward_break, newt_code_current());
+				snek_code_patch_branch(while_off, while_else_stat_off);
+				snek_code_patch_branch(loop_end_off, top_off);
+				snek_code_patch_forward(while_off, snek_forward_continue, top_off);
+				snek_code_patch_forward(while_off, snek_forward_break, snek_code_current());
 			}@
 		;
 while-else-stat	: ELSE COLON suite
@@ -245,26 +245,26 @@ while-else-stat	: ELSE COLON suite
 for-stat	: for suite
 			@{
 				/* push 1 - loop_end_off */
-				newt_code_add_op_offset(newt_op_branch, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_branch, 0);
+				value_push_offset(snek_compile_prev);
 				/* push 2 - while_else_stat_off */
-				value_push_offset(newt_code_current());
+				value_push_offset(snek_code_current());
 			}@
 		  while-else-stat
 			@{
-				newt_offset_t while_else_stat_off = value_pop().offset;
-				newt_offset_t loop_end_off = value_pop().offset;
-				newt_offset_t for_off = value_pop().offset;
+				snek_offset_t while_else_stat_off = value_pop().offset;
+				snek_offset_t loop_end_off = value_pop().offset;
+				snek_offset_t for_off = value_pop().offset;
 
-				newt_code_patch_branch(for_off, while_else_stat_off);
-				newt_code_patch_branch(loop_end_off, for_off);
-				newt_code_patch_forward(for_off, newt_forward_continue, for_off);
-				newt_code_patch_forward(for_off, newt_forward_break, newt_code_current());
+				snek_code_patch_branch(for_off, while_else_stat_off);
+				snek_code_patch_branch(loop_end_off, for_off);
+				snek_code_patch_forward(for_off, snek_forward_continue, for_off);
+				snek_code_patch_forward(for_off, snek_forward_break, snek_code_current());
 			}@
 		;
 for		: FOR NAME
 			@{
-				value_push(newt_token_val);
+				value_push(snek_token_val);
 			}@
 		  IN for-p
 		;
@@ -273,36 +273,36 @@ for-p		: RANGE
 			}@
 		  OP opt-actuals CP COLON
 			@{
-				newt_offset_t num = value_pop().offset;
-				newt_id_t id = value_pop().id;
-				newt_code_add_range_start(id, num);
+				snek_offset_t num = value_pop().offset;
+				snek_id_t id = value_pop().id;
+				snek_code_add_range_start(id, num);
 				/* push 0 - for_off */
-				newt_code_add_op_offset(newt_op_range_step, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_range_step, 0);
+				value_push_offset(snek_compile_prev);
 			}@
 		| expr COLON
 			@{
-				newt_id_t id = value_pop().id;
-				newt_code_set_push(newt_code_prev_insn());
-				newt_code_add_op_id(newt_op_in_start, id);
+				snek_id_t id = value_pop().id;
+				snek_code_set_push(snek_code_prev_insn());
+				snek_code_add_op_id(snek_op_in_start, id);
 				/* push 0 - for_off */
-				newt_code_add_op_offset(newt_op_in_step, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_in_step, 0);
+				value_push_offset(snek_compile_prev);
 			}@
 		;
 suite		: simple-stat
 		| nl INDENT
 			@{
-				value_push(newt_token_val);
+				value_push(snek_token_val);
 			}@
 		  stat opt-stats EXDENT
 			@{
 				uint8_t indent = value_pop().indent;
-				uint8_t exdent = newt_token_val.indent;
+				uint8_t exdent = snek_token_val.indent;
 
-				newt_current_indent = indent;
-				if (exdent > newt_current_indent) {
-					newt_error("mismatching indentation indent %d exdent %d", indent, exdent);
+				snek_current_indent = indent;
+				if (exdent > snek_current_indent) {
+					snek_error("mismatching indentation indent %d exdent %d", indent, exdent);
 					return parse_return_syntax;
 				}
 			}@
@@ -311,12 +311,12 @@ expr		: expr-and expr-or-p
 		;
 expr-or-p	: OR
 			@{
-				newt_code_add_op_offset(newt_op_branch_false, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_branch_false, 0);
+				value_push_offset(snek_compile_prev);
 			}@
 		  expr-and
 			@{
-				newt_code_patch_branch(value_pop().offset, newt_code_current());
+				snek_code_patch_branch(value_pop().offset, snek_code_current());
 			}@
 		  expr-or-p
 		|
@@ -325,12 +325,12 @@ expr-and	: expr-not expr-and-p
 		;
 expr-and-p	: AND
 			@{
-				newt_code_add_op_offset(newt_op_branch_true, 0);
-				value_push_offset(newt_compile_prev);
+				snek_code_add_op_offset(snek_op_branch_true, 0);
+				value_push_offset(snek_compile_prev);
 			}@
 		  expr-not
 			@{
-				newt_code_patch_branch(value_pop().offset, newt_code_current());
+				snek_code_patch_branch(value_pop().offset, snek_code_current());
 			}@
 		  expr-and-p
 		|
@@ -339,12 +339,12 @@ expr-not	: expr-cmp
 		| NOT
 			@{
 			unop_first:
-				value_push(newt_token_val);
+				value_push(snek_token_val);
 			}@
 		  expr-not
 			@{
 			unop_second:
-				newt_code_add_op(value_pop().op);
+				snek_code_add_op(value_pop().op);
 			}@
 		;
 expr-cmp	: expr-lor expr-cmp-p
@@ -352,13 +352,13 @@ expr-cmp	: expr-lor expr-cmp-p
 expr-cmp-p	: CMPOP
 			@{
 			binop_first:
-				newt_code_set_push(newt_code_prev_insn());
-				value_push(newt_token_val);
+				snek_code_set_push(snek_code_prev_insn());
+				value_push(snek_token_val);
 			}@
 		  expr-lor
 			@{
 			binop_second:
-				newt_code_add_op(value_pop().op);
+				snek_code_add_op(value_pop().op);
 			}@
 		  expr-cmp-p
 		| IS @ goto binop_first; @ expr-lor @ goto binop_second; @ expr-cmp-p
@@ -411,33 +411,33 @@ expr-array	: expr-prim expr-array-p
 		;
 expr-array-p	: OS
 			@{
-				newt_code_set_push(newt_code_prev_insn());
-				++newt_ignore_nl;
+				snek_code_set_push(snek_code_prev_insn());
+				++snek_ignore_nl;
 			}@
 		  array-index CS
 			@{
 				bool slice = value_pop().bools;
 				if (slice) {
-					newt_code_set_push(newt_code_prev_insn());
+					snek_code_set_push(snek_code_prev_insn());
 					bool stride = value_pop().bools;
 					bool end = value_pop().bools;
 					bool start = value_pop().bools;
-					newt_code_add_slice(start, end, stride);
+					snek_code_add_slice(start, end, stride);
 				} else {
-					newt_code_add_op(newt_op_array);
+					snek_code_add_op(snek_op_array);
 				}
-				--newt_ignore_nl;
+				--snek_ignore_nl;
  			}@
 		  expr-array-p
 		| OP
 			@{
-				++newt_ignore_nl;
-				newt_code_set_push(newt_code_prev_insn());
+				++snek_ignore_nl;
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		  opt-actuals CP
 		        @{
-				--newt_ignore_nl;
-				newt_code_add_op_offset(newt_op_call, value_pop().offset);
+				--snek_ignore_nl;
+				snek_code_add_op_offset(snek_op_call, value_pop().offset);
 			}@
 		  expr-array-p
 		|
@@ -461,7 +461,7 @@ slice-p		: COLON opt-expr
 			@{ value_push_bool(false); }@
 		;
 opt-expr	:	@{
-				newt_code_set_push(newt_code_prev_insn());
+				snek_code_set_push(snek_code_prev_insn());
 				value_push_bool(true);
 			}@
 		  expr
@@ -470,39 +470,39 @@ opt-expr	:	@{
 				value_push_bool(false);
 			}@
 		;
-expr-prim	: OP @{ ++newt_ignore_nl; }@ opt-tuple CP @{ --newt_ignore_nl; }@
+expr-prim	: OP @{ ++snek_ignore_nl; }@ opt-tuple CP @{ --snek_ignore_nl; }@
 			@{
 				bool tuple = value_pop().bools;
 
 				if (tuple) {
-					newt_offset_t num = value_pop().offset;
-					newt_code_add_op_offset(newt_op_tuple, num);
+					snek_offset_t num = value_pop().offset;
+					snek_code_add_op_offset(snek_op_tuple, num);
 				}
 			}@
-		| OS @{ ++newt_ignore_nl; }@ opt-actuals CS @{ --newt_ignore_nl; }@
+		| OS @{ ++snek_ignore_nl; }@ opt-actuals CS @{ --snek_ignore_nl; }@
 			@{
-				newt_offset_t num = value_pop().offset;
-				newt_code_add_op_offset(newt_op_list, num);
+				snek_offset_t num = value_pop().offset;
+				snek_code_add_op_offset(snek_op_list, num);
 			}@
 		| NAME
 			@{
-				newt_code_add_op_id(newt_op_id, newt_token_val.id);
+				snek_code_add_op_id(snek_op_id, snek_token_val.id);
 			}@
 		| NUMBER
 			@{
-				newt_code_add_number(newt_token_val.number);
+				snek_code_add_number(snek_token_val.number);
 			}@
 		| STRING
 			@{
-				newt_code_add_string(newt_token_val.string);
+				snek_code_add_string(snek_token_val.string);
 			}@
 		  strings-p
 		;
 strings-p	: STRING
 			@{
-				newt_code_set_push(newt_code_prev_insn());
-				newt_code_add_string(newt_token_val.string);
-				newt_code_add_op(newt_op_plus);
+				snek_code_set_push(snek_code_prev_insn());
+				snek_code_add_string(snek_token_val.string);
+				snek_code_add_op(snek_op_plus);
 			}@
 		  strings-p
 		|
@@ -517,7 +517,7 @@ opt-tuple	: expr opt-tuple-p
 		;
 opt-tuple-p	: COMMA
 			@{
-				newt_code_set_push(newt_code_prev_insn());
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		  opt-actuals
 			@{
@@ -543,29 +543,29 @@ actuals		:
 		;
 actual-p	: ASSIGN
 			@{
-				newt_offset_t prev_offset = newt_code_prev_insn();
-				uint8_t *prev = newt_code_at(prev_offset);
-				newt_id_t id;
+				snek_offset_t prev_offset = snek_code_prev_insn();
+				uint8_t *prev = snek_code_at(prev_offset);
+				snek_id_t id;
 
 				/* look at the previous instruction to figure out
 				 * if it's an id.
 				 */
-				if (*prev != newt_op_id)
+				if (*prev != snek_op_id)
 					return parse_return_syntax;
-				memcpy(&id, prev + 1, sizeof (newt_id_t));
-				newt_code_delete_prev();
-				newt_code_add_number(id);
-				newt_code_set_push(newt_code_prev_insn());
+				memcpy(&id, prev + 1, sizeof (snek_id_t));
+				snek_code_delete_prev();
+				snek_code_add_number(id);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		  expr
 			@{
-				newt_code_set_push(newt_code_prev_insn());
+				snek_code_set_push(snek_code_prev_insn());
 				value_push_offset(value_pop().offset + 256);
 			}@
 		|
 			@{
 				value_push_offset(value_pop().offset + 1);
-				newt_code_set_push(newt_code_prev_insn());
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		;
 actuals-p	: COMMA expr actual-p actuals-p
@@ -573,6 +573,6 @@ actuals-p	: COMMA expr actual-p actuals-p
 		;
 nl		: NL
 			@{
-				newt_code_add_op_offset(newt_op_line, newt_token_val.line);
+				snek_code_add_op_offset(snek_op_line, snek_token_val.line);
 			}@
 		;

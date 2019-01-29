@@ -12,7 +12,7 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -62,32 +62,32 @@ uart_putchar(char c, FILE *stream)
 
 #define RX_BUFSIZE	64
 
-newt_poly_t
-newt_builtin_led_on(void)
+snek_poly_t
+snek_builtin_led_on(void)
 {
 	int ret = (PORTB >> PB5) & 1;
 	DDRB |= (1 << PB5);
 	PORTB |= (1 << PB5);
-	return newt_float_to_poly(ret);
+	return snek_float_to_poly(ret);
 }
 
-newt_poly_t
-newt_builtin_led_off(void)
+snek_poly_t
+snek_builtin_led_off(void)
 {
 	int ret = (PORTB >> PB5) & 1;
 	PORTB &= ~(1 << PB5);
-	return newt_float_to_poly(ret);
+	return snek_float_to_poly(ret);
 }
 
-newt_poly_t
-newt_builtin_time_sleep(newt_poly_t a)
+snek_poly_t
+snek_builtin_time_sleep(snek_poly_t a)
 {
-	if (newt_poly_type(a) == newt_float) {
-		int cs = newt_poly_to_float(a) * 100.0f;
+	if (snek_poly_type(a) == snek_float) {
+		int cs = snek_poly_to_float(a) * 100.0f;
 		while (cs--)
 			_delay_ms(10);
 	}
-	return NEWT_ONE;
+	return SNEK_ONE;
 }
 
 int
@@ -168,7 +168,7 @@ int main (void)
 {
 	uart_init();
 	stderr = stdout = stdin = &uart_str;
-	fprintf(stdout, "Welcome to Newt\n");
-	newt_print_vals = true;
-	newt_parse();
+	fprintf(stdout, "Welcome to Snek\n");
+	snek_print_vals = true;
+	snek_parse();
 }

@@ -1,4 +1,4 @@
 led_on, 0
 led_off, 0
 time.sleep, 1
-#include <newt-duino.h>
+#include <snek-duino.h>

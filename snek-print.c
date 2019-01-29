@@ -12,24 +12,24 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 
-static inline newt_offset_t
-newt_func_line(newt_func_t *func)
+static inline snek_offset_t
+snek_func_line(snek_func_t *func)
 {
-	newt_code_t	*code = newt_pool_ref(func->code);
+	snek_code_t	*code = snek_pool_ref(func->code);
 	if (code)
-		return newt_code_line(code);
+		return snek_code_line(code);
 	return 0;
 }
 
 void
-newt_poly_format(newt_buf_t *buf, newt_poly_t a, char format)
+snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 {
 	void *closure = buf->closure;
 	static char tmp[32];
 	char format_string[3] = "%.";
-	newt_type_t atype = newt_poly_type(a);
+	snek_type_t atype = snek_poly_type(a);
 
 	format_string[1] = format;
 	format_string[1] = format;
@@ -39,9 +39,9 @@ newt_poly_format(newt_buf_t *buf, newt_poly_t a, char format)
 	case 'u':
 	case 'x':
 	case 'X':
-		if (atype != newt_float)
+		if (atype != snek_float)
 			break;
-		sprintf(tmp, format_string, (int) newt_poly_to_float(a));
+		sprintf(tmp, format_string, (int) snek_poly_to_float(a));
 		buf->put_s(tmp, closure);
 		return;
 	case 'e':
@@ -50,19 +50,19 @@ newt_poly_format(newt_buf_t *buf, newt_poly_t a, char format)
 	case 'F':
 	case 'g':
 	case 'G':
-		if (atype != newt_float)
+		if (atype != snek_float)
 			break;
-		sprintf(tmp, format_string, newt_poly_to_float(a));
+		sprintf(tmp, format_string, snek_poly_to_float(a));
 		buf->put_s(tmp, closure);
 		return;
 	case 'c':
 		switch (atype) {
-		case newt_float:
-			sprintf(tmp, format_string, (int) newt_poly_to_float(a));
+		case snek_float:
+			sprintf(tmp, format_string, (int) snek_poly_to_float(a));
 			buf->put_s(tmp, closure);
 			return;
-		case newt_string:
-			sprintf(tmp, format_string, (int) newt_poly_to_string(a)[0]);
+		case snek_string:
+			sprintf(tmp, format_string, (int) snek_poly_to_string(a)[0]);
 			buf->put_s(tmp, closure);
 			return;
 		default:
@@ -70,8 +70,8 @@ newt_poly_format(newt_buf_t *buf, newt_poly_t a, char format)
 		}
 		break;
 	case 's':
-		if (atype == newt_string) {
-			buf->put_s(newt_poly_to_string(a), closure);
+		if (atype == snek_string) {
+			buf->put_s(snek_poly_to_string(a), closure);
 			return;
 		}
 		break;
@@ -79,38 +79,38 @@ newt_poly_format(newt_buf_t *buf, newt_poly_t a, char format)
 		break;
 	}
 	switch (atype) {
-	case newt_float:
-		sprintf_const(tmp, "%g", newt_poly_to_float(a));
+	case snek_float:
+		sprintf_const(tmp, "%g", snek_poly_to_float(a));
 		buf->put_s(tmp, closure);
 		break;
-	case newt_string:
+	case snek_string:
 		buf->put_c('\'', closure);
-		buf->put_s(newt_poly_to_string(a), closure);
+		buf->put_s(snek_poly_to_string(a), closure);
 		buf->put_c('\'', closure);
 		break;
-	case newt_func:
+	case snek_func:
 		sprintf_const(tmp, "<function at %d>",
-			      newt_func_line(newt_poly_to_func(a)));
+			      snek_func_line(snek_poly_to_func(a)));
 		buf->put_s(tmp, closure);
 		break;
-	case newt_builtin:
+	case snek_builtin:
 		sprintf_const(tmp, "<builtin %s>",
-			      newt_name_string(newt_poly_to_builtin_id(a)));
+			      snek_name_string(snek_poly_to_builtin_id(a)));
 		buf->put_s(tmp, closure);
 		break;
-	case newt_list:
+	case snek_list:
 	{
-		newt_list_t *list = newt_poly_to_list(a);
-		buf->put_c(newt_list_readonly(list) ? '(' : '[', closure);
-		newt_poly_t *data = newt_pool_ref(list->data);
-		for (newt_offset_t o = 0; o < list->size; o++) {
+		snek_list_t *list = snek_poly_to_list(a);
+		buf->put_c(snek_list_readonly(list) ? '(' : '[', closure);
+		snek_poly_t *data = snek_pool_ref(list->data);
+		for (snek_offset_t o = 0; o < list->size; o++) {
 			if (o)
 				buf->put_c(' ', closure);
-			newt_poly_format(buf, data[o], format);
-			if (o < list->size - 1 || (list->size == 1 && newt_list_readonly(list)))
+			snek_poly_format(buf, data[o], format);
+			if (o < list->size - 1 || (list->size == 1 && snek_list_readonly(list)))
 				buf->put_c(',', closure);
 		}
-		buf->put_c(newt_list_readonly(list) ? ')' : ']', closure);
+		buf->put_c(snek_list_readonly(list) ? ')' : ']', closure);
 		break;
 	}
 	}

@@ -12,29 +12,29 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 #include <time.h>
 
-newt_poly_t
-newt_builtin_exit(newt_poly_t a)
+snek_poly_t
+snek_builtin_exit(snek_poly_t a)
 {
 	int ret;
-	switch (newt_poly_type(a)) {
-	case newt_float:
-		ret = (int) newt_poly_to_float(a);
+	switch (snek_poly_type(a)) {
+	case snek_float:
+		ret = (int) snek_poly_to_float(a);
 		break;
 	default:
-		ret = newt_poly_true(a) ? 0 : 1;
+		ret = snek_poly_true(a) ? 0 : 1;
 		break;
 	}
 	exit(ret);
 }
 
-newt_poly_t
-newt_builtin_time_sleep(newt_poly_t a)
+snek_poly_t
+snek_builtin_time_sleep(snek_poly_t a)
 {
-	if (newt_poly_type(a) == newt_float) {
-		float delay = newt_poly_to_float(a);
+	if (snek_poly_type(a) == snek_float) {
+		float delay = snek_poly_to_float(a);
 		float secs = floorf(delay);
 		float ns = floorf((delay - secs) * 1e9 + 0.5);
 
@@ -45,5 +45,5 @@ newt_builtin_time_sleep(newt_poly_t a)
 
 		nanosleep(&ts, NULL);
 	}
-	return NEWT_ONE;
+	return SNEK_ONE;
 }

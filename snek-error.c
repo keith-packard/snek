@@ -12,23 +12,23 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 
-bool newt_abort;
+bool snek_abort;
 
 #ifndef ERROR_FETCH_FORMAT_CHAR
 #define ERROR_FETCH_FORMAT_CHAR(a) (*(a))
 #endif
 
 void
-newt_error_name(const char *format, ...)
+snek_error_name(const char *format, ...)
 {
 	va_list		args;
 	char		c;
 
-	newt_abort = true;
+	snek_abort = true;
 	va_start(args, format);
-	fprintf(stderr, "%s:%d ", newt_file, newt_line);
+	fprintf(stderr, "%s:%d ", snek_file, snek_line);
 	while ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
 		if (c == '%') {
 			switch ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
@@ -48,7 +48,7 @@ newt_error_name(const char *format, ...)
 				fprintf(stderr, "%x", va_arg(args, int));
 				break;
 			case 'i':
-				fprintf(stderr, "%s", newt_name_string(va_arg(args, int)));
+				fprintf(stderr, "%s", snek_name_string(va_arg(args, int)));
 				break;
 			case 'g':
 				fprintf(stderr, "%g", va_arg(args, double));
@@ -62,11 +62,11 @@ newt_error_name(const char *format, ...)
 				fputs(va_arg(args, char *), stderr);
 				break;
 			case 'p':
-				newt_poly_print(stderr, va_arg(args, newt_poly_t), 'r');
+				snek_poly_print(stderr, va_arg(args, snek_poly_t), 'r');
 				break;
-#if NEWT_DEBUG
+#if SNEK_DEBUG
 			default:
-				newt_panic("bad newt_error format");
+				snek_panic("bad snek_error format");
 				break;
 #endif
 			}
@@ -77,11 +77,11 @@ newt_error_name(const char *format, ...)
 	va_end(args);
 }
 
-#if NEWT_DEBUG
+#if SNEK_DEBUG
 void
-newt_panic(const char *message)
+snek_panic(const char *message)
 {
-	newt_error("%s\n", message);
+	snek_error("%s\n", message);
 	abort();
 }
 #endif

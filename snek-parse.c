@@ -12,30 +12,30 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 #include <assert.h>
 
-bool newt_print_vals;
-bool newt_print_val;
+bool snek_print_vals;
+bool snek_print_val;
 
 #define MAX_FORMALS	10
 
 static uint8_t nformal;
-static newt_id_t formals[MAX_FORMALS];
+static snek_id_t formals[MAX_FORMALS];
 
-newt_token_val_t newt_token_val;
+snek_token_val_t snek_token_val;
 
 #define GRAMMAR_TABLE
-#include "newt-gram.h"
+#include "snek-gram.h"
 
 #ifndef VALUE_STACK_SIZE
 #define VALUE_STACK_SIZE	128
 #endif
 
-static newt_token_val_t value_stack[VALUE_STACK_SIZE];
+static snek_token_val_t value_stack[VALUE_STACK_SIZE];
 static int value_stack_p = 0;
 
-static inline newt_token_val_t
+static inline snek_token_val_t
 value_get(int pos)
 {
 	return value_stack[value_stack_p - pos];
@@ -43,7 +43,7 @@ value_get(int pos)
 
 //#define VALUE_DEBUG
 
-static inline newt_token_val_t
+static inline snek_token_val_t
 _value_pop(const char *file, int line)
 {
 	(void) file; (void) line;
@@ -51,14 +51,14 @@ _value_pop(const char *file, int line)
 	printf("value pop %d from %s:%d\n", value_stack_p - 1, file, line);
 #endif
 	if (value_stack_p == 0) {
-		newt_error("value stack underflow");
-		return newt_token_val;
+		snek_error("value stack underflow");
+		return snek_token_val;
 	}
 	return value_stack[--value_stack_p];
 }
 
 static inline bool
-_value_push(newt_token_val_t value, const char *file, int line)
+_value_push(snek_token_val_t value, const char *file, int line)
 {
 	(void) file; (void) line;
 	if (value_stack_p >= VALUE_STACK_SIZE)
@@ -71,13 +71,13 @@ _value_push(newt_token_val_t value, const char *file, int line)
 }
 
 static inline bool
-_value_push_offset(newt_offset_t value, const char *file, int line)
+_value_push_offset(snek_offset_t value, const char *file, int line)
 {
 	(void) file; (void) line;
 #ifdef VALUE_DEBUG
 	printf("value push offset %u\n", (unsigned) value);
 #endif
-	return _value_push((newt_token_val_t) { .offset = value }, file, line);
+	return _value_push((snek_token_val_t) { .offset = value }, file, line);
 }
 
 static inline bool
@@ -87,17 +87,17 @@ _value_push_bool(bool value, const char *file, int line)
 #ifdef VALUE_DEBUG
 	printf("value push bool %d\n", value);
 #endif
-	return _value_push((newt_token_val_t) { .bools = value }, file, line);
+	return _value_push((snek_token_val_t) { .bools = value }, file, line);
 }
 
 static inline bool
-_value_push_id(newt_id_t id, const char *file, int line)
+_value_push_id(snek_id_t id, const char *file, int line)
 {
 	(void) file; (void) line;
 #ifdef VALUE_DEBUG
-	printf("value push id %s\n", newt_name_string(id));
+	printf("value push id %s\n", snek_name_string(id));
 #endif
-	return _value_push((newt_token_val_t) { .id = id }, file, line);
+	return _value_push((snek_token_val_t) { .id = id }, file, line);
 }
 
 #define value_pop() _value_pop(__FILE__, __LINE__)
@@ -121,16 +121,16 @@ lex(void *lex_context)
 		token_t token;
 		*skip_to_nl = false;
 		for (;;) {
-			token = newt_lex();
+			token = snek_lex();
 			switch(token) {
 			case END:
 				return END;
 			case NL:
-				if (newt_current_indent == 0)
+				if (snek_current_indent == 0)
 					break;
 				continue;
 			case EXDENT:
-				newt_current_indent = newt_token_val.indent;
+				snek_current_indent = snek_token_val.indent;
 				continue;
 			default:
 				continue;
@@ -138,39 +138,39 @@ lex(void *lex_context)
 			break;
 		}
 	}
-	return newt_lex();
+	return snek_lex();
 }
 
 #define PARSE_ACTION_BOTTOM do {			\
-		if (newt_abort)				\
+		if (snek_abort)				\
 			return parse_return_error;	\
 	} while (0)
 
 #define PARSE_CODE
-#include "newt-gram.h"
+#include "snek-gram.h"
 
-newt_parse_ret_t
-newt_parse(void)
+snek_parse_ret_t
+snek_parse(void)
 {
 	bool skip_to_nl = false;
-	newt_line = 1;
+	snek_line = 1;
 
 	for (;;) {
-		newt_current_indent = 0;
-		newt_ignore_nl = 0;
-		newt_abort = false;
+		snek_current_indent = 0;
+		snek_ignore_nl = 0;
+		snek_abort = false;
 		value_stack_p = 0;
 
 		parse_return_t ret = parse(&skip_to_nl);
 
 		switch (ret) {
 		case parse_return_success:
-			return newt_parse_success;
+			return snek_parse_success;
 		case parse_return_end:
-			newt_error("Syntax error at end of file.");
-			return newt_parse_error;
+			snek_error("Syntax error at end of file.");
+			return snek_parse_error;
 		case parse_return_syntax:
-			newt_error("Syntax error at \"%s\".", newt_lex_text);
+			snek_error("Syntax error at \"%s\".", snek_lex_text);
 			skip_to_nl = true;
 			break;
 		case parse_return_error:

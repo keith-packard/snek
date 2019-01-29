@@ -5,7 +5,7 @@ import argparse
 
 builtin_id = 1
 
-class NewtBuiltin:
+class SnekBuiltin:
     name = ""
     id = 0
     nformal = 0
@@ -27,14 +27,14 @@ class NewtBuiltin:
     def __lt__(self,other):
         return self.name < other.name
 
-    def newt_name(self):
+    def snek_name(self):
         return self.name
 
     def cpp_name(self):
-        return "NEWT_BUILTIN_%s" % (self.name.replace(".", "_"))
+        return "SNEK_BUILTIN_%s" % (self.name.replace(".", "_"))
 
     def func_name(self):
-        return "newt_builtin_%s" % (self.name.replace(".", "_"))
+        return "snek_builtin_%s" % (self.name.replace(".", "_"))
 
 
     def func_field(self):
@@ -47,7 +47,7 @@ builtins = []
 
 def add_builtin(name, id):
     global builtins
-    builtins += [NewtBuiltin(name, id)]
+    builtins += [SnekBuiltin(name, id)]
 
 def load_builtins(filename):
     global headers
@@ -68,10 +68,10 @@ def dump_max_len(fp):
     for name in builtins:
         if len(name.name) > max_len:
             max_len = len(name.name)
-    print("#define NEWT_BUILTIN_NAMES_MAX_LEN %d" % max_len, file=fp)
+    print("#define SNEK_BUILTIN_NAMES_MAX_LEN %d" % max_len, file=fp)
 
 def dump_names(fp):
-    print("static const uint8_t NEWT_BUILTIN_NAMES_DECLARE(newt_builtin_names)[] = {", file=fp)
+    print("static const uint8_t SNEK_BUILTIN_NAMES_DECLARE(snek_builtin_names)[] = {", file=fp)
     total = 0
     print("0,", file=fp);
     total += 1
@@ -87,28 +87,28 @@ def dump_names(fp):
         print("0,", file=fp)
         total += 1
     print("};", file=fp)
-    print("#define NEWT_BUILTIN_NAMES_SIZE %d" % total, file=fp)
+    print("#define SNEK_BUILTIN_NAMES_SIZE %d" % total, file=fp)
 
 def dump_decls(fp):
     for name in sorted(builtins):
         if name.keyword or name.nformal == -2:
             continue
-        print("extern newt_poly_t", file=fp)
+        print("extern snek_poly_t", file=fp)
         print("%s(" % name.func_name(), file=fp, end='')
         if name.nformal == -1:
-            print("uint8_t nposition, uint8_t nnamed, newt_poly_t *args", end='', file=fp)
+            print("uint8_t nposition, uint8_t nnamed, snek_poly_t *args", end='', file=fp)
         elif name.nformal == 0:
             print("void", end='', file=fp)
         else:
             for a in range(name.nformal):
-                print("newt_poly_t a%d" % a, end='', file=fp)
+                print("snek_poly_t a%d" % a, end='', file=fp)
                 if a < name.nformal-1:
                     print(", ", file=fp)
         print(");", file=fp)
         print(file=fp)
 
 def dump_builtins(fp):
-    print("const newt_builtin_t NEWT_BUILTIN_DECLARE(newt_builtins)[] = {", file=fp)
+    print("const snek_builtin_t SNEK_BUILTIN_DECLARE(snek_builtins)[] = {", file=fp)
 
     for name in sorted(builtins):
         if name.keyword or name.nformal == -2:
@@ -126,12 +126,12 @@ def dump_cpp(fp):
             continue
         print("#define %s %d" % (name.cpp_name(), name.id), file=fp)
 
-    print("#define NEWT_BUILTIN_END %d" % (builtin_id), file=fp)
+    print("#define SNEK_BUILTIN_END %d" % (builtin_id), file=fp)
 
 
 def builtin_main():
 
-    parser = argparse.ArgumentParser(description="Construct Newt builtin data.")
+    parser = argparse.ArgumentParser(description="Construct Snek builtin data.")
     parser.add_argument('builtins', metavar='F', nargs='+',
                         help='input files describing builtins')
     parser.add_argument('-o', '--output', dest='output', help='output file')
@@ -146,36 +146,36 @@ def builtin_main():
     if args.output:
         fp = open(args.output, mode='w')
 
-    print("#ifdef NEWT_BUILTIN_DATA", file=fp)
-    print("#undef NEWT_BUILTIN_DATA", file=fp)
-    print("#ifndef NEWT_BUILTIN_NAMES_DECLARE", file=fp)
-    print("#define NEWT_BUILTIN_NAMES_DECLARE(n) n", file=fp)
+    print("#ifdef SNEK_BUILTIN_DATA", file=fp)
+    print("#undef SNEK_BUILTIN_DATA", file=fp)
+    print("#ifndef SNEK_BUILTIN_NAMES_DECLARE", file=fp)
+    print("#define SNEK_BUILTIN_NAMES_DECLARE(n) n", file=fp)
     print("#endif", file=fp)
 
     dump_names(fp)
 
     print(file=fp)
 
-    print("#ifndef NEWT_BUILTIN_DECLARE", file=fp)
-    print("#define NEWT_BUILTIN_DECLARE(n) n", file=fp)
-    print("#define NEWT_BUILTIN_NFORMAL(b) ((b)->nformal)", file=fp)
-    print("#define NEWT_BUILTIN_FUNC0(b) ((b)->func0)", file=fp)
-    print("#define NEWT_BUILTIN_FUNC1(b) ((b)->func1)", file=fp)
-    print("#define NEWT_BUILTIN_FUNC2(b) ((b)->func2)", file=fp)
-    print("#define NEWT_BUILTIN_FUNC3(b) ((b)->func3)", file=fp)
-    print("#define NEWT_BUILTIN_FUNC4(b) ((b)->func4)", file=fp)
+    print("#ifndef SNEK_BUILTIN_DECLARE", file=fp)
+    print("#define SNEK_BUILTIN_DECLARE(n) n", file=fp)
+    print("#define SNEK_BUILTIN_NFORMAL(b) ((b)->nformal)", file=fp)
+    print("#define SNEK_BUILTIN_FUNC0(b) ((b)->func0)", file=fp)
+    print("#define SNEK_BUILTIN_FUNC1(b) ((b)->func1)", file=fp)
+    print("#define SNEK_BUILTIN_FUNC2(b) ((b)->func2)", file=fp)
+    print("#define SNEK_BUILTIN_FUNC3(b) ((b)->func3)", file=fp)
+    print("#define SNEK_BUILTIN_FUNC4(b) ((b)->func4)", file=fp)
     print("#endif", file=fp)
 
     dump_builtins(fp)
 
     print(file=fp)
 
-    print("#else /* NEWT_BUILTIN_DATA */", file=fp)
+    print("#else /* SNEK_BUILTIN_DATA */", file=fp)
 
-    print("#ifdef NEWT_BUILTIN_DECLS", file=fp)
-    print("#undef NEWT_BUILTIN_DECLS", file=fp)
+    print("#ifdef SNEK_BUILTIN_DECLS", file=fp)
+    print("#undef SNEK_BUILTIN_DECLS", file=fp)
     dump_decls(fp)
-    print("#else /* NEWT_BUILTIN_DECLS */", file=fp)
+    print("#else /* SNEK_BUILTIN_DECLS */", file=fp)
 
     dump_max_len(fp)
 
@@ -183,7 +183,7 @@ def builtin_main():
 
     dump_cpp(fp)
 
-    print("#endif /* NEWT_BUILTIN_DECLS */", file=fp)
-    print("#endif /* NEWT_BUILTIN_DATA */", file=fp)
+    print("#endif /* SNEK_BUILTIN_DECLS */", file=fp)
+    print("#endif /* SNEK_BUILTIN_DATA */", file=fp)
 
 builtin_main()

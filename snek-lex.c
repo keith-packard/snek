@@ -12,25 +12,25 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 
-uint8_t newt_current_indent;
+uint8_t snek_current_indent;
 
-char *newt_file;
-newt_offset_t newt_line;
+char *snek_file;
+snek_offset_t snek_line;
 
-uint8_t newt_ignore_nl;
+uint8_t snek_ignore_nl;
 
-static newt_offset_t newt_lex_line = 1;
-static bool newt_lex_midline;
-static bool newt_lex_exdent;
+static snek_offset_t snek_lex_line = 1;
+static bool snek_lex_midline;
+static bool snek_lex_exdent;
 
-uint8_t newt_lex_indent;
+uint8_t snek_lex_indent;
 
-#define NEWT_MAX_TOKEN	63
+#define SNEK_MAX_TOKEN	63
 
-char newt_lex_text[NEWT_MAX_TOKEN + 1];
-static uint8_t newt_lex_len;
+char snek_lex_text[SNEK_MAX_TOKEN + 1];
+static uint8_t snek_lex_len;
 
 //#define DEBUG
 #ifdef DEBUG
@@ -39,13 +39,13 @@ static uint8_t newt_lex_len;
 #define RETURN(token) return(token)
 #endif
 
-#define RETURN_OP(_op, ret) do { newt_token_val.op = (_op); RETURN (ret); } while(0)
+#define RETURN_OP(_op, ret) do { snek_token_val.op = (_op); RETURN (ret); } while(0)
 
 static char ungetbuf[5];
 static uint8_t ungetcount;
 
-#ifndef NEWT_GETC
-#define NEWT_GETC() getchar()
+#ifndef SNEK_GETC
+#define SNEK_GETC() getchar()
 #endif
 
 static int
@@ -53,7 +53,7 @@ lexchar(void)
 {
 	if (ungetcount)
 		return ((int) ungetbuf[--ungetcount]) & 0xff;
-	return NEWT_GETC();
+	return SNEK_GETC();
 }
 
 static void
@@ -63,7 +63,7 @@ unlexchar(char c)
 }
 
 static token_t
-check_equal(token_t plain_token, newt_op_t plain_op, newt_op_t assign_op)
+check_equal(token_t plain_token, snek_op_t plain_op, snek_op_t assign_op)
 {
 	int n = lexchar();
 
@@ -72,7 +72,7 @@ check_equal(token_t plain_token, newt_op_t plain_op, newt_op_t assign_op)
 		RETURN_OP(plain_op, plain_token);
 	}
 	RETURN_OP(assign_op, ASSIGN);
-	newt_token_val.op = assign_op;
+	snek_token_val.op = assign_op;
 	RETURN(ASSIGN);
 }
 
@@ -110,24 +110,24 @@ comment(void)
 	while ((c = lexchar() != '\n'))
 		if (c == EOF)
 			return false;
-	++newt_lex_line;
+	++snek_lex_line;
 	return true;
 }
 
 static void
 start_token(void)
 {
-	newt_lex_len = 0;
-	newt_lex_text[0] = '\0';
+	snek_lex_len = 0;
+	snek_lex_text[0] = '\0';
 }
 
 static bool
 add_token(int c)
 {
-	if (newt_lex_len == NEWT_MAX_TOKEN)
+	if (snek_lex_len == SNEK_MAX_TOKEN)
 		return false;
-	newt_lex_text[newt_lex_len++] = c;
-	newt_lex_text[newt_lex_len] = '\0';
+	snek_lex_text[snek_lex_len++] = c;
+	snek_lex_text[snek_lex_len] = '\0';
 	return true;
 }
 
@@ -223,7 +223,7 @@ number(int c)
 	}
 
 	unlexchar(c);
-	newt_token_val.number = strtof(newt_lex_text, NULL);
+	snek_token_val.number = strtof(snek_lex_text, NULL);
 	RETURN(NUMBER);
 }
 
@@ -237,11 +237,11 @@ string(int q)
 	for (;;) {
 		c = lexchar();
 		if (c == q) {
-			char *ret = newt_alloc(newt_lex_len + 1);
+			char *ret = snek_alloc(snek_lex_len + 1);
 			if (!ret)
 				RETURN(TOKEN_NONE);
-			strcpy(ret, newt_lex_text);
-			newt_token_val.string = ret;
+			strcpy(ret, snek_lex_text);
+			snek_token_val.string = ret;
 			RETURN(STRING);
 		}
 		if (c == '\\') {
@@ -273,10 +273,10 @@ string(int q)
 }
 
 static token_t
-trailing(char *next, newt_op_t without_op, token_t without, newt_op_t with_op, token_t with)
+trailing(char *next, snek_op_t without_op, token_t without, snek_op_t with_op, token_t with)
 {
 	int c;
-	uint8_t len = newt_lex_len;
+	uint8_t len = snek_lex_len;
 	char *n = next;
 
 	/* skip spaces between words */
@@ -289,8 +289,8 @@ trailing(char *next, newt_op_t without_op, token_t without, newt_op_t with_op, t
 			unlexchar(c);
 			while (n > next)
 				unlexchar(*--n);
-			newt_lex_len = len;
-			newt_lex_text[len] = '\0';
+			snek_lex_len = len;
+			snek_lex_text[len] = '\0';
 			RETURN_OP(without_op, without);
 		}
 		if (*++n == '\0') {
@@ -301,22 +301,22 @@ trailing(char *next, newt_op_t without_op, token_t without, newt_op_t with_op, t
 }
 
 token_t
-newt_lex(void)
+snek_lex(void)
 {
 	int c, n;
 
 	for (;;) {
 		/* At begining of line, deal with indent changes */
-		if (!newt_lex_midline) {
+		if (!snek_lex_midline) {
 
 			/* Find a non-comment line */
 			for (;;) {
-				newt_lex_indent = 0;
+				snek_lex_indent = 0;
 				while ((c = lexchar()) == ' ')
-					newt_lex_indent++;
+					snek_lex_indent++;
 
 				if (c == EOF) {
-					newt_lex_indent = 0;
+					snek_lex_indent = 0;
 					break;
 				}
 
@@ -328,31 +328,31 @@ newt_lex(void)
 				}
 			}
 
-			newt_lex_midline = true;
+			snek_lex_midline = true;
 
 			if (c != EOF)
 				unlexchar(c);
 
-			if (newt_lex_indent > newt_current_indent) {
-				newt_token_val.indent = newt_current_indent;
-				newt_current_indent = newt_lex_indent;
+			if (snek_lex_indent > snek_current_indent) {
+				snek_token_val.indent = snek_current_indent;
+				snek_current_indent = snek_lex_indent;
 				RETURN(INDENT);
 			}
 
-			if (newt_lex_indent < newt_current_indent)
-				newt_lex_exdent = true;
+			if (snek_lex_indent < snek_current_indent)
+				snek_lex_exdent = true;
 		}
 
-		/* Generate EXDENT tokens until newt_current_indent is no
+		/* Generate EXDENT tokens until snek_current_indent is no
 		 * bigger than the indent for this line
 		 */
 
-		if (newt_lex_exdent) {
-			if (newt_lex_indent < newt_current_indent) {
-				newt_token_val.indent = newt_lex_indent;
+		if (snek_lex_exdent) {
+			if (snek_lex_indent < snek_current_indent) {
+				snek_token_val.indent = snek_lex_indent;
 				RETURN(EXDENT);
 			}
-			newt_lex_exdent = false;
+			snek_lex_exdent = false;
 		}
 
 		c = lexchar();
@@ -364,12 +364,12 @@ newt_lex(void)
 		case EOF:
 			RETURN(END);
 		case '\n':
-			++newt_lex_line;
-			newt_lex_midline = false;
-			newt_line = newt_lex_line;
-			if (newt_ignore_nl)
+			++snek_lex_line;
+			snek_lex_midline = false;
+			snek_line = snek_lex_line;
+			if (snek_ignore_nl)
 				continue;
-			newt_token_val.line = newt_line;
+			snek_token_val.line = snek_line;
 			RETURN(NL);
 		case ':':
 			RETURN(COLON);
@@ -386,72 +386,72 @@ newt_lex(void)
 		case ']':
 			RETURN(CS);
 		case '+':
-			return check_equal(ADDOP, newt_op_plus, newt_op_assign_plus);
+			return check_equal(ADDOP, snek_op_plus, snek_op_assign_plus);
 		case '-':
-			return check_equal(ADDOP, newt_op_minus, newt_op_assign_minus);
+			return check_equal(ADDOP, snek_op_minus, snek_op_assign_minus);
 		case '*':
 			n = lexchar();
 			if (n == '*') {
 				add_token(n);
-				return check_equal(POW, newt_op_pow, newt_op_assign_pow);
+				return check_equal(POW, snek_op_pow, snek_op_assign_pow);
 			}
 			unlexchar(n);
-			return check_equal(MULOP, newt_op_times, newt_op_assign_times);
+			return check_equal(MULOP, snek_op_times, snek_op_assign_times);
 		case '/':
 			n = lexchar();
 			if (n == '/') {
 				add_token(n);
-				return check_equal(MULOP, newt_op_div, newt_op_assign_div);
+				return check_equal(MULOP, snek_op_div, snek_op_assign_div);
 			}
 			unlexchar(n);
-			return check_equal(MULOP, newt_op_divide, newt_op_assign_divide);
+			return check_equal(MULOP, snek_op_divide, snek_op_assign_divide);
 		case '%':
-			return check_equal(MULOP, newt_op_mod, newt_op_assign_mod);
+			return check_equal(MULOP, snek_op_mod, snek_op_assign_mod);
 		case '&':
-			return check_equal(LAND, newt_op_land, newt_op_assign_land);
+			return check_equal(LAND, snek_op_land, snek_op_assign_land);
 		case '|':
-			return check_equal(LOR, newt_op_lor, newt_op_assign_lor);
+			return check_equal(LOR, snek_op_lor, snek_op_assign_lor);
 		case '~':
-			RETURN_OP(newt_op_lnot, LNOT);
+			RETURN_OP(snek_op_lnot, LNOT);
 		case '^':
-			return check_equal(LXOR, newt_op_lxor, newt_op_assign_lxor);
+			return check_equal(LXOR, snek_op_lxor, snek_op_assign_lxor);
 		case '<':
 			n = lexchar();
 			if (n == '<') {
 				add_token(n);
-				return check_equal(SHIFT, newt_op_lshift, newt_op_assign_lshift);
+				return check_equal(SHIFT, snek_op_lshift, snek_op_assign_lshift);
 			}
 			if (n == '=') {
 				add_token(n);
-				RETURN_OP(newt_op_le, CMPOP);
+				RETURN_OP(snek_op_le, CMPOP);
 			}
 			unlexchar(n);
-			RETURN_OP(newt_op_lt, CMPOP);
+			RETURN_OP(snek_op_lt, CMPOP);
 		case '=':
 			n = lexchar();
 			if (n == '=') {
 				add_token(n);
-				RETURN_OP(newt_op_eq, CMPOP);
+				RETURN_OP(snek_op_eq, CMPOP);
 			}
 			unlexchar(n);
-			RETURN_OP(newt_op_assign, ASSIGN);
+			RETURN_OP(snek_op_assign, ASSIGN);
 		case '>':
 			n = lexchar();
 			if (n == '>') {
 				add_token(n);
-				return check_equal(SHIFT, newt_op_rshift, newt_op_assign_rshift);
+				return check_equal(SHIFT, snek_op_rshift, snek_op_assign_rshift);
 			}
 			if (n == '=') {
 				add_token(n);
-				RETURN_OP(newt_op_ge, CMPOP);
+				RETURN_OP(snek_op_ge, CMPOP);
 			}
 			unlexchar(n);
-			RETURN_OP(newt_op_gt, CMPOP);
+			RETURN_OP(snek_op_gt, CMPOP);
 		case '!':
 			n = lexchar();
 			if (n == '=') {
 				add_token(n);
-				RETURN_OP(newt_op_ne, CMPOP);
+				RETURN_OP(snek_op_ne, CMPOP);
 			}
 			unlexchar(n);
 			break;
@@ -461,7 +461,7 @@ newt_lex(void)
 		case '#':
 			if (!comment())
 				RETURN(END);
-			newt_lex_midline = false;
+			snek_lex_midline = false;
 			continue;
 		case ' ':
 			continue;
@@ -481,32 +481,32 @@ newt_lex(void)
 		} while (is_name(c, false));
 		unlexchar(c);
 
-		if (!strcmp(newt_lex_text, "True")) {
-			newt_token_val.number = 1.0;
+		if (!strcmp(snek_lex_text, "True")) {
+			snek_token_val.number = 1.0;
 			RETURN(NUMBER);
 		}
 
-		if (!strcmp(newt_lex_text, "False")) {
-			newt_token_val.number = 0.0;
+		if (!strcmp(snek_lex_text, "False")) {
+			snek_token_val.number = 0.0;
 			RETURN(NUMBER);
 		}
 
 		bool keyword;
-		newt_id_t id = newt_name_id(newt_lex_text, &keyword);
+		snek_id_t id = snek_name_id(snek_lex_text, &keyword);
 
 		if (keyword) {
-			newt_token_val.line = newt_lex_line;
+			snek_token_val.line = snek_lex_line;
 			switch (id) {
 			case IS:
-				return trailing("not", newt_op_is, CMPOP, newt_op_is_not, CMPOP);
+				return trailing("not", snek_op_is, CMPOP, snek_op_is_not, CMPOP);
 			case NOT:
-				return trailing("in", newt_op_not, NOT, newt_op_not_in, CMPOP);
+				return trailing("in", snek_op_not, NOT, snek_op_not_in, CMPOP);
 			default:
 				return id;
 			}
 		}
 
-		newt_token_val.id = id;
+		snek_token_val.id = id;
 		RETURN(NAME);
 	}
 }

@@ -12,17 +12,17 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 
 int
 main (int argc, char **argv)
 {
 	if (argc > 1) {
 		freopen(argv[1], "r", stdin);
-		newt_file = argv[1];
+		snek_file = argv[1];
 	} else {
-		newt_file = "<stdin>";
-		newt_print_vals = true;
+		snek_file = "<stdin>";
+		snek_print_vals = true;
 	}
-	return newt_parse() == newt_parse_success ? 0 : 1;
+	return snek_parse() == snek_parse_success ? 0 : 1;
 }

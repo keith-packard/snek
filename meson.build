@@ -1,9 +1,9 @@
-project('newt', 'c',
+project('snek', 'c',
 	license : 'GPLv2+',
 	default_options : ['buildtype=debug', 'c_std=c99']
        )
 
-add_project_arguments(['-D_DEFAULT_SOURCE', '-DNEWT_MEM_INCLUDE_NAME'], language: 'c')
+add_project_arguments(['-D_DEFAULT_SOURCE', '-DSNEK_MEM_INCLUDE_NAME'], language: 'c')
 
 lola = find_program('lola')
 
@@ -15,7 +15,7 @@ lgen = generator(lola,
 		 output : '@BASENAME@.h',
 		 arguments : ['-o', '@OUTPUT@', '@INPUT@'])
 
-lfiles = lgen.process('newt-gram.ll')
+lfiles = lgen.process('snek-gram.ll')
 
 conf_data = configuration_data()
 configure_file(output : 'config.h',
@@ -24,39 +24,39 @@ configure_file(output : 'config.h',
 prog_python = import('python').find_installation('python3')
 
 builtins = [
-  'newt-keyword.builtin',
-  'newt-base.builtin',
-  'newt-posix.builtin'
+  'snek-keyword.builtin',
+  'snek-base.builtin',
+  'snek-posix.builtin'
   ]
 
-newt_builtin_h = custom_target(
-  'newt-builtin.h',
-  output : 'newt-builtin.h',
-  input : ['newt-builtin.py'] + builtins,
+snek_builtin_h = custom_target(
+  'snek-builtin.h',
+  output : 'snek-builtin.h',
+  input : ['snek-builtin.py'] + builtins,
   command : [prog_python, '@INPUT@', '-o', '@OUTPUT@']
 	    )
 
 sources = [
-  'newt-builtin.c',
-  'newt-code.c',
-  'newt-error.c',
-  'newt-for.c',
-  'newt-frame.c',
-  'newt-func.c',
-  'newt-lex.c',
-  'newt-list.c',
-  'newt-main.c',
-  'newt-memory.c',
-  'newt-name.c',
-  'newt-parse.c',
-  'newt-poly.c',
-  'newt-posix.c',
-  'newt-print.c',
-  'newt-string.c',
-  newt_builtin_h
+  'snek-builtin.c',
+  'snek-code.c',
+  'snek-error.c',
+  'snek-for.c',
+  'snek-frame.c',
+  'snek-func.c',
+  'snek-lex.c',
+  'snek-list.c',
+  'snek-main.c',
+  'snek-memory.c',
+  'snek-name.c',
+  'snek-parse.c',
+  'snek-poly.c',
+  'snek-posix.c',
+  'snek-print.c',
+  'snek-string.c',
+  snek_builtin_h
 ]
 
-newt = executable('newt',
+snek = executable('snek',
 		  sources, lfiles,
 		  dependencies: [m_dep]
 		 )

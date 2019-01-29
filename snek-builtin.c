@@ -12,39 +12,39 @@
  * General Public License for more details.
  */
 
-#include "newt.h"
+#include "snek.h"
 
-newt_poly_t
-newt_builtin_len(newt_poly_t a)
+snek_poly_t
+snek_builtin_len(snek_poly_t a)
 {
-	return newt_float_to_poly(newt_poly_len(a));
+	return snek_float_to_poly(snek_poly_len(a));
 }
 
-newt_poly_t
-newt_builtin_print(uint8_t nposition, uint8_t nnamed, newt_poly_t *args)
+snek_poly_t
+snek_builtin_print(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 {
 	while (nposition--) {
-		newt_poly_t arg = *args++;
-		newt_poly_print(stdout, arg, 's');
+		snek_poly_t arg = *args++;
+		snek_poly_print(stdout, arg, 's');
 	}
-	newt_poly_t end = NEWT_NULL;
+	snek_poly_t end = SNEK_NULL;
 
 	while (nnamed--) {
-		newt_id_t id = (newt_id_t) ((*args++).f);
-		newt_poly_t value = *args++;
-		if (id == NEWT_BUILTIN_end)
+		snek_id_t id = (snek_id_t) ((*args++).f);
+		snek_poly_t value = *args++;
+		if (id == SNEK_BUILTIN_end)
 			end = value;
 	}
-	if (!newt_is_null(end))
-		newt_poly_print(stdout, end, 's');
+	if (!snek_is_null(end))
+		snek_poly_print(stdout, end, 's');
 	else
 		putc('\n', stdout);
-	return NEWT_ZERO;
+	return SNEK_ZERO;
 }
 
-newt_poly_t
-newt_builtin_sys_stdout_flush(void)
+snek_poly_t
+snek_builtin_sys_stdout_flush(void)
 {
 	fflush(stdout);
-	return NEWT_ONE;
+	return SNEK_ONE;
 }
