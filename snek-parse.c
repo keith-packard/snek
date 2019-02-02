@@ -161,6 +161,7 @@ snek_parse(void)
 		snek_ignore_nl = 0;
 		snek_abort = false;
 		value_stack_p = 0;
+		for_depth = 0;
 
 		parse_return_t ret = parse(&skip_to_nl);
 
