@@ -247,7 +247,11 @@ while-stat	:
 while-else-stat	: ELSE COLON suite
 		|
 		;
-for-stat	: for suite
+for-stat	: FOR NAME
+			@{
+				value_push(snek_token_val);
+			}@
+		  IN for-params suite
 			@{
 				snek_code_add_op_offset(snek_op_branch, 0);
 				/* push 2 - loop_end_off */
@@ -261,13 +265,7 @@ for-stat	: for suite
 				goto patch_loop;
 			}@
 		;
-for		: FOR NAME
-			@{
-				value_push(snek_token_val);
-			}@
-		  IN for-p
-		;
-for-p		: RANGE
+for-params	: RANGE
 			@{
 			}@
 		  OP opt-actuals CP COLON
