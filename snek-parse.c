@@ -35,6 +35,8 @@ snek_token_val_t snek_token_val;
 static snek_token_val_t value_stack[VALUE_STACK_SIZE];
 static int value_stack_p = 0;
 
+static uint8_t for_depth;
+
 static inline snek_token_val_t
 value_get(int pos)
 {

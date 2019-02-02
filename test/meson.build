@@ -18,6 +18,7 @@ tests = [
   'for-range.py',
   'for-string.py',
   'for-break.py',
+  'for-nested.py',
   'global.py',
   'if.py',
   'op.py',

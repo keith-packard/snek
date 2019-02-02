@@ -24,7 +24,6 @@ SNEK_SRC = \
 	snek-builtin.c \
 	snek-code.c \
 	snek-error.c \
-	snek-for.c \
 	snek-frame.c \
 	snek-func.c \
 	snek-list.c \

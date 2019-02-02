@@ -52,14 +52,6 @@ static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
 		.addr = (void **) (void *) &snek_frame,
 	},
 	{
-		.type = &snek_range_mem,
-		.addr = (void **) (void *) &snek_ranges,
-	},
-	{
-		.type = &snek_in_mem,
-		.addr = (void **) (void *) &snek_ins,
-	},
-	{
 		.type = &snek_code_mem,
 		.addr = (void **) (void *) &stash_code,
 	},

@@ -133,7 +133,6 @@ typedef enum {
 	snek_op_forward,
 	snek_op_range_start,
 	snek_op_range_step,
-	snek_op_in_start,
 	snek_op_in_step,
 
 	snek_op_nop,
@@ -381,7 +380,10 @@ void
 snek_code_add_slice(bool has_start, bool has_end, bool has_stride);
 
 void
-snek_code_add_range_start(snek_id_t id, snek_offset_t nactual);
+snek_code_add_in_range(snek_id_t id, snek_offset_t nactual, uint8_t for_depth);
+
+void
+snek_code_add_in_enum(snek_id_t id, uint8_t for_depth);
 
 void
 snek_code_patch_branch(snek_offset_t branch, snek_offset_t target);
@@ -426,26 +428,6 @@ snek_panic(const char *message);
 #endif
 
 extern bool snek_abort;
-
-/* snek-for.c */
-
-void
-snek_range_start(snek_id_t id, snek_offset_t nparam);
-
-bool
-snek_range_step(void);
-
-extern const snek_mem_t snek_range_mem;
-extern snek_range_t *snek_ranges;
-
-void
-snek_in_start(snek_id_t id);
-
-bool
-snek_in_step(void);
-
-extern const snek_mem_t snek_in_mem;
-extern snek_in_t *snek_ins;
 
 /* snek-frame.c */
 

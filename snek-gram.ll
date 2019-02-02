@@ -254,6 +254,7 @@ for-stat	: for suite
 				value_push_offset(snek_compile_prev);
 				/* push 3 - while_else_stat_off */
 				value_push_offset(snek_code_current());
+				for_depth--;
 			}@
 		  while-else-stat
 			@{
@@ -273,22 +274,18 @@ for-p		: RANGE
 			@{
 				snek_offset_t num = value_pop().offset;
 				snek_id_t id = value_pop().id;
-				snek_code_add_range_start(id, num);
-				snek_code_add_op_offset(snek_op_range_step, 0);
-
+				snek_code_add_in_range(id, num, for_depth);
 			for_push_prevs:
 				/* push 0 - for_off */
 				value_push_offset(snek_compile_prev);
 				/* push 1 - top_off */
 				value_push_offset(snek_compile_prev);
+				for_depth++;
 			}@
 		| expr COLON
 			@{
 				snek_id_t id = value_pop().id;
-				snek_code_set_push(snek_code_prev_insn());
-				snek_code_add_op_id(snek_op_in_start, id);
-				snek_code_add_op_offset(snek_op_in_step, 0);
-
+				snek_code_add_in_enum(id, for_depth);
 				goto for_push_prevs;
 			}@
 		;

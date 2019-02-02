@@ -86,6 +86,11 @@ bail:
 	return false;
 }
 
+void
+snek_for_add_in(snek_id_t id, uint8_t depth)
+{
+}
+
 static snek_offset_t
 snek_range_size(void *addr)
 {
@@ -125,116 +130,4 @@ const snek_mem_t SNEK_MEM_DECLARE(snek_range_mem) = {
 	.mark = snek_range_mark,
 	.move = snek_range_move,
 	SNEK_MEM_DECLARE_NAME("range")
-};
-
-snek_in_t *snek_ins;
-
-void
-snek_in_start(snek_id_t id)
-{
-	/* make sure the variable is in the frame */
-	if (!snek_id_ref(id, true)) {
-		snek_stack_drop(1);
-		return;
-	}
-
-	snek_in_t *i = snek_alloc(sizeof(snek_in_t));
-	if (!i) {
-		snek_stack_drop(1);
-		return;
-	}
-
-	i->id = id;
-	i->array = snek_stack_pop();
-	i->i = 0;
-
-	i->prev = snek_pool_offset(snek_ins);
-	snek_ins = i;
-}
-
-bool
-snek_in_step(void)
-{
-	if (!snek_ins)
-		return false;
-
-	snek_poly_t array = snek_ins->array;
-	snek_poly_t value = SNEK_NULL;
-
-	snek_list_t *l;
-	char *s;
-
-	switch (snek_poly_type(array)) {
-	case snek_list:
-		l = snek_poly_to_list(array);
-		if (snek_ins->i < l->size)
-			value = snek_list_data(l)[snek_ins->i];
-		break;
-	case snek_string:
-		s = snek_poly_to_string(array);
-		char c = snek_string_get(s, snek_ins->i);
-		if (c)
-			value = snek_string_to_poly(snek_string_make(c));
-		break;
-	default:
-		snek_error("not iterable: %p", array);
-		goto bail;
-	}
-	if (snek_is_null(value))
-		goto bail;
-
-	snek_poly_t *ref = snek_id_ref(snek_ins->id, false);
-	if (!ref)
-		goto bail;
-	*ref = value;
-
-	++snek_ins->i;
-	return true;
-bail:
-	snek_ins = snek_pool_ref(snek_ins->prev);
-	return false;
-}
-
-static snek_offset_t
-snek_in_size(void *addr)
-{
-	(void) addr;
-	return sizeof(snek_in_t);
-}
-
-static void
-snek_in_mark(void *addr)
-{
-	snek_in_t	*i = addr;
-
-	for (;;) {
-		snek_poly_mark(i->array);
-
-		if (!i->prev)
-			break;
-		i = snek_pool_ref(i->prev);
-		snek_mark_block_addr(&snek_in_mem, i);
-	}
-}
-
-static void
-snek_in_move(void *addr)
-{
-	snek_in_t	*i = addr;
-
-	for (;;) {
-		snek_poly_move(&i->array);
-		if (!i->prev)
-			break;
-		if (snek_move_block_offset(&i->prev))
-			break;
-		i = snek_pool_ref(i->prev);
-	}
-}
-
-const snek_mem_t SNEK_MEM_DECLARE(snek_in_mem) = {
-	.size = snek_in_size,
-	.mark = snek_in_mark,
-	.move = snek_in_move,
-	SNEK_MEM_DECLARE_NAME("in")
 };
