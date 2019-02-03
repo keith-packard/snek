@@ -48,12 +48,18 @@ static uint8_t ungetcount;
 #define SNEK_GETC() getchar()
 #endif
 
-static int
+#define SNEK_EOF	0x00
+
+static char
 lexchar(void)
 {
 	if (ungetcount)
-		return ((int) ungetbuf[--ungetcount]) & 0xff;
-	return SNEK_GETC();
+		return ungetbuf[--ungetcount];
+
+	int c = SNEK_GETC();
+	if (c == EOF)
+		return SNEK_EOF;
+	return (char) c;
 }
 
 static void
@@ -65,7 +71,7 @@ unlexchar(char c)
 static token_t
 check_equal(token_t plain_token, snek_op_t plain_op, snek_op_t assign_op)
 {
-	int n = lexchar();
+	char n = lexchar();
 
 	if (n != '=') {
 		unlexchar(n);
@@ -77,7 +83,7 @@ check_equal(token_t plain_token, snek_op_t plain_op, snek_op_t assign_op)
 }
 
 static bool
-is_name(int c, bool first)
+is_name(char c, bool first)
 {
 	if ('A' <= c && c <= 'Z')
 		return true;
@@ -105,10 +111,10 @@ is_octal(char c)
 static bool
 comment(void)
 {
-	int	c;
+	char	c;
 
 	while ((c = lexchar() != '\n'))
-		if (c == EOF)
+		if (c == SNEK_EOF)
 			return false;
 	return true;
 }
@@ -121,7 +127,7 @@ start_token(void)
 }
 
 static bool
-add_token(int c)
+add_token(char c)
 {
 	if (snek_lex_len == SNEK_MAX_TOKEN)
 		return false;
@@ -146,7 +152,7 @@ typedef enum nclass {
 } nclass_t;
 
 static nclass_t
-cclass(int c)
+cclass(char c)
 {
 	if ('0' <= c && c <= '9')
 		return c_digit;
@@ -159,8 +165,8 @@ cclass(int c)
 	return c_other;
 }
 
-static int
-number(int c)
+static token_t
+number(char c)
 {
 	nstate_t n = n_int;
 	nclass_t t;
@@ -226,11 +232,11 @@ number(int c)
 	RETURN(NUMBER);
 }
 
-static int
-string(int q)
+static token_t
+string(char q)
 {
-	int c;
-	int t;
+	char c;
+	char t;
 
 	start_token();
 	for (;;) {
@@ -274,7 +280,7 @@ string(int q)
 static token_t
 trailing(char *next, snek_op_t without_op, token_t without, snek_op_t with_op, token_t with)
 {
-	int c;
+	char c;
 	uint8_t len = snek_lex_len;
 	char *n = next;
 
@@ -302,7 +308,7 @@ trailing(char *next, snek_op_t without_op, token_t without, snek_op_t with_op, t
 token_t
 snek_lex(void)
 {
-	int c, n;
+	char c, n;
 
 	for (;;) {
 		/* At begining of line, deal with indent changes */
@@ -311,10 +317,11 @@ snek_lex(void)
 			/* Find a non-comment line */
 			for (;;) {
 				snek_lex_indent = 0;
+
 				while ((c = lexchar()) == ' ')
 					snek_lex_indent++;
 
-				if (c == EOF) {
+				if (c == SNEK_EOF) {
 					snek_lex_indent = 0;
 					break;
 				}
@@ -330,7 +337,7 @@ snek_lex(void)
 
 			snek_lex_midline = true;
 
-			if (c != EOF)
+			if (c != SNEK_EOF)
 				unlexchar(c);
 
 			if (snek_lex_indent > snek_current_indent) {
@@ -361,7 +368,7 @@ snek_lex(void)
 		add_token(c);
 
 		switch (c) {
-		case EOF:
+		case SNEK_EOF:
 			RETURN(END);
 		case '\n':
 			++snek_lex_line;

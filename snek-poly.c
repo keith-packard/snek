@@ -84,7 +84,7 @@ snek_poly_true(snek_poly_t a)
 	}
 }
 
-int
+snek_offset_t
 snek_poly_len(snek_poly_t a)
 {
 	switch (snek_poly_type(a)) {

@@ -235,9 +235,9 @@ typedef struct snek_frame {
 
 typedef struct snek_slice {
 	/* provided parameters */
-	int32_t		start;
-	int32_t		end;
-	int32_t		stride;
+	snek_soffset_t		start;
+	snek_soffset_t		end;
+	snek_soffset_t		stride;
 
 	/* provided length of object */
 	snek_offset_t	len;
@@ -249,7 +249,7 @@ typedef struct snek_slice {
 	snek_offset_t	pos;
 } snek_slice_t;
 
-#define SNEK_SLICE_DEFAULT	0x7fffffff	/* empty value provided [1:] */
+#define SNEK_SLICE_DEFAULT	SNEK_SOFFSET_NONE		/* empty value provided [1:] */
 
 typedef struct snek_builtin {
 	int8_t nformal;
@@ -353,9 +353,6 @@ void
 snek_code_add_op(snek_op_t op);
 
 void
-snek_code_add_op_id(snek_op_t op, snek_id_t id);
-
-void
 snek_code_add_op_array(snek_op_t op);
 
 void
@@ -366,6 +363,12 @@ snek_code_add_string(char *string);
 
 void
 snek_code_add_op_offset(snek_op_t op, snek_offset_t offset);
+
+static inline void
+snek_code_add_op_id(snek_op_t op, snek_id_t id)
+{
+	snek_code_add_op_offset(op, id);
+}
 
 void
 snek_code_add_op_branch(snek_op_t op);
@@ -625,7 +628,7 @@ snek_poly_equal(snek_poly_t a, snek_poly_t b);
 bool
 snek_poly_true(snek_poly_t a);
 
-int
+snek_offset_t
 snek_poly_len(snek_poly_t a);
 
 snek_offset_t
@@ -649,7 +652,7 @@ char *
 snek_string_make(char c);
 
 char
-snek_string_get(char *string, int i);
+snek_string_get(char *string, snek_soffset_t i);
 
 char *
 snek_string_cat(char *a, char *b);
@@ -802,7 +805,7 @@ snek_poly_get_float(snek_poly_t a);
 extern snek_soffset_t
 snek_poly_get_soffset(snek_poly_t a);
 
-static inline int
+static inline bool
 snek_is_pool_addr(const void *addr) {
 	const uint8_t *a = addr;
 	return (snek_pool <= a) && (a < snek_pool + SNEK_POOL);
@@ -814,13 +817,13 @@ snek_poly_type(snek_poly_t v)
 	return snek_is_float(v) ? snek_float : (v.u & 3);
 }
 
-static inline int
-snek_size_round(int size)
+static inline snek_offset_t
+snek_size_round(snek_offset_t size)
 {
 	return (size + (SNEK_ALLOC_ROUND - 1)) & ~(SNEK_ALLOC_ROUND - 1);
 }
 
-static inline int
+static inline snek_offset_t
 snek_size(const snek_mem_t *mem, void *addr)
 {
 	return snek_size_round(SNEK_MEM_SIZE(mem)(addr));

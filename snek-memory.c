@@ -171,9 +171,6 @@ static inline bool busy(snek_offset_t offset) {
 	return (snek_busy[tag_byte(offset)] >> tag_bit(offset)) & 1;
 }
 
-static inline int min(int a, int b) { return a < b ? a : b; }
-static inline int max(int a, int b) { return a > b ? a : b; }
-
 static inline bool
 note_list(snek_list_t *list_old, snek_list_t *list_new)
 {
@@ -233,7 +230,9 @@ note_chunk(snek_offset_t offset, snek_offset_t size)
 	 */
 
 	/* Shuffle existing entries right */
-	end = min(SNEK_NCHUNK, chunk_last + 1);
+	end = chunk_last + 1;
+	if (end > SNEK_NCHUNK)
+		end = SNEK_NCHUNK;
 
 	memmove(&snek_chunk[chunk+1],
 		&snek_chunk[chunk],
@@ -279,7 +278,7 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 	memset(snek_busy, '\0', SNEK_BUSY_SIZE);
 	snek_note_list = 0;
 	visit_run();
-	for (i = 0; i < (int) SNEK_ROOT; i++) {
+	for (i = 0; i < (snek_offset_t) SNEK_ROOT; i++) {
 		if (SNEK_ROOT_TYPE(&snek_root[i])) {
 			void **a = SNEK_ROOT_ADDR(&snek_root[i]), *v;
 			if (a == NULL || (v = *a) != NULL) {

@@ -275,13 +275,6 @@ snek_code_add_op(snek_op_t op)
 }
 
 void
-snek_code_add_op_id(snek_op_t op, snek_id_t id)
-{
-	snek_code_add_op(op);
-	compile_extend(sizeof (snek_id_t), &id);
-}
-
-void
 snek_code_add_number(float number)
 {
 	int8_t i8 = (int8_t) number;
@@ -637,7 +630,6 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	snek_list_t	*bl;
 	float		af;
 	float		bf;
-	int		i;
 	bool		found;
 	snek_poly_t	ret = SNEK_NULL;
 	snek_poly_t	*ref;
@@ -732,10 +724,11 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 		case snek_op_in:
 		case snek_op_not_in:
 			if (bt == snek_list) {
+				snek_offset_t	o;
 				bl = snek_poly_to_list(b);
 				found = false;
-				for (i = 0; i < bl->size; i++) {
-					if (snek_poly_equal(a, snek_list_data(bl)[i])) {
+				for (o = 0; o < bl->size; o++) {
+					if (snek_poly_equal(a, snek_list_data(bl)[o])) {
 						found = true;
 						break;
 					}
@@ -1148,9 +1141,9 @@ snek_code_run(snek_code_t *code_in)
 				snek_stack_push(a);
 #ifdef DEBUG_EXEC
 			dbg("\t\ta= "); snek_poly_print(stddbg, a, 'r');
-			for (int i = snek_stackp; i;) {
-				dbg(", [%d]= ", snek_stackp - i);
-				snek_poly_print(stddbg, snek_stack[--i], 'r');
+			for (snek_offset_t o = snek_stackp; o;) {
+				dbg(", [%d]= ", snek_stackp - o);
+				snek_poly_print(stddbg, snek_stack[--o], 'r');
 			}
 			dbg("\n");
 #endif

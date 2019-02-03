@@ -24,9 +24,9 @@ snek_string_make(char c)
 }
 
 char
-snek_string_get(char *string, int i)
+snek_string_get(char *string, snek_soffset_t i)
 {
-	if (i < (int) strlen(string))
+	if (i < (snek_soffset_t) strlen(string))
 		return string[i];
 	return '\0';
 }
@@ -111,11 +111,9 @@ snek_buf_sprintc(int c, void *closure)
 	char	**str_p = closure;
 	char	*new;
 
-	if ((new = snek_buf_realloc(str_p, 1)) != NULL) {
+	if ((new = snek_buf_realloc(str_p, 1)) != NULL)
 		*new = c;
-		return c;
-	}
-	return EOF;
+	return 0;
 }
 
 static int
@@ -131,11 +129,9 @@ snek_buf_sprints(const char *s, void *closure)
 	new = snek_buf_realloc(str_p, len);
 	if (is_pool)
 		s = snek_string_fetch();
-	if (new) {
+	if (new)
 		memcpy(new, s, len);
-		return len;
-	}
-	return EOF;
+	return 0;
 }
 
 char *

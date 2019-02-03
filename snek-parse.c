@@ -29,16 +29,23 @@ snek_token_val_t snek_token_val;
 #include "snek-gram.h"
 
 #ifndef VALUE_STACK_SIZE
-#define VALUE_STACK_SIZE	128
+#define VALUE_STACK_SIZE	127
+#endif
+
+#if VALUE_STACK_SIZE < 128
+typedef int8_t snek_value_stack_p_t;
+#else
+typedef int16_t snek_value_stack_p_t;
 #endif
 
 static snek_token_val_t value_stack[VALUE_STACK_SIZE];
-static int value_stack_p = 0;
+
+static snek_value_stack_p_t value_stack_p = 0;
 
 static uint8_t for_depth;
 
 static inline snek_token_val_t
-value_get(int pos)
+value_get(snek_value_stack_p_t pos)
 {
 	return value_stack[value_stack_p - pos];
 }
@@ -52,10 +59,12 @@ _value_pop(const char *file, int line)
 #ifdef VALUE_DEBUG
 	printf("value pop %d from %s:%d\n", value_stack_p - 1, file, line);
 #endif
+#if SNEK_DEBUG
 	if (value_stack_p == 0) {
 		snek_error("value stack underflow");
 		return snek_token_val;
 	}
+#endif
 	return value_stack[--value_stack_p];
 }
 
@@ -110,7 +119,7 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define value_push_id(o) _value_push_id(o, __FILE__, __LINE__)
 
 #ifndef PARSE_STACK_SIZE
-#define PARSE_STACK_SIZE 256
+#define PARSE_STACK_SIZE 128
 #endif
 
 static inline token_t

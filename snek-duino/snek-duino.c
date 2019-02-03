@@ -65,7 +65,7 @@ uart_putchar(char c, FILE *stream)
 snek_poly_t
 snek_builtin_led_on(void)
 {
-	int ret = (PORTB >> PB5) & 1;
+	uint8_t ret = (PORTB >> PB5) & 1;
 	DDRB |= (1 << PB5);
 	PORTB |= (1 << PB5);
 	return snek_float_to_poly(ret);
@@ -74,7 +74,7 @@ snek_builtin_led_on(void)
 snek_poly_t
 snek_builtin_led_off(void)
 {
-	int ret = (PORTB >> PB5) & 1;
+	uint8_t ret = (PORTB >> PB5) & 1;
 	PORTB &= ~(1 << PB5);
 	return snek_float_to_poly(ret);
 }
@@ -82,11 +82,9 @@ snek_builtin_led_off(void)
 snek_poly_t
 snek_builtin_time_sleep(snek_poly_t a)
 {
-	if (snek_poly_type(a) == snek_float) {
-		int cs = snek_poly_to_float(a) * 100.0f;
-		while (cs--)
-			_delay_ms(10);
-	}
+	snek_soffset_t o = snek_poly_get_float(a) * 100.0f;
+	while (o-- >= 0)
+		_delay_ms(10);
 	return SNEK_ONE;
 }
 
@@ -164,7 +162,8 @@ uart_getchar(FILE *stream)
 
 FILE uart_str = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
 
-int main (void)
+void
+main (void)
 {
 	uart_init();
 	stderr = stdout = stdin = &uart_str;

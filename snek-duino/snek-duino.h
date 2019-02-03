@@ -28,6 +28,9 @@
 #define PARSE_TABLE_FETCH_PRODUCTION(a)	((uint8_t) pgm_read_byte(a))
 #define ERROR_FETCH_FORMAT_CHAR(a)	((char) pgm_read_byte(a))
 
+/* no sense linking both functions */
+#define memcpy(a,b,c) memmove(a,b,c)
+
 #define snek_error_name snek_internal_error
 #define snek_error(fmt, args...) do {				\
 		static const char PROGMEM __fmt__[] = (fmt);	\
