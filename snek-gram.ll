@@ -418,7 +418,6 @@ expr-array	: expr-prim expr-array-p
 expr-array-p	: OS
 			@{
 				snek_code_set_push(snek_code_prev_insn());
-				++snek_ignore_nl;
 			}@
 		  array-index CS
 			@{
@@ -432,17 +431,14 @@ expr-array-p	: OS
 				} else {
 					snek_code_add_op(snek_op_array);
 				}
-				--snek_ignore_nl;
  			}@
 		  expr-array-p
 		| OP
 			@{
-				++snek_ignore_nl;
 				snek_code_set_push(snek_code_prev_insn());
 			}@
 		  opt-actuals CP
 		        @{
-				--snek_ignore_nl;
 				snek_code_add_op_offset(snek_op_call, value_pop().offset);
 			}@
 		  expr-array-p
@@ -476,7 +472,7 @@ opt-expr	:	@{
 				value_push_bool(false);
 			}@
 		;
-expr-prim	: OP @{ ++snek_ignore_nl; }@ opt-tuple CP @{ --snek_ignore_nl; }@
+expr-prim	: OP opt-tuple CP
 			@{
 				bool tuple = value_pop().bools;
 
@@ -485,7 +481,7 @@ expr-prim	: OP @{ ++snek_ignore_nl; }@ opt-tuple CP @{ --snek_ignore_nl; }@
 					snek_code_add_op_offset(snek_op_tuple, num);
 				}
 			}@
-		| OS @{ ++snek_ignore_nl; }@ opt-actuals CS @{ --snek_ignore_nl; }@
+		| OS opt-actuals CS
 			@{
 				snek_offset_t num = value_pop().offset;
 				snek_code_add_op_offset(snek_op_list, num);
