@@ -445,17 +445,56 @@ static snek_code_t	*snek_code;
 float
 snek_poly_get_float(snek_poly_t a)
 {
-	if (snek_is_float(a))
+	if (snek_poly_type(a) == snek_float)
 		return snek_poly_to_float(a);
 	snek_error("not a number: %p", a);
 	return 0.0f;
 }
 
-
 snek_soffset_t
 snek_poly_get_soffset(snek_poly_t a)
 {
 	return (snek_soffset_t) snek_poly_get_float(a);
+}
+
+void
+snek_stack_push(snek_poly_t p)
+{
+	if (snek_stackp == SNEK_STACK) {
+		snek_error("stack overflow");
+		return;
+	}
+	snek_stack[snek_stackp++] = p;
+}
+
+snek_poly_t
+snek_stack_pop(void)
+{
+#if SNEK_DEBUG
+	if (!snek_stackp)
+		snek_panic("stack underflow");
+#endif
+	return snek_stack[--snek_stackp];
+}
+
+snek_poly_t
+snek_stack_pick(snek_offset_t off)
+{
+#if SNEK_DEBUG
+	if (off >= snek_stackp)
+		snek_panic("stack underflow");
+#endif
+	return snek_stack[snek_stackp - off - 1];
+}
+
+void
+snek_stack_drop(snek_offset_t off)
+{
+#if SNEK_DEBUG
+	if (off > snek_stackp)
+		snek_panic("stack underflow");
+#endif
+	snek_stackp -= off;
 }
 
 float

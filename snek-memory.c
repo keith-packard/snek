@@ -755,3 +755,32 @@ snek_code_fetch(void)
 	stash_code = 0;
 	return code;
 }
+
+void *
+snek_pool_ref(snek_offset_t offset)
+{
+	if (offset == 0)
+		return NULL;
+
+#if SNEK_DEBUG
+	if (((offset - 1) & (SNEK_ALLOC_ROUND-1)) != 0)
+		snek_panic("bad offset");
+#endif
+
+	return snek_pool + offset - 1;
+}
+
+snek_offset_t
+snek_pool_offset(const void *addr)
+{
+	if (addr == NULL)
+		return 0;
+
+#if SNEK_DEBUG
+	if (((uintptr_t) addr & (SNEK_ALLOC_ROUND-1)) != 0)
+		snek_panic("bad address");
+#endif
+
+	return ((const uint8_t *) addr) - snek_pool + 1;
+}
+

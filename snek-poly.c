@@ -30,6 +30,20 @@ snek_poly(const void *addr, snek_type_t type)
 	return snek_offset_to_poly((const uint8_t *) addr - snek_pool, type);
 }
 
+snek_poly_t
+snek_float_to_poly(float f)
+{
+	if (isnanf(f))
+		return SNEK_NAN;
+	return (snek_poly_t) { .f = f };
+}
+
+snek_type_t
+snek_poly_type(snek_poly_t v)
+{
+	return snek_is_float(v) ? snek_float : (v.u & 3);
+}
+
 static inline snek_offset_t
 snek_func_line(snek_func_t *func)
 {

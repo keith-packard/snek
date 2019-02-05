@@ -393,6 +393,30 @@ snek_code_finish(void);
 snek_offset_t
 snek_code_line(snek_code_t *code);
 
+float
+snek_poly_get_float(snek_poly_t a);
+
+snek_soffset_t
+snek_poly_get_soffset(snek_poly_t a);
+
+snek_soffset_t
+snek_stack_pop_soffset(void);
+
+float
+snek_stack_pop_float(void);;
+
+void
+snek_stack_push(snek_poly_t p);
+
+snek_poly_t
+snek_stack_pop(void);
+
+snek_poly_t
+snek_stack_pick(snek_offset_t off);
+
+void
+snek_stack_drop(snek_offset_t off);
+
 void
 snek_run_mark(void);
 
@@ -583,6 +607,12 @@ snek_code_stash(snek_code_t *code);
 snek_code_t *
 snek_code_fetch(void);
 
+void *
+snek_pool_ref(snek_offset_t offset);
+
+snek_offset_t
+snek_pool_offset(const void *addr);
+
 /* snek-name.c */
 
 snek_id_t
@@ -614,6 +644,12 @@ snek_poly_offset(snek_offset_t offset, snek_type_t type);
 
 snek_poly_t
 snek_poly(const void *addr, snek_type_t type);
+
+snek_poly_t
+snek_float_to_poly(float f);
+
+snek_type_t
+snek_poly_type(snek_poly_t v);
 
 void
 snek_poly_print(FILE *file, snek_poly_t poly, char format);
@@ -664,52 +700,6 @@ extern const snek_mem_t snek_string_mem;
 /* inlines */
 
 static inline void
-snek_stack_push(snek_poly_t p)
-{
-	if (snek_stackp == SNEK_STACK) {
-		snek_error("stack overflow");
-		return;
-	}
-	snek_stack[snek_stackp++] = p;
-}
-
-static inline snek_poly_t
-snek_stack_pop(void)
-{
-#if SNEK_DEBUG
-	if (!snek_stackp)
-		snek_panic("stack underflow");
-#endif
-	return snek_stack[--snek_stackp];
-}
-
-static inline snek_poly_t
-snek_stack_pick(snek_offset_t off)
-{
-#if SNEK_DEBUG
-	if (off >= snek_stackp)
-		snek_panic("stack underflow");
-#endif
-	return snek_stack[snek_stackp - off - 1];
-}
-
-static inline void
-snek_stack_drop(snek_offset_t off)
-{
-#if SNEK_DEBUG
-	if (off > snek_stackp)
-		snek_panic("stack underflow");
-#endif
-	snek_stackp -= off;
-}
-
-snek_soffset_t
-snek_stack_pop_soffset(void);
-
-float
-snek_stack_pop_float(void);
-
-static inline void
 snek_slice_start(snek_slice_t *slice)
 {
 	slice->pos = slice->start;
@@ -733,48 +723,12 @@ snek_slice_identity(snek_slice_t *slice)
 	return slice->start == 0 && slice->end == slice->len && slice->stride == 1;
 }
 
-static inline void *
-snek_pool_ref(snek_offset_t offset)
-{
-	if (offset == 0)
-		return NULL;
-
-#if SNEK_DEBUG
-	if (((offset - 1) & (SNEK_ALLOC_ROUND-1)) != 0)
-		snek_panic("bad offset");
-#endif
-
-	return snek_pool + offset - 1;
-}
-
-static inline snek_offset_t
-snek_pool_offset(const void *addr)
-{
-	if (addr == NULL)
-		return 0;
-
-#if SNEK_DEBUG
-	if (((uintptr_t) addr & (SNEK_ALLOC_ROUND-1)) != 0)
-		snek_panic("bad address");
-#endif
-
-	return ((const uint8_t *) addr) - snek_pool + 1;
-}
-
 static inline bool
 snek_is_float(snek_poly_t v)
 {
 	if ((v.u & 0xff000000) != 0xff000000 || v.u == SNEK_NAN_U)
 		return true;
 	return false;
-}
-
-static inline snek_poly_t
-snek_float_to_poly(float f)
-{
-	if (isnanf(f))
-		return SNEK_NAN;
-	return (snek_poly_t) { .f = f };
 }
 
 static inline snek_poly_t
@@ -795,22 +749,10 @@ snek_poly_to_float(snek_poly_t v)
 	return v.f;
 }
 
-extern float
-snek_poly_get_float(snek_poly_t a);
-
-extern snek_soffset_t
-snek_poly_get_soffset(snek_poly_t a);
-
 static inline bool
 snek_is_pool_addr(const void *addr) {
 	const uint8_t *a = addr;
 	return (snek_pool <= a) && (a < snek_pool + SNEK_POOL);
-}
-
-static inline snek_type_t
-snek_poly_type(snek_poly_t v)
-{
-	return snek_is_float(v) ? snek_float : (v.u & 3);
 }
 
 static inline snek_offset_t
