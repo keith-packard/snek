@@ -1,2 +1,4 @@
 TAGS
-build
+snek-builtin.h
+snek-gram.h
+*.o

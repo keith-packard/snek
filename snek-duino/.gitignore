@@ -1,6 +1,3 @@
-*.o
 snek-duino
 snek-duino.hex
 snek-duino.map
-snek-builtin.h
-snek-gram.h
