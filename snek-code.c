@@ -160,7 +160,7 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 	switch(op) {
 	case snek_op_num:
 		memcpy(&f, &code->code[ip], sizeof(float));
-		dbg("%g\n", f);
+		dbg("%.7g\n", f);
 		break;
 	case snek_op_int:
 		memcpy(&i8, &code->code[ip], sizeof(int8_t));

@@ -51,7 +51,7 @@ snek_error_name(const char *format, ...)
 				fprintf(stderr, "%s", snek_name_string(va_arg(args, int)));
 				break;
 			case 'g':
-				fprintf(stderr, "%g", va_arg(args, double));
+				fprintf(stderr, "%.7g", va_arg(args, double));
 				break;
 			case 'S':
 				len = va_arg(args, int);
