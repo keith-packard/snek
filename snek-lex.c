@@ -387,13 +387,15 @@ snek_lex(void)
 			++snek_ignore_nl;
 			RETURN(OP);
 		case ')':
-			--snek_ignore_nl;
+			if (snek_ignore_nl)
+				--snek_ignore_nl;
 			RETURN(CP);
 		case '[':
 			++snek_ignore_nl;
 			RETURN(OS);
 		case ']':
-			--snek_ignore_nl;
+			if (snek_ignore_nl)
+				--snek_ignore_nl;
 			RETURN(CS);
 		case '+':
 			return check_equal(PLUS, snek_op_plus, snek_op_assign_plus);

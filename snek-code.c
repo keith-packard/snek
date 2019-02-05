@@ -1194,6 +1194,10 @@ snek_code_run(snek_code_t *code_in)
 				snek_stack_push(snek_a);
 		}
 	}
+	/* Clear references to run objects */
+	snek_code = NULL;
+	snek_frame = NULL;
+	snek_stackp = 0;
 	return snek_a;
 }
 

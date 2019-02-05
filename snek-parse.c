@@ -130,6 +130,7 @@ lex(void *lex_context)
 	if (*skip_to_nl) {
 		token_t token;
 		*skip_to_nl = false;
+		snek_ignore_nl = 0;
 		for (;;) {
 			token = snek_lex();
 			switch(token) {
