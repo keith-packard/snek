@@ -25,10 +25,6 @@
 
 #include "snek-builtin.h"
 
-#ifndef SNEK_DEBUG
-#define SNEK_DEBUG	1
-#endif
-
 // #define DEBUG_MEMORY
 
 #ifdef DEBUG_MEMORY

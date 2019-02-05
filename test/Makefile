@@ -11,24 +11,28 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-tests = [
-  'andor.py',
-  'list.py',
-  'for-array.py',
-  'for-range.py',
-  'for-string.py',
-  'for-break.py',
-  'for-nested.py',
-  'global.py',
-  'if.py',
-  'op.py',
-  'while.py',
-  'while-break.py',
-  'while-else.py',
-  ]
 
-foreach t: tests
-  test('snek   ' + t, snek, workdir: meson.current_source_dir(), args: [t])
-  test('python ' + t, prog_python, workdir: meson.current_source_dir(), args: [t])
-endforeach
+TESTS = \
+	andor.py \
+	list.py \
+	for-array.py \
+	for-range.py \
+	for-string.py \
+	for-break.py \
+	for-nested.py \
+	global.py \
+	if.py \
+	op.py \
+	while.py \
+	while-break.py \
+	while-else.py
 
+check:
+	for TEST in $(TESTS); do \
+		if ! python3 $$TEST; then \
+			echo $$TEST failed python3; \
+		fi; \
+		if ! ../posix/snek $$TEST; then \
+			echo $$TEST failed snek; \
+		fi; \
+	done

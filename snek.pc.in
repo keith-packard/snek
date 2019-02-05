@@ -1,0 +1,6 @@
+sneklib=@SNEKLIB@
+
+Name: snek
+Description: Snek. A tiny python-esque language
+Version: @VERSION@
+Cflags: -I${sneklib}

@@ -1,0 +1,85 @@
+ifndef SNEK_LOCAL_VPATH
+SNEK_LOCAL_VPATH = .
+endif
+
+vpath %.c $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
+vpath %.h $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
+vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
+vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
+
+SNEK_SRC = \
+	snek-builtin.c \
+	snek-code.c \
+	snek-error.c \
+	snek-frame.c \
+	snek-func.c \
+	snek-lex.c \
+	snek-list.c \
+	snek-memory.c \
+	snek-name.c \
+	snek-parse.c \
+	snek-poly.c \
+	snek-print.c \
+	snek-string.c \
+	$(SNEK_LOCAL_SRC)
+
+SNEK_OBJ=$(SNEK_SRC:.c=.o)
+
+SNEK_RAW_INC = \
+	$(SNEK_ROOT)/snek.h
+
+SNEK_BUILT_INC = \
+	snek-gram.h \
+	snek-builtin.h
+
+SNEK_INC = \
+	$(SNEK_RAW_INC) \
+	$(SNEK_BUILT_INC) \
+	$(SNEK_LOCAL_INC)
+
+SNEK_BUILTINS = \
+	$(SNEK_ROOT)/snek-keyword.builtin \
+	$(SNEK_ROOT)/snek-base.builtin \
+	$(SNEK_LOCAL_BUILTINS)
+
+SNEK_WARNINGS = \
+	-Wall \
+	-Wextra \
+	-Wpointer-arith \
+	-Wstrict-prototypes \
+	-Wmissing-prototypes \
+	-Wmissing-declarations \
+	-Wnested-externs \
+	-Wshadow
+
+SNEK_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) $(SNEK_WARNINGS)
+
+ifndef SNEK_NO_BUILD_TARGETS
+
+snek-gram.h: $(SNEK_ROOT)/snek-gram.ll
+	lola -o $@ $^
+
+snek-builtin.h: $(SNEK_ROOT)/snek-builtin.py $(SNEK_BUILTINS)
+	python3 $^ -o $@
+
+clean::
+	rm -f snek-gram.h snek-builtin.h $(SNEK_OBJ)
+
+$(SNEK_OBJ): $(SNEK_INC)
+
+ifndef quiet
+
+V=0
+# The user has explicitly enabled quiet compilation.
+ifeq ($(V),0)
+quiet = @printf "  $1 $2 $@\n"; $($1)
+endif
+# Otherwise, print the full command line.
+quiet ?= $($1)
+
+.c.o:
+	$(call quiet,CC) -c $(CFLAGS) -o $@ $<
+
+endif
+
+endif
