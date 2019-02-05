@@ -60,8 +60,6 @@ uart_putchar(char c, FILE *stream)
 	return 0;
 }
 
-#define RX_BUFSIZE	64
-
 snek_poly_t
 snek_builtin_led_on(void)
 {
@@ -88,6 +86,8 @@ snek_builtin_time_sleep(snek_poly_t a)
 	return SNEK_ONE;
 }
 
+#define RX_BUFSIZE	64
+
 static int
 uart_getchar(FILE *stream)
 {
@@ -113,24 +113,11 @@ uart_getchar(FILE *stream)
 				rxp = b;
 				break;
 			}
-			else if (c == '\t')
-				c = ' ';
-
-			if (c >= (uint8_t)' ') {
-				if (cp >= b + RX_BUFSIZE - 1)
-					uart_putchar('\a', stream);
-				else
-				{
-					*cp++ = c;
-					uart_putchar(c, stream);
-				}
-				continue;
-			}
 
 			switch (c)
 			{
-			case '\b':
-			case '\x7f':
+			case 'h' & 0x1f:
+			case 0x7f:
 				if (cp > b)
 				{
 					uart_putchar('\b', stream);
@@ -149,6 +136,19 @@ uart_getchar(FILE *stream)
 					cp--;
 				}
 				break;
+			case '\t':
+				c = ' ';
+			default:
+				if (c >= (uint8_t)' ') {
+					if (cp >= b + RX_BUFSIZE - 1)
+						uart_putchar('\a', stream);
+					else
+					{
+						*cp++ = c;
+						uart_putchar(c, stream);
+					}
+					continue;
+				}
 			}
 		}
 	}
@@ -169,6 +169,6 @@ main (void)
 	stderr = stdout = stdin = &uart_str;
 	fprintf(stdout, "Welcome to Snek\n");
 	snek_print_vals = true;
-	snek_parse();
-	return 0;
+	for (;;)
+		snek_parse();
 }
