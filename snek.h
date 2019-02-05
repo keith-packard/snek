@@ -271,6 +271,7 @@ extern const snek_builtin_t snek_builtins[];
 #define SNEK_BUILTIN_VARARGS	-1
 
 #define SNEK_NAN_U	0x7fffffffu
+#define SNEK_NINF_U	0xff800000u
 #define SNEK_NAN	((snek_poly_t) { .u = SNEK_NAN_U })
 #define SNEK_NULL_U	0xffffffffu
 #define SNEK_NULL	((snek_poly_t) { .u = SNEK_NULL_U })
@@ -726,7 +727,7 @@ snek_slice_identity(snek_slice_t *slice)
 static inline bool
 snek_is_float(snek_poly_t v)
 {
-	if ((v.u & 0xff000000) != 0xff000000 || v.u == SNEK_NAN_U)
+	if ((v.u & 0xff000000) != 0xff000000 || v.u == SNEK_NAN_U || v.u == SNEK_NINF_U)
 		return true;
 	return false;
 }
