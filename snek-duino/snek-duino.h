@@ -68,8 +68,6 @@ static inline const char *
 avr_snek_builtin_names_return(const uint8_t *bits)
 {
 	static char ret[SNEK_BUILTIN_NAMES_MAX_LEN + 1];
-	int i;
-	char c;
 	char *r = ret;
 
 	while ((*r++ = (char) pgm_read_byte(bits++)))
@@ -78,7 +76,7 @@ avr_snek_builtin_names_return(const uint8_t *bits)
 }
 
 static inline int
-avr_snek_builtin_names_len(const uint8_t *a)
+avr_snek_builtin_names_len(const char *a)
 {
 	int len = 0;
 

@@ -50,7 +50,7 @@ uart_init(void)
  * Send character c down the UART Tx, wait until tx holding register
  * is empty.
  */
-int
+static int
 uart_putchar(char c, FILE *stream)
 {
 	if (c == '\n')
@@ -88,11 +88,11 @@ snek_builtin_time_sleep(snek_poly_t a)
 	return SNEK_ONE;
 }
 
-int
+static int
 uart_getchar(FILE *stream)
 {
 	uint8_t c;
-	char *cp, *cp2;
+	char *cp;
 	static char b[RX_BUFSIZE];
 	static char *rxp;
 
@@ -162,7 +162,7 @@ uart_getchar(FILE *stream)
 
 FILE uart_str = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
 
-void
+int
 main (void)
 {
 	uart_init();
@@ -170,4 +170,5 @@ main (void)
 	fprintf(stdout, "Welcome to Snek\n");
 	snek_print_vals = true;
 	snek_parse();
+	return 0;
 }

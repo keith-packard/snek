@@ -143,7 +143,7 @@ const char * const snek_op_names[] = {
 	[snek_op_line] = "line",
 };
 
-snek_offset_t
+static snek_offset_t
 snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 {
 	float		f;
@@ -230,7 +230,7 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 	return ip + snek_op_extra_size(op);
 }
 
-void
+static void
 snek_code_dump(snek_code_t *code)
 {
 	snek_offset_t	ip = 0;
@@ -439,8 +439,8 @@ snek_code_line(snek_code_t *code)
 
 snek_poly_t	snek_stack[SNEK_STACK];
 snek_offset_t	snek_stackp = 0;
-static snek_poly_t 	a = SNEK_ZERO;
-static snek_code_t	*code;
+static snek_poly_t 	snek_a = SNEK_ZERO;
+static snek_code_t	*snek_code;
 
 float
 snek_poly_get_float(snek_poly_t a)
@@ -473,7 +473,7 @@ snek_stack_pop_soffset(void)
 static snek_poly_t *
 snek_list_ref(snek_list_t *list, snek_soffset_t o)
 {
-	if (o < 0 || list->size <= o) {
+	if (o < 0 || list->size <= (snek_offset_t) o) {
 		snek_error("index out of range: %d", o);
 		return NULL;
 	}
@@ -488,9 +488,9 @@ snek_range_start(snek_offset_t ip)
 	snek_id_t	id;
 	uint8_t		for_depth;
 
-	memcpy(&nactual, &code->code[ip], sizeof(snek_offset_t));
-	memcpy(&id, &code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
-	memcpy(&for_depth, &code->code[ip + sizeof(snek_offset_t)], sizeof (uint8_t));
+	memcpy(&nactual, &snek_code->code[ip], sizeof(snek_offset_t));
+	memcpy(&id, &snek_code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
+	memcpy(&for_depth, &snek_code->code[ip + sizeof(snek_offset_t)], sizeof (uint8_t));
 
 	float current = 0.0f;
 	float limit = 0.0f;
@@ -547,8 +547,8 @@ snek_range_step(snek_offset_t ip)
 	uint8_t		for_depth;
 	snek_id_t	id;
 
-	memcpy(&for_depth, &code->code[ip + sizeof(snek_offset_t)], sizeof (uint8_t));
-	memcpy(&id, &code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
+	memcpy(&for_depth, &snek_code->code[ip + sizeof(snek_offset_t)], sizeof (uint8_t));
+	memcpy(&id, &snek_code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
 
 	snek_poly_t	*id_ref = snek_id_ref(id, false);
 	snek_poly_t	*limit_ref = snek_id_ref(snek_for_tmp(for_depth, 0), false);
@@ -574,7 +574,7 @@ snek_in_step(snek_offset_t ip)
 	snek_id_t id;
 	snek_poly_t *ref;
 
-	memcpy(&for_depth, &code->code[ip + sizeof(snek_offset_t)], sizeof(uint8_t));
+	memcpy(&for_depth, &snek_code->code[ip + sizeof(snek_offset_t)], sizeof(uint8_t));
 
 	/* Get current index, save next index */
 	snek_poly_t *i_ref = snek_id_ref(snek_for_tmp(for_depth, 1), false);
@@ -592,7 +592,7 @@ snek_in_step(snek_offset_t ip)
 	switch (snek_poly_type(array)) {
 	case snek_list:
 		l = snek_poly_to_list(array);
-		if (i < l->size)
+		if (i >= 0 && (snek_offset_t) i < l->size)
 			value = snek_list_data(l)[i];
 		break;
 	case snek_string:
@@ -610,7 +610,7 @@ snek_in_step(snek_offset_t ip)
 		return false;
 
 	/* Update value */
-	memcpy(&id, &code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
+	memcpy(&id, &snek_code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
 
 	snek_poly_stash(value);
 	ref = snek_id_ref(id, true);
@@ -833,16 +833,16 @@ snek_slice(uint8_t bits)
 	if (bits & SNEK_OP_SLICE_START)
 		slice.start = snek_stack_pop_soffset();
 
-	slice.len = snek_poly_len(a = snek_stack_pop());
+	slice.len = snek_poly_len(snek_a = snek_stack_pop());
 
 	if (!snek_slice_canon(&slice))
 		return;
-	switch (snek_poly_type(a)) {
+	switch (snek_poly_type(snek_a)) {
 	case snek_string:
-		a = snek_string_to_poly(snek_string_slice(snek_poly_to_string(a), &slice));
+		snek_a = snek_string_to_poly(snek_string_slice(snek_poly_to_string(snek_a), &slice));
 		break;
 	case snek_list:
-		a = snek_list_to_poly(snek_list_slice(snek_poly_to_list(a), &slice));
+		snek_a = snek_list_to_poly(snek_list_slice(snek_poly_to_list(snek_a), &slice));
 		break;
 	default:
 		break;
@@ -899,10 +899,10 @@ snek_assign(snek_id_t id, snek_op_t op)
 		 */
 		if (id == SNEK_ID_NONE)
 			snek_stackp += 2;
-		a = snek_binary(*ref, op - (snek_op_assign_plus - snek_op_plus), a, true);
+		snek_a = snek_binary(*ref, op - (snek_op_assign_plus - snek_op_plus), snek_a, true);
 		op = snek_op_assign;
 	}
-	*ref = a;
+	*ref = snek_a;
 }
 
 static void
@@ -912,25 +912,25 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 	snek_soffset_t nformal = SNEK_BUILTIN_NFORMAL(builtin);
 
 	if (nformal < 0) {
-		a = SNEK_BUILTIN_FUNCV(builtin)(nposition, nnamed, actuals);
+		snek_a = SNEK_BUILTIN_FUNCV(builtin)(nposition, nnamed, actuals);
 	} else if (nposition != nformal || nnamed) {
 		snek_error("wrong number of args: wanted %d, got %d", nformal, nposition);
 	} else {
 		switch (nformal) {
 		case 0:
-			a = SNEK_BUILTIN_FUNC0(builtin)();
+			snek_a = SNEK_BUILTIN_FUNC0(builtin)();
 			break;
 		case 1:
-			a = SNEK_BUILTIN_FUNC1(builtin)(actuals[0]);
+			snek_a = SNEK_BUILTIN_FUNC1(builtin)(actuals[0]);
 			break;
 #if SNEK_BUILTIN_NAMES_MAX_ARGS >= 2
 		case 2:
-			a = SNEK_BUILTIN_FUNC2(builtin)(actuals[0], actuals[1]);
+			snek_a = SNEK_BUILTIN_FUNC2(builtin)(actuals[0], actuals[1]);
 			break;
 #endif
 #if SNEK_BUILTIN_NAMES_MAX_ARGS >= 3
 		case 3:
-			a = SNEK_BUILTIN_FUNC3(builtin)(actuals[0], actuals[1], actuals[2]);
+			snek_a = SNEK_BUILTIN_FUNC3(builtin)(actuals[0], actuals[1], actuals[2]);
 			break;
 #endif
 		}
@@ -943,83 +943,82 @@ snek_run_do(bool (*poly)(snek_poly_t *p))
 	snek_offset_t s;
 	for (s = 0; s < snek_stackp; s++)
 		poly(&snek_stack[s]);
-	poly(&a);
+	poly(&snek_a);
 }
 
 void
 snek_run_mark(void)
 {
 	snek_run_do(snek_poly_mark_ref);
-	if (code)
-		snek_mark_addr(&snek_code_mem, code);
+	if (snek_code)
+		snek_mark_addr(&snek_code_mem, snek_code);
 }
 
 void
 snek_run_move(void)
 {
 	snek_run_do(snek_poly_move);
-	if (code)
-		snek_move_addr(&snek_code_mem, (void **) &code);
+	if (snek_code)
+		snek_move_addr(&snek_code_mem, (void **) &snek_code);
 }
 
 snek_poly_t
 snek_code_run(snek_code_t *code_in)
 {
-	code = code_in;
+	snek_code = code_in;
 
 	snek_poly_t	*ref = NULL;
 	snek_id_t	id;
 	snek_offset_t	ip = 0;
 	snek_offset_t	o;
 
-	while (code && !snek_abort) {
-		while (!snek_abort && ip < code->size) {
+	while (snek_code && !snek_abort) {
+		while (!snek_abort && ip < snek_code->size) {
 #ifdef DEBUG_EXEC
-			snek_code_dump_instruction(code, ip);
+			snek_code_dump_instruction(snek_code, ip);
 #endif
-			snek_op_t op = code->code[ip++];
+			snek_op_t op = snek_code->code[ip++];
 			bool push = (op & snek_op_push) != 0;
 			op &= ~snek_op_push;
 			switch(op) {
 			case snek_op_num:
-				memcpy(&a.f, &code->code[ip], sizeof(float));
+				memcpy(&snek_a.f, &snek_code->code[ip], sizeof(float));
 				ip += sizeof(float);
 				break;
 			case snek_op_int:
-				a.f = (int8_t) code->code[ip];
+				snek_a.f = (int8_t) snek_code->code[ip];
 				ip += 1;
 				break;
 			case snek_op_string:
-				memcpy(&o, &code->code[ip], sizeof(snek_offset_t));
+				memcpy(&o, &snek_code->code[ip], sizeof(snek_offset_t));
 				ip += sizeof (snek_offset_t);
-				a = snek_offset_to_poly(o, snek_string);
+				snek_a = snek_offset_to_poly(o, snek_string);
 				break;
 			case snek_op_list:
 			case snek_op_tuple:
-				memcpy(&o, &code->code[ip], sizeof(snek_offset_t));
+				memcpy(&o, &snek_code->code[ip], sizeof(snek_offset_t));
 				ip += sizeof (snek_offset_t);
-				a = snek_list_imm(o, op == snek_op_tuple);
+				snek_a = snek_list_imm(o, op == snek_op_tuple);
 				break;
 			case snek_op_id:
-				memcpy(&id, &code->code[ip], sizeof(snek_id_t));
+				memcpy(&id, &snek_code->code[ip], sizeof(snek_id_t));
 				ip += sizeof (snek_id_t);
 				ref = snek_id_ref(id, false);
 				if (ref) {
-					a = *ref;
+					snek_a = *ref;
 					break;
 				}
 				if (id < SNEK_BUILTIN_END) {
-					a = snek_builtin_id_to_poly(id);
+					snek_a = snek_builtin_id_to_poly(id);
 					break;
 				}
 				snek_undefined(id);
 				break;
 			case snek_op_uminus:
-				if (snek_is_float(a))
-					a = snek_float_to_poly(-snek_poly_to_float(a));
+				snek_a = snek_float_to_poly(-snek_poly_get_float(snek_a));
 				break;
 			case snek_op_not:
-				a = snek_bool_to_poly(!snek_poly_true(a));
+				snek_a = snek_bool_to_poly(!snek_poly_true(snek_a));
 				break;
 			case snek_op_plus:
 			case snek_op_minus:
@@ -1042,29 +1041,29 @@ snek_code_run(snek_code_t *code_in)
 			case snek_op_land:
 			case snek_op_lor:
 			case snek_op_array:
-				a = snek_binary(snek_stack_pick(0), op, a, false);
+				snek_a = snek_binary(snek_stack_pick(0), op, snek_a, false);
 				snek_stack_drop(1);
 				break;
 			case snek_op_call:
-				memcpy(&o, &code->code[ip], sizeof (snek_offset_t));
+				memcpy(&o, &snek_code->code[ip], sizeof (snek_offset_t));
 				snek_offset_t nposition = (o & 0xff);
 				snek_offset_t nnamed = (o >> 8);
 				snek_offset_t nstack = nposition + (nnamed<<1);
-				a = snek_stack_pick(nstack);
-				switch (snek_poly_type(a)) {
+				snek_a = snek_stack_pick(nstack);
+				switch (snek_poly_type(snek_a)) {
 				case snek_func:
-					if (!snek_func_push(snek_poly_to_func(a), nposition, nnamed, code, ip - 1))
+					if (!snek_func_push(snek_poly_to_func(snek_a), nposition, nnamed, snek_code, ip - 1))
 						break;
-					a = snek_stack_pop();	/* get function back */
-					code = snek_pool_ref(snek_poly_to_func(a)->code);
+					snek_a = snek_stack_pop();	/* get function back */
+					snek_code = snek_pool_ref(snek_poly_to_func(snek_a)->code);
 					ip = 0;
 					push = false;	/* will pick up push on return */
 					goto done_func;
 				case snek_builtin:
-					snek_call_builtin(snek_poly_to_builtin(a), nposition, nnamed);
+					snek_call_builtin(snek_poly_to_builtin(snek_a), nposition, nnamed);
 					break;
 				default:
-					snek_error("not a func: %p", a);
+					snek_error("not a func: %p", snek_a);
 					break;
 				}
 				ip += sizeof (snek_offset_t);
@@ -1072,7 +1071,7 @@ snek_code_run(snek_code_t *code_in)
 			done_func:
 				break;
 			case snek_op_slice:
-				snek_slice(code->code[ip]);
+				snek_slice(snek_code->code[ip]);
 				ip++;
 				break;
 			case snek_op_assign_named:
@@ -1089,29 +1088,29 @@ snek_code_run(snek_code_t *code_in)
 			case snek_op_assign_lxor:
 			case snek_op_assign_lshift:
 			case snek_op_assign_rshift:
-				memcpy(&id, &code->code[ip], sizeof (snek_id_t));
+				memcpy(&id, &snek_code->code[ip], sizeof (snek_id_t));
 				ip += sizeof (snek_id_t);
 				snek_assign(id, op);
 				break;
 			case snek_op_global:
-				memcpy(&id, &code->code[ip], sizeof (snek_id_t));
+				memcpy(&id, &snek_code->code[ip], sizeof (snek_id_t));
 				ip += sizeof (snek_id_t);
 				snek_frame_mark_global(id);
 				break;
 			case snek_op_branch_false:
-				if (!snek_poly_true(a))
-					memcpy(&ip, &code->code[ip], sizeof (snek_offset_t));
+				if (!snek_poly_true(snek_a))
+					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				else
 					ip += sizeof (snek_offset_t);
 				break;
 			case snek_op_branch_true:
-				if (snek_poly_true(a))
-					memcpy(&ip, &code->code[ip], sizeof (snek_offset_t));
+				if (snek_poly_true(snek_a))
+					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				else
 					ip += sizeof (snek_offset_t);
 				break;
 			case snek_op_branch:
-				memcpy(&ip, &code->code[ip], sizeof (snek_offset_t));
+				memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				break;
 			case snek_op_range_start:
 				snek_range_start(ip);
@@ -1119,18 +1118,18 @@ snek_code_run(snek_code_t *code_in)
 				break;
 			case snek_op_range_step:
 				if (!snek_range_step(ip))
-					memcpy(&ip, &code->code[ip], sizeof (snek_offset_t));
+					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				else
 					ip += sizeof (snek_offset_t) + sizeof (uint8_t) + sizeof(snek_id_t);
 				break;
 			case snek_op_in_step:
 				if (!snek_in_step(ip))
-					memcpy(&ip, &code->code[ip], sizeof (snek_offset_t));
+					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				else
 					ip += sizeof (snek_offset_t) + sizeof (uint8_t) + sizeof (snek_id_t);
 				break;
 			case snek_op_line:
-				memcpy(&o, &code->code[ip], sizeof (snek_offset_t));
+				memcpy(&o, &snek_code->code[ip], sizeof (snek_offset_t));
 				ip += sizeof (snek_offset_t);
 				snek_line = o;
 				break;
@@ -1138,25 +1137,25 @@ snek_code_run(snek_code_t *code_in)
 				break;
 			}
 			if (push)
-				snek_stack_push(a);
+				snek_stack_push(snek_a);
 #ifdef DEBUG_EXEC
-			dbg("\t\ta= "); snek_poly_print(stddbg, a, 'r');
-			for (snek_offset_t o = snek_stackp; o;) {
+			dbg("\t\ta= "); snek_poly_print(stddbg, snek_a, 'r');
+			for (o = snek_stackp; o;) {
 				dbg(", [%d]= ", snek_stackp - o);
 				snek_poly_print(stddbg, snek_stack[--o], 'r');
 			}
 			dbg("\n");
 #endif
 		}
-		code = snek_frame_pop(&ip);
-		if (code) {
-			snek_op_t op = code->code[ip];
+		snek_code = snek_frame_pop(&ip);
+		if (snek_code) {
+			snek_op_t op = snek_code->code[ip];
 			ip += sizeof (snek_offset_t) + 1;
 			if ((op & snek_op_push) != 0)
-				snek_stack_push(a);
+				snek_stack_push(snek_a);
 		}
 	}
-	return a;
+	return snek_a;
 }
 
 static snek_offset_t

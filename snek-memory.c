@@ -348,7 +348,7 @@ static void dump_busy(void)
 snek_offset_t
 snek_collect(uint8_t style)
 {
-	snek_offset_t	i;
+	snek_soffset_t	c;
 	snek_offset_t	top;
 
 	debug_memory("Collect...\n");
@@ -379,11 +379,11 @@ snek_collect(uint8_t style)
 
 		debug_memory("chunk_last %d\n", chunk_last);
 		/* Find the first moving object */
-		for (i = 0; i < chunk_last; i++) {
-			snek_offset_t	size = snek_chunk[i].size;
+		for (c = 0; c < chunk_last; c++) {
+			snek_offset_t	size = snek_chunk[c].size;
 
-			debug_memory("size %d old_offset %d top %d\n", size, snek_chunk[i].old_offset, top);
-			if (snek_chunk[i].old_offset > top)
+			debug_memory("size %d old_offset %d top %d\n", size, snek_chunk[c].old_offset, top);
+			if (snek_chunk[c].old_offset > top)
 				break;
 
 			top += size;
@@ -395,7 +395,7 @@ snek_collect(uint8_t style)
 		 * work in this case, but GCC 7.2.0 with optimization
 		 * greater than 2 generates incorrect code for this...
 		 */
-		if (i == SNEK_NCHUNK) {
+		if (c == SNEK_NCHUNK) {
 			chunk_low = chunk_high;
 			continue;
 		}
@@ -404,20 +404,20 @@ snek_collect(uint8_t style)
 		 * Limit amount of chunk array used in mapping moves
 		 * to the active region
 		 */
-		chunk_first = i;
-		chunk_low = snek_chunk[i].old_offset;
+		chunk_first = c;
+		chunk_low = snek_chunk[c].old_offset;
 
 		/* Copy all of the objects */
-		for (; i < chunk_last; i++) {
-			snek_offset_t	size = snek_chunk[i].size;
+		for (; c < chunk_last; c++) {
+			snek_offset_t	size = snek_chunk[c].size;
 
 			debug_memory("  moving %d -> %d (%d)\n",
-			       snek_chunk[i].old_offset, top, size);
+			       snek_chunk[c].old_offset, top, size);
 
-			snek_chunk[i].new_offset = top;
+			snek_chunk[c].new_offset = top;
 
 			memmove(&snek_pool[top],
-				&snek_pool[snek_chunk[i].old_offset],
+				&snek_pool[snek_chunk[c].old_offset],
 				size);
 
 			top += size;
@@ -482,8 +482,9 @@ snek_mark_block_addr(const struct snek_mem *type, void *addr)
 {
 	bool ret;
 	ret = snek_mark_blob(addr, snek_size(type, addr));
-	if (!ret)
+	if (!ret) {
 		debug_memory("\tmark %s %d %d\n", type->name, pool_offset(addr), snek_size(type, addr));
+	}
 	return ret;
 }
 
@@ -532,8 +533,9 @@ snek_poly_mark(snek_poly_t p)
 
 	addr = snek_ref(p);
 
-	if (type == snek_list)
+	if (type == snek_list) {
 		debug_memory("\tmark list %d\n", pool_offset(addr));
+	}
 
 #if SNEK_DEBUG
 	if (!snek_is_pool_addr(addr))
@@ -569,10 +571,6 @@ move_map(snek_offset_t offset)
 
 	chunk = find_chunk(offset);
 
-#if DBG_MEM
-	if (snek_chunk[chunk].old_offset != offset)
-		abort();
-#endif
 	return snek_chunk[chunk].new_offset;
 }
 
@@ -651,8 +649,9 @@ snek_poly_move(snek_poly_t *ref)
 
 	addr = snek_ref(p);
 
-	if (type == snek_list)
+	if (type == snek_list) {
 		debug_memory("\tmove list %d\n", pool_offset(addr));
+	}
 
 #if SNEK_DEBUG
 	if (!snek_is_pool_addr(addr))

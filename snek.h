@@ -240,13 +240,13 @@ typedef struct snek_slice {
 	snek_soffset_t		stride;
 
 	/* provided length of object */
-	snek_offset_t	len;
+	snek_soffset_t	len;
 
 	/* computed number of outputs */
-	snek_offset_t	count;
+	snek_soffset_t	count;
 
 	/* computed position of current object */
-	snek_offset_t	pos;
+	snek_soffset_t	pos;
 } snek_slice_t;
 
 #define SNEK_SLICE_DEFAULT	SNEK_SOFFSET_NONE		/* empty value provided [1:] */

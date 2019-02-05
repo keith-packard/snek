@@ -184,7 +184,7 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 	return result;
 }
 
-snek_offset_t
+static snek_offset_t
 snek_string_size(void *addr)
 {
 	char *string = addr;

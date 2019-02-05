@@ -74,7 +74,7 @@ snek_name_id_builtin(char *name, bool *keyword)
 	return 0;
 }
 
-const char *
+static const char *
 snek_name_string_builtin(snek_id_t id)
 {
 	long		i;
@@ -156,7 +156,7 @@ snek_name_mark(void *addr)
 	}
 }
 
-void
+static void
 snek_name_move(void *addr)
 {
 	snek_name_t *n = addr;
