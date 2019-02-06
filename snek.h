@@ -519,6 +519,12 @@ snek_list_plus(snek_list_t *a, snek_list_t *b);
 snek_list_t *
 snek_list_times(snek_list_t *a, snek_soffset_t count);
 
+snek_poly_t *
+snek_list_ref(snek_list_t *list, snek_soffset_t o);
+
+snek_poly_t
+snek_list_get(snek_list_t *list, snek_soffset_t i);
+
 bool
 snek_list_equal(snek_list_t *a, snek_list_t *b);
 
@@ -684,10 +690,10 @@ snek_print(snek_buf_t *buf, snek_poly_t poly);
 char *
 snek_string_make(char c);
 
-char
+snek_poly_t
 snek_string_get(char *string, snek_soffset_t i);
 
-char *
+snek_poly_t
 snek_string_cat(char *a, char *b);
 
 char *

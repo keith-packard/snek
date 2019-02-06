@@ -509,16 +509,6 @@ snek_stack_pop_soffset(void)
 	return (snek_soffset_t) snek_stack_pop_float();
 }
 
-static snek_poly_t *
-snek_list_ref(snek_list_t *list, snek_soffset_t o)
-{
-	if (o < 0 || list->size <= (snek_offset_t) o) {
-		snek_error("index out of range: %d", o);
-		return NULL;
-	}
-	return &snek_list_data(list)[o];
-}
-
 static void
 snek_range_start(snek_offset_t ip)
 {
@@ -625,20 +615,13 @@ snek_in_step(snek_offset_t ip)
 
 	/* Compute current value */
 	snek_poly_t value = SNEK_NULL;
-	snek_list_t *l;
-	char *s;
 
 	switch (snek_poly_type(array)) {
 	case snek_list:
-		l = snek_poly_to_list(array);
-		if (i >= 0 && (snek_offset_t) i < l->size)
-			value = snek_list_data(l)[i];
+		value = snek_list_get(snek_poly_to_list(array), i);
 		break;
 	case snek_string:
-		s = snek_poly_to_string(array);
-		char c = snek_string_get(s, i);
-		if (c)
-			value = snek_string_to_poly(snek_string_make(c));
+		value = snek_string_get(snek_poly_to_string(array), i);
 		break;
 	default:
 		snek_error("not iterable: %p", array);
@@ -663,15 +646,12 @@ snek_in_step(snek_offset_t ip)
 static snek_poly_t
 snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 {
-	char		*as;
-	char		*bs;
 	snek_list_t	*al;
 	snek_list_t	*bl;
 	float		af;
 	float		bf;
 	bool		found;
 	snek_poly_t	ret = SNEK_NULL;
-	snek_poly_t	*ref;
 
 	switch (op) {
 	case snek_op_eq:
@@ -694,13 +674,10 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 
 		switch (at) {
 		case snek_list:
-			ref = snek_list_ref(snek_poly_to_list(a), bo);
-			if (ref)
-				ret = *ref;
+			ret = snek_list_get(snek_poly_to_list(a), bo);
 			break;
 		case snek_string:
-			as = snek_poly_to_string(a);
-			ret = snek_string_to_poly(snek_string_make(snek_string_get(as, bo)));
+			ret = snek_string_get(snek_poly_to_string(a), bo);
 			break;
 		default:
 			break;
@@ -781,9 +758,8 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			break;
 		case snek_op_plus:
 			if (at == snek_string && bt == snek_string) {
-				as = snek_poly_to_string(a);
-				bs = snek_poly_to_string(b);
-				ret = snek_string_to_poly(snek_string_cat(as, bs));
+				ret = snek_string_cat(snek_poly_to_string(a),
+						      snek_poly_to_string(b));
 			} else if (at == snek_list && bt == snek_list) {
 				al = snek_poly_to_list(a);
 				bl = snek_poly_to_list(b);

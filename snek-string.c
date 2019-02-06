@@ -23,12 +23,12 @@ snek_string_make(char c)
 	return new;
 }
 
-char
+snek_poly_t
 snek_string_get(char *string, snek_soffset_t i)
 {
-	if (i < (snek_soffset_t) strlen(string))
-		return string[i];
-	return '\0';
+	if (0 <= i && i < (snek_soffset_t) strlen(string))
+		return snek_string_to_poly(snek_string_make(string[i]));
+	return SNEK_NULL;
 }
 
 static char *
@@ -53,11 +53,11 @@ snek_string_catn(char *a, snek_offset_t aoff, snek_offset_t alen,
 	return new;
 }
 
-char *
+snek_poly_t
 snek_string_cat(char *a, char *b)
 {
-	return snek_string_catn(a, 0, strlen(a),
-				b, 0, strlen(b));
+	return snek_string_to_poly(snek_string_catn(a, 0, strlen(a),
+						    b, 0, strlen(b)));
 }
 
 char *
