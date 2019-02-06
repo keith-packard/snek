@@ -11,7 +11,15 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-led_on, 0
-led_off, 0
 time.sleep, 1
+talkto, 1
+listento, 1
+setpower, 1
+setleft, 0
+setright, 0
+onfor, 1
+on, 0
+off, 0
+read, 0
+stopall, 0
 #include <snek-duino.h>
