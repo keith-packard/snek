@@ -235,5 +235,6 @@ There are examples provided which work with both Python and Snek.
 
 I'd love to receive more contributions in the form of patches,
 suggestions and bug reports. Please feel free to send mail or use the
-github process. If we get enough participation, I can host a mailing
-list easily enough.
+github process. I've created a mailing list for collaboration; 
+you'll need to subscribe to be able to post. Subscribe to the [snek
+mailing list here](https://keithp.com/mailman/listinfo/snek)
