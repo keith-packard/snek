@@ -217,14 +217,13 @@ To build Snek you need the next dependencies:
 In the source of the project run:
 
 ```
-$ meson build && cd build
-$ ninja
+$ make
 ```
 
 ### Running
 
 ```
-$ ./snek
+$ ./posix/snek
 ```
 Then, just enjoy!
 
