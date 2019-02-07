@@ -29,11 +29,20 @@ TESTS = \
 	while-else.py
 
 check:
+	@exit=0; \
 	for TEST in $(TESTS); do \
-		if ! python3 $$TEST; then \
-			echo $$TEST failed python3; \
+		echo "Running test $$TEST."; \
+		if python3 $$TEST; then \
+			echo "    python" pass.; \
+		else \
+			echo "    python" fail.; \
+			exit=1; \
 		fi; \
-		if ! ../posix/snek $$TEST; then \
-			echo $$TEST failed snek; \
+		if ../posix/snek $$TEST; then \
+			echo "    snek" pass.; \
+		else \
+			echo "    snek" fail.; \
+			exit=1; \
 		fi; \
-	done
+	done; \
+	exit $$exit
