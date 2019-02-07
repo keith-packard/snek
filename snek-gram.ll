@@ -28,7 +28,7 @@ command		: stat
 			}@
 		| DEF
 			@{
-				nformal = 0;
+				snek_parse_nformal = 0;
 				goto add_line;
 			}@
 		  NAME
@@ -40,7 +40,7 @@ command		: stat
 				snek_code_t	*code = snek_code_finish();
 				if (!code)
 					break;
-				snek_func_t	*func = snek_func_alloc(code, nformal, formals);
+				snek_func_t	*func = snek_func_alloc(code);
 				if (!func)
 					break;
 				snek_poly_t	poly = snek_func_to_poly(func);
@@ -54,14 +54,14 @@ command		: stat
 			}@
 		| DEL
 			@{
-				nformal = 0;
+				snek_parse_nformal = 0;
 			}@
 		  formals
 			@{
 				uint8_t i;
-				for (i = 0; i < nformal; i++)
-					if (!snek_id_del(formals[i])) {
-						snek_undefined(formals[i]);
+				for (i = 0; i < snek_parse_nformal; i++)
+					if (!snek_id_del(snek_parse_formals[i])) {
+						snek_undefined(snek_parse_formals[i]);
 						break;
 					}
 			}@
@@ -77,13 +77,13 @@ formals-p	: COMMA formal formals-p
 		;
 formal		: NAME 
 			@{
-				formals[nformal++] = snek_token_val.id;
+				snek_parse_formals[snek_parse_nformal++] = snek_token_val.id;
 			}@
 		  opt-named-p
 		;
 opt-named-p	: ASSIGN expr
 			@{
-				snek_code_add_op_id(snek_op_assign_named, formals[--nformal]);
+				snek_code_add_op_id(snek_op_assign_named, snek_parse_formals[--snek_parse_nformal]);
 			}@
 		|
 		;

@@ -17,7 +17,7 @@
 snek_frame_t	*snek_globals;
 snek_frame_t	*snek_frame;
 
-static inline snek_frame_t *snek_pick_frame(bool globals)
+static snek_frame_t *snek_pick_frame(bool globals)
 {
 	if (globals)
 		return snek_globals;
@@ -39,7 +39,7 @@ snek_frame_realloc(bool globals, snek_offset_t nvariables)
 	return frame;
 }
 
-static inline snek_variable_t *
+static snek_variable_t *
 snek_variable_insert(bool globals)
 {
 	snek_frame_t	*old_frame = snek_pick_frame(globals);
@@ -61,7 +61,7 @@ snek_variable_insert(bool globals)
 	return &frame->variables[nvariables-1];
 }
 
-static inline void
+static void
 snek_variable_delete(snek_offset_t i)
 {
 	snek_frame_t	*frame;
@@ -127,37 +127,36 @@ snek_frame_mark_global(snek_id_t id)
 	return true;
 }
 
-snek_frame_t *
-snek_frame_push(snek_code_t *code, snek_offset_t ip, snek_offset_t nformal)
+bool
+snek_frame_push(snek_offset_t ip, snek_offset_t nformal)
 {
 	snek_frame_t *f;
 
-	snek_code_stash(code);
 	f = snek_alloc(sizeof (snek_frame_t) + nformal * sizeof (snek_variable_t));
-	code = snek_code_fetch();
 	if (!f)
-		return NULL;
+		return false;
 	f->nvariables = nformal;
-	f->code = snek_pool_offset(code);
+	f->code = snek_pool_offset(snek_code);
 	f->ip = ip;
 	f->prev = snek_pool_offset(snek_frame);
 	snek_frame = f;
-	return f;
+	return true;
 }
 
-snek_code_t *
-snek_frame_pop(snek_offset_t *ip_p)
+snek_offset_t
+snek_frame_pop(void)
 {
-	if (!snek_frame)
-		return NULL;
+	if (!snek_frame) {
+		snek_code = NULL;
+		return 0;
+	}
 
-	snek_code_t	*code = snek_pool_ref(snek_frame->code);
-	snek_offset_t	ip = snek_frame->ip;
+	snek_offset_t ip = snek_frame->ip;
 
+	snek_code = snek_pool_ref(snek_frame->code);
 	snek_frame = snek_pool_ref(snek_frame->prev);
 
-	*ip_p = ip;
-	return code;
+	return ip;
 }
 
 snek_poly_t *

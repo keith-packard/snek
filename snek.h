@@ -471,11 +471,11 @@ extern snek_frame_t	*snek_frame;
 bool
 snek_frame_mark_global(snek_offset_t name);
 
-snek_frame_t *
-snek_frame_push(snek_code_t *code, snek_offset_t ip, snek_offset_t nformal);
+bool
+snek_frame_push(snek_offset_t ip, snek_offset_t nformal);
 
-snek_code_t *
-snek_frame_pop(snek_offset_t *ip_p);
+snek_offset_t
+snek_frame_pop(void);
 
 snek_poly_t *
 snek_id_ref(snek_id_t id, bool insert);
@@ -491,19 +491,15 @@ extern const snek_mem_t snek_frame_mem;
 /* snek-func.c */
 
 snek_func_t *
-snek_func_alloc(snek_code_t *code, snek_offset_t nparam, snek_id_t *formals);
+snek_func_alloc(snek_code_t *code);
 
 bool
-snek_func_push(snek_func_t *func, uint8_t nposition, uint8_t nnamed, snek_code_t *code, snek_offset_t ip);
+snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip);
 
 snek_code_t *
 snek_func_pop(snek_offset_t *ip);
 
 extern const snek_mem_t snek_func_mem;
-
-/* snek-gram.y */
-
-extern bool snek_print_vals;
 
 /* snek-lex.l */
 
@@ -634,6 +630,13 @@ extern const snek_mem_t snek_name_mem;
 extern snek_name_t *snek_names;
 
 /* snek-parse.c */
+
+extern bool snek_print_vals;
+
+#define SNEK_MAX_FORMALS	10
+
+extern uint8_t snek_parse_nformal;
+extern snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 typedef enum {
 	snek_parse_success,

@@ -18,10 +18,8 @@
 bool snek_print_vals;
 bool snek_print_val;
 
-#define MAX_FORMALS	10
-
-static uint8_t nformal;
-static snek_id_t formals[MAX_FORMALS];
+uint8_t snek_parse_nformal;
+snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 snek_token_val_t snek_token_val;
 

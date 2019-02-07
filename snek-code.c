@@ -1062,7 +1062,7 @@ snek_code_run(snek_code_t *code_in)
 				snek_a = snek_stack_pick(nstack);
 				switch (snek_poly_type(snek_a)) {
 				case snek_func:
-					if (!snek_func_push(snek_poly_to_func(snek_a), nposition, nnamed, snek_code, ip - 1))
+					if (!snek_func_push(nposition, nnamed, ip - 1))
 						break;
 					snek_a = snek_stack_pop();	/* get function back */
 					snek_code = snek_pool_ref(snek_poly_to_func(snek_a)->code);
@@ -1157,7 +1157,7 @@ snek_code_run(snek_code_t *code_in)
 			dbg("\n");
 #endif
 		}
-		snek_code = snek_frame_pop(&ip);
+		ip = snek_frame_pop();
 		if (snek_code) {
 			snek_op_t op = snek_code->code[ip];
 			ip += sizeof (snek_offset_t) + 1;

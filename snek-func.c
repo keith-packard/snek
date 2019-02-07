@@ -15,37 +15,37 @@
 #include "snek.h"
 
 snek_func_t *
-snek_func_alloc(snek_code_t *code, snek_offset_t nformal, snek_id_t *formals)
+snek_func_alloc(snek_code_t *code)
 {
 	snek_func_t *func;
 
 	snek_code_stash(code);
-	func = snek_alloc(sizeof (snek_func_t) + nformal * sizeof (snek_id_t));
+	func = snek_alloc(sizeof (snek_func_t) + snek_parse_nformal * sizeof (snek_id_t));
 	code = snek_code_fetch();
 	if (!func)
 		return NULL;
 	func->code = snek_pool_offset(code);
-	func->nformal = nformal;
-	memcpy(func->formals, formals, nformal * sizeof (snek_id_t));
+	func->nformal = snek_parse_nformal;
+	memcpy(func->formals, snek_parse_formals, snek_parse_nformal * sizeof (snek_id_t));
 	return func;
 }
 
 bool
-snek_func_push(snek_func_t *func, uint8_t nposition, uint8_t nnamed, snek_code_t *code, snek_offset_t ip)
+snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip)
 {
-	if (nposition != func->nformal) {
+	uint8_t nparam = nposition + nnamed;
+	if (!snek_frame_push(ip, nparam))
+		return false;
+
+	snek_func_t *func = snek_poly_to_func(snek_a);
+
+	if (nposition != func->nformal)
+	{
 		snek_error("wrong number of args: wanted %d, got %d", func->nformal, nposition);
 		return false;
 	}
 
-	snek_stack_push(snek_func_to_poly(func));
-	uint8_t nparam = nposition + nnamed;
-	snek_frame_t *frame = snek_frame_push(code, ip, nparam);
-	func = snek_poly_to_func(snek_stack_pop());
-	if (!frame)
-		return false;
-
-	snek_variable_t *v = &frame->variables[nparam];
+	snek_variable_t *v = &snek_frame->variables[nparam];
 
 	while (nnamed--) {
 		v--;
