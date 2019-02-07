@@ -530,7 +530,7 @@ snek_poly_t
 snek_list_get(snek_list_t *list, snek_soffset_t i, bool report_error);
 
 bool
-snek_list_equal(snek_list_t *a, snek_list_t *b, bool is);
+snek_list_equal(snek_list_t *a, snek_list_t *b);
 
 snek_poly_t
 snek_list_imm(snek_offset_t size, bool readonly);

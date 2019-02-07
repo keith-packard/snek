@@ -68,10 +68,13 @@ snek_poly_equal(snek_poly_t a, snek_poly_t b, bool is)
 	case snek_string:
 		return !strcmp(snek_poly_to_string(a), snek_poly_to_string(b));
 	case snek_list:
-		return snek_list_equal(snek_poly_to_list(a), snek_poly_to_list(b), is);
+		if (!is)
+			return snek_list_equal(snek_poly_to_list(a), snek_poly_to_list(b));
+		break;
 	default:
-		return false;
+		break;
 	}
+	return false;
 }
 
 bool
