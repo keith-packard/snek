@@ -25,7 +25,7 @@ CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -g -fno-jump-tables $(SNEK_CFLAGS)
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7c0 \
+	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7a0 \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-Map=snek-duino.map
 
