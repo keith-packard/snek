@@ -33,15 +33,15 @@ check:
 	for TEST in $(TESTS); do \
 		echo "Running test $$TEST."; \
 		if python3 $$TEST; then \
-			echo "    python" pass.; \
+			echo "    python pass"; \
 		else \
-			echo "    python" fail.; \
+			echo "    ***************** python fail *********************"; \
 			exit=1; \
 		fi; \
 		if ../posix/snek $$TEST; then \
-			echo "    snek" pass.; \
+			echo "    snek pass"; \
 		else \
-			echo "    snek" fail.; \
+			echo "    ***************** snek fail ***********************"; \
 			exit=1; \
 		fi; \
 	done; \

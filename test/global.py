@@ -21,6 +21,5 @@ def g():
 
 g()
 
-print("n %d m %d" % (n,m))
 if not (n == 1 and m == 3):
     exit(1)

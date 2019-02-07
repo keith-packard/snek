@@ -31,8 +31,8 @@ all:
 %:
 	+for dir in $(SUBDIRS); do (cd $$dir && make $@); done
 
-check:
-	cd test && make $@
+check: all
+	+cd test && make $@
 
 LIBFILES = \
 	snek.defs \

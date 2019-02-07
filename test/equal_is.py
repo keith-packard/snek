@@ -16,6 +16,9 @@
 def twople(a,b):
     return (a,b)
 
+def cat(a,b):
+    a + b
+
 al = [1,2]
 adl = [[1,2],[3,4]]
 bl = [1,2]
@@ -24,8 +27,8 @@ at = twople(1,2)
 adt = (twople(1,2),twople(3,4))
 bt = twople(1,2)
 bdt = (twople(1,2),twople(3,4))
-astr = "hello"
-bstr = "hello"
+astr = cat("h", "ello")
+bstr = cat("he", "llo")
 
 def fail(which):
     print("fail %s" % which)
