@@ -169,6 +169,11 @@ typedef struct snek_mem {
 #define SNEK_MEM_MOVE(m)	((m)->move)
 #endif
 
+#ifndef SNEK_MEMS_DECLARE
+#define SNEK_MEMS_DECLARE(n) n
+#define SNEK_MEMS_FETCH(a)	(*(a))
+#endif
+
 #ifdef SNEK_MEM_INCLUDE_NAME
 #define SNEK_MEM_DECLARE_NAME(_name)	.name = _name,
 #else

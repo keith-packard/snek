@@ -93,4 +93,7 @@ avr_snek_builtin_names_len(const char *a)
 #define SNEK_MEM_MARK(m)	((void (*)(void *addr)) pgm_read_word(&(m)->mark))
 #define SNEK_MEM_MOVE(m)	((void (*)(void *addr)) pgm_read_word(&(m)->move))
 
+#define SNEK_MEMS_DECLARE(n)	PROGMEM n
+#define SNEK_MEMS_FETCH(a)	((const struct snek_mem *) pgm_read_word(a))
+
 #endif /* _SNEK_DUINO_H_ */

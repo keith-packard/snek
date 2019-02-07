@@ -310,7 +310,7 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 }
 
 
-static const struct snek_mem * const snek_mems[4] = {
+static const struct snek_mem * const SNEK_MEMS_DECLARE(snek_mems)[4] = {
 	[snek_list] = &snek_list_mem,
 	[snek_string] = &snek_string_mem,
 	[snek_func] = &snek_func_mem,
@@ -544,7 +544,7 @@ snek_poly_mark(snek_poly_t p)
 
 	const struct snek_mem *mem;
 
-	mem = snek_mems[type];
+	mem = SNEK_MEMS_FETCH(&snek_mems[type]);
 	ret = snek_mark_block_addr(mem, addr);
 	if (!ret) {
 		SNEK_MEM_MARK(mem)(addr);
@@ -663,7 +663,7 @@ snek_poly_move(snek_poly_t *ref)
 
 	const struct snek_mem *mem;
 
-	mem = snek_mems[type];
+	mem = SNEK_MEMS_FETCH(&snek_mems[type]);
 
 	/* inline snek_move to save stack space */
 	ret = snek_move_block_addr(&addr);
