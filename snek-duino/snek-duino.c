@@ -197,7 +197,7 @@ main (void)
 }
 
 static volatile uint8_t *
-ddr_reg(snek_soffset_t pin)
+ddr_reg(uint8_t pin)
 {
 	if (pin < 8)
 		return &DDRD;
@@ -207,7 +207,7 @@ ddr_reg(snek_soffset_t pin)
 }
 
 static volatile uint8_t *
-pin_reg(snek_soffset_t pin)
+pin_reg(uint8_t pin)
 {
 	if (pin < 8)
 		return &PIND;
@@ -217,7 +217,7 @@ pin_reg(snek_soffset_t pin)
 }
 
 static volatile uint8_t *
-port_reg(snek_soffset_t pin)
+port_reg(uint8_t pin)
 {
 	if (pin < 8)
 		return &PORTD;
@@ -227,7 +227,7 @@ port_reg(snek_soffset_t pin)
 }
 
 static uint8_t
-bit(snek_soffset_t pin)
+bit(uint8_t pin)
 {
 	if (pin < 8)
 		;
@@ -239,76 +239,56 @@ bit(snek_soffset_t pin)
 }
 
 static bool
-has_pwm(snek_soffset_t p)
+has_pwm(uint8_t p)
 {
 	return ((p) == 3 || (p) == 5 || (p) == 6 || (p) == 9 || (p) == 10 || (p) == 11);
 }
 
-static volatile uint8_t *
-ocr_reg(snek_soffset_t pin)
-{
-	switch(pin) {
-	case 3:
-		return &OCR2B;
-	case 5:
-		return &OCR0B;
-	case 6:
-		return &OCR0A;
-	case 9:
-		return &OCR1AL;
-	case 10:
-		return &OCR1BL;
-	case 11:
-		return &OCR2A;
-	default:
-		return NULL;
-	}
-}
+static volatile uint8_t * const PROGMEM ocr_reg_addrs[] = {
+	[3] = &OCR2B,
+	[5] = &OCR0B,
+	[6] = &OCR0A,
+	[9] = &OCR1AL,
+	[10] = &OCR1BL,
+	[11] = &OCR2A
+};
 
 static volatile uint8_t *
-tcc_reg(snek_soffset_t pin)
-{
-	switch(pin) {
-	case 3:
-		return &TCCR2A;
-	case 5:
-		return &TCCR0A;
-	case 6:
-		return &TCCR0A;
-	case 9:
-		return &TCCR1A;
-	case 10:
-		return &TCCR1A;
-	case 11:
-		return &TCCR2A;
-	default:
-		return NULL;
-	}
+ocr_reg(uint8_t pin) {
+	return (volatile uint8_t *) pgm_read_word(&ocr_reg_addrs[pin]);
 }
+
+static volatile uint8_t * const PROGMEM tcc_reg_addrs[] = {
+	[3] = &TCCR2A,
+	[5] = &TCCR0A,
+	[6] = &TCCR0A,
+	[9] = &TCCR1A,
+	[10] = &TCCR1A,
+	[11] = &TCCR2A,
+};
+
+static volatile uint8_t *
+tcc_reg(uint8_t pin) {
+	return (volatile uint8_t *) pgm_read_word(&tcc_reg_addrs[pin]);
+}
+
+static uint8_t const PROGMEM tcc_val_addrs[] = {
+	[3] = 1 << COM2B1,
+	[5] = 1 << COM0B1,
+	[6] = 1 << COM0A1,
+	[9] = 1 << COM1A1,
+	[10] = 1 << COM1B1,
+	[11] = 1 << COM2A1,
+};
 
 static uint8_t
-tcc_val(snek_soffset_t pin)
+tcc_val(uint8_t pin)
 {
-	switch (pin) {
-	case 3:
-		return 1 << COM2B1;
-	case 5:
-		return 1 << COM0B1;
-	case 6:
-		return 1 << COM0A1;
-	case 9:
-		return 1 << COM1A1;
-	case 10:
-		return 1 << COM1B1;
-	case 11:
-		return 1 << COM2A1;
-	default:
-		return 0;
-	}
+	return (uint8_t) pgm_read_byte(&tcc_val_addrs[pin]);
 }
 
 static void
-set_dir(snek_soffset_t pin, uint8_t d)
+set_dir(uint8_t pin, uint8_t d)
 {
 	volatile uint8_t *r = ddr_reg(pin);
 	volatile uint8_t *p = port_reg(pin);
@@ -359,7 +339,7 @@ snek_builtin_listento(snek_poly_t a)
 static bool
 is_on(uint8_t pin)
 {
-	return on_pins >> pin & 1;
+	return (on_pins >> pin) & 1;
 }
 
 static void
@@ -465,7 +445,7 @@ snek_builtin_read(void)
 snek_poly_t
 snek_builtin_stopall(void)
 {
-	snek_soffset_t p;
+	uint8_t p;
 	for (p = 0; p < NUM_PIN; p++)
 		if (on_pins & ((uint32_t) 1 << p)) {
 			set_off(p);
