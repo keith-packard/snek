@@ -12,28 +12,21 @@
 # General Public License for more details.
 #
 
-TESTS = \
-	andor.py \
-	list.py \
-	equal_is.py \
-	for-array.py \
-	for-range.py \
-	for-string.py \
-	for-break.py \
-	for-nested.py \
-	global.py \
-	if.py \
-	op.py \
-	while.py \
-	while-break.py \
-	while-else.py
+# == tests elements of both lists and tuples
+if not ([1,2] == [1,2]): exit (1)
+if not ((1,2) == (1,2)): exit (1)
 
-check:
-	for TEST in $(TESTS); do \
-		if ! python3 $$TEST; then \
-			echo $$TEST failed python3; \
-		fi; \
-		if ! ../posix/snek $$TEST; then \
-			echo $$TEST failed snek; \
-		fi; \
-	done
+if not ([[1,2],[3,4]] == [[1,2],[3,4]]): exit (1)
+if not (((1,2),(3,4)) == ((1,2),(3,4))): exit (1)
+
+# is tests elements of tuples but only container of lists
+if     ([1,2] is [1,2]): exit (1)
+if not ((1,2) is (1,2)): exit (1)
+
+if     ([[1,2],[3,4]] is [[1,2],[3,4]]): exit (1)
+if not (((1,2),(3,4)) is ((1,2),(3,4))): exit (1)
+
+# in tests using == not is
+
+if not ([1,2] in [[1,2],[3,4]]): exit(1)
+if not ((1,2) in ((1,2),(3,4))): exit(1)

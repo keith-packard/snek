@@ -348,7 +348,7 @@ expr-not	: expr-cmp
 		;
 expr-cmp	: expr-lor expr-cmp-p
 		;
-expr-cmp-p	: CMPOP
+expr-cmp-p	: cmpop
 			@{
 			binop_first:
 				snek_code_set_push(snek_code_prev_insn());
@@ -362,6 +362,9 @@ expr-cmp-p	: CMPOP
 		  expr-cmp-p
 		| IS @ goto binop_first; @ expr-lor @ goto binop_second; @ expr-cmp-p
 		|
+		;
+cmpop		: CMPOP
+		| IN
 		;
 expr-lor	: expr-land expr-lor-p
 		;

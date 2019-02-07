@@ -534,7 +534,7 @@ snek_poly_t
 snek_list_get(snek_list_t *list, snek_soffset_t i, bool report_error);
 
 bool
-snek_list_equal(snek_list_t *a, snek_list_t *b);
+snek_list_equal(snek_list_t *a, snek_list_t *b, bool is);
 
 snek_poly_t
 snek_list_imm(snek_offset_t size, bool readonly);
@@ -664,7 +664,7 @@ void
 snek_poly_print(FILE *file, snek_poly_t poly, char format);
 
 bool
-snek_poly_equal(snek_poly_t a, snek_poly_t b);
+snek_poly_equal(snek_poly_t a, snek_poly_t b, bool is);
 
 bool
 snek_poly_true(snek_poly_t a);

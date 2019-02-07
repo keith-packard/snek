@@ -655,13 +655,13 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 
 	switch (op) {
 	case snek_op_eq:
-		return snek_bool_to_poly(snek_poly_equal(a, b));
+		return snek_bool_to_poly(snek_poly_equal(a, b, false));
 	case snek_op_ne:
-		return snek_bool_to_poly(!snek_poly_equal(a, b));
+		return snek_bool_to_poly(!snek_poly_equal(a, b, false));
 	case snek_op_is:
-		return snek_bool_to_poly(a.u == b.u);
+		return snek_bool_to_poly(snek_poly_equal(a, b, true));
 	case snek_op_is_not:
-		return snek_bool_to_poly(a.u != b.u);
+		return snek_bool_to_poly(!snek_poly_equal(a, b, true));
 	default:
 		break;
 	}
@@ -744,7 +744,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 				bl = snek_poly_to_list(b);
 				found = false;
 				for (o = 0; o < bl->size; o++) {
-					if (snek_poly_equal(a, snek_list_data(bl)[o])) {
+					if (snek_poly_equal(a, snek_list_data(bl)[o], false)) {
 						found = true;
 						break;
 					}

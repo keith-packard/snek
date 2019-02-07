@@ -513,6 +513,9 @@ snek_lex(void)
 				return trailing("not", snek_op_is, CMPOP, snek_op_is_not, CMPOP);
 			case NOT:
 				return trailing("in", snek_op_not, NOT, snek_op_not_in, CMPOP);
+			case IN:
+				snek_token_val.op = snek_op_in;
+				return id;
 			default:
 				return id;
 			}

@@ -145,14 +145,18 @@ snek_list_get(snek_list_t *list, snek_soffset_t o, bool report_error)
 }
 
 bool
-snek_list_equal(snek_list_t *a, snek_list_t *b)
+snek_list_equal(snek_list_t *a, snek_list_t *b, bool is)
 {
+	if (snek_list_readonly(a) != snek_list_readonly(b))
+		return false;
+	if (is && !snek_list_readonly(a))
+		return false;
 	if (a->size != b->size)
 		return false;
 	snek_poly_t *adata = snek_pool_ref(a->data);
 	snek_poly_t *bdata = snek_pool_ref(b->data);
 	for (snek_offset_t o = 0; o < a->size; o++)
-		if (!snek_poly_equal(adata[o], bdata[o]))
+		if (!snek_poly_equal(adata[o], bdata[o], is))
 			return false;
 	return true;
 }

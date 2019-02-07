@@ -56,7 +56,7 @@ snek_poly_print(FILE *file, snek_poly_t poly, char format)
 }
 
 bool
-snek_poly_equal(snek_poly_t a, snek_poly_t b)
+snek_poly_equal(snek_poly_t a, snek_poly_t b, bool is)
 {
 	if (a.u == b.u)
 		return true;
@@ -68,7 +68,7 @@ snek_poly_equal(snek_poly_t a, snek_poly_t b)
 	case snek_string:
 		return !strcmp(snek_poly_to_string(a), snek_poly_to_string(b));
 	case snek_list:
-		return snek_list_equal(snek_poly_to_list(a), snek_poly_to_list(b));
+		return snek_list_equal(snek_poly_to_list(a), snek_poly_to_list(b), is);
 	default:
 		return false;
 	}
