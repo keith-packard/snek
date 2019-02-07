@@ -444,8 +444,11 @@ extern const snek_mem_t snek_compile_mem;
 #define snek_error_name snek_error
 #endif
 
-void
+snek_poly_t
 snek_error_name(const char *format, ...);
+
+snek_poly_t
+snek_error_range(snek_soffset_t o);
 
 #if SNEK_DEBUG
 void
@@ -525,10 +528,10 @@ snek_list_t *
 snek_list_times(snek_list_t *a, snek_soffset_t count);
 
 snek_poly_t *
-snek_list_ref(snek_list_t *list, snek_soffset_t o);
+snek_list_ref(snek_list_t *list, snek_soffset_t o, bool report_error);
 
 snek_poly_t
-snek_list_get(snek_list_t *list, snek_soffset_t i);
+snek_list_get(snek_list_t *list, snek_soffset_t i, bool report_error);
 
 bool
 snek_list_equal(snek_list_t *a, snek_list_t *b);
@@ -696,7 +699,7 @@ char *
 snek_string_make(char c);
 
 snek_poly_t
-snek_string_get(char *string, snek_soffset_t i);
+snek_string_get(char *string, snek_soffset_t i, bool report_error);
 
 snek_poly_t
 snek_string_cat(char *a, char *b);

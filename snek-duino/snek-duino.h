@@ -32,20 +32,20 @@
 #define memcpy(a,b,c) memmove(a,b,c)
 
 #define snek_error_name snek_internal_error
-#define snek_error(fmt, args...) do {				\
+#define snek_error(fmt, args...) ({				\
 		static const char PROGMEM __fmt__[] = (fmt);	\
 		snek_internal_error(__fmt__, ## args);		\
-	} while (0)
+	})
 
-#define fprintf(file, fmt, args...) do {			\
+#define fprintf(file, fmt, args...) ({				\
 		static const char PROGMEM __fmt__[] = (fmt);	\
 		fprintf_P(file, __fmt__, ## args);		\
-	} while(0)
+	})
 
-#define sprintf_const(dst, fmt, args...) do {			\
+#define sprintf_const(dst, fmt, args...) ({			\
 		static const char PROGMEM __fmt__[] = (fmt);	\
 		sprintf_P(dst, __fmt__, ##args);		\
-	} while(0)
+	})
 
 #define SNEK_BUILTIN_NAMES_DECLARE(n) 	PROGMEM n
 #define SNEK_BUILTIN_NAMES(a)		((uint8_t) pgm_read_byte(&snek_builtin_names[a]))

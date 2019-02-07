@@ -303,36 +303,51 @@ set_dir(uint8_t pin, uint8_t d)
 	}
 }
 
+static snek_poly_t
+snek_error_duino_pin(snek_poly_t a)
+{
+	return snek_error("invalid pin %p", a);
+}
+
 snek_poly_t
 snek_builtin_talkto(snek_poly_t a)
 {
 	snek_list_t *l;
+	uint8_t p, d;
+
 	switch (snek_poly_type(a)) {
 	case snek_float:
-		power_pin = dir_pin = snek_poly_get_soffset(a);
+		p = d = snek_poly_get_soffset(a);
 		break;
 	case snek_list:
 		l = snek_poly_to_list(a);
-		power_pin = snek_poly_get_soffset(snek_list_get(l, 0));
-		dir_pin = snek_poly_get_soffset(snek_list_get(l, 1));
+		p = snek_poly_get_soffset(snek_list_get(l, 0, true));
+		d = snek_poly_get_soffset(snek_list_get(l, 1, true));
 		break;
 	default:
-		break;
+		return snek_error_duino_pin(a);
 	}
-	if (power_pin >= NUM_PIN)
-		power_pin = 0;
-	if (dir_pin >= NUM_PIN)
-		dir_pin = 0;
-	set_dir(power_pin, 1);
-	set_dir(dir_pin, 1);
+	if (!snek_abort) {
+		if (p >= NUM_PIN)
+			return snek_error_duino_pin(a);
+		if (d >= NUM_PIN)
+			return snek_error_duino_pin(a);
+		set_dir(p, 1);
+		set_dir(d, 1);
+		power_pin = p;
+		dir_pin = d;
+	}
 	return a;
 }
 
 snek_poly_t
 snek_builtin_listento(snek_poly_t a)
 {
-	input_pin = snek_poly_get_soffset(a);
-	set_dir(input_pin, 0);
+	uint8_t p = snek_poly_get_soffset(a);
+	if (p >= NUM_PIN)
+		return snek_error_duino_pin(a);
+	set_dir(p, 0);
+	input_pin = p;
 	return a;
 }
 

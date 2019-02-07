@@ -125,19 +125,20 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 }
 
 snek_poly_t *
-snek_list_ref(snek_list_t *list, snek_soffset_t o)
+snek_list_ref(snek_list_t *list, snek_soffset_t o, bool report_error)
 {
 	if (o < 0 || list->size <= (snek_offset_t) o) {
-		snek_error("index out of range: %d", o);
+		if (report_error)
+			snek_error_range(o);
 		return NULL;
 	}
 	return &snek_list_data(list)[o];
 }
 
 snek_poly_t
-snek_list_get(snek_list_t *list, snek_soffset_t o)
+snek_list_get(snek_list_t *list, snek_soffset_t o, bool report_error)
 {
-	snek_poly_t *p = snek_list_ref(list, o);
+	snek_poly_t *p = snek_list_ref(list, o, report_error);
 	if (p)
 		return *p;
 	return SNEK_NULL;

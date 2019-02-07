@@ -618,10 +618,10 @@ snek_in_step(snek_offset_t ip)
 
 	switch (snek_poly_type(array)) {
 	case snek_list:
-		value = snek_list_get(snek_poly_to_list(array), i);
+		value = snek_list_get(snek_poly_to_list(array), i, false);
 		break;
 	case snek_string:
-		value = snek_string_get(snek_poly_to_string(array), i);
+		value = snek_string_get(snek_poly_to_string(array), i, false);
 		break;
 	default:
 		snek_error("not iterable: %p", array);
@@ -674,10 +674,10 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 
 		switch (at) {
 		case snek_list:
-			ret = snek_list_get(snek_poly_to_list(a), bo);
+			ret = snek_list_get(snek_poly_to_list(a), bo, true);
 			break;
 		case snek_string:
-			ret = snek_string_get(snek_poly_to_string(a), bo);
+			ret = snek_string_get(snek_poly_to_string(a), bo, true);
 			break;
 		default:
 			break;
@@ -901,7 +901,7 @@ snek_assign(snek_id_t id, snek_op_t op)
 			}
 
 			snek_soffset_t	o = snek_poly_get_soffset(ip);
-			ref = snek_list_ref(l, o);
+			ref = snek_list_ref(l, o, true);
 			if (!ref)
 				return;
 		}

@@ -20,7 +20,7 @@ bool snek_abort;
 #define ERROR_FETCH_FORMAT_CHAR(a) (*(a))
 #endif
 
-void
+snek_poly_t
 snek_error_name(const char *format, ...)
 {
 	va_list		args;
@@ -75,6 +75,13 @@ snek_error_name(const char *format, ...)
 	}
 	putc('\n', stderr);
 	va_end(args);
+	return SNEK_ZERO;
+}
+
+snek_poly_t
+snek_error_range(snek_soffset_t o)
+{
+	return snek_error("index out of range: %d", o);
 }
 
 #if SNEK_DEBUG
