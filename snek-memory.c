@@ -142,36 +142,36 @@ static snek_offset_t	snek_note_list;
 static snek_offset_t	snek_top;
 
 /* Offset of an address within the pool. */
-static inline snek_offset_t pool_offset(void *addr) {
+static snek_offset_t pool_offset(void *addr) {
 	return ((uint8_t *) addr) - snek_pool;
 }
 
 /* Address of an offset within the pool */
-static inline void *pool_addr(snek_offset_t offset) {
+static void *pool_addr(snek_offset_t offset) {
 	return snek_pool + offset;
 }
 
-static inline snek_offset_t tag_byte(snek_offset_t offset) {
+static snek_offset_t tag_byte(snek_offset_t offset) {
 	return offset >> (SNEK_ALLOC_SHIFT + 3);
 }
 
-static inline uint8_t tag_bit(snek_offset_t offset) {
+static uint8_t tag_bit(snek_offset_t offset) {
 	return (offset >> SNEK_ALLOC_SHIFT) & 7;
 }
 
-static inline void mark(snek_offset_t offset) {
+static void mark(snek_offset_t offset) {
 	snek_busy[tag_byte(offset)] |= (1 << tag_bit(offset));
 }
 
-static inline void clear(snek_offset_t offset) {
+static void clear(snek_offset_t offset) {
 	snek_busy[tag_byte(offset)] &= ~(1 << tag_bit(offset));
 }
 
-static inline bool busy(snek_offset_t offset) {
+static bool busy(snek_offset_t offset) {
 	return (snek_busy[tag_byte(offset)] >> tag_bit(offset)) & 1;
 }
 
-static inline bool
+static bool
 note_list(snek_list_t *list_old, snek_list_t *list_new)
 {
 	if (!snek_list_noted(list_new)) {

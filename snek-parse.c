@@ -44,15 +44,9 @@ static snek_value_stack_p_t value_stack_p = 0;
 
 static uint8_t for_depth;
 
-static inline snek_token_val_t
-value_get(snek_value_stack_p_t pos)
-{
-	return value_stack[value_stack_p - pos];
-}
-
 //#define VALUE_DEBUG
 
-static inline snek_token_val_t
+static snek_token_val_t
 _value_pop(const char *file, int line)
 {
 	(void) file; (void) line;
@@ -68,7 +62,7 @@ _value_pop(const char *file, int line)
 	return value_stack[--value_stack_p];
 }
 
-static inline bool
+static bool
 _value_push(snek_token_val_t value, const char *file, int line)
 {
 	(void) file; (void) line;
@@ -81,7 +75,7 @@ _value_push(snek_token_val_t value, const char *file, int line)
 	return true;
 }
 
-static inline bool
+static bool
 _value_push_offset(snek_offset_t value, const char *file, int line)
 {
 	(void) file; (void) line;
@@ -91,7 +85,7 @@ _value_push_offset(snek_offset_t value, const char *file, int line)
 	return _value_push((snek_token_val_t) { .offset = value }, file, line);
 }
 
-static inline bool
+static bool
 _value_push_bool(bool value, const char *file, int line)
 {
 	(void) file; (void) line;
@@ -101,7 +95,7 @@ _value_push_bool(bool value, const char *file, int line)
 	return _value_push((snek_token_val_t) { .bools = value }, file, line);
 }
 
-static inline bool
+static bool
 _value_push_id(snek_id_t id, const char *file, int line)
 {
 	(void) file; (void) line;
@@ -122,7 +116,7 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define PARSE_STACK_SIZE 128
 #endif
 
-static inline token_t
+static token_t
 lex(void *lex_context)
 {
 	bool *skip_to_nl = lex_context;
