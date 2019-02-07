@@ -40,14 +40,14 @@ snek_string_catn(char *a, snek_offset_t aoff, snek_offset_t alen,
 {
 	char *new;
 	if (snek_is_pool_addr(a))
-		snek_string_stash(a);
+		snek_stack_push_string(a);
 	if (snek_is_pool_addr(b))
-		snek_string_stash(b);
+		snek_stack_push_string(b);
 	new = snek_alloc(alen + blen + 1);
 	if (snek_is_pool_addr(b))
-		b = snek_string_fetch();
+		b = snek_stack_pop_string();
 	if (snek_is_pool_addr(a))
-		a = snek_string_fetch();
+		a = snek_stack_pop_string();
 	if (new) {
 		memcpy(new, a + aoff, alen);
 		memcpy(new + alen, b + boff, blen);
@@ -66,9 +66,9 @@ snek_string_cat(char *a, char *b)
 char *
 snek_string_slice(char *a, snek_slice_t *slice)
 {
-	snek_string_stash(a);
+	snek_stack_push_string(a);
 	char	*r = snek_alloc(slice->len + 1);
-	a = snek_string_fetch();
+	a = snek_stack_pop_string();
 	if (!r)
 		return NULL;
 	snek_offset_t i = 0;
@@ -96,10 +96,10 @@ snek_buf_realloc(char **str_p, snek_offset_t add)
 	snek_offset_t len = old ? strlen(old) : 0;
 
 	if (old)
-		snek_string_stash(old);
+		snek_stack_push_string(old);
 	new = snek_alloc(len + add + 1);
 	if (old)
-		old = snek_string_fetch();
+		old = snek_stack_pop_string();
 	if (!new)
 		return NULL;
 	memcpy(new, old, len);
@@ -128,10 +128,10 @@ snek_buf_sprints(const char *s, void *closure)
 	bool	is_pool = snek_is_pool_addr(s);
 
 	if (is_pool)
-		snek_string_stash((char *) s);
+		snek_stack_push_string((char *) s);
 	new = snek_buf_realloc(str_p, len);
 	if (is_pool)
-		s = snek_string_fetch();
+		s = snek_stack_pop_string();
 	if (new)
 		memcpy(new, s, len);
 	return 0;
@@ -151,12 +151,12 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 
 	while (a[percent]) {
 		uint8_t next = snek_next_format(a + percent) + percent;
-		snek_poly_stash(poly);
-		snek_string_stash(a);
+		snek_stack_push(poly);
+		snek_stack_push_string(a);
 		result = snek_string_catn(result, 0, result ? strlen(result) : 0,
 					  a, percent, next-percent);
-		a = snek_string_fetch();
-		poly = snek_poly_fetch();
+		a = snek_stack_pop_string();
+		poly = snek_stack_pop();
 		percent = next;
 		if (a[percent] == '%') {
 			percent++;
@@ -176,15 +176,27 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 				snek_poly_t v = SNEK_ZERO;
 				if (o < size)
 					v = data[o++];
-				snek_poly_stash(poly);
-				snek_string_stash(a);
+				snek_stack_push(poly);
+				snek_stack_push_string(a);
 				snek_poly_format(&buf, v, format);
-				a = snek_string_fetch();
-				poly = snek_poly_fetch();
+				a = snek_stack_pop_string();
+				poly = snek_stack_pop();
 			}
 		}
 	}
 	return result;
+}
+
+void
+snek_stack_push_string(const char *s)
+{
+	snek_stack_push(snek_string_to_poly((char *) s));
+}
+
+char *
+snek_stack_pop_string(void)
+{
+	return snek_poly_to_string(snek_stack_pop());
 }
 
 static snek_offset_t

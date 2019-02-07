@@ -293,11 +293,11 @@ snek_code_add_string(char *string)
 	snek_offset_t s;
 	snek_offset_t strpos;
 
-	snek_string_stash(string);
+	snek_stack_push_string(string);
 	snek_code_add_op(snek_op_string);
 	strpos = snek_compile_size;
 	compile_extend(sizeof (snek_offset_t), NULL);
-	s = snek_pool_offset(snek_string_fetch());
+	s = snek_pool_offset(snek_stack_pop_string());
 	memcpy(snek_compile + strpos, &s, sizeof (snek_offset_t));
 }
 
@@ -438,9 +438,9 @@ snek_code_line(snek_code_t *code)
 }
 
 snek_poly_t	snek_stack[SNEK_STACK];
-snek_offset_t	snek_stackp = 0;
-static snek_poly_t 	snek_a = SNEK_ZERO;
-static snek_code_t	*snek_code;
+snek_offset_t	snek_stackp;
+snek_poly_t 	snek_a;
+snek_code_t	*snek_code;
 
 float
 snek_poly_get_float(snek_poly_t a)
@@ -634,9 +634,9 @@ snek_in_step(snek_offset_t ip)
 	/* Update value */
 	memcpy(&id, &snek_code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
 
-	snek_poly_stash(value);
+	snek_stack_push(value);
 	ref = snek_id_ref(id, true);
-	value = snek_poly_fetch();
+	value = snek_stack_pop();
 	if (!ref)
 		return false;
 	*ref = value;
@@ -958,23 +958,18 @@ snek_run_do(bool (*poly)(snek_poly_t *p))
 	snek_offset_t s;
 	for (s = 0; s < snek_stackp; s++)
 		poly(&snek_stack[s]);
-	poly(&snek_a);
 }
 
 void
 snek_run_mark(void)
 {
 	snek_run_do(snek_poly_mark_ref);
-	if (snek_code)
-		snek_mark_addr(&snek_code_mem, snek_code);
 }
 
 void
 snek_run_move(void)
 {
 	snek_run_do(snek_poly_move);
-	if (snek_code)
-		snek_move_addr(&snek_code_mem, (void **) &snek_code);
 }
 
 snek_poly_t
@@ -1174,7 +1169,9 @@ snek_code_run(snek_code_t *code_in)
 	snek_code = NULL;
 	snek_frame = NULL;
 	snek_stackp = 0;
-	return snek_a;
+	snek_poly_t ret = snek_a;
+	snek_a = SNEK_NULL;
+	return ret;
 }
 
 static snek_offset_t

@@ -44,15 +44,6 @@ snek_poly_type(snek_poly_t v)
 	return snek_is_float(v) ? snek_float : (v.u & 3);
 }
 
-static snek_offset_t
-snek_func_line(snek_func_t *func)
-{
-	snek_code_t	*code = snek_pool_ref(func->code);
-	if (code)
-		return snek_code_line(code);
-	return 0;
-}
-
 void
 snek_poly_print(FILE *file, snek_poly_t poly, char format)
 {

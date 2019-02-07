@@ -38,10 +38,10 @@ snek_func_push(snek_func_t *func, uint8_t nposition, uint8_t nnamed, snek_code_t
 		return false;
 	}
 
-	snek_poly_stash(snek_func_to_poly(func));
+	snek_stack_push(snek_func_to_poly(func));
 	uint8_t nparam = nposition + nnamed;
 	snek_frame_t *frame = snek_frame_push(code, ip, nparam);
-	func = snek_poly_to_func(snek_poly_fetch());
+	func = snek_poly_to_func(snek_stack_pop());
 	if (!frame)
 		return false;
 

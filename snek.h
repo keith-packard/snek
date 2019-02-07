@@ -290,6 +290,8 @@ extern const snek_builtin_t snek_builtins[];
 #endif
 extern snek_poly_t	snek_stack[SNEK_STACK];
 extern snek_offset_t	snek_stackp;
+extern snek_poly_t	snek_a;
+extern snek_code_t	*snek_code;
 
 static inline bool
 snek_is_nan(snek_poly_t p)
@@ -409,7 +411,7 @@ snek_soffset_t
 snek_stack_pop_soffset(void);
 
 float
-snek_stack_pop_float(void);;
+snek_stack_pop_float(void);
 
 void
 snek_stack_push(snek_poly_t p);
@@ -465,8 +467,6 @@ extern bool snek_abort;
 
 extern snek_frame_t	*snek_globals;
 extern snek_frame_t	*snek_frame;
-
-extern const snek_mem_t snek_variable_mem;
 
 bool
 snek_frame_mark_global(snek_offset_t name);
@@ -599,22 +599,16 @@ void *
 snek_alloc(snek_offset_t size);
 
 void
-snek_poly_stash(snek_poly_t p);
-
-snek_poly_t
-snek_poly_fetch(void);
-
-void
-snek_string_stash(const char *s);
+snek_stack_push_string(const char *s);
 
 char *
-snek_string_fetch(void);
+snek_stack_pop_string(void);
 
 void
-snek_list_stash(snek_list_t *list);
+snek_stack_push_list(snek_list_t *list);
 
 snek_list_t *
-snek_list_fetch(void);
+snek_stack_pop_list(void);
 
 void
 snek_code_stash(snek_code_t *code);

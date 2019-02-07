@@ -27,9 +27,6 @@ struct snek_root {
 	void			**addr;
 };
 
-#define SNEK_NUM_STASH	5
-static snek_poly_t		stash_poly[SNEK_NUM_STASH];
-static uint8_t			stash_poly_ptr;
 static snek_code_t		*stash_code;
 
 #ifndef SNEK_ROOT_DECLARE
@@ -56,28 +53,16 @@ static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
 		.addr = (void **) (void *) &stash_code,
 	},
 	{
+		.type = &snek_code_mem,
+		.addr = (void **) (void *) &snek_code,
+	},
+	{
+		.type = NULL,
+		.addr = (void **) (void *) &snek_a,
+	},
+	{
 		.type = &snek_compile_mem,
 		.addr = (void **) (void *) &snek_compile,
-	},
-	{
-		.type = NULL,
-		.addr = (void **) (void *) &stash_poly[0]
-	},
-	{
-		.type = NULL,
-		.addr = (void **) (void *) &stash_poly[1]
-	},
-	{
-		.type = NULL,
-		.addr = (void **) (void *) &stash_poly[2]
-	},
-	{
-		.type = NULL,
-		.addr = (void **) (void *) &stash_poly[3]
-	},
-	{
-		.type = NULL,
-		.addr = (void **) (void *) &stash_poly[4]
 	},
 };
 
@@ -161,10 +146,6 @@ static uint8_t tag_bit(snek_offset_t offset) {
 
 static void mark(snek_offset_t offset) {
 	snek_busy[tag_byte(offset)] |= (1 << tag_bit(offset));
-}
-
-static void clear(snek_offset_t offset) {
-	snek_busy[tag_byte(offset)] &= ~(1 << tag_bit(offset));
 }
 
 static bool busy(snek_offset_t offset) {
@@ -279,10 +260,11 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 	snek_note_list = 0;
 	visit_run();
 	for (i = 0; i < (snek_offset_t) SNEK_ROOT; i++) {
-		if (SNEK_ROOT_TYPE(&snek_root[i])) {
+		const snek_mem_t *mem = SNEK_ROOT_TYPE(&snek_root[i]);
+		if (mem) {
 			void **a = SNEK_ROOT_ADDR(&snek_root[i]), *v;
 			if (a == NULL || (v = *a) != NULL) {
-				visit_addr(SNEK_ROOT_TYPE(&snek_root[i]), a);
+				visit_addr(mem, a);
 			}
 		} else {
 			snek_poly_t *a = (snek_poly_t *) SNEK_ROOT_ADDR(&snek_root[i]), p;
@@ -308,14 +290,6 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 		debug_memory("done procesing list\n");
 	}
 }
-
-
-static const struct snek_mem * const SNEK_MEMS_DECLARE(snek_mems)[4] = {
-	[snek_list] = &snek_list_mem,
-	[snek_string] = &snek_string_mem,
-	[snek_func] = &snek_func_mem,
-	[snek_builtin] = &snek_null_mem,
-};
 
 static bool
 snek_mark_ref(const struct snek_mem *type, void **ref)
@@ -513,6 +487,13 @@ snek_mark_offset(const struct snek_mem *type, snek_offset_t offset)
 	return snek_mark_addr(type, snek_pool_ref(offset));
 }
 
+static const struct snek_mem * const SNEK_MEMS_DECLARE(snek_mems)[] = {
+	[snek_list] = &snek_list_mem,
+	[snek_string] = &snek_string_mem,
+	[snek_func] = &snek_func_mem,
+	[snek_builtin] = &snek_null_mem,
+};
+
 /*
  * Mark an object, unless it is a list. In that case, just set a bit
  * in the list note array; those will be marked in a separate pass to
@@ -661,13 +642,13 @@ snek_poly_move(snek_poly_t *ref)
 	orig_offset = pool_offset(addr);
 	offset = move_map(orig_offset);
 
-	const struct snek_mem *mem;
-
-	mem = SNEK_MEMS_FETCH(&snek_mems[type]);
-
 	/* inline snek_move to save stack space */
 	ret = snek_move_block_addr(&addr);
 	if (!ret) {
+		const struct snek_mem *mem;
+
+		mem = SNEK_MEMS_FETCH(&snek_mems[type]);
+
 		SNEK_MEM_MOVE(mem)(addr);
 		if (type == snek_list)
 			note_list(pool_addr(orig_offset), addr);
@@ -699,46 +680,6 @@ snek_alloc(snek_offset_t size)
 	debug_memory("Alloc %d size %d\n", snek_top, size);
 	snek_top += size;
 	return addr;
-}
-
-void
-snek_poly_stash(snek_poly_t p)
-{
-	stash_poly[stash_poly_ptr++] = p;
-}
-
-snek_poly_t
-snek_poly_fetch(void)
-{
-	snek_poly_t	p;
-
-	p = stash_poly[--stash_poly_ptr];
-	stash_poly[stash_poly_ptr] = SNEK_NULL;
-	return p;
-}
-
-void
-snek_string_stash(const char *s)
-{
-	snek_poly_stash(snek_string_to_poly((char *) s));
-}
-
-char *
-snek_string_fetch(void)
-{
-	return snek_poly_to_string(snek_poly_fetch());
-}
-
-void
-snek_list_stash(snek_list_t *l)
-{
-	snek_poly_stash(snek_list_to_poly(l));
-}
-
-snek_list_t *
-snek_list_fetch(void)
-{
-	return snek_poly_to_list(snek_poly_fetch());
 }
 
 void

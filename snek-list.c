@@ -30,9 +30,9 @@ snek_list_resize(snek_list_t *list, snek_offset_t size)
 
 	snek_offset_t alloc = snek_list_readonly(list) ? size : snek_list_alloc(size);
 
-	snek_list_stash(list);
+	snek_stack_push_list(list);
 	snek_poly_t *data = snek_alloc(alloc * sizeof (snek_poly_t));
-	list = snek_list_fetch();
+	list = snek_stack_pop_list();
 
 	if (!data)
 		return false;
@@ -74,9 +74,9 @@ snek_list_append(snek_list_t *list, snek_list_t *append)
 	if (snek_list_readonly(list))
 		return NULL;
 
-	snek_list_stash(append);
+	snek_stack_push_list(append);
 	list = snek_list_resize(list, list->size + append->size);
-	append = snek_list_fetch();
+	append = snek_stack_pop_list();
 
 	if (list)
 		memcpy((snek_poly_t *) snek_pool_ref(list->data) + oldsize,
@@ -88,11 +88,11 @@ snek_list_append(snek_list_t *list, snek_list_t *append)
 snek_list_t *
 snek_list_plus(snek_list_t *a, snek_list_t *b)
 {
-	snek_list_stash(a);
-	snek_list_stash(b);
+	snek_stack_push_list(a);
+	snek_stack_push_list(b);
 	snek_list_t *n = snek_list_make(a->size + b->size, snek_list_readonly(a));
-	b = snek_list_fetch();
-	a = snek_list_fetch();
+	b = snek_stack_pop_list();
+	a = snek_stack_pop_list();
 	if (!n)
 		return NULL;
 	memcpy(snek_pool_ref(n->data),
@@ -109,10 +109,10 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 {
 	if (count < 0)
 		count = 0;
-	snek_list_stash(a);
+	snek_stack_push_list(a);
 	snek_offset_t size = a->size;
 	snek_list_t *n = snek_list_make(size * count, snek_list_readonly(a));
-	a = snek_list_fetch();
+	a = snek_stack_pop_list();
 	if (!n)
 		return NULL;
 	snek_poly_t *src = snek_pool_ref(a->data);
@@ -179,9 +179,9 @@ snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 	if (snek_list_readonly(list) && snek_slice_identity(slice))
 	    return list;
 
-	snek_list_stash(list);
+	snek_stack_push_list(list);
 	snek_list_t *n = snek_list_make(slice->count, snek_list_readonly(list));
-	list = snek_list_fetch();
+	list = snek_stack_pop_list();
 	if (!n)
 		return NULL;
 	snek_offset_t i = 0;
@@ -190,6 +190,18 @@ snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 	for (snek_slice_start(slice); snek_slice_test(slice); snek_slice_step(slice))
 		ndata[i++] = data[slice->pos];
 	return n;
+}
+
+void
+snek_stack_push_list(snek_list_t *l)
+{
+	snek_stack_push(snek_list_to_poly(l));
+}
+
+snek_list_t *
+snek_stack_pop_list(void)
+{
+	return snek_poly_to_list(snek_stack_pop());
 }
 
 static snek_offset_t

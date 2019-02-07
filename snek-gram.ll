@@ -46,9 +46,9 @@ command		: stat
 				snek_poly_t	poly = snek_func_to_poly(func);
 				snek_id_t	id = value_pop().id;
 
-				snek_poly_stash(poly);
+				snek_stack_push(poly);
 				snek_poly_t *ref = snek_id_ref(id, true);
-				poly = snek_poly_fetch();
+				poly = snek_stack_pop();
 				if (ref)
 					*ref = poly;
 			}@
