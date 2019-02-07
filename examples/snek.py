@@ -23,7 +23,7 @@ snek = []
 grow = 0
 snak = 0
 lines = 25
-cols = 80
+cols = 40
 dx = 0
 dy = 0
 
@@ -119,23 +119,28 @@ def main():
         stdscr.refresh()
         time.sleep(.1)
         c = stdscr.getch()
+        ndx = dx
+        ndy = dy
         if c == ord('h'):
-            dx = -1
-            dy = 0
+            ndx = -1
+            ndy = 0
         elif c == ord('j'):
-            dx = 0
-            dy = 1
+            ndx = 0
+            ndy = 1
         elif c == ord('k'):
-            dx = 0
-            dy = -1
+            ndx = 0
+            ndy = -1
         elif c == ord('l'):
-            dx = 1
-            dy = 0
+            ndx = 1
+            ndy = 0
         elif c == ord('q') or c == ord('x'):
             done("quit")
         elif c == ord('p'):
             while stdscr.getch() != ord('p'):
                 time.sleep(.1)
+        if ndx != -dx and ndy != -dy:
+            dx = ndx
+            dy = ndy
         hit = move_snek()
         if hit == hit_wall:
             done("hit the wall")
