@@ -38,6 +38,14 @@ snek_float_to_poly(float f)
 	return (snek_poly_t) { .f = f };
 }
 
+static bool
+snek_is_float(snek_poly_t v)
+{
+	if ((v.u & 0xff000000) != 0xff000000 || v.u == SNEK_NAN_U || v.u == SNEK_NINF_U)
+		return true;
+	return false;
+}
+
 snek_type_t
 snek_poly_type(snek_poly_t v)
 {
@@ -117,10 +125,3 @@ snek_null_mark_move(void *addr)
 {
 	(void) addr;
 }
-
-const snek_mem_t SNEK_MEM_DECLARE(snek_null_mem) = {
-	.size = snek_null_size,
-	.mark = snek_null_mark_move,
-	.move = snek_null_mark_move,
-	SNEK_MEM_DECLARE_NAME("null")
-};

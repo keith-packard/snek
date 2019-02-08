@@ -14,7 +14,7 @@
 
 #include "snek.h"
 
-static inline snek_offset_t
+static snek_offset_t
 snek_func_line(snek_func_t *func)
 {
 	snek_code_t	*code = snek_pool_ref(func->code);

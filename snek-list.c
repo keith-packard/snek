@@ -14,7 +14,7 @@
 
 #include "snek.h"
 
-static inline snek_offset_t
+static snek_offset_t
 snek_list_alloc(snek_offset_t size)
 {
 	return size + (size >> 3) + (size < 9 ? 3 : 6);

@@ -152,6 +152,25 @@ static bool busy(snek_offset_t offset) {
 	return (snek_busy[tag_byte(offset)] >> tag_bit(offset)) & 1;
 }
 
+bool
+snek_is_pool_addr(const void *addr)
+{
+	const uint8_t *a = addr;
+	return (snek_pool <= a) && (a < snek_pool + SNEK_POOL);
+}
+
+static snek_offset_t
+snek_size_round(snek_offset_t size)
+{
+	return (size + (SNEK_ALLOC_ROUND - 1)) & ~(SNEK_ALLOC_ROUND - 1);
+}
+
+static snek_offset_t
+snek_size(const snek_mem_t *mem, void *addr)
+{
+	return snek_size_round(SNEK_MEM_SIZE(mem)(addr));
+}
+
 static bool
 note_list(snek_list_t *list_old, snek_list_t *list_new)
 {
@@ -257,7 +276,6 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 	snek_offset_t i;
 
 	memset(snek_busy, '\0', SNEK_BUSY_SIZE);
-	snek_note_list = 0;
 	visit_run();
 	for (i = 0; i < (snek_offset_t) SNEK_ROOT; i++) {
 		const snek_mem_t *mem = SNEK_ROOT_TYPE(&snek_root[i]);
@@ -491,7 +509,6 @@ static const struct snek_mem * const SNEK_MEMS_DECLARE(snek_mems)[] = {
 	[snek_list] = &snek_list_mem,
 	[snek_string] = &snek_string_mem,
 	[snek_func] = &snek_func_mem,
-	[snek_builtin] = &snek_null_mem,
 };
 
 /*

@@ -553,6 +553,9 @@ snek_lex(void);
 #define SNEK_COLLECT_INCREMENTAL	1
 
 bool
+snek_is_pool_addr(const void *addr);
+
+bool
 snek_poly_mark(snek_poly_t p);
 
 bool
@@ -735,14 +738,6 @@ snek_slice_identity(snek_slice_t *slice)
 	return slice->start == 0 && slice->end == slice->len && slice->stride == 1;
 }
 
-static inline bool
-snek_is_float(snek_poly_t v)
-{
-	if ((v.u & 0xff000000) != 0xff000000 || v.u == SNEK_NAN_U || v.u == SNEK_NINF_U)
-		return true;
-	return false;
-}
-
 static inline snek_poly_t
 snek_offset_to_poly(snek_offset_t offset, snek_type_t type)
 {
@@ -759,24 +754,6 @@ static inline float
 snek_poly_to_float(snek_poly_t v)
 {
 	return v.f;
-}
-
-static inline bool
-snek_is_pool_addr(const void *addr) {
-	const uint8_t *a = addr;
-	return (snek_pool <= a) && (a < snek_pool + SNEK_POOL);
-}
-
-static inline snek_offset_t
-snek_size_round(snek_offset_t size)
-{
-	return (size + (SNEK_ALLOC_ROUND - 1)) & ~(SNEK_ALLOC_ROUND - 1);
-}
-
-static inline snek_offset_t
-snek_size(const snek_mem_t *mem, void *addr)
-{
-	return snek_size_round(SNEK_MEM_SIZE(mem)(addr));
 }
 
 static inline snek_poly_t
