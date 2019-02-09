@@ -205,14 +205,16 @@ snek_frame_mark(void *addr)
 		debug_memory("\t\tframe mark vars %d code %d prev %d\n",
 			     f->variables, f->code, f->prev);
 		snek_offset_t i;
-		for (i = 0; i < f->nvariables; i++)
-			if (!snek_is_global(f->variables[i].value))
-				snek_poly_mark(f->variables[i].value);
+		for (i = 0; i < f->nvariables; i++) {
+			snek_poly_t v = f->variables[i].value;
+			if (!snek_is_global(v))
+				snek_poly_mark(v);
+		}
 		if (f->code)
 			snek_mark_offset(&snek_code_mem, f->code);
-		if (!f->prev || snek_mark_block_offset(&snek_frame_mem, f->prev))
-			break;
 		f = snek_pool_ref(f->prev);
+		if (!f || snek_mark_block_addr(&snek_frame_mem, f))
+			break;
 	}
 }
 

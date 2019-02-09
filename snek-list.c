@@ -222,7 +222,7 @@ snek_list_mark(void *addr)
 		snek_poly_t *data = snek_pool_ref(list->data);
 		snek_mark_blob(data, list->alloc * sizeof (snek_poly_t));
 		for (snek_offset_t i = 0; i < list->size; i++)
-			snek_poly_mark(data[i]);
+			snek_poly_mark_ref(&data[i]);
 	}
 }
 

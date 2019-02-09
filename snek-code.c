@@ -1209,14 +1209,9 @@ code_move(uint8_t *code, snek_offset_t size)
 
 	while (ip < size) {
 		snek_op_t op = code[ip++] & ~snek_op_push;
-		snek_offset_t o, p;
 		switch (op) {
 		case snek_op_string:
-			memcpy(&o, &code[ip], sizeof (snek_offset_t));
-			p = o;
-			snek_move_block_offset(&p);
-			if (o != p)
-				memcpy(&code[ip], &p, sizeof (snek_offset_t));
+			snek_move_block_offset((snek_offset_t *) &code[ip]);
 			break;
 		default:
 			break;
