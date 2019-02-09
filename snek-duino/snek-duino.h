@@ -15,7 +15,10 @@
 #ifndef _SNECK_DUINO_H_
 #define _SNECK_DUINO_H_
 
+#include <avr/io.h>
+#include <util/delay.h>
 #include <avr/pgmspace.h>
+
 #define SNEK_POOL	1024
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
@@ -94,6 +97,14 @@ avr_snek_builtin_names_len(const char *a)
 #define SNEK_MEM_MOVE(m)	((void (*)(void *addr)) pgm_read_word(&(m)->move))
 
 #define SNEK_MEMS_DECLARE(n)	PROGMEM n
-#define SNEK_MEMS_FETCH(a)	((const struct snek_mem *) pgm_read_word(a))
+
+void
+snek_uart_init(void);
+
+int
+snek_uart_putchar(char c, FILE *stream);
+
+int
+snek_uart_getchar(FILE *stream);
 
 #endif /* _SNEK_DUINO_H_ */
