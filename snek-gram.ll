@@ -162,43 +162,27 @@ compound-stat	: if-stat
 		| while-stat
 		| for-stat
 		;
-if-stat		: if suite elif-stats
-			@{
-				snek_offset_t elif_off = value_pop().offset;
-				snek_offset_t if_off = value_pop().offset;
-				snek_code_patch_branch(if_off, elif_off);
-				snek_code_patch_forward(if_off, snek_compile_size, snek_forward_if, snek_code_current());
-			}@
-		;
-if		: IF expr COLON
-			@{
-				snek_code_add_op_offset(snek_op_branch_false, 0);
-				value_push_offset(snek_compile_prev);
-			}@
-		;
-elif-stats	: elif elif_expr suite elif-stats
+if-stat		: IF if-expr suite elif-stats
 			@{
 				snek_offset_t elif_stats_off = value_pop().offset;
-				snek_offset_t elif_expr_off = value_pop().offset;
-				snek_offset_t elif_off = value_pop().offset;
-				snek_code_patch_branch(elif_expr_off, elif_stats_off);
-				value_push_offset(elif_off);
+				snek_offset_t if_expr_off = value_pop().offset;
+				snek_code_patch_branch(if_expr_off, elif_stats_off);
+				snek_code_patch_forward(if_expr_off, snek_compile_size,
+							snek_forward_if, snek_code_current());
 			}@
-		| else-stat
 		;
-elif		: ELIF
+elif-stats	: ELIF
 			@{
 				snek_code_add_forward(snek_forward_if);
 				value_push_offset(snek_code_current());
 			}@
-		;
-elif_expr	: expr COLON
+		  if-expr suite elif-stats
 			@{
-				snek_code_add_op_offset(snek_op_branch_false, 0);
-				value_push_offset(snek_compile_prev);
+				snek_offset_t elif_stats_off = value_pop().offset;
+				snek_offset_t if_expr_off = value_pop().offset;
+				snek_code_patch_branch(if_expr_off, elif_stats_off);
 			}@
-		;
-else-stat	: ELSE COLON
+		| ELSE COLON
 			@{
 				snek_code_add_forward(snek_forward_if);
 				value_push_offset(snek_code_current());
@@ -206,7 +190,16 @@ else-stat	: ELSE COLON
 		  suite
 		|
 			@{
+				/* push 1 - elif_stats_off */
 				value_push_offset(snek_code_current());
+			}@
+		;
+if-expr		: expr COLON
+			@{
+				snek_code_add_op_offset(snek_op_branch_false, 0);
+
+				/* push 0 - if_expr_off */
+				value_push_offset(snek_compile_prev);
 			}@
 		;
 while-stat	:
@@ -398,8 +391,7 @@ expr-mul-p	: MULOP @ goto binop_first; @ expr-unary @ goto binop_second; @ expr-
 expr-unary	: LNOT @ goto unop_first; @ expr-unary @ goto unop_second; @
 		| MINUS
 			@{
-				snek_token_val.op = snek_op_uminus;
-				goto unop_first;
+				value_push((snek_token_val_t) { .op = snek_op_uminus});
 			}@
 		  expr-unary @ goto unop_second; @
 		| PLUS expr-unary
