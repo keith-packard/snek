@@ -22,12 +22,13 @@ def down():
     for i in range(1,0,-0.001):
         setpower(i)
 
-def blink(n):
+def blink():
     talkto(led)
     setpower(0)
     on()
-    for i in range(n):
+    while True:
         up()
         down()
-    off()
+
+blink()
 

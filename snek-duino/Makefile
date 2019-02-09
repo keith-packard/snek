@@ -15,6 +15,7 @@
 SNEK_ROOT = ..
 SNEK_LOCAL_SRC = \
 	snek-duino.c \
+	snek-duino-eeprom.c \
 	snek-duino-serial.c
 
 SNEK_LOCAL_INC = snek-duino.h

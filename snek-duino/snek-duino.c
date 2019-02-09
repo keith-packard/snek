@@ -62,15 +62,28 @@ port_init(void)
 	memset(power, 0xff, NUM_PIN);
 }
 
+FILE snek_duino_file = FDEV_SETUP_STREAM(snek_uart_putchar, snek_eeprom_getchar, _FDEV_SETUP_RW);
+
+#include <avr/wdt.h>
+
 int
 main (void)
 {
+	MCUSR = 0;
+	wdt_disable();
 	snek_uart_init();
+	stderr = stdout = stdin = &snek_duino_file;
 	port_init();
-	fprintf(stdout, "Welcome to Snek\n");
-	snek_print_vals = true;
 	for (;;)
 		snek_parse();
+}
+
+snek_poly_t
+snek_builtin_reset(void)
+{
+	wdt_enable(WDTO_15MS);
+	for(;;);
+	return SNEK_ZERO;
 }
 
 static volatile uint8_t *
@@ -88,9 +101,7 @@ pin_reg(uint8_t pin)
 {
 	if (pin < 8)
 		return &PIND;
-	if (pin < 14)
-		return &PINB;
-	return &PINC;
+	return &PINB;
 }
 
 static volatile uint8_t *
@@ -186,46 +197,46 @@ snek_error_duino_pin(snek_poly_t a)
 	return snek_error("invalid pin %p", a);
 }
 
+static uint8_t
+snek_poly_get_pin(snek_poly_t a)
+{
+	snek_soffset_t p = snek_poly_get_soffset(a);
+	if (p < 0 || NUM_PIN <= p)
+		snek_error_duino_pin(a);
+	return p;
+}
+
 snek_poly_t
 snek_builtin_talkto(snek_poly_t a)
 {
 	snek_list_t *l;
 	uint8_t p, d;
 
-	switch (snek_poly_type(a)) {
-	case snek_float:
-		p = d = snek_poly_get_soffset(a);
-		break;
-	case snek_list:
+	if (snek_poly_type(a) == snek_list) {
 		l = snek_poly_to_list(a);
-		p = snek_poly_get_soffset(snek_list_get(l, 0, true));
-		d = snek_poly_get_soffset(snek_list_get(l, 1, true));
-		break;
-	default:
-		return snek_error_duino_pin(a);
+		p = snek_poly_get_pin(snek_list_get(l, 0, true));
+		d = snek_poly_get_pin(snek_list_get(l, 1, true));
+	} else {
+		p = d = snek_poly_get_pin(a);
 	}
 	if (!snek_abort) {
-		if (p >= NUM_PIN)
-			return snek_error_duino_pin(a);
-		if (d >= NUM_PIN)
-			return snek_error_duino_pin(a);
 		set_dir(p, 1);
 		set_dir(d, 1);
 		power_pin = p;
 		dir_pin = d;
 	}
-	return a;
+	return SNEK_ZERO;
 }
 
 snek_poly_t
 snek_builtin_listento(snek_poly_t a)
 {
-	uint8_t p = snek_poly_get_soffset(a);
-	if (p >= NUM_PIN)
-		return snek_error_duino_pin(a);
-	set_dir(p, 0);
-	input_pin = p;
-	return a;
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort) {
+		set_dir(p, 0);
+		input_pin = p;
+	}
+	return SNEK_ZERO;
 }
 
 static bool
@@ -350,7 +361,7 @@ snek_poly_t
 snek_builtin_time_sleep(snek_poly_t a)
 {
 	snek_soffset_t o = snek_poly_get_float(a) * 100.0f;
-	while (o-- >= 0)
+	while (o-- >= 0 && !snek_abort)
 		_delay_ms(10);
 	return SNEK_ONE;
 }

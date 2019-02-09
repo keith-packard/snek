@@ -23,7 +23,7 @@
 #define SNEK_POOL	1024
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
-#define VALUE_STACK_SIZE	8
+#define VALUE_STACK_SIZE	16
 #define PARSE_STACK_SIZE	64
 #define SNEK_STACK		16
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
@@ -107,5 +107,13 @@ snek_uart_putchar(char c, FILE *stream);
 
 int
 snek_uart_getchar(FILE *stream);
+
+int
+snek_eeprom_getchar(FILE *stream);
+
+char
+snek_uart_getch(void);
+
+extern FILE snek_duino_file;
 
 #endif /* _SNEK_DUINO_H_ */

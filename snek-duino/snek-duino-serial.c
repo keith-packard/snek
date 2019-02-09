@@ -50,9 +50,11 @@ static bool ring_mostly_full(uart_ring_t *ring)
 	return ring->count >= (RINGSIZE / 2);
 }
 
-static uint8_t
+static int
 ring_get(uart_ring_t *ring)
 {
+	if (ring_empty(ring))
+		return -1;
 	uint8_t c = ring->buf[ring->read];
 	ring->read = (ring->read + 1) & (RINGSIZE - 1);
 	ring->count--;
@@ -88,10 +90,13 @@ _snek_uart_tx_start(void)
 				c = 'q' & 0x1f;
 			else
 				c = 's' & 0x1f;
-		} else if (!ring_empty(&tx_ring)) {
-			c = ring_get(&tx_ring);
-		} else
-			return;
+		} else {
+			int ic;
+			ic = ring_get(&tx_ring);
+			if (ic == -1)
+				return;
+			c = ic;
+		}
 		UDR0 = c;
 		UCSR0B |= (1 << UDRIE0);
 	}
@@ -137,21 +142,20 @@ ISR(USART_RX_vect)
 	_snek_uart_xoff();
 }
 
-static char
-snek_uart_getch(bool wait)
+char
+snek_uart_getch(void)
 {
+	int c;
 	for (;;) {
 		cli();
-		if (!ring_empty(&rx_ring)) {
-			char c = ring_get(&rx_ring);
-			_snek_uart_xon();
-			sei();
-			return c;
-		}
+		c = ring_get(&rx_ring);
+		if (c != -1)
+			break;
 		sei();
-		if (!wait)
-			return -1;
 	}
+	_snek_uart_xon();
+	sei();
+	return c;
 }
 
 #define RX_LINEBUF	80
@@ -217,7 +221,7 @@ snek_uart_getchar(FILE *stream)
 		snek_uart_puts("> ");
 		used = avail = 0;
 		for (;;) {
-			uint8_t c = snek_uart_getch(true);
+			uint8_t c = snek_uart_getch();
 
 			switch (c)
 			{
@@ -253,8 +257,6 @@ snek_uart_getchar(FILE *stream)
 	return buf[used++];
 }
 
-FILE snek_uart_str = FDEV_SETUP_STREAM(snek_uart_putchar, snek_uart_getchar, _FDEV_SETUP_RW);
-
 void
 snek_uart_init(void)
 {
@@ -278,7 +280,6 @@ snek_uart_init(void)
 		  (1 << TXEN0) |
 		  (0 << UCSZ02) |
 		  (0 << TXB80));
-	_snek_uart_tx_start();
-	stderr = stdout = stdin = &snek_uart_str;
+	snek_uart_puts("Welcome to Snek\n");
 }
 
