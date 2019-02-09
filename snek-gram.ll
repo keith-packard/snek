@@ -14,16 +14,15 @@
 start		: command start
 		|
 		;
-command		: stat
+command		: @{ snek_print_val = snek_print_vals; }@ stat
 			@{
 				snek_code_t *code = snek_code_finish();
 				snek_poly_t p = snek_code_run(code);
 				if (snek_abort)
 					return parse_return_error;
-				if (snek_print_val && snek_print_vals) {
+				if (snek_print_val) {
 					snek_poly_print(stdout, p, 'r');
 					putchar('\n');
-					snek_print_val = false;
 				}
 			}@
 		| DEF
@@ -91,9 +90,8 @@ opt-stats	: stat opt-stats
 		|
 		;
 stat		: simple-stat
-			@{ snek_print_val = true; }@
-		| compound-stat
-		| NL
+		| @{ snek_print_val = false; }@ compound-stat
+		| @{ snek_print_val = false; }@ NL
 		;
 simple-stat	: small-stat small-stats-p nl
 		;

@@ -16,7 +16,7 @@
 #include <assert.h>
 
 bool snek_print_vals;
-bool snek_print_val;
+static bool snek_print_val;
 
 uint8_t snek_parse_nformal;
 snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
