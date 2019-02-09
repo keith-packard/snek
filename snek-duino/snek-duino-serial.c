@@ -18,29 +18,193 @@
 #define UART_BAUD  9600
 #define UART_BAUD_SCALE	(((F_CPU / (UART_BAUD * 16UL))) - 1)
 
-/*
- * Send character c down the UART Tx, wait until tx holding register
- * is empty.
- */
+#define RINGSIZE	16
+
+typedef volatile struct uart_ring {
+	uint8_t	read;
+	uint8_t	count;
+	uint8_t	buf[RINGSIZE];
+} uart_ring_t;
+
+static uart_ring_t	rx_ring, tx_ring;
+static volatile uint8_t rx_flow;
+
+/* Start at EMPTY state so we send a ^Q at startup time */
+#define FLOW_EMPTY	0
+#define FLOW_RUNNING	1
+#define FLOW_FULL	2
+#define FLOW_STOPPED	3
+
+static bool ring_full(uart_ring_t *ring)
+{
+	return ring->count == RINGSIZE;
+}
+
+static bool ring_empty(uart_ring_t *ring)
+{
+	return ring->count == 0;
+}
+
+static bool ring_mostly_full(uart_ring_t *ring)
+{
+	return ring->count >= (RINGSIZE / 2);
+}
+
+static uint8_t
+ring_get(uart_ring_t *ring)
+{
+	uint8_t c = ring->buf[ring->read];
+	ring->read = (ring->read + 1) & (RINGSIZE - 1);
+	ring->count--;
+	return c;
+}
+
+static bool
+ring_put(uart_ring_t *ring, uint8_t c)
+{
+	if (ring_full(ring))
+		return false;
+	uint8_t write = (ring->read + ring->count) & (RINGSIZE - 1);
+	ring->buf[write] = c;
+	ring->count++;
+	return true;
+}
+
+static void
+next_flow(void)
+{
+	rx_flow = (rx_flow + 1) & 3;
+}
+
+static void
+_snek_uart_tx_start(void)
+{
+	if ((UCSR0A & (1 << UDRE0))) {
+		uint8_t c;
+
+		if ((rx_flow & 1) == 0) {
+			next_flow();
+			if (rx_flow == FLOW_RUNNING)
+				c = 'q' & 0x1f;
+			else
+				c = 's' & 0x1f;
+		} else if (!ring_empty(&tx_ring)) {
+			c = ring_get(&tx_ring);
+		} else
+			return;
+		UDR0 = c;
+		UCSR0B |= (1 << UDRIE0);
+	}
+}
+
+static void
+_snek_uart_flow_do(void)
+{
+	next_flow();
+	_snek_uart_tx_start();
+}
+
+static void
+_snek_uart_xon(void)
+{
+	if (rx_flow == FLOW_STOPPED && ring_empty(&rx_ring))
+		_snek_uart_flow_do();
+}
+
+static void
+_snek_uart_xoff(void)
+{
+	if (rx_flow == FLOW_RUNNING && ring_mostly_full(&rx_ring))
+		_snek_uart_flow_do();
+}
+
+ISR(USART_UDRE_vect)
+{
+	UCSR0B &= ~(1 << UDRIE0);
+	_snek_uart_xon();
+	_snek_uart_tx_start();
+}
+
+ISR(USART_RX_vect)
+{
+	uint8_t	c = UDR0;
+
+	if (c == ('c' & 0x1f))
+		snek_abort = true;
+
+	ring_put(&rx_ring, c);
+
+	_snek_uart_xoff();
+}
+
+static char
+snek_uart_getch(bool wait)
+{
+	for (;;) {
+		cli();
+		if (!ring_empty(&rx_ring)) {
+			char c = ring_get(&rx_ring);
+			_snek_uart_xon();
+			sei();
+			return c;
+		}
+		sei();
+		if (!wait)
+			return -1;
+	}
+}
+
+#define RX_LINEBUF	80
+
+static void
+snek_uart_putch(char c)
+{
+	if (c == '\n')
+		snek_uart_putch('\r');
+	for (;;) {
+		cli();
+		if (ring_put(&tx_ring, c)) {
+			_snek_uart_tx_start();
+			sei();
+			return;
+		}
+		sei();
+	}
+}
+
 int
 snek_uart_putchar(char c, FILE *stream)
 {
 	(void) stream;
-	if (c == '\n')
-		snek_uart_putchar('\r', NULL);
-	while (!(UCSR0A & (1 << UDRE0)));
-	UDR0 = c;
+	snek_uart_putch(c);
 	return 0;
 }
 
-#define RX_BUFSIZE	128
+static void
+_snek_uart_puts(const char *PROGMEM string)
+{
+	char c;
+	while ((c = pgm_read_byte(string++)))
+		snek_uart_putch(c);
+}
+
+#define snek_uart_puts(string) ({ static const char PROGMEM __string__[] = (string); _snek_uart_puts(__string__); })
+
+static char buf[RX_LINEBUF];
+static uint8_t used, avail;
 
 static void
 snek_uart_backspace(void)
 {
-	snek_uart_putchar('\b', NULL);
-	snek_uart_putchar(' ', NULL);
-	snek_uart_putchar('\b', NULL);
+	avail--;
+	snek_uart_puts("\b \b");
+}
+
+static void
+snek_uart_addc(char c)
+{
+	buf[avail++] = c;
+	snek_uart_putch(c);
 }
 
 int
@@ -48,67 +212,45 @@ snek_uart_getchar(FILE *stream)
 {
 	(void) stream;
 
-	uint8_t c;
-	char *cp;
-	static char b[RX_BUFSIZE];
-	static char *rxp;
-
-	if (rxp == 0) {
-		snek_uart_putchar('>', NULL);
-		snek_uart_putchar(' ', NULL);
-		cp = b;
+	if (used == avail) {
+	restart:
+		snek_uart_puts("> ");
+		used = avail = 0;
 		for (;;) {
-			while ((UCSR0A & (1 << RXC0)) == 0);
-			c = UDR0;
-			/* behaviour similar to Unix stty ICRNL */
-			if (c == '\r')
-				c = '\n';
-			if (c == '\n')
-			{
-				*cp = c;
-				snek_uart_putchar(c, NULL);
-				rxp = b;
-				break;
-			}
+			uint8_t c = snek_uart_getch(true);
 
 			switch (c)
 			{
+			case '\r':
+			case '\n':
+				snek_uart_addc('\n');
+				break;
+			case 'c' & 0x1f:
+				snek_uart_puts("^C\n");
+				snek_abort = false;
+				goto restart;
 			case 'h' & 0x1f:
 			case 0x7f:
-				if (cp > b) {
+				if (avail)
 					snek_uart_backspace();
-					cp--;
-				}
-				break;
-
+				continue;
 			case 'u' & 0x1f:
-				while (cp > b) {
+				while (avail)
 					snek_uart_backspace();
-					cp--;
-				}
-				break;
+				continue;
 			case '\t':
 				c = ' ';
 			default:
 				if (c >= (uint8_t)' ') {
-					if (cp >= b + RX_BUFSIZE - 1)
-						snek_uart_putchar('\a', NULL);
-					else
-					{
-						*cp++ = c;
-						snek_uart_putchar(c, NULL);
-					}
-					continue;
+					if (avail < RX_LINEBUF-1)
+						snek_uart_addc(c);
 				}
+				continue;
 			}
+			break;
 		}
 	}
-
-	c = *rxp++;
-	if (c == '\n')
-		rxp = 0;
-
-	return c;
+	return buf[used++];
 }
 
 FILE snek_uart_str = FDEV_SETUP_STREAM(snek_uart_putchar, snek_uart_getchar, _FDEV_SETUP_RW);
@@ -121,13 +263,6 @@ snek_uart_init(void)
 	UCSR0A = ((1 << TXC0) |
 		  (0 << U2X0) |
 		  (0 << MPCM0));
-	UCSR0B = ((0 << RXCIE0) |
-		  (0 << TXCIE0) |
-		  (0 << UDRIE0) |
-		  (1 << RXEN0) |
-		  (1 << TXEN0) |
-		  (0 << UCSZ02) |
-		  (0 << TXB80));
 	UCSR0C = ((0 << UMSEL01) |
 		  (0 << UMSEL00) |
 		  (0 << UPM01) |
@@ -136,6 +271,14 @@ snek_uart_init(void)
 		  (1 << UCSZ00) |
 		  (1 << UCSZ01) |
 		  (0 << UCPOL0));
+	UCSR0B = ((1 << RXCIE0) |
+		  (0 << TXCIE0) |
+		  (0 << UDRIE0) |
+		  (1 << RXEN0) |
+		  (1 << TXEN0) |
+		  (0 << UCSZ02) |
+		  (0 << TXB80));
+	_snek_uart_tx_start();
 	stderr = stdout = stdin = &snek_uart_str;
 }
 

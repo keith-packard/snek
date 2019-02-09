@@ -18,6 +18,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+#include <avr/interrupt.h>
 
 #define SNEK_POOL	1024
 #define SNEK_DEBUG	0
