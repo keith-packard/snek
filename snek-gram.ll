@@ -28,11 +28,11 @@ command		: @{ snek_print_val = snek_print_vals; }@ stat
 		| DEF
 			@{
 				snek_parse_nformal = 0;
-				goto add_line;
+				snek_code_add_op_offset(snek_op_line, snek_line);
 			}@
 		  NAME
 			@{
-				value_push(snek_token_val);
+				value_push_id(snek_token_val.id);
 	 		}@
 		  OP opt-formals CP COLON suite
 			@{
@@ -240,7 +240,7 @@ while-else-stat	: ELSE COLON suite
 		;
 for-stat	: FOR NAME
 			@{
-				value_push(snek_token_val);
+				value_push_id(snek_token_val.id);
 			}@
 		  IN for-params suite
 			@{
@@ -281,7 +281,7 @@ for-params	: RANGE
 suite		: simple-stat
 		| nl INDENT
 			@{
-				value_push(snek_token_val);
+				value_push_indent(snek_token_val.indent);
 			}@
 		  stat opt-stats EXDENT
 			@{
@@ -329,7 +329,7 @@ expr-not	: expr-cmp
 		| NOT
 			@{
 			unop_first:
-				value_push(snek_token_val);
+				value_push_op(snek_token_val.op);
 			}@
 		  expr-not
 			@{
@@ -343,7 +343,7 @@ expr-cmp-p	: cmpop
 			@{
 			binop_first:
 				snek_code_set_push(snek_code_prev_insn());
-				value_push(snek_token_val);
+				value_push_op(snek_token_val.op);
 			}@
 		  expr-lor
 			@{
@@ -391,7 +391,7 @@ expr-mul-p	: MULOP @ goto binop_first; @ expr-unary @ goto binop_second; @ expr-
 expr-unary	: LNOT @ goto unop_first; @ expr-unary @ goto unop_second; @
 		| MINUS
 			@{
-				value_push((snek_token_val_t) { .op = snek_op_uminus});
+				value_push_op(snek_op_uminus);
 			}@
 		  expr-unary @ goto unop_second; @
 		| PLUS expr-unary
@@ -571,9 +571,7 @@ actuals-p	: COMMA expr actual-p actuals-p
 		;
 nl		: NL
 			@{
-				if (snek_compile_size) {
-			add_line:
+				if (snek_compile_size)
 					snek_code_add_op_offset(snek_op_line, snek_line);
-				}
 			}@
 		;
