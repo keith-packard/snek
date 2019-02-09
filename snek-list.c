@@ -206,14 +206,14 @@ snek_stack_pop_list(void)
 	return snek_poly_to_list(snek_stack_pop());
 }
 
-static snek_offset_t
+snek_offset_t
 snek_list_size(void *addr)
 {
 	(void) addr;
 	return sizeof (snek_list_t);
 }
 
-static void
+void
 snek_list_mark(void *addr)
 {
 	snek_list_t *list = addr;
@@ -226,7 +226,7 @@ snek_list_mark(void *addr)
 	}
 }
 
-static void
+void
 snek_list_move(void *addr)
 {
 	snek_list_t *list = addr;
@@ -238,10 +238,3 @@ snek_list_move(void *addr)
 			snek_poly_move(&data[i]);
 	}
 }
-
-const snek_mem_t SNEK_MEM_DECLARE(snek_list_mem) = {
-	.size = snek_list_size,
-	.mark = snek_list_mark,
-	.move = snek_list_move,
-	SNEK_MEM_DECLARE_NAME("list")
-};

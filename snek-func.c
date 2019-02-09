@@ -61,7 +61,7 @@ snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip)
 	return true;
 }
 
-static snek_offset_t
+snek_offset_t
 snek_func_size(void *addr)
 {
 	snek_func_t *func = addr;
@@ -69,7 +69,7 @@ snek_func_size(void *addr)
 	return (snek_offset_t) sizeof (snek_func_t) + func->nformal * (snek_offset_t) sizeof (snek_id_t);
 }
 
-static void
+void
 snek_func_mark(void *addr)
 {
 	snek_func_t *func = addr;
@@ -78,7 +78,7 @@ snek_func_mark(void *addr)
 		snek_mark_offset(&snek_code_mem, func->code);
 }
 
-static void
+void
 snek_func_move(void *addr)
 {
 	snek_func_t *func = addr;
@@ -86,10 +86,3 @@ snek_func_move(void *addr)
 	if (func->code)
 		snek_move_offset(&snek_code_mem, &func->code);
 }
-
-const snek_mem_t SNEK_MEM_DECLARE(snek_func_mem) = {
-	.size = snek_func_size,
-	.mark = snek_func_mark,
-	.move = snek_func_move,
-	SNEK_MEM_DECLARE_NAME("func")
-};

@@ -158,7 +158,7 @@ typedef struct snek_mem {
 	void		(*mark)(void *addr);
 	void		(*move)(void *addr);
 #ifdef SNEK_MEM_INCLUDE_NAME
-	char		name[];
+	char		name[16];
 #endif
 } snek_mem_t;
 
@@ -171,7 +171,6 @@ typedef struct snek_mem {
 
 #ifndef SNEK_MEMS_DECLARE
 #define SNEK_MEMS_DECLARE(n) n
-#define SNEK_MEMS_FETCH(a)	(*(a))
 #endif
 
 #ifdef SNEK_MEM_INCLUDE_NAME
@@ -499,7 +498,14 @@ snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip);
 snek_code_t *
 snek_func_pop(snek_offset_t *ip);
 
-extern const snek_mem_t snek_func_mem;
+snek_offset_t
+snek_func_size(void *addr);
+
+void
+snek_func_mark(void *addr);
+
+void
+snek_func_move(void *addr);
 
 /* snek-lex.l */
 
@@ -538,7 +544,14 @@ snek_list_imm(snek_offset_t size, bool readonly);
 snek_list_t *
 snek_list_slice(snek_list_t *list, snek_slice_t *slice);
 
-extern const snek_mem_t snek_list_mem;
+snek_offset_t
+snek_list_size(void *addr);
+
+void
+snek_list_mark(void *addr);
+
+void
+snek_list_move(void *addr);
 
 /* snek-lex.c */
 
@@ -580,7 +593,7 @@ bool
 snek_mark_offset(const struct snek_mem *type, snek_offset_t offset);
 
 bool
-snek_move_block_offset(snek_offset_t *ref);
+snek_move_block_offset(void *ref);
 
 bool
 snek_move_block_addr(void **ref);
@@ -620,6 +633,8 @@ snek_pool_ref(snek_offset_t offset);
 
 snek_offset_t
 snek_pool_offset(const void *addr);
+
+extern const struct snek_mem SNEK_MEMS_DECLARE(snek_mems)[];
 
 /* snek-name.c */
 
@@ -702,7 +717,11 @@ snek_string_slice(char *a, snek_slice_t *slice);
 char *
 snek_string_interpolate(char *a, snek_poly_t poly);
 
-extern const snek_mem_t snek_string_mem;
+snek_offset_t
+snek_string_size(void *addr);
+
+void
+snek_string_mark_move(void *addr);
 
 /* inlines */
 

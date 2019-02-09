@@ -199,22 +199,15 @@ snek_stack_pop_string(void)
 	return snek_poly_to_string(snek_stack_pop());
 }
 
-static snek_offset_t
+snek_offset_t
 snek_string_size(void *addr)
 {
 	char *string = addr;
 	return (snek_offset_t) strlen(string) + 1;
 }
 
-static void
+void
 snek_string_mark_move(void *addr)
 {
 	(void) addr;
 }
-
-const snek_mem_t SNEK_MEM_DECLARE(snek_string_mem) = {
-	.size = snek_string_size,
-	.mark = snek_string_mark_move,
-	.move = snek_string_mark_move,
-	SNEK_MEM_DECLARE_NAME("string")
-};
