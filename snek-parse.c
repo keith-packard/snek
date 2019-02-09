@@ -114,35 +114,7 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define PARSE_STACK_SIZE 128
 #endif
 
-static token_t
-lex(void *lex_context)
-{
-	bool *skip_to_nl = lex_context;
-
-	if (*skip_to_nl) {
-		token_t token;
-		*skip_to_nl = false;
-		snek_ignore_nl = 0;
-		for (;;) {
-			token = snek_lex();
-			switch(token) {
-			case END:
-				return END;
-			case NL:
-				if (snek_current_indent == 0)
-					break;
-				continue;
-			case EXDENT:
-				snek_current_indent = snek_token_val.indent;
-				continue;
-			default:
-				continue;
-			}
-			break;
-		}
-	}
-	return snek_lex();
-}
+#define lex(context) ({ (void) context; snek_lex(); })
 
 #define PARSE_ACTION_BOTTOM do {			\
 		if (snek_abort)				\
@@ -155,7 +127,6 @@ lex(void *lex_context)
 snek_parse_ret_t
 snek_parse(void)
 {
-	bool skip_to_nl = false;
 	snek_line = 1;
 
 	for (;;) {
@@ -165,7 +136,7 @@ snek_parse(void)
 		value_stack_p = 0;
 		for_depth = 0;
 
-		parse_return_t ret = parse(&skip_to_nl);
+		parse_return_t ret = parse(NULL);
 
 		switch (ret) {
 		case parse_return_success:
@@ -173,15 +144,33 @@ snek_parse(void)
 		case parse_return_end:
 			snek_error("Syntax error at end of file.");
 			return snek_parse_error;
-		case parse_return_syntax:
-			snek_error("Syntax error at \"%s\".", snek_lex_text);
-			skip_to_nl = true;
-			break;
 		case parse_return_error:
 		case parse_return_oom:
 			break;
+		case parse_return_syntax:
 		default:
-			skip_to_nl = true;
+			snek_error("Syntax error at \"%s\".", snek_lex_text);
+			{
+				token_t token;
+				snek_ignore_nl = 0;
+				for (;;) {
+					token = snek_lex();
+					switch(token) {
+					case END:
+						return END;
+					case NL:
+						if (snek_current_indent == 0)
+							break;
+						continue;
+					case EXDENT:
+						snek_current_indent = snek_token_val.indent;
+						continue;
+					default:
+						continue;
+					}
+					break;
+				}
+			}
 			break;
 		}
 	}
