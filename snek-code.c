@@ -982,8 +982,8 @@ snek_code_run(snek_code_t *code_in)
 	snek_offset_t	ip = 0;
 	snek_offset_t	o;
 
-	while (snek_code && !snek_abort) {
-		while (!snek_abort && ip < snek_code->size) {
+	while (snek_code) {
+		while (ip < snek_code->size) {
 #ifdef DEBUG_EXEC
 			snek_code_dump_instruction(snek_code, ip);
 #endif
@@ -1146,6 +1146,8 @@ snek_code_run(snek_code_t *code_in)
 			default:
 				break;
 			}
+			if (snek_abort)
+				goto abort;
 			if (push)
 				snek_stack_push(snek_a);
 #ifdef DEBUG_EXEC
@@ -1165,6 +1167,7 @@ snek_code_run(snek_code_t *code_in)
 				snek_stack_push(snek_a);
 		}
 	}
+abort:
 	/* Clear references to run objects */
 	snek_code = NULL;
 	snek_frame = NULL;
