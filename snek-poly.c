@@ -112,16 +112,3 @@ snek_poly_len(snek_poly_t a)
 		return 0;
 	}
 }
-
-snek_offset_t
-snek_null_size(void *addr)
-{
-	(void) addr;
-	return 0;
-}
-
-void
-snek_null_mark_move(void *addr)
-{
-	(void) addr;
-}

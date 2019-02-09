@@ -678,14 +678,6 @@ snek_poly_true(snek_poly_t a);
 snek_offset_t
 snek_poly_len(snek_poly_t a);
 
-snek_offset_t
-snek_null_size(void *addr);
-
-void
-snek_null_mark_move(void *addr);
-
-extern const snek_mem_t snek_null_mem;
-
 void
 snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format);
 

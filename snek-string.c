@@ -206,9 +206,15 @@ snek_string_size(void *addr)
 	return (snek_offset_t) strlen(string) + 1;
 }
 
+static void
+snek_string_mark_move(void *addr)
+{
+	(void) addr;
+}
+
 const snek_mem_t SNEK_MEM_DECLARE(snek_string_mem) = {
 	.size = snek_string_size,
-	.mark = snek_null_mark_move,
-	.move = snek_null_mark_move,
+	.mark = snek_string_mark_move,
+	.move = snek_string_mark_move,
 	SNEK_MEM_DECLARE_NAME("string")
 };
