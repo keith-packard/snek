@@ -21,16 +21,47 @@ snek_builtin_eeprom_write(void)
 	uint8_t c;
 	snek_offset_t	addr = 0;
 
-	while (addr < 1024) {
+	for (addr = 0; addr < 1024; addr++) {
 		c = snek_uart_getch();
-		if (c == '\r') c = '\n';
+		if (c == '\r')
+			c = '\n';
 		if (c == ('d' & 0x1f))
 			c = 0xff;
 		eeprom_write_byte((uint8_t *) addr, c);
 		if (c == 0xff)
 			break;
-		addr++;
 	}
+	return SNEK_ZERO;
+}
+
+snek_poly_t
+snek_builtin_eeprom_show(void)
+{
+	uint8_t c;
+	snek_offset_t	addr = 0;
+
+	for (addr = 0; addr < 1024; addr++) {
+		c = eeprom_read_byte((uint8_t *) addr);
+		if (c == 0xff)
+			break;
+		putc(c, stdout);
+	}
+	return SNEK_ZERO;
+}
+
+snek_poly_t
+snek_builtin_eeprom_load(void)
+{
+	snek_print_vals = false;
+	snek_duino_file.get = snek_eeprom_getchar;
+	return SNEK_ZERO;
+}
+
+snek_poly_t
+snek_builtin_eeprom_erase(void)
+{
+	if (eeprom_read_byte((uint8_t *) 0) != 0xff)
+		eeprom_write_byte((uint8_t *) 0, 0xff);
 	return SNEK_ZERO;
 }
 
