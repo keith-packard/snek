@@ -28,6 +28,7 @@ typedef volatile struct uart_ring {
 
 static uart_ring_t	rx_ring, tx_ring;
 static volatile uint8_t rx_flow;
+static volatile uint8_t	tx_flow;
 
 /* Start at EMPTY state so we send a ^Q at startup time */
 #define FLOW_EMPTY	0
@@ -81,7 +82,7 @@ next_flow(void)
 static void
 _snek_uart_tx_start(void)
 {
-	if ((UCSR0A & (1 << UDRE0))) {
+	if ((UCSR0A & (1 << UDRE0)) && !tx_flow) {
 		uint8_t c;
 
 		if ((rx_flow & 1) == 0) {
@@ -134,8 +135,18 @@ ISR(USART_RX_vect)
 {
 	uint8_t	c = UDR0;
 
-	if (c == ('c' & 0x1f))
+	switch (c) {
+	case 'c' & 0x1f:
 		snek_abort = true;
+		break;
+	case 's' & 0x1f:
+		tx_flow = true;
+		return;
+	case 'q' & 0x1f:
+		tx_flow = false;
+		_snek_uart_tx_start();
+		return;
+	}
 
 	ring_put(&rx_ring, c);
 
