@@ -27,9 +27,8 @@
 #define PARSE_STACK_SIZE	64
 #define SNEK_STACK		16
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
-#define PARSE_TABLE_FETCH_KEY(a) 	((parse_key_t) pgm_read_word(a))
-#define PARSE_TABLE_FETCH_TOKEN(a)	((token_t) pgm_read_byte(a))
-#define PARSE_TABLE_FETCH_PRODUCTION(a)	((uint8_t) pgm_read_byte(a))
+#define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
+#define PARSE_TABLE_FETCH_INDEX(a)	((uint8_t) pgm_read_byte(a))
 #define ERROR_FETCH_FORMAT_CHAR(a)	((char) pgm_read_byte(a))
 
 /* no sense linking both functions */
