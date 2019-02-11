@@ -13,15 +13,21 @@
 # General Public License for more details.
 #
 
-def test():
-    matches = 0
-    for y in range(2):
-        for x in range(10):
-            if x == y:
-                matches += 1
-                break
-        else:
-            break
-    return matches
+def fail(which):
+    print("fail %s" % which)
+    exit(1)
 
-if test() != 2: exit(1)
+def check(a,b,which):
+    if a > b or a < b:
+        fail(which)
+
+# 1.701412e38 is 0x7f000001. Make sure both of these values look like
+# numbers
+
+check (-1.701412e38, 2 * -8.50706e37, "-1.701412e38")
+check ( 1.701412e38, 2 *  8.50706e37, " 1.701412e38")
+
+# in 32-bit floats, these should be +/- inf
+
+check (2 * -1.701412e38, 4 * -8.50706e37, "2 * -1.701412e38")
+check (2 *  1.701412e38, 4 *  8.50706e37, "2 *  1.701412e38")

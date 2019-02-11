@@ -16,6 +16,7 @@ TESTS = \
 	andor.py \
 	list.py \
 	equal_is.py \
+	float.py \
 	for-array.py \
 	for-range.py \
 	for-string.py \
