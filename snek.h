@@ -39,7 +39,22 @@
 #define SNEK_POOL_EXTRA		0
 #define SNEK_ALLOC_SHIFT	2
 #define SNEK_ALLOC_ROUND	(1 << SNEK_ALLOC_SHIFT)
-#define SNEK_OFFSET_MASK	0x00fffffc
+
+/*
+ * Offsets are encoded in floats as NaN values with the sign bit
+ * set. That means the top 9 bits of the value are all one. There is
+ * one other value with that value, -inf, which is encoded as negative
+ * sign, all exponent bits one and a zero mantissa.
+ *
+ * This leaves us 23 bits for offsets. The bottom two bits of offsets
+ * are used as tags; allocations within the heap are rounded to a
+ * multiple of four bytes so that offsets will always have the bottom
+ * two bits clear.
+ */
+
+#define SNEK_OFFSET_MASK	0x007ffffcu
+#define SNEK_EXPONENT_MASK	0xff800000u
+#define SNEK_NINF		0xff800000u
 
 #if SNEK_POOL <= 65536
 typedef uint16_t	snek_offset_t;
@@ -275,7 +290,6 @@ extern const snek_builtin_t snek_builtins[];
 #define SNEK_BUILTIN_VARARGS	-1
 
 #define SNEK_NAN_U	0x7fffffffu
-#define SNEK_NINF_U	0xff800000u
 #define SNEK_NAN	((snek_poly_t) { .u = SNEK_NAN_U })
 #define SNEK_NULL_U	0xffffffffu
 #define SNEK_NULL	((snek_poly_t) { .u = SNEK_NULL_U })
@@ -752,7 +766,7 @@ snek_slice_identity(snek_slice_t *slice)
 static inline snek_poly_t
 snek_offset_to_poly(snek_offset_t offset, snek_type_t type)
 {
-	return (snek_poly_t) { .u = 0xff000000 | offset | type };
+	return (snek_poly_t) { .u = SNEK_EXPONENT_MASK | offset | type };
 }
 
 static inline snek_offset_t

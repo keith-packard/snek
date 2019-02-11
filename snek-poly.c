@@ -41,7 +41,7 @@ snek_float_to_poly(float f)
 static bool
 snek_is_float(snek_poly_t v)
 {
-	if ((v.u & 0xff000000) != 0xff000000 || v.u == SNEK_NAN_U || v.u == SNEK_NINF_U)
+	if ((v.u & SNEK_EXPONENT_MASK) != SNEK_EXPONENT_MASK || v.u == SNEK_NINF)
 		return true;
 	return false;
 }
