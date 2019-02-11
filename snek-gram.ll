@@ -111,6 +111,7 @@ assign-expr	: expr assign-expr-p
 		;
 assign-expr-p	: ASSIGN
 			@{
+				snek_print_val = false;
 				snek_offset_t prev_offset = snek_code_prev_insn();
 				uint8_t *prev = snek_code_at(prev_offset);
 				snek_id_t id;
