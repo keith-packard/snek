@@ -1122,6 +1122,9 @@ snek_code_run(snek_code_t *code_in)
 			case snek_op_branch:
 				memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				break;
+			case snek_op_forward:
+				snek_error("not in loop");
+				break;
 			case snek_op_range_start:
 				snek_range_start(ip);
 				ip += sizeof (snek_offset_t) + sizeof (uint8_t) + sizeof(snek_id_t);
