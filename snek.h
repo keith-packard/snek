@@ -36,7 +36,6 @@
 #ifndef SNEK_POOL
 #define SNEK_POOL		(32 * 1024)
 #endif
-#define SNEK_POOL_EXTRA		0
 #define SNEK_ALLOC_SHIFT	2
 #define SNEK_ALLOC_ROUND	(1 << SNEK_ALLOC_SHIFT)
 
@@ -329,7 +328,7 @@ snek_is_global(snek_poly_t p)
 extern uint8_t *snek_pool  __attribute__((aligned(SNEK_ALLOC_ROUND)));
 extern uint32_t	snek_pool_size;
 #else
-extern uint8_t	snek_pool[SNEK_POOL + SNEK_POOL_EXTRA] __attribute__((aligned(SNEK_ALLOC_ROUND)));
+extern uint8_t	snek_pool[SNEK_POOL] __attribute__((aligned(SNEK_ALLOC_ROUND)));
 #endif
 
 #include "snek-gram.h"

@@ -19,7 +19,7 @@
 uint8_t 	*snek_pool  __attribute__((aligned(SNEK_ALLOC_ROUND)));
 uint32_t	snek_pool_size;
 #else
-uint8_t	snek_pool[SNEK_POOL + SNEK_POOL_EXTRA] __attribute__((aligned(SNEK_ALLOC_ROUND)));
+uint8_t	snek_pool[SNEK_POOL] __attribute__((aligned(SNEK_ALLOC_ROUND)));
 #endif
 
 struct snek_root {
@@ -91,14 +91,14 @@ snek_mem_alloc(snek_poly_t pool_size)
 {
 	snek_poly_t	busy_size = (pool_size + 31) / 32;
 
-	snek_pool = malloc(pool_size + SNEK_POOL_EXTRA +
+	snek_pool = malloc(pool_size +
 				busy_size +
 				busy_size +
 				busy_size +
 				SNEK_NCHUNK_EST(pool_size) * sizeof (struct snek_chunk));
 	if (!snek_pool)
 		return false;
-	snek_busy = snek_pool + pool_size + SNEK_POOL_EXTRA;
+	snek_busy = snek_pool + pool_size;
 	snek_chunk = (struct snek_chunk *) (((uintptr_t)(snek_busy + busy_size) + 7) & ~7);
 	snek_pool_size = pool_size;
 	SNEK_NCHUNK = SNEK_NCHUNK_EST(pool_size);
