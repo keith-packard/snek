@@ -22,7 +22,9 @@ all: snek
 
 include $(SNEK_ROOT)/snek.defs
 
-CFLAGS=-DSNEK_MEM_INCLUDE_NAME -O0 -g -I. $(SNEK_CFLAGS)
+OPT=-O0
+
+CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS)
 
 snek: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) -lm
