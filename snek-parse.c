@@ -181,8 +181,8 @@ snek_parse(void)
 			snek_error("Syntax error at \"%s\".", snek_lex_text);
 			{
 				token_t token;
-				snek_ignore_nl = 0;
 				for (;;) {
+					snek_ignore_nl = 0;
 					token = snek_lex();
 					switch(token) {
 					case END:
