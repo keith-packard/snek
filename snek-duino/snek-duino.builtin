@@ -23,7 +23,7 @@ off, 0
 read, 0
 stopall, 0
 eeprom.write, 0
-eeprom.show, 0
+eeprom.show, -1
 eeprom.load, 0
 eeprom.erase, 0
 reset, 0

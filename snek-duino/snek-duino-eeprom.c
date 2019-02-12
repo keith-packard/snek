@@ -35,17 +35,23 @@ snek_builtin_eeprom_write(void)
 }
 
 snek_poly_t
-snek_builtin_eeprom_show(void)
+snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 {
 	uint8_t c;
 	snek_offset_t	addr = 0;
 
+	(void) nnamed;
+	(void) args;
+	if (nposition)
+		putc('b' & 0x1f, stdout);
 	for (addr = 0; addr < 1024; addr++) {
 		c = eeprom_read_byte((uint8_t *) addr);
 		if (c == 0xff)
 			break;
 		putc(c, stdout);
 	}
+	if (nposition)
+		putc('c' & 0x1f, stdout);
 	return SNEK_ZERO;
 }
 
