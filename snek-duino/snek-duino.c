@@ -71,8 +71,8 @@ main (void)
 {
 	MCUSR = 0;
 	wdt_disable();
-	snek_uart_init();
 	stderr = stdout = stdin = &snek_duino_file;
+	snek_uart_init();
 	port_init();
 	for (;;)
 		snek_parse();
@@ -184,7 +184,6 @@ set_dir(uint8_t pin, uint8_t d)
 
 	if (d) {
 		*r |= b;
-		*p &= ~b;
 	} else {
 		*r &= ~b;
 		*p |= b;
@@ -254,7 +253,7 @@ set_on(uint8_t pin)
 static void
 set_off(uint8_t pin)
 {
-	on_pins &= ~((uint32_t) 1) << pin;
+	on_pins &= ~(((uint32_t) 1) << pin);
 }
 
 static snek_poly_t
@@ -283,7 +282,10 @@ set_out(uint8_t pin)
 snek_poly_t
 snek_builtin_setpower(snek_poly_t a)
 {
-	power[power_pin] = (uint8_t) (snek_poly_get_float(a) * 255.0f + 0.5f);
+	float p = snek_poly_get_float(a);
+	if (p < 0.0f) p = 0.0f;
+	if (p > 1.0f) p = 1.0f;
+	power[power_pin] = (uint8_t) (p * 255.0f + 0.5f);
 	return set_out(power_pin);
 }
 
