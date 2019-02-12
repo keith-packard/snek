@@ -328,7 +328,7 @@ snek_lex(void)
 
 				if (c == '#') {
 					if (!comment())
-						RETURN(0);
+						RETURN(END);
 					++snek_lex_line;
 				} else {
 					break;
@@ -337,8 +337,7 @@ snek_lex(void)
 
 			snek_lex_midline = true;
 
-			if (c != SNEK_EOF)
-				unlexchar(c);
+			unlexchar(c);
 
 			if (snek_lex_indent > snek_current_indent) {
 				snek_token_val.indent = snek_current_indent;
