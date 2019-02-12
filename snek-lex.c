@@ -493,16 +493,6 @@ snek_lex(void)
 		} while (is_name(c, false));
 		unlexchar(c);
 
-		if (!strcmp(snek_lex_text, "True")) {
-			snek_token_val.number = 1.0;
-			RETURN(NUMBER);
-		}
-
-		if (!strcmp(snek_lex_text, "False")) {
-			snek_token_val.number = 0.0;
-			RETURN(NUMBER);
-		}
-
 		bool keyword;
 		snek_id_t id = snek_name_id(snek_lex_text, &keyword);
 
@@ -518,6 +508,15 @@ snek_lex(void)
 				break;
 			}
 			return id;
+		}
+
+		switch (id) {
+		case SNEK_BUILTIN_False:
+			snek_token_val.number = 0.0f;
+			RETURN(NUMBER);
+		case SNEK_BUILTIN_True:
+			snek_token_val.number = 1.0f;
+			RETURN(NUMBER);
 		}
 
 		snek_token_val.id = id;
