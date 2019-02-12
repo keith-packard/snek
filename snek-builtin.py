@@ -66,6 +66,7 @@ def load_builtins(filename):
     global headers
     f = open(filename)
     for line in f.readlines():
+        line = line.rstrip()
         if line[0] == '#':
             if len(line) > 1 and line[1] != ' ':
                 headers += [line]
@@ -127,7 +128,7 @@ def dump_decls(fp):
             for a in range(name.nformal):
                 print("snek_poly_t a%d" % a, end='', file=fp)
                 if a < name.nformal-1:
-                    print(", ", file=fp)
+                    print(", ", end='', file=fp)
         print(");", file=fp)
         print(file=fp)
 
