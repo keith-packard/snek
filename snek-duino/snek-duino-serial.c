@@ -15,7 +15,7 @@
 #include "snek.h"
 
 /* UART baud rate */
-#define UART_BAUD  9600
+#define UART_BAUD  38400
 #define UART_BAUD_SCALE	(((F_CPU / (UART_BAUD * 16UL))) - 1)
 
 #define RINGSIZE	16
@@ -29,6 +29,7 @@ typedef volatile struct uart_ring {
 static uart_ring_t	rx_ring, tx_ring;
 static volatile uint8_t rx_flow;
 static volatile uint8_t	tx_flow;
+static bool 		raw_mode;
 
 /* Start at EMPTY state so we send a ^Q at startup time */
 #define FLOW_EMPTY	0
@@ -98,8 +99,8 @@ _snek_uart_tx_start(void)
 				return;
 			c = ic;
 		}
-		UDR0 = c;
 		UCSR0B |= (1 << UDRIE0);
+		UDR0 = c;
 	}
 }
 
@@ -139,6 +140,12 @@ ISR(USART_RX_vect)
 	case 'c' & 0x1f:
 		snek_abort = true;
 		break;
+	case 'n' & 0x1f:
+		raw_mode = true;
+		return;
+	case 'o' & 0x1f:
+		raw_mode = false;
+		return;
 	case 's' & 0x1f:
 		tx_flow = true;
 		return;
@@ -212,21 +219,22 @@ static void
 snek_uart_backspace(void)
 {
 	avail--;
-	snek_uart_puts("\b \b");
+	if (!raw_mode)
+		snek_uart_puts("\b \b");
 }
 
 static void
 snek_uart_addc(char c)
 {
 	buf[avail++] = c;
-	snek_uart_putch(c);
+	if (!raw_mode)
+		snek_uart_putch(c);
 }
 
 int
 snek_uart_getchar(FILE *stream)
 {
 	(void) stream;
-
 	if (used == avail) {
 	restart:
 		snek_uart_puts("> ");
@@ -293,4 +301,3 @@ snek_uart_init(void)
 		  (0 << TXB80));
 	snek_uart_puts("Welcome to Snek\n");
 }
-
