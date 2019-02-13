@@ -77,31 +77,48 @@ typedef union {
 } snek_poly_t;
 
 typedef enum {
-	snek_op_plus = 0,
-	snek_op_minus = 1,
-	snek_op_times = 2,
-	snek_op_divide = 3,
-	snek_op_div = 4,
-	snek_op_mod = 5,
-	snek_op_pow = 6,
-	snek_op_land = 7,
-	snek_op_lor = 8,
-	snek_op_lxor = 9,
-	snek_op_lshift = 10,
-	snek_op_rshift = 11,
+	snek_op_eq = 0,
+	snek_op_ne = 1,
+	snek_op_gt = 2,
+	snek_op_lt = 3,
+	snek_op_ge = 4,
+	snek_op_le = 5,
 
-	snek_op_assign_plus = 12,
-	snek_op_assign_minus = 13,
-	snek_op_assign_times = 14,
-	snek_op_assign_divide = 15,
-	snek_op_assign_div = 16,
-	snek_op_assign_mod = 17,
-	snek_op_assign_pow = 18,
-	snek_op_assign_land = 19,
-	snek_op_assign_lor = 20,
-	snek_op_assign_lxor = 21,
-	snek_op_assign_lshift = 22,
-	snek_op_assign_rshift = 23,
+	snek_op_is = 6,
+	snek_op_is_not = 7,
+	snek_op_in = 8,
+	snek_op_not_in = 9,
+
+	snek_op_array = 10,
+
+	snek_op_plus = 11,
+	snek_op_minus = 12,
+	snek_op_times = 13,
+	snek_op_divide = 14,
+	snek_op_div = 15,
+	snek_op_mod = 16,
+	snek_op_pow = 17,
+	snek_op_land = 18,
+	snek_op_lor = 19,
+	snek_op_lxor = 20,
+	snek_op_lshift = 21,
+	snek_op_rshift = 22,
+
+	snek_op_assign_plus = 23,
+	snek_op_assign_minus = 24,
+	snek_op_assign_times = 25,
+	snek_op_assign_divide = 26,
+	snek_op_assign_div = 27,
+	snek_op_assign_mod = 28,
+	snek_op_assign_pow = 29,
+	snek_op_assign_land = 30,
+	snek_op_assign_lor = 31,
+	snek_op_assign_lxor = 32,
+	snek_op_assign_lshift = 33,
+	snek_op_assign_rshift = 34,
+
+	snek_op_assign = 35,
+	snek_op_assign_named = 36,
 
 	snek_op_num,
 	snek_op_int,
@@ -111,29 +128,12 @@ typedef enum {
 	snek_op_id,
 
 	snek_op_not,
-
-	snek_op_eq,
-	snek_op_ne,
-	snek_op_gt,
-	snek_op_lt,
-	snek_op_ge,
-	snek_op_le,
-
-	snek_op_is,
-	snek_op_is_not,
-	snek_op_in,
-	snek_op_not_in,
-
 	snek_op_uminus,
 	snek_op_lnot,
 
 	snek_op_call,
 
-	snek_op_array,
 	snek_op_slice,
-
-	snek_op_assign,
-	snek_op_assign_named,
 
 	snek_op_global,
 
@@ -145,9 +145,9 @@ typedef enum {
 	snek_op_range_step,
 	snek_op_in_step,
 
-	snek_op_nop,
-
 	snek_op_line,
+
+	snek_op_nop,
 
 	snek_op_push = 0x80,
 } __attribute__((packed)) snek_op_t;

@@ -730,6 +730,12 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			case snek_op_lxor:
 				af = (float) ((int32_t) af ^ (int32_t) bf);
 				break;
+			case snek_op_lshift:
+				af = (float) ((int32_t) af << (int32_t) bf);
+				break;
+			case snek_op_rshift:
+				af = (float) ((int32_t) af >> (int32_t) bf);
+				break;
 			default:
 				break;
 			}
@@ -991,6 +997,56 @@ snek_code_run(snek_code_t *code_in)
 			bool push = (op & snek_op_push) != 0;
 			op &= ~snek_op_push;
 			switch(op) {
+			case snek_op_eq:
+			case snek_op_ne:
+			case snek_op_gt:
+			case snek_op_lt:
+			case snek_op_ge:
+			case snek_op_le:
+
+			case snek_op_is:
+			case snek_op_is_not:
+			case snek_op_in:
+			case snek_op_not_in:
+
+			case snek_op_array:
+
+			case snek_op_plus:
+			case snek_op_minus:
+			case snek_op_times:
+			case snek_op_divide:
+			case snek_op_div:
+			case snek_op_mod:
+			case snek_op_pow:
+			case snek_op_land:
+			case snek_op_lor:
+			case snek_op_lxor:
+			case snek_op_lshift:
+			case snek_op_rshift:
+				snek_a = snek_binary(snek_stack_pick(0), op, snek_a, false);
+				snek_stack_drop(1);
+				break;
+
+			case snek_op_assign_plus:
+			case snek_op_assign_minus:
+			case snek_op_assign_times:
+			case snek_op_assign_divide:
+			case snek_op_assign_div:
+			case snek_op_assign_mod:
+			case snek_op_assign_pow:
+			case snek_op_assign_land:
+			case snek_op_assign_lor:
+			case snek_op_assign_lxor:
+			case snek_op_assign_lshift:
+			case snek_op_assign_rshift:
+
+			case snek_op_assign:
+			case snek_op_assign_named:
+				memcpy(&id, &snek_code->code[ip], sizeof (snek_id_t));
+				ip += sizeof (snek_id_t);
+				snek_assign(id, op);
+				break;
+
 			case snek_op_num:
 				memcpy(&snek_a.f, &snek_code->code[ip], sizeof(float));
 				ip += sizeof(float);
@@ -1030,29 +1086,8 @@ snek_code_run(snek_code_t *code_in)
 			case snek_op_not:
 				snek_a = snek_bool_to_poly(!snek_poly_true(snek_a));
 				break;
-			case snek_op_plus:
-			case snek_op_minus:
-			case snek_op_times:
-			case snek_op_divide:
-			case snek_op_div:
-			case snek_op_mod:
-			case snek_op_pow:
-			case snek_op_eq:
-			case snek_op_ne:
-			case snek_op_is:
-			case snek_op_is_not:
-			case snek_op_in:
-			case snek_op_not_in:
-			case snek_op_lt:
-			case snek_op_gt:
-			case snek_op_ge:
-			case snek_op_le:
-			case snek_op_lxor:
-			case snek_op_land:
-			case snek_op_lor:
-			case snek_op_array:
-				snek_a = snek_binary(snek_stack_pick(0), op, snek_a, false);
-				snek_stack_drop(1);
+			case snek_op_lnot:
+				snek_a = snek_float_to_poly(~(uint32_t) snek_poly_get_float(snek_a));
 				break;
 			case snek_op_call:
 				memcpy(&o, &snek_code->code[ip], sizeof (snek_offset_t));
@@ -1083,24 +1118,6 @@ snek_code_run(snek_code_t *code_in)
 			case snek_op_slice:
 				snek_slice(snek_code->code[ip]);
 				ip++;
-				break;
-			case snek_op_assign_named:
-			case snek_op_assign:
-			case snek_op_assign_plus:
-			case snek_op_assign_minus:
-			case snek_op_assign_times:
-			case snek_op_assign_divide:
-			case snek_op_assign_div:
-			case snek_op_assign_mod:
-			case snek_op_assign_pow:
-			case snek_op_assign_land:
-			case snek_op_assign_lor:
-			case snek_op_assign_lxor:
-			case snek_op_assign_lshift:
-			case snek_op_assign_rshift:
-				memcpy(&id, &snek_code->code[ip], sizeof (snek_id_t));
-				ip += sizeof (snek_id_t);
-				snek_assign(id, op);
 				break;
 			case snek_op_global:
 				memcpy(&id, &snek_code->code[ip], sizeof (snek_id_t));
@@ -1146,7 +1163,8 @@ snek_code_run(snek_code_t *code_in)
 				ip += sizeof (snek_offset_t);
 				snek_line = o;
 				break;
-			default:
+			case snek_op_nop:
+			case snek_op_push:
 				break;
 			}
 			if (snek_abort)
