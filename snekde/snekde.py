@@ -169,6 +169,8 @@ class EditWin:
     cut = ""
     mark = -1
 
+    undo = []
+
     def __init__(self, lines, cols, y, x):
         self.lines = lines
         self.y = y
@@ -339,16 +341,61 @@ class EditWin:
         pos = self.point_to_cursor(self.point)
         self.point = self.cursor_to_point((65536, pos[1]))
 
-    # Insert some text
+    def push_undo(self, point, operation):
+        self.undo.append((point, operation, self.point, self.mark))
 
-    def insert(self, text):
-        self.text = self.text[:self.point] + text + self.text[self.point:]
+    def pop_undo(self):
+        if not self.undo:
+            return False
+        (point, operation, self_point, self_mark) = self.undo.pop()
+
+        if isinstance(operation, str):
+            # Replace deleted text
+            self.text = self.text[:point] + operation + self.text[point:]
+        else:
+            # Delete inserted text
+            self.text = self.text[:point] + self.text[point+operation:]
+
+        self.point = self_point
+        self.mark = self_mark
+        return True
+
+    # Insert some text, adjusting self.point and self.mark if the text
+    # is before them
+
+    def insert(self, point, text):
+        self.push_undo(point, len(text))
+        self.text = self.text[:point] + text + self.text[point:]
+        if point < self.point:
+            self.point += len(text)
+        if point < self.mark:
+            self.mark += len(text)
+
+    def insert_at_point(self, text):
+        self.insert(self.point, text)
         self.point += len(text)
 
-    # Delete some text
+    # Delete some text, adjusting self.point if the delete starts
+    # before it
 
-    def delete(self, count):
-        self.text = self.text[:self.point] + self.text[self.point + count:]
+    def _adjust_delete_position(self, delete_point, delete_count, moving_point, is_mark):
+        if delete_point <= moving_point and moving_point < delete_point + delete_count:
+            if is_mark:
+                return -1
+            moving_point = delete_point
+        elif delete_point + delete_count <= moving_point:
+            moving_point -= delete_count
+        return moving_point
+
+    def delete(self, point, count):
+        self.push_undo(point, self.text[point:point+count])
+        self.text = self.text[:point] + self.text[point + count:]
+        self.point = self._adjust_delete_position(point, count, self.point, False)
+        if self.mark >= 0:
+            self.mark = self._adjust_delete_position(point, self.mark, True)
+
+    def delete_at_point(self, count):
+        self.delete(self.point, count)
 
     # Delete back to the previous tab stop
 
@@ -360,7 +407,7 @@ class EditWin:
         if to_remove == 0:
             to_remove = self.tab_width
         self.point -= to_remove
-        self.delete(to_remove)
+        self.delete_at_point(to_remove)
 
     # Delete something. If there's a mark, delete that.  otherwise,
     # delete backwards, if in indent of the line, backtab
@@ -368,14 +415,14 @@ class EditWin:
     def backspace(self):
         selection = self.get_selection()
         if selection:
-            self.text = self.text[:selection[0]] + self.text[selection[1]:]
+            self.delete(selection[0], selection[1] - selection[0])
             self.mark = -1
         elif self.point > 0:
             if self.in_indent(self.point):
                 self.backtab()
             else:
                 self.left()
-                self.delete(1)
+                self.delete_at_point(1)
 
     # Set or clear the 'mark', which defines
     # the other end of the current selection
@@ -404,15 +451,14 @@ class EditWin:
                 
             self.cut = self.text[start:end]
             if delete:
-                self.text = self.text[:start] + self.text[end:]
+                self.delete(start, end - start)
             self.mark = -1
 
     # Paste any cut buffer at point
     
     def paste(self):
         if self.cut:
-            self.text = self.text[:self.point] + self.cut + self.text[self.point:]
-            self.point += len(self.cut)
+            self.insert_at_point(self.cut)
 
     # Set indent of current line to 'want'. Leave point
     # at the end of the indent
@@ -424,9 +470,9 @@ class EditWin:
             self.right()
             have += 1
         if have < want:
-            self.insert(" " * (want - have))
+            self.insert_at_point(" " * (want - have))
         elif have > want:
-            self.delete(have - want)
+            self.delete_at_point(have - want)
 
     # Automatically indent the current line,
     # using the previous line as a guide
@@ -446,9 +492,9 @@ class EditWin:
         current = self.point_to_cursor(self.point)
         eol = self.cursor_to_point((65536, current[1]))
         if self.point == eol:
-            self.delete(1)
+            self.delete_at_point(1)
         else:
-            self.delete(eol - self.point)
+            self.delete_at_point(eol - self.point)
 
     # Read a character for this window
 
@@ -477,6 +523,8 @@ class EditWin:
             self.paste()
         elif ch == ord('k') & 0x1f:
             self.delete_to_eol()
+        elif ch == ord('z') & 0x1f:
+            self.pop_undo()
         if ch == curses.KEY_LEFT or ch == ord('b') & 0x1f:
             self.left()
         elif ch == curses.KEY_RIGHT or ch == ord('f') & 0x1f:
@@ -494,7 +542,7 @@ class EditWin:
         elif ch in (curses.ascii.BS, curses.KEY_BACKSPACE, curses.ascii.DEL):
             self.backspace()
         elif curses.ascii.isprint(ch) or ch == ord('\n'):
-            self.insert(chr(ch))
+            self.insert_at_point(chr(ch))
 
 class ErrorWin:
     """Show an error message"""
