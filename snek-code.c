@@ -1080,11 +1080,11 @@ snek_code_run(snek_code_t *code_in)
 				}
 				snek_undefined(id);
 				break;
-			case snek_op_uminus:
-				snek_a = snek_float_to_poly(-snek_poly_get_float(snek_a));
-				break;
 			case snek_op_not:
 				snek_a = snek_bool_to_poly(!snek_poly_true(snek_a));
+				break;
+			case snek_op_uminus:
+				snek_a = snek_float_to_poly(-snek_poly_get_float(snek_a));
 				break;
 			case snek_op_lnot:
 				snek_a = snek_float_to_poly(~(uint32_t) snek_poly_get_float(snek_a));
@@ -1124,11 +1124,8 @@ snek_code_run(snek_code_t *code_in)
 				ip += sizeof (snek_id_t);
 				snek_frame_mark_global(id);
 				break;
-			case snek_op_branch_false:
-				if (!snek_poly_true(snek_a))
-					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
-				else
-					ip += sizeof (snek_offset_t);
+			case snek_op_branch:
+				memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				break;
 			case snek_op_branch_true:
 				if (snek_poly_true(snek_a))
@@ -1136,8 +1133,11 @@ snek_code_run(snek_code_t *code_in)
 				else
 					ip += sizeof (snek_offset_t);
 				break;
-			case snek_op_branch:
-				memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
+			case snek_op_branch_false:
+				if (!snek_poly_true(snek_a))
+					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
+				else
+					ip += sizeof (snek_offset_t);
 				break;
 			case snek_op_forward:
 				snek_error("not in loop");
