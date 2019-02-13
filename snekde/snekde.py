@@ -630,14 +630,17 @@ def snekde_fini():
     screen_fini()
 
 def snekde_open_device():
+    global snek_device
     dialog = GetTextWin("Open Device", prompt="Port:")
     name = dialog.run_dialog()
     try:
         snek_monitor = SnekMonitor()
         device = SnekDevice(name, snek_monitor)
         device.start()
-        del snek_device
+        if snek_device:
+            del snek_device
         snek_device = device
+        screen_paint()
     except OSError as e:
         ErrorWin(e.strerror)
 
