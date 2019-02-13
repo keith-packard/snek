@@ -20,6 +20,18 @@ bool snek_abort;
 #define ERROR_FETCH_FORMAT_CHAR(a) (*(a))
 #endif
 
+static void
+puts_clean(char *s)
+{
+	unsigned char c;
+	while ((c = (unsigned char) *s++)) {
+		if (c < ' ')
+			fprintf(stderr, "\\x%02x", c);
+		else
+			putc(c, stderr);
+	}
+}
+
 snek_poly_t
 snek_error_name(const char *format, ...)
 {
@@ -32,34 +44,11 @@ snek_error_name(const char *format, ...)
 	while ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
 		if (c == '%') {
 			switch ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
-#if 0
-			case '\0':
-				--format;
-				break;
-			case '%':
-				putc(c, stderr);
-				break;
-#endif
 			case 'd':
 				fprintf(stderr, "%d", va_arg(args, int));
 				break;
-#if 0
-			case 'x':
-				fprintf(stderr, "%x", va_arg(args, int));
-				break;
-			case 'i':
-				fprintf(stderr, "%s", snek_name_string(va_arg(args, int)));
-				break;
-			case 'g':
-				fprintf(stderr, "%.7g", va_arg(args, double));
-				break;
-			case 'S':
-				len = va_arg(args, int);
-				fwrite(va_arg(args, char *), 1, len, stderr);
-				break;
-#endif
 			case 's':
-				fputs(va_arg(args, char *), stderr);
+				puts_clean(va_arg(args, char *));
 				break;
 			case 'p':
 				snek_poly_print(stderr, va_arg(args, snek_poly_t), 'r');
