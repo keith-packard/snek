@@ -774,7 +774,7 @@ def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--list", action='store_true', help="List available serial devices")
     arg_parser.add_argument("--port", help="Serial device")
-    arg_parser.add_argument("file", help="Read file into edit window")
+    arg_parser.add_argument("file", nargs="*", help="Read file into edit window")
     args = arg_parser.parse_args()
     snek_device = False
     if args.port:
@@ -787,7 +787,7 @@ def main():
     text = ""
     if args.file:
         try:
-            with open(args.file, 'r') as myfile:
+            with open(args.file[0], 'r') as myfile:
                 text = myfile.read()
         except OSError as e:
             print("%s: %s", (e.filename, e.strerror), file=sys.stderr)
