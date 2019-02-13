@@ -17,16 +17,21 @@ import sys
 import argparse
 import time
 import curses
-import select
 import threading
 import serial
 
-from curses.textpad import Textbox, rectangle
+from curses import ascii
 
-global_lock = threading.Lock()
-global_lock.acquire()
+stdscr = 0
 
-current_window = False
+snek_lock = threading.Lock()
+snek_lock.acquire()
+
+snek_current_window = 0
+snek_edit_win = 0
+snek_repl_win = 0
+
+snek_device = False
 
 #
 # Read a character from the keyboard, releasing the
@@ -34,12 +39,12 @@ current_window = False
 #
 
 def my_getch(window):
-    global global_lock
-    if current_window:
-        current_window.set_cursor()
-    global_lock.release()
+    global snek_lock, snek_current_window
+    if snek_current_window:
+        snek_current_window.set_cursor()
+    snek_lock.release()
     c = window.getch()
-    global_lock.acquire()
+    snek_lock.acquire()
     #
     # Check for resize
     #
@@ -156,6 +161,7 @@ class EditWin:
 
     window = 0
     lines = 0
+    y = 0
     point = 0
     top_line = 0
     tab_width = 4
@@ -165,6 +171,7 @@ class EditWin:
 
     def __init__(self, lines, cols, y, x):
         self.lines = lines
+        self.y = y
         self.window = curses.newwin(lines, cols, y, x)
         self.window.keypad(True)
 
@@ -218,31 +225,26 @@ class EditWin:
     def repaint(self):
         self.window.erase()
         self.scroll_to_point()
-        if self.mark >= 0:
-            mark_high = self.point_to_cursor(self.mark)
-            point_high = self.point_to_cursor(self.point)
-            if self.mark < self.point:
-                start_high = mark_high
-                end_high = point_high
-            else:
-                start_high = point_high
-                end_high = mark_high
+        selection = self.get_selection()
+        if selection:
+            start_selection = self.point_to_cursor(selection[0])
+            end_selection = self.point_to_cursor(selection[1])
         line = 0
         for s in self.text.split('\n'):
             if self.top_line <= line and line < self.top_line + self.lines:
 
                 # Paint the marked region in reverse video
 
-                if self.mark >= 0 and start_high[1] <= line and line <= end_high[1]:
-                    if line == start_high[1]:
-                        before = s[:start_high[0]]
-                        middle = s[start_high[0]:]
+                if selection and start_selection[1] <= line and line <= end_selection[1]:
+                    if line == start_selection[1]:
+                        before = s[:start_selection[0]]
+                        middle = s[start_selection[0]:]
                     else:
                         before = ""
                         middle = s
-                    if line == end_high[1]:
-                        after = middle[end_high[0]:]
-                        middle = middle[:end_high[0]]
+                    if line == end_selection[1]:
+                        after = middle[end_selection[0]:]
+                        middle = middle[:end_selection[0]]
                     else:
                         after = ""
                     self.window.addstr(line - self.top_line, 0, before)
@@ -360,10 +362,15 @@ class EditWin:
         self.point -= to_remove
         self.delete(to_remove)
 
-    # Delete backwards, if in indent of the line, backtab
+    # Delete something. If there's a mark, delete that.  otherwise,
+    # delete backwards, if in indent of the line, backtab
     
     def backspace(self):
-        if self.point > 0:
+        selection = self.get_selection()
+        if selection:
+            self.text = self.text[:selection[0]] + self.text[selection[1]:]
+            self.mark = -1
+        elif self.point > 0:
             if self.in_indent(self.point):
                 self.backtab()
             else:
@@ -379,20 +386,24 @@ class EditWin:
         else:
             self.mark = self.point
 
+    # Return the extent of the current selection, False if none
+
+    def get_selection(self):
+        if self.mark >= 0:
+            return (min(self.mark, self.point), max(self.mark, self.point))
+        else:
+            return False
+
     # Copy from mark to point and place in cut buffer
     # delete from text if requested
 
     def copy(self, delete=False):
-        if self.mark >= 0:
-            if self.mark > self.point:
-                start = self.point
-                end = self.mark
-            else:
-                start = self.mark
-                end = self.point
+        selection = self.get_selection()
+        if selection:
+            (start, end) = selection
                 
             self.cut = self.text[start:end]
-            if cut:
+            if delete:
                 self.text = self.text[:start] + self.text[end:]
             self.mark = -1
 
@@ -429,6 +440,16 @@ class EditWin:
                 want += self.tab_width
         self.indent(want)
 
+    # Delete to end of line, or delete newline if at end of line
+
+    def delete_to_eol(self):
+        current = self.point_to_cursor(self.point)
+        eol = self.cursor_to_point((65536, current[1]))
+        if self.point == eol:
+            self.delete(1)
+        else:
+            self.delete(eol - self.point)
+
     # Read a character for this window
 
     def getch(self):
@@ -454,17 +475,19 @@ class EditWin:
             self.copy(delete=True)
         elif ch == ord('v') & 0x1f:
             self.paste()
-        if ch == curses.KEY_LEFT:
+        elif ch == ord('k') & 0x1f:
+            self.delete_to_eol()
+        if ch == curses.KEY_LEFT or ch == ord('b') & 0x1f:
             self.left()
-        elif ch == curses.KEY_RIGHT:
+        elif ch == curses.KEY_RIGHT or ch == ord('f') & 0x1f:
             self.right()
-        elif ch == curses.KEY_UP:
+        elif ch == curses.KEY_UP or ch == ord('p') & 0x1f:
             self.up()
-        elif ch == curses.KEY_DOWN:
+        elif ch == curses.KEY_DOWN or ch == ord('n') & 0x1f:
             self.down()
-        elif ch == curses.KEY_HOME:
+        elif ch == curses.KEY_HOME or ch == ord('a') & 0x1f:
             self.bol()
-        elif ch == curses.KEY_END:
+        elif ch == curses.KEY_END or ch == ord('e') & 0x1f:
             self.eol()
         elif ch == ord('\t'):
             self.auto_indent()
@@ -542,23 +565,12 @@ class GetTextWin:
         screen_repaint()
         return str(name, encoding='utf-8', errors='ignore')
 
-stdscr = 0
-edit_win = 0
-repl_win = 0
-
-snek_device = False
-
-edit_lines = 0
-repl_lines = 0
-repl_y = 0
-edit_y = 0
-
-def screen_set_sizes():
-    global repl_lines, edit_lines, repl_y, edit_y
+def screen_get_sizes():
     repl_lines = curses.LINES // 3
     edit_lines = curses.LINES - repl_lines - 2
     edit_y = 1
     repl_y = edit_y + edit_lines + 1
+    return (edit_lines, edit_y, repl_lines, repl_y)
 
 help_text = (
     ("F1", "Device"),
@@ -570,7 +582,7 @@ help_text = (
     )
 
 def screen_paint():
-    global stdscr, edit_win, repl_win, edit_lines, edit_y, repl_lines, reply_y
+    global stdscr, snek_device, snek_edit_win
     help_col = 0
     help_cols = min(curses.COLS // len(help_text), 13)
     stdscr.addstr(0, 0, " " * curses.COLS)
@@ -583,37 +595,41 @@ def screen_paint():
     device_col = curses.COLS - len(device_name)
     if device_col < 0:
         device_col = 0
-    stdscr.addstr(edit_y + edit_lines, device_col, device_name, curses.A_REVERSE)
+    mid_y = snek_edit_win.y + snek_edit_win.lines
+    stdscr.addstr(mid_y, device_col, device_name, curses.A_REVERSE)
     if device_col >= 6:
-        stdscr.addstr(edit_y + edit_lines, device_col - 6, "      ", curses.A_REVERSE)
+        stdscr.addstr(mid_y, device_col - 6, "      ", curses.A_REVERSE)
     for col in range(0,device_col - 6,5):
-        stdscr.addstr(edit_y + edit_lines, col, "snek ", curses.A_REVERSE)
+        stdscr.addstr(mid_y, col, "snek ", curses.A_REVERSE)
     stdscr.refresh()
     
 # Repaint everything, as when a dialog goes away
 
 def screen_repaint():
-    edit_win.repaint()
-    repl_win.repaint()
+    global snek_edit_win, snek_repl_win
+    snek_edit_win.repaint()
+    snek_repl_win.repaint()
     screen_paint()
 
 def screen_resize():
-    global stdscr, edit_win, repl_win, edit_lines, edit_y, repl_lines, reply_y
+    global snek_edit_win, snek_repl_win
     curses.update_lines_cols()
-    screen_set_sizes()
+    (edit_lines, edit_y, repl_lines, repl_y) = screen_get_sizes()
     screen_paint()
-    edit_win.resize(edit_lines, curses.COLS, edit_y, 0)
-    repl_win.resize(repl_lines, curses.COLS, repl_y, 0)
+    snek_edit_win.resize(edit_lines, curses.COLS, edit_y, 0)
+    snek_repl_win.resize(repl_lines, curses.COLS, repl_y, 0)
 
-def screen_init():
-    global stdscr, edit_win, repl_win, edit_lines, edit_y, repl_lines, reply_y
+def screen_init(text):
+    global stdscr, snek_edit_win, snek_repl_win
     stdscr = curses.initscr()
     curses.noecho()
     curses.raw()
     stdscr.keypad(True)
-    screen_set_sizes()
-    edit_win = EditWin(edit_lines, curses.COLS, edit_y, 0)
-    repl_win = EditWin(repl_lines, curses.COLS, repl_y, 0)
+    (edit_lines, edit_y, repl_lines, repl_y) = screen_get_sizes()
+    snek_edit_win = EditWin(edit_lines, curses.COLS, edit_y, 0)
+    if text:
+        snek_edit_win.set_text(text)
+    snek_repl_win = EditWin(repl_lines, curses.COLS, repl_y, 0)
     screen_paint()
 
 def screen_fini():
@@ -622,12 +638,6 @@ def screen_fini():
     curses.noraw()
     curses.echo()
     curses.endwin()
-
-def snekde_init():
-    screen_init()
-
-def snekde_fini():
-    screen_fini()
 
 def snekde_open_device():
     global snek_device
@@ -645,44 +655,48 @@ def snekde_open_device():
         ErrorWin(e.strerror)
 
 def snekde_get_text():
-    edit_win.set_text("")
+    global snek_edit_win, snek_device
+    snek_edit_win.set_text("")
     snek_device.write("\x0eeeprom.show(1)\n")
 
 def snekde_put_text():
+    global snek_edit_win, snek_device
     snek_device.write("\x0eeeprom.write()\n")
-    snek_device.write(edit_win.text)
+    snek_device.write(snek_edit_win.text)
     snek_device.write('\x04')
 
 def snekde_load_file():
+    global snek_edit_win
     dialog = GetTextWin("Load File", prompt="File:")
     name = dialog.run_dialog()
     try:
         with open(name, 'r') as myfile:
             data = myfile.read()
-            edit_win.set_text(data)
+            snek_edit_win.set_text(data)
     except OSError as e:
         ErrorWin("%s: %s" % (e.filename, e.strerror))
         
 
 def snekde_save_file():
+    global snek_edit_win
     dialog = GetTextWin("Save File", prompt="File:")
     name = dialog.run_dialog()
     try:
         with open(name, 'w') as myfile:
-            myfile.write(edit_win.text)
+            myfile.write(snek_edit_win.text)
     except OSError as e:
         ErrorWin("%s: %s" % (e.filename, e.strerror))
 
 def run():
-    global current_window
-    current_window = edit_win
+    global snek_current_window, snek_edit_win, snek_repl_win, snek_device
+    snek_current_window = snek_edit_win
     while True:
-        ch = current_window.getch()
+        ch = snek_current_window.getch()
         if ch == curses.KEY_NPAGE or ch == curses.KEY_PPAGE:
-            if current_window is edit_win:
-                current_window = repl_win
+            if snek_current_window is snek_edit_win:
+                snek_current_window = snek_repl_win
             else:
-                current_window = edit_win
+                snek_current_window = snek_edit_win
             continue
         if ch == 3:
             if snek_device:
@@ -706,12 +720,12 @@ def run():
         elif ch == curses.KEY_F6:
             snekde_save_file()
         else:
-            current_window.dispatch(ch)
+            snek_current_window.dispatch(ch)
             if ch == ord('\n'):
-                if current_window is edit_win:
-                    current_window.auto_indent()
+                if snek_current_window is snek_edit_win:
+                    snek_current_window.auto_indent()
                 elif snek_device:
-                    data = repl_win.prev_line()
+                    data = snek_repl_win.prev_line()
                     while True:
                         if data[:2] == "> ":
                             data = data[2:]
@@ -731,23 +745,25 @@ def run():
 class SnekMonitor:
 
     def __init__(self):
-        self.cv = threading.Condition(global_lock)
+        global snek_lock
+        self.cv = threading.Condition(snek_lock)
 
-    # Reading text to edit_win instead of repl_win
+    # Reading text to snek_edit_win instead of snek_repl_win
 
     getting_text = False
 
     def add_to(self, window, data):
-        follow = window == repl_win and window.point == len(window.text)
+        global snek_current_window, snek_repl_win
+        follow = window == snek_repl_win and window.point == len(window.text)
         window.text += data
         if follow:
             window.point += len(data)
         window.repaint()
-        if current_window:
-            current_window.set_cursor()
+        if snek_current_window:
+            snek_current_window.set_cursor()
 
     def receive(self, data):
-        global repl_win
+        global snek_edit_win, snek_repl_win, snek_lock
         data_edit = ""
         data_repl = ""
         for c in data:
@@ -764,15 +780,15 @@ class SnekMonitor:
                     data_edit += c
                 else:
                     data_repl += c
-        global_lock.acquire()
+        snek_lock.acquire()
         if data_edit:
-            self.add_to(edit_win, data_edit)
+            self.add_to(snek_edit_win, data_edit)
         if data_repl:
-            self.add_to(repl_win, data_repl)
-        global_lock.release()
+            self.add_to(snek_repl_win, data_repl)
+        snek_lock.release()
 
 def main():
-    global snek_device
+    global snek_device, snek_edit_win
 
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--list", action='store_true', help="List available serial devices")
@@ -796,14 +812,11 @@ def main():
             print("%s: %s", (e.filename, e.strerror), file=sys.stderr)
             exit(1)
     try:
-        snekde_init()
-        if text:
-            edit_win.set_text(text)
+        screen_init(text)
         if snek_device:
             snek_device.start()
         run()
     finally:
-        snekde_fini()
-    print("source %s" % edit_win.text)
+        screen_fini()
 
 main()
