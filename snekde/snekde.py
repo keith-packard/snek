@@ -505,6 +505,7 @@ class ErrorWin:
         self.window.move(3, 4)
         name = self.window.getstr()
         del self.window
+        screen_repaint()
 
 class GetTextWin:
     """Prompt for line of text"""
@@ -538,6 +539,7 @@ class GetTextWin:
         name = self.window.getstr()
         curses.noecho()
         del self.window
+        screen_repaint()
         return str(name, encoding='utf-8', errors='ignore')
 
 stdscr = 0
@@ -588,6 +590,13 @@ def screen_paint():
         stdscr.addstr(edit_y + edit_lines, col, "snek ", curses.A_REVERSE)
     stdscr.refresh()
     
+# Repaint everything, as when a dialog goes away
+
+def screen_repaint():
+    edit_win.repaint()
+    repl_win.repaint()
+    screen_paint()
+
 def screen_resize():
     global stdscr, edit_win, repl_win, edit_lines, edit_y, repl_lines, reply_y
     curses.update_lines_cols()
