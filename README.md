@@ -215,6 +215,7 @@ emulator running on another host, or through a local text interface.
 To build Snek you need the next dependencies:
 
   * [Lola](https://keithp.com/cgit/lola.git/)
+  * [avr-gcc](https://www.nongnu.org/avr-libc/)
 
 ### Building and install
 In the source of the project run:
