@@ -99,7 +99,7 @@ would require an external pull-up (or pull-down) resistor.
    immediately. For pins with PWM capability, power levels between 0 and 1
    will enable PWM operation. For pins without PWM capability, a power
    level of 0 will set the pin to low logic level while any other
-   value will set hte pin to high logic level.
+   value will set the pin to high logic level.
 
  * on() — mark the current output pin as ”on” and set the power to the
    currently configured power level.
@@ -212,23 +212,85 @@ emulator running on another host, or through a local text interface.
 ## Build and Run!
 
 ### Dependencies
-To build Snek you need the next dependencies:
+To build Snek you need these dependencies:
 
   * [Lola](https://keithp.com/cgit/lola.git/)
+  * [gcc-avr](https://ccrma.stanford.edu/~juanig/articles/wiriavrlib/AVR_GCC.html)
+  * [avr-libc](https://www.nongnu.org/avr-libc/)
+  * [python3](https://www.python.org/)
+  * [pyserial](https://github.com/pyserial/)
+  * [python curses](https://docs.python.org/3/library/curses.html)
+
+On Debian, you can get everything other than Lola from the main archive:
+
+	# apt install gcc-avr avr-libc python3-serial
+
+To install Lola, download the source and install it;
+
+	$ git clone git://keithp.com/git/lola.git
+	$ cd lola && make install
 
 ### Building and install
+
 In the source of the project run:
 
-```
-$ make
-```
+	$ make
+	$ make install
 
-### Running
+### Running on Linux
 
-```
-$ ./posix/snek
-```
+	$ snek
+
 Then, just enjoy!
+
+### Running on Arduino
+
+Snek takes over the entire Arduino device, without leaving room for
+the serial boot loader. Because of this, you will need an AVR programming device, such as a
+[USBtiny from Adafruit](https://www.adafruit.com/product/46).
+
+Once snek has been compiled, first reset the fuses on the device to
+make the Arduino run Snek instead of attempting to run the
+non-existent boot loader. You will only need to set the fuses once per device.
+
+	$ (cd snek-duino && make set-fuse)
+
+Next, flash the Snek interpreter:
+
+	$ (cd snek-duino && make load)
+
+Then, figure out which serial port your Arduino is connected to using a tool provided with pyserial:
+
+	$ python3 -m serial.tools.list_ports
+	/dev/ttyUSB0        
+	1 ports found
+
+Finally, you can run the snek development environment:
+
+	$ snekde --port /dev/ttyUSB0
+
+The snekde window is split into two parts. The upper 2/3 is a text
+editor for source code. The bottom 1/3 lets you interact with the
+Arduino over the serial port. The very top line lists functions that
+you can invoke by pressing the associated function key:
+
+ * F1 — Device. Connect to a serial port.
+ * F2 — Get. Get source code saved to the Arduino eeprom into the editor pane.
+ * F3 — Put. Put code from the editor pane into the Arduino eeprom.
+ * F4 — Quit. Exit snekde.
+ * F5 — Load. Read source code from the file system into the editor pane.
+ * F6 — Save. Write source code from the editor pane to the file system.
+
+There are a couple more keybindings which you'll want to know:
+
+ * Page-up/Page-down — Switch between the editor pane and the interaction pane.
+ * Ctrl-X/Ctrl-C/Ctrl-V — Usual cut/copy/paste commands.
+ * Ctrl-C — In the interaction pane, this interrupts any snek program running on the device. Note that
+   this means you don't get a Copy command in the interaction pane.
+ * Ctrl-Z — Undo.
+
+Tab auto-indents the current line. Backspace backs up over a tabstop
+when appropriate.
 
 ### Examples
 
