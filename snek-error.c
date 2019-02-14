@@ -64,7 +64,7 @@ snek_error_name(const char *format, ...)
 	}
 	putc('\n', stderr);
 	va_end(args);
-	return SNEK_ZERO;
+	return SNEK_NULL;
 }
 
 snek_poly_t

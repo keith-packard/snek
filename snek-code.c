@@ -807,10 +807,8 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			break;
 		}
 	}
-	if (snek_is_null(ret)) {
+	if (snek_is_null(ret))
 		snek_error("type mismatch: %p %p", a, b);
-		return SNEK_ZERO;
-	}
 	return ret;
 }
 

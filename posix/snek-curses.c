@@ -37,31 +37,31 @@ snek_builtin_curses_initscr(void)
 		exit(1);
 	}
 	printf("\033[?47h");
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_curses_noecho(void)
 {
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_curses_echo(void)
 {
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_curses_cbreak(void)
 {
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_curses_nocbreak(void)
 {
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
@@ -69,7 +69,7 @@ snek_builtin_curses_endwin(void)
 {
 	printf("\033[?47l");
 	tcsetattr(0, TCSAFLUSH, &termios_save);
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 static bool stdscr_nodelay;
@@ -85,7 +85,7 @@ snek_poly_t
 snek_builtin_stdscr_erase(void)
 {
 	printf("\033[2J");
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
@@ -94,21 +94,21 @@ snek_builtin_stdscr_addstr(snek_poly_t y, snek_poly_t x, snek_poly_t str)
 	snek_builtin_stdscr_move(y, x);
 	if (snek_poly_type(str) == snek_string)
 		printf("%s", snek_poly_to_string(str));
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_stdscr_move(snek_poly_t y, snek_poly_t x)
 {
 	printf("\033[%d;%dH", snek_poly_get_soffset(y)+1, snek_poly_get_soffset(x)+1);
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_stdscr_refresh(void)
 {
 	fflush(stdout);
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t

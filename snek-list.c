@@ -166,7 +166,7 @@ snek_list_imm(snek_offset_t size, bool readonly)
 
 	if (!list) {
 		snek_stack_drop(size);
-		return SNEK_ZERO;
+		return SNEK_NULL;
 	}
 
 	snek_poly_t	*data = snek_pool_ref(list->data);

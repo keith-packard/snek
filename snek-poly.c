@@ -26,7 +26,7 @@ snek_poly_t
 snek_poly(const void *addr, snek_type_t type)
 {
 	if (addr == NULL)
-		return SNEK_ZERO;
+		return SNEK_NULL;
 	return snek_offset_to_poly((const uint8_t *) addr - snek_pool, type);
 }
 

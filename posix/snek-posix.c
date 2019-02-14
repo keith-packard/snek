@@ -48,14 +48,14 @@ snek_builtin_time_sleep(snek_poly_t a)
 
 		nanosleep(&ts, NULL);
 	}
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_random_seed(void)
 {
 	srandom(time(NULL));
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t

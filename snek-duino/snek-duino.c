@@ -83,7 +83,7 @@ snek_builtin_reset(void)
 {
 	wdt_enable(WDTO_15MS);
 	for(;;);
-	return SNEK_ZERO;
+	return SNEK_NULL;
 }
 
 static volatile uint8_t *
@@ -224,7 +224,7 @@ snek_builtin_talkto(snek_poly_t a)
 		power_pin = p;
 		dir_pin = d;
 	}
-	return SNEK_ZERO;
+	return SNEK_NULL;
 }
 
 snek_poly_t
@@ -235,7 +235,7 @@ snek_builtin_listento(snek_poly_t a)
 		set_dir(p, 0);
 		input_pin = p;
 	}
-	return SNEK_ZERO;
+	return SNEK_NULL;
 }
 
 static bool
@@ -268,7 +268,7 @@ set_out(uint8_t pin)
 		if (0 < p && p < 255) {
 			*ocr_reg(pin) = p;
 			*tcc_reg(pin) |= tcc_val(pin);
-			return SNEK_ZERO;
+			return SNEK_NULL;
 		}
 		*tcc_reg(pin) &= ~tcc_val(pin);
 	}
@@ -276,7 +276,7 @@ set_out(uint8_t pin)
 		*port_reg(pin) |= bit(pin);
 	else
 		*port_reg(pin) &= ~bit(pin);
-	return SNEK_ZERO;
+	return SNEK_NULL;
 }
 
 snek_poly_t
@@ -356,7 +356,7 @@ snek_builtin_stopall(void)
 			set_off(p);
 			set_out(p);
 		}
-	return SNEK_ZERO;
+	return SNEK_NULL;
 }
 
 snek_poly_t
@@ -365,6 +365,6 @@ snek_builtin_time_sleep(snek_poly_t a)
 	snek_soffset_t o = snek_poly_get_float(a) * 100.0f;
 	while (o-- >= 0 && !snek_abort)
 		_delay_ms(10);
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 

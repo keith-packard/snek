@@ -179,7 +179,7 @@ if-stat		: IF if-expr suite elif-stats
 		;
 elif-stats	: ELIF
 			@{
-				/* snek_code_add_op_offset(snek_op_line, snek_lex_line); */
+				snek_code_add_op_offset(snek_op_line, snek_lex_line);
 			else_branch:
 				snek_code_add_forward(snek_forward_if);
 				value_push_offset(snek_code_current());

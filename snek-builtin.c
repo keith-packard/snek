@@ -40,14 +40,14 @@ snek_builtin_print(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 		snek_poly_print(stdout, end, 's');
 	else
 		putc('\n', stdout);
-	return SNEK_ZERO;
+	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_sys_stdout_flush(void)
 {
 	fflush(stdout);
-	return SNEK_ONE;
+	return SNEK_NULL;
 }
 
 snek_poly_t
@@ -55,7 +55,7 @@ snek_builtin_ord(snek_poly_t a)
 {
 	if (snek_poly_type(a) != snek_string) {
 		snek_error("expected string");
-		return SNEK_ZERO;
+		return SNEK_NULL;
 	}
 	return snek_float_to_poly(snek_poly_to_string(a)[0]);
 }
