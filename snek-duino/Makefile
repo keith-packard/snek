@@ -33,8 +33,8 @@ LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-Map=snek-duino.map
 
-#ISP = usbtiny
-ISP = avrisp2
+ISP = usbtiny
+#ISP = avrisp2
 
 #
 # lfuse: 0xff
