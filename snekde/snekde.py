@@ -775,9 +775,9 @@ def run():
                 elif snek_device:
                     data = snek_repl_win.prev_line()
                     while True:
-                        if data[:2] == "> ":
+                        if data[:2] == "> " or data[:2] == "+ ":
                             data = data[2:]
-                        elif data[:1] == ">":
+                        elif data[:1] == ">" or data[:1] == "+":
                             data = data[1:]
                         else:
                             break

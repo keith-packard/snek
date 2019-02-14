@@ -14,7 +14,14 @@
 
 SNEK_ROOT=..
 
-SNEK_LOCAL_SRC = snek-main.c snek-posix.c
+PREFIX=$(DESTDIR)/usr/local
+BINDIR = $(PREFIX)/bin
+
+SNEK_LOCAL_SRC = \
+	snek-main.c \
+	snek-posix.c \
+	snek-curses.c
+
 SNEK_LOCAL_INC = snek-posix.h
 SNEK_LOCAL_BUILTINS = snek-posix.builtin
 
@@ -26,8 +33,13 @@ OPT=-O0
 
 CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS)
 
+LIBS=-lreadline -lm
+
 snek: $(SNEK_OBJ)
-	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) -lm
+	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
+
+install: snek
+	install $^ $(BINDIR)
 
 clean::
 	rm -f snek

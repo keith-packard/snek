@@ -105,6 +105,7 @@ small-stat	: assign-expr
 			@{ snek_code_add_forward(snek_forward_break); }@
 		| CONTINUE
 			@{ snek_code_add_forward(snek_forward_continue); }@
+		| PASS
 		| GLOBAL globals
 		;
 assign-expr	: expr assign-expr-p
