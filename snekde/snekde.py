@@ -155,6 +155,8 @@ class SnekDevice:
             self.write_queue = data
         self.interface.cv.notify()
 
+    def command(self, data):
+        self.write("\x0e" + data)
 
 class EditWin:
     """Editable text object"""
@@ -392,7 +394,7 @@ class EditWin:
         self.text = self.text[:point] + self.text[point + count:]
         self.point = self._adjust_delete_position(point, count, self.point, False)
         if self.mark >= 0:
-            self.mark = self._adjust_delete_position(point, self.mark, True)
+            self.mark = self._adjust_delete_position(point, count, self.mark, True)
 
     def delete_at_point(self, count):
         self.delete(self.point, count)
@@ -705,13 +707,14 @@ def snekde_open_device():
 def snekde_get_text():
     global snek_edit_win, snek_device
     snek_edit_win.set_text("")
-    snek_device.write("\x0eeeprom.show(1)\n")
+    snek_device.command("eeprom.show(1)\n")
 
 def snekde_put_text():
     global snek_edit_win, snek_device
-    snek_device.write("\x0eeeprom.write()\n")
-    snek_device.write(snek_edit_win.text)
-    snek_device.write('\x04')
+    snek_device.command("eeprom.write()\n")
+    snek_device.write(snek_edit_win.text + '\x04')
+    snek_device.command("eeprom.load()\n")
+    snek_device.command('print("All done")\n')
 
 def snekde_load_file():
     global snek_edit_win
@@ -781,7 +784,7 @@ def run():
                             data = data[1:]
                         else:
                             break
-                    snek_device.write('\x0e' + data)
+                    snek_device.command(data)
 
 
 # Class to monitor the serial device for data and
