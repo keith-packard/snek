@@ -45,7 +45,7 @@ LIBFILES = \
 PKGFILES = \
 	snek.pc
 
-install: $(LIBFILES) $(PKGFILES) install-snekde
+install: $(LIBFILES) $(PKGFILES) install-snekde install-posix
 	mkdir -p $(SNEKLIB)
 	cp -a $(LIBFILES) $(SNEKLIB)
 	mkdir -p $(PKGCONFIG)
@@ -53,6 +53,9 @@ install: $(LIBFILES) $(PKGFILES) install-snekde
 
 install-snekde:
 	+@cd snekde && make install
+
+install-posix:
+	+@cd posix && make install
 
 snek.pc: snek.pc.in
 	sed -e 's;@SNEKLIB@;$(SNEKLIB);' -e 's/@VERSION@/$(VERSION)/' $^ > $@
