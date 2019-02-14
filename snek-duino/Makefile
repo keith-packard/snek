@@ -36,6 +36,35 @@ LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 #ISP = usbtiny
 ISP = avrisp2
 
+#
+# lfuse: 0xff
+#	CKDIV8:		1	no divide by 8
+#	CKOUT:		1	no clock output
+#	SUT1:		1	crystal osc, slow startup
+#	SUT0:		1	crystal osc, slow startup
+#	CKSEL3:		1	low swing osc, 8-16MHz
+#	CKSEL2:		1	low swing osc, 8-16MHz
+#	CKSEL1:		1	low swing osc, 8-16MHz
+#	CKSEL0:		1	crystal osc
+# hfuse:
+#	RSTDISBL:	1	reset enabled
+#	DWEN:		1	debug wire disabled
+#	SPIEN:		0	SPI program enabled
+#	WDTON:		1	watch dog disabled
+#	EESAVE:		0	EEPROM saved across chip erase
+#	BOOTSZ1:	1	256 words
+#	BOOTSZ0:	1	256 words
+#	BOOTRST:	1	boot to address 0
+# efuse:
+#	BODLEVEL2	1	brown out 2.5-2.9V
+#	BODLEVEL1	0	brown out 2.5-2.9V
+#	BODLEVEL0	1	brown out 2.5-2.9V
+
+set-fuse:
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U lfuse:w:0xff:m
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U hfuse:w:0xd7:m
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U efuse:w:0xfd:m
+
 load: snek-duino.hex
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:snek-duino.hex
 

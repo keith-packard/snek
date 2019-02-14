@@ -303,5 +303,5 @@ snek_uart_init(void)
 		  (1 << TXEN0) |
 		  (0 << UCSZ02) |
 		  (0 << TXB80));
-	snek_uart_puts("Welcome to Snek\n");
+	snek_uart_puts("Welcome to Snek " SNEK_VERSION "\n");
 }
