@@ -193,9 +193,13 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 	case snek_op_assign_rshift:
 		memcpy(&id, &code->code[ip], sizeof(snek_id_t));
 		dbg("(%5d) ", id);
-		if (id)
-			dbg("%s\n", snek_name_string(id));
-		else
+		if (id) {
+			const char *name = snek_name_string(id);
+			if (!name)
+				dbg("<temp %d>\n", id);
+			else
+				dbg("%s\n", name);
+		} else
 			dbg("<array>\n");
 		break;
 	case snek_op_call:
