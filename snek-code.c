@@ -1194,7 +1194,7 @@ abort:
 	snek_frame = NULL;
 	snek_stackp = 0;
 	snek_poly_t ret = snek_a;
-	snek_a = SNEK_NULL;
+	snek_a = SNEK_ZERO;
 	return ret;
 }
 
