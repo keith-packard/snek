@@ -147,6 +147,8 @@ typedef enum {
 
 	snek_op_line,
 
+	snek_op_null,
+
 	snek_op_nop,
 
 	snek_op_push = 0x80,
@@ -364,6 +366,9 @@ extern snek_offset_t	snek_compile_prev, snek_compile_prev_prev;
 #define SNEK_OP_SLICE_START	1
 #define SNEK_OP_SLICE_END	2
 #define SNEK_OP_SLICE_STRIDE	4
+
+void
+snek_code_delete_prev(void);
 
 void
 snek_code_add_op(snek_op_t op);
@@ -957,9 +962,3 @@ snek_code_set_push(snek_offset_t offset)
 	snek_compile[offset] |= snek_op_push;
 }
 
-static inline void
-snek_code_delete_prev(void)
-{
-	snek_compile_size = snek_compile_prev;
-	snek_compile_prev = snek_compile_prev_prev;
-}

@@ -20,7 +20,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				snek_poly_t p = snek_code_run(code);
 				if (snek_abort)
 					return parse_return_error;
-				if (snek_print_val) {
+				if (snek_print_val && !snek_is_null(p)) {
 					snek_poly_print(stdout, p, 'r');
 					putchar('\n');
 				}
@@ -36,6 +36,10 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 	 		}@
 		  OP opt-formals CP COLON suite
 			@{
+				if (snek_compile[snek_compile_prev] == snek_op_forward)
+					snek_code_delete_prev();
+				else
+					snek_code_add_op(snek_op_null);
 				snek_code_t	*code = snek_code_finish();
 				if (!code)
 					break;

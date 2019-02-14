@@ -139,6 +139,7 @@ const char * const snek_op_names[] = {
 	[snek_op_range_start] = "range_start",
 	[snek_op_range_step] = "range_step",
 	[snek_op_in_step] = "in_step",
+	[snek_op_null] = "null",
 	[snek_op_nop] = "nop",
 	[snek_op_line] = "line",
 };
@@ -268,6 +269,13 @@ compile_extend(snek_offset_t n, void *data)
 	if (data)
 		memcpy(snek_compile + snek_compile_size, data, n);
 	snek_compile_size += n;
+}
+
+void
+snek_code_delete_prev(void)
+{
+	snek_compile_size = snek_compile_prev;
+	snek_compile_prev = snek_compile_prev_prev;
 }
 
 void
@@ -443,7 +451,7 @@ snek_code_line(snek_code_t *code)
 
 snek_poly_t	snek_stack[SNEK_STACK];
 snek_offset_t	snek_stackp;
-snek_poly_t 	snek_a;
+snek_poly_t 	snek_a = SNEK_NULL;
 snek_code_t	*snek_code;
 
 float
@@ -1167,6 +1175,9 @@ snek_code_run(snek_code_t *code_in)
 				ip += sizeof (snek_offset_t);
 				snek_line = o;
 				break;
+			case snek_op_null:
+				snek_a = SNEK_NULL;
+				break;
 			case snek_op_nop:
 			case snek_op_push:
 				break;
@@ -1198,7 +1209,7 @@ abort:
 	snek_frame = NULL;
 	snek_stackp = 0;
 	snek_poly_t ret = snek_a;
-	snek_a = SNEK_ZERO;
+	snek_a = SNEK_NULL;
 	return ret;
 }
 

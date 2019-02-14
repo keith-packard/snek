@@ -49,6 +49,10 @@ snek_is_float(snek_poly_t v)
 snek_type_t
 snek_poly_type(snek_poly_t v)
 {
+#if SNEK_DEBUG
+	if (snek_is_null(v))
+		snek_panic("attempt to use NULL value");
+#endif
 	return snek_is_float(v) ? snek_float : (v.u & 3);
 }
 
