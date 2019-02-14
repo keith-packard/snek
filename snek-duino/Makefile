@@ -33,8 +33,11 @@ LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-Map=snek-duino.map
 
+#ISP = usbtiny
+ISP = avrisp2
+
 load: snek-duino.hex
-	avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino.hex
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:snek-duino.hex
 
 snek-duino.hex: snek-duino
 	avr-objcopy -O ihex -R .eeprom snek-duino $@
