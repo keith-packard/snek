@@ -7,6 +7,8 @@ vpath %.h $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
+SNEK_VERSION = 1.0
+
 SNEK_SRC = \
 	snek-builtin.c \
 	snek-code.c \
@@ -52,7 +54,7 @@ SNEK_WARNINGS = \
 	-Wnested-externs \
 	-Wshadow
 
-SNEK_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) $(SNEK_WARNINGS)
+SNEK_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) $(SNEK_WARNINGS) -DSNEK_VERSION='"$(SNEK_VERSION)"'
 
 ifndef SNEK_NO_BUILD_TARGETS
 
