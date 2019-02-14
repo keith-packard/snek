@@ -144,7 +144,7 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define PARSE_STACK_SIZE 128
 #endif
 
-#define lex(context) ({ (void) context; token_t __token__ = snek_lex(); snek_parse_middle = true; __token__; })
+#define lex(context) ({ (void) context; token_t __token__ = snek_lex(); snek_line = snek_lex_line; snek_parse_middle = true; __token__; })
 
 #define PARSE_ACTION_BOTTOM do {			\
 		if (snek_abort)				\
@@ -157,8 +157,6 @@ _value_push_id(snek_id_t id, const char *file, int line)
 snek_parse_ret_t
 snek_parse(void)
 {
-	snek_line = 1;
-
 	for (;;) {
 		snek_current_indent = 0;
 		snek_ignore_nl = 0;

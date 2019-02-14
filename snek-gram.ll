@@ -28,7 +28,6 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 		| DEF
 			@{
 				snek_parse_nformal = 0;
-				snek_code_add_op_offset(snek_op_line, snek_line);
 			}@
 		  NAME
 			@{
@@ -94,10 +93,11 @@ opt-stats	: stat opt-stats
 		|
 		;
 stat		: simple-stat
-		| @{ snek_print_val = false; }@ compound-stat
-		| @{ snek_print_val = false; }@ NL
+		| @{ snek_print_val = false; snek_code_add_op_offset(snek_op_line, snek_lex_line); }@
+		  compound-stat
+		| NL
 		;
-simple-stat	: small-stat small-stats-p nl
+simple-stat	: @{ snek_code_add_op_offset(snek_op_line, snek_lex_line); }@ small-stat small-stats-p NL
 		;
 small-stats-p	: SEMI small-stat small-stats-p
 		|
@@ -179,6 +179,8 @@ if-stat		: IF if-expr suite elif-stats
 		;
 elif-stats	: ELIF
 			@{
+				/* snek_code_add_op_offset(snek_op_line, snek_lex_line); */
+			else_branch:
 				snek_code_add_forward(snek_forward_if);
 				value_push_offset(snek_code_current());
 			}@
@@ -190,8 +192,7 @@ elif-stats	: ELIF
 			}@
 		| ELSE COLON
 			@{
-				snek_code_add_forward(snek_forward_if);
-				value_push_offset(snek_code_current());
+				goto else_branch;
 			}@
 		  suite
 		|
@@ -285,7 +286,7 @@ for-params	: RANGE
 			}@
 		;
 suite		: simple-stat
-		| nl INDENT
+		| NL INDENT
 			@{
 				value_push_indent(snek_token_val.indent);
 			}@
@@ -574,10 +575,4 @@ actual-p	: ASSIGN
 		;
 actuals-p	: COMMA expr actual-p actuals-p
 		|
-		;
-nl		: NL
-			@{
-				if (snek_compile_size)
-					snek_code_add_op_offset(snek_op_line, snek_line);
-			}@
 		;

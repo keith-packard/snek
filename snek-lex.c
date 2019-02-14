@@ -17,10 +17,9 @@
 uint8_t snek_current_indent;
 
 char *snek_file;
-snek_offset_t snek_line;
 uint8_t snek_ignore_nl;
 
-static snek_offset_t snek_lex_line = 1;
+snek_offset_t snek_lex_line = 1;
 static bool snek_lex_midline;
 static bool snek_lex_exdent;
 
@@ -52,18 +51,27 @@ static uint8_t ungetcount;
 static char
 lexchar(void)
 {
-	if (ungetcount)
-		return ungetbuf[--ungetcount];
+	char ch;
 
-	int c = SNEK_GETC();
-	if (c == EOF)
-		return SNEK_EOF;
-	return (char) c;
+	if (ungetcount)
+		ch = ungetbuf[--ungetcount];
+	else {
+		int c = SNEK_GETC();
+		if (c == EOF)
+			ch = SNEK_EOF;
+		else
+			ch = c;
+	}
+	if (ch == '\n')
+		++snek_lex_line;
+	return ch;
 }
 
 static void
 unlexchar(char c)
 {
+	if (c == '\n')
+		--snek_lex_line;
 	ungetbuf[ungetcount++] = c;
 }
 
@@ -326,11 +334,10 @@ snek_lex(void)
 				}
 
 				if (!snek_interactive && c == '\n') {
-					++snek_lex_line;
+					;
 				} else if (c == '#') {
 					if (!comment())
 						RETURN(END);
-					++snek_lex_line;
 				} else {
 					break;
 				}
@@ -371,9 +378,7 @@ snek_lex(void)
 		case SNEK_EOF:
 			RETURN(END);
 		case '\n':
-			++snek_lex_line;
 			snek_lex_midline = false;
-			snek_line = snek_lex_line;
 			if (snek_ignore_nl)
 				continue;
 			RETURN(NL);

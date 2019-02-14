@@ -530,6 +530,7 @@ snek_func_move(void *addr);
 extern uint8_t snek_current_indent;
 extern char *snek_file;
 extern snek_offset_t snek_line;
+extern snek_offset_t snek_lex_line;
 extern uint8_t snek_ignore_nl;
 extern bool snek_parse_middle;
 extern bool snek_interactive;

@@ -449,6 +449,7 @@ snek_code_line(snek_code_t *code)
 	return line;
 }
 
+snek_offset_t 	snek_line;
 snek_poly_t	snek_stack[SNEK_STACK];
 snek_offset_t	snek_stackp;
 snek_poly_t 	snek_a = SNEK_NULL;
