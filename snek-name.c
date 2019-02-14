@@ -34,42 +34,30 @@ snek_id_t   snek_id = SNEK_BUILTIN_END;
 #define snek_builtin_names_len(a) strlen((const char *) (a))
 #endif
 
-#if SNEK_BUILTIN_NAMES_SIZE < 128
-typedef int8_t snek_bi_index_t;
-typedef uint8_t snek_ubi_index_t;
+#if SNEK_BUILTIN_NAMES_SIZE < 256
+typedef uint8_t snek_bi_index_t;
 #else
-#if SNEK_BUILTIN_NAMES_SIZE < 32768
-typedef int16_t snek_bi_index_t;
-typedef uint16_t snek_ubi_index_t;
+#if SNEK_BUILTIN_NAMES_SIZE < 65536
+typedef uint16_t snek_bi_index_t;
 #else
-#define int32_t snek_bi_index_t;
-typedef uint32_t snek_ubi_index_t;
+tyepdef uint32_t snek_bi_index_t;
 #endif
 #endif
 
 static snek_id_t
 snek_name_id_builtin(char *name, bool *keyword)
 {
-	snek_bi_index_t l = 1, h = sizeof(snek_builtin_names) - 1;
+	snek_bi_index_t i;
 
-	while (l <= h) {
-		snek_bi_index_t m = ((snek_ubi_index_t) (l + h)) >> 1;
-
-		while (SNEK_BUILTIN_NAMES(m-1) != '\0')
-			m--;
-
-		if (SNEK_BUILTIN_NAMES_CMP(name, (const char *) &snek_builtin_names[m+1]) > 0) {
-			l = m + 2;
-			while (SNEK_BUILTIN_NAMES(l-1) != '\0')
-				l++;
-		} else
-			h = m - 2;
-	}
-	if (SNEK_BUILTIN_NAMES_CMP(name, (const char *) &snek_builtin_names[l+1]) == 0) {
-		snek_id_t id = SNEK_BUILTIN_NAMES(l);
-		if ((*keyword = ((id & 0x80) != 0)))
-			id = (id & ~0x80);
-		return id;
+	for (i = 0;
+	     i < sizeof (snek_builtin_names);
+	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+1]) + 2)
+	{
+		if (SNEK_BUILTIN_NAMES_CMP(name, (const char *) &snek_builtin_names[i+1]) == 0) {
+			snek_id_t id = SNEK_BUILTIN_NAMES(i);
+			*keyword = (id & 0x80);
+			return id & ~0x80;
+		}
 	}
 	return 0;
 }
@@ -77,13 +65,14 @@ snek_name_id_builtin(char *name, bool *keyword)
 static const char *
 snek_name_string_builtin(snek_id_t id)
 {
-	long		i;
+	snek_bi_index_t i;
 
-	i = 0;
-	while (i < (long) sizeof(snek_builtin_names)) {
+	for (i = 0;
+	     i < sizeof (snek_builtin_names);
+	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+1]) + 2)
+	{
 		if (snek_builtin_names[i] == id)
 			return snek_builtin_names_return(&snek_builtin_names[i+1]);
-		i += snek_builtin_names_len((const char *) &snek_builtin_names[i+1]) + 2;
 	}
 	return NULL;
 }

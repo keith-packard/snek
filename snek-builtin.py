@@ -89,8 +89,6 @@ def dump_max_len(fp):
 def dump_names(fp):
     print("static const uint8_t SNEK_BUILTIN_NAMES_DECLARE(snek_builtin_names)[] = {", file=fp)
     total = 0
-    print("0,", file=fp);
-    total += 1
     for name in sorted(builtins):
         if name.keyword:
             print("\t%s | 0x80, " % name.keyword, end='', file=fp)
