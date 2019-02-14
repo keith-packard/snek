@@ -55,10 +55,13 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	return SNEK_ZERO;
 }
 
+static snek_soffset_t	snek_eeprom_addr;
+
 snek_poly_t
 snek_builtin_eeprom_load(void)
 {
 	snek_interactive = false;
+	snek_eeprom_addr = 0;
 	snek_duino_file.get = snek_eeprom_getchar;
 	return SNEK_ZERO;
 }
@@ -71,8 +74,6 @@ snek_builtin_eeprom_erase(void)
 	return SNEK_ZERO;
 }
 
-static snek_soffset_t	snek_eeprom_addr;
-
 int
 snek_eeprom_getchar(FILE *stream)
 {
@@ -84,5 +85,5 @@ snek_eeprom_getchar(FILE *stream)
 	}
 	snek_interactive = true;
 	snek_duino_file.get = snek_uart_getchar;
-	return snek_uart_getchar(NULL);
+	return '\n';
 }
