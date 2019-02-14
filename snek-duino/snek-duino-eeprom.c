@@ -58,7 +58,7 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 snek_poly_t
 snek_builtin_eeprom_load(void)
 {
-	snek_print_vals = false;
+	snek_interactive = false;
 	snek_duino_file.get = snek_eeprom_getchar;
 	return SNEK_ZERO;
 }
@@ -82,7 +82,7 @@ snek_eeprom_getchar(FILE *stream)
 		if (c != 0xff)
 			return c;
 	}
-	snek_print_vals = true;
+	snek_interactive = true;
 	snek_duino_file.get = snek_uart_getchar;
 	return snek_uart_getchar(NULL);
 }

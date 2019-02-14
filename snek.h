@@ -526,6 +526,8 @@ extern uint8_t snek_current_indent;
 extern char *snek_file;
 extern snek_offset_t snek_line;
 extern uint8_t snek_ignore_nl;
+extern bool snek_parse_middle;
+extern bool snek_interactive;
 extern char snek_lex_text[];
 
 /* snek-list.c */
@@ -661,8 +663,6 @@ extern const snek_mem_t snek_name_mem;
 extern snek_name_t *snek_names;
 
 /* snek-parse.c */
-
-extern bool snek_print_vals;
 
 #define SNEK_MAX_FORMALS	10
 

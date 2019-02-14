@@ -15,7 +15,8 @@
 #include "snek.h"
 #include <assert.h>
 
-bool snek_print_vals;
+bool snek_parse_middle;
+bool snek_interactive;
 static bool snek_print_val;
 
 uint8_t snek_parse_nformal;
@@ -143,7 +144,7 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define PARSE_STACK_SIZE 128
 #endif
 
-#define lex(context) ({ (void) context; snek_lex(); })
+#define lex(context) ({ (void) context; token_t __token__ = snek_lex(); snek_parse_middle = true; __token__; })
 
 #define PARSE_ACTION_BOTTOM do {			\
 		if (snek_abort)				\
@@ -162,6 +163,7 @@ snek_parse(void)
 		snek_current_indent = 0;
 		snek_ignore_nl = 0;
 		snek_abort = false;
+		snek_parse_middle = false;
 		value_stack_p = 0;
 		for_depth = 0;
 
@@ -197,6 +199,7 @@ snek_parse(void)
 					default:
 						continue;
 					}
+					snek_parse_middle = false;
 					break;
 				}
 			}

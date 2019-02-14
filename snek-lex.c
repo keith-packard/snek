@@ -18,7 +18,6 @@ uint8_t snek_current_indent;
 
 char *snek_file;
 snek_offset_t snek_line;
-
 uint8_t snek_ignore_nl;
 
 static snek_offset_t snek_lex_line = 1;
@@ -326,7 +325,9 @@ snek_lex(void)
 					break;
 				}
 
-				if (c == '#') {
+				if (!snek_interactive && c == '\n') {
+					++snek_lex_line;
+				} else if (c == '#') {
 					if (!comment())
 						RETURN(END);
 					++snek_lex_line;

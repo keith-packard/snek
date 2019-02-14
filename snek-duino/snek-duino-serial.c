@@ -237,7 +237,11 @@ snek_uart_getchar(FILE *stream)
 	(void) stream;
 	if (used == avail) {
 	restart:
-		snek_uart_puts("> ");
+		if (snek_parse_middle)
+			snek_uart_putch('+');
+		else
+			snek_uart_putch('>');
+		snek_uart_putch(' ');
 		used = avail = 0;
 		for (;;) {
 			uint8_t c = snek_uart_getch();

@@ -11,10 +11,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  General Public License for more details.
 #
-start		: command start
+start		: command @{ snek_parse_middle = false; }@ start
 		|
 		;
-command		: @{ snek_print_val = snek_print_vals; }@ stat
+command		: @{ snek_print_val = snek_interactive; }@ stat
 			@{
 				snek_code_t *code = snek_code_finish();
 				snek_poly_t p = snek_code_run(code);

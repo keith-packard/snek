@@ -17,7 +17,9 @@
 
 extern FILE	*snek_posix_input;
 
-#define SNEK_GETC()	getc(snek_posix_input)
+int snek_getc(FILE *input);
+
+#define SNEK_GETC()	snek_getc(snek_posix_input)
 
 #define SNEK_DEBUG	1
 
