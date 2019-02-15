@@ -549,7 +549,7 @@ snek_range_start(snek_offset_t ip)
 	case 3:
 		step = snek_stack_pop_float();
 		limit = snek_stack_pop_float();
-		current = snek_stack_pop_soffset();
+		current = snek_stack_pop_float();
 		if (step == 0) {
 			snek_error("zero range step");
 			return;
