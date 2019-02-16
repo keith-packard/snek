@@ -314,7 +314,7 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 		while (!snek_offset_is_none(note)) {
 			snek_list_t *list = pool_addr(note);
 			debug_memory("\tprocess list %d\n", pool_offset(list));
-			visit_addr(&snek_mems[snek_list], (void **) &list);
+			visit_addr(snek_mems(snek_list), (void **) &list);
 			note = snek_list_note_next(list);
 			debug_memory("\t\tprocessed, list is now %d next now %d\n",
 				     pool_offset(list), note);
@@ -594,7 +594,7 @@ snek_poly_mark(snek_poly_t p)
 		snek_panic("non-pool addr in heap");
 #endif
 
-	ret = snek_mark_addr(&snek_mems[type], addr);
+	ret = snek_mark_addr(snek_mems(type), addr);
 	if (!ret && type == snek_list)
 		note_list(addr, addr);
 
@@ -701,7 +701,7 @@ snek_poly_move(snek_poly_t *ref)
 		snek_panic("non-pool address");
 #endif
 
-	bool ret = snek_move_addr(&snek_mems[type], &addr);
+	bool ret = snek_move_addr(snek_mems(type), &addr);
 
 	if (!ret && type == snek_list)
 		note_list(orig_addr, addr);

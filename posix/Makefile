@@ -31,7 +31,7 @@ include $(SNEK_ROOT)/snek.defs
 
 OPT=-O0
 
-CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS)
+CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror
 
 LIBS=-lreadline -lm
 

@@ -654,7 +654,17 @@ snek_pool_offset(const void *addr);
 
 extern const struct snek_mem SNEK_MEMS_DECLARE(_snek_mems)[];
 
-#define snek_mems	(&_snek_mems[-1])
+static inline const struct snek_mem *snek_mems(snek_type_t type)
+{
+	/* Oddly, the compiler complains about this particular array
+	 * operation. However, this lets us declare _snek_mems with
+	 * one fewer entry, without causing any increase in code size
+	 */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+	return &((&_snek_mems[-1])[type]);
+#pragma GCC diagnostic pop
+}
 
 /* snek-name.c */
 

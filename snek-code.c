@@ -1231,7 +1231,7 @@ code_mark(uint8_t *code, snek_offset_t size)
 		switch (op) {
 		case snek_op_string:
 			memcpy(&o, &code[ip], sizeof (snek_offset_t));
-			snek_mark_offset(&snek_mems[snek_string], o);
+			snek_mark_offset(snek_mems(snek_string), o);
 			break;
 		default:
 			break;

@@ -52,6 +52,7 @@ SNEK_WARNINGS = \
 	-Wmissing-prototypes \
 	-Wmissing-declarations \
 	-Wnested-externs \
+	-Warray-bounds \
 	-Wshadow
 
 SNEK_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) $(SNEK_WARNINGS) -DSNEK_VERSION='"$(SNEK_VERSION)"'
