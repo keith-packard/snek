@@ -37,11 +37,11 @@ snek_device = False
 
 snek_dialog_waiting = False
 
-snek_debug_file = open('log', 'w')
+#snek_debug_file = open('log', 'w')
 
-def snek_debug(message):
-    snek_debug_file.write(message + '\n')
-    snek_debug_file.flush()
+#def snek_debug(message):
+#    snek_debug_file.write(message + '\n')
+#    snek_debug_file.flush()
 
 #
 # Read a character from the keyboard, releasing the
@@ -131,9 +131,7 @@ class SnekDevice:
 
     def close(self):
         self.alive = False
-        snek_debug("stop_reader")
         self.stop_reader()
-        snek_debug("stop_writer")
         self.stop_writer()
         try:
             self.serial.write_timeout = 1
@@ -154,7 +152,6 @@ class SnekDevice:
             self.interface.failed(self.device)
         finally:
             self.receiver_thread = False
-            snek_debug("receiver_thread exit")
 
     def writer(self):
         """Copy queued data to the serial port."""
@@ -173,7 +170,6 @@ class SnekDevice:
             self.interface.failed(self.device)
         finally:
             self.transmitter_thread = False
-            snek_debug("transmitter_thread exit")
 
     def write(self, data):
         if self.write_queue:
