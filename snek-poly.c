@@ -33,7 +33,7 @@ snek_poly(const void *addr, snek_type_t type)
 snek_poly_t
 snek_float_to_poly(float f)
 {
-	if (isnanf(f))
+	if (isnan(f))
 		return SNEK_NAN;
 	return (snek_poly_t) { .f = f };
 }
