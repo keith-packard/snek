@@ -138,9 +138,9 @@ snek_name_mark(void *addr)
 	snek_name_t *n = addr;
 
 	for (;;) {
-		if (!n->next)
-			break;
 		n = snek_pool_ref(n->next);
+		if (!n)
+			break;
 		snek_mark_block_addr(&snek_name_mem, n);
 	}
 }
@@ -151,8 +151,6 @@ snek_name_move(void *addr)
 	snek_name_t *n = addr;
 
 	for (;;) {
-		if (!n->next)
-			break;
 		if (snek_move_block_offset(&n->next))
 			break;
 		n = snek_pool_ref(n->next);

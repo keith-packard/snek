@@ -34,7 +34,7 @@ snek_frame_realloc(bool globals, snek_offset_t nvariables)
 		return NULL;
 
 	snek_frame_t *old_frame = snek_pick_frame(globals);
-	memcpy(frame, old_frame, sizeof (snek_frame_t));
+	*frame = *old_frame;
 	frame->nvariables = nvariables;
 	return frame;
 }
@@ -106,8 +106,11 @@ snek_frame_lookup(snek_id_t id, bool insert)
 		if (!snek_is_global(v->value))
 			return v;
 	}
-	if (insert && !snek_globals)
+	if (insert && !snek_globals) {
 		snek_globals = snek_alloc(sizeof (snek_frame_t));
+		snek_globals->prev = SNEK_OFFSET_NONE;
+		snek_globals->code = SNEK_OFFSET_NONE;
+	}
 	if (snek_globals && (v = snek_variable_lookup(true, id, insert)))
 		return v;
 	return v;
@@ -202,16 +205,15 @@ snek_frame_mark(void *addr)
 	snek_frame_t *f = addr;
 
 	for (;;) {
-		debug_memory("\t\tframe mark vars %d code %d prev %d\n",
-			     f->variables, f->code, f->prev);
+		debug_memory("\t\tframe mark %d code %d prev %d\n",
+			     snek_pool_offset(f), f->code, f->prev);
 		snek_offset_t i;
 		for (i = 0; i < f->nvariables; i++) {
 			snek_poly_t v = f->variables[i].value;
 			if (!snek_is_global(v))
 				snek_poly_mark(v);
 		}
-		if (f->code)
-			snek_mark_offset(&snek_code_mem, f->code);
+		snek_mark_offset(&snek_code_mem, f->code);
 		f = snek_pool_ref(f->prev);
 		if (!f || snek_mark_block_addr(&snek_frame_mem, f))
 			break;
@@ -224,15 +226,13 @@ snek_frame_move(void *addr)
 	snek_frame_t *f = addr;
 
 	for (;;) {
-		debug_memory("\t\tframe move vars %d code %d prev %d\n",
-			     f->variables, f->code, f->prev);
+		debug_memory("\t\tframe move %d code %d prev %d\n",
+			     snek_pool_offset(f), f->code, f->prev);
 		snek_offset_t i;
 		for (i = 0; i < f->nvariables; i++)
-			if (!snek_is_global(f->variables[i].value))
-				snek_poly_move(&f->variables[i].value);
-		if (f->code)
-			snek_move_offset(&snek_code_mem, &f->code);
-		if (!f->prev || snek_move_block_offset(&f->prev))
+			snek_poly_move(&f->variables[i].value);
+		snek_move_offset(&snek_code_mem, &f->code);
+		if (snek_move_block_offset(&f->prev))
 			break;
 		f = snek_pool_ref(f->prev);
 	}

@@ -58,13 +58,13 @@
 #if SNEK_POOL <= 65536
 typedef uint16_t	snek_offset_t;
 typedef int16_t		snek_soffset_t;
-#define SNEK_OFFSET_NONE	0xffffu
-#define SNEK_SOFFSET_NONE	0x7fff
+#define SNEK_OFFSET_NONE	0xfffcu
+#define SNEK_SOFFSET_NONE	0x7ffc
 #else
 typedef uint32_t	snek_offset_t;
 typedef int32_t		snek_soffset_t;
-#define SNEK_OFFSET_NONE	0xffffffffu
-#define SNEK_SOFFSET_NONE	0x7fffffff
+#define SNEK_OFFSET_NONE	0xfffffffcu
+#define SNEK_SOFFSET_NONE	0x7ffffffc
 #endif
 
 typedef snek_offset_t snek_id_t;
@@ -162,10 +162,10 @@ typedef enum {
 } __attribute__((packed)) snek_forward_t;
 
 typedef enum {
-	snek_list = 0,
-	snek_string = 1,
-	snek_func = 2,
-	snek_builtin = 3,
+	snek_builtin = 0,
+	snek_list = 1,
+	snek_string = 2,
+	snek_func = 3,
 	snek_float = 4,
 } __attribute__((packed)) snek_type_t;
 
@@ -292,9 +292,9 @@ extern const snek_builtin_t snek_builtins[];
 
 #define SNEK_NAN_U	0x7fffffffu
 #define SNEK_NAN	((snek_poly_t) { .u = SNEK_NAN_U })
-#define SNEK_NULL_U	0xffffffffu
+#define SNEK_NULL_U	0xfffffffcu
 #define SNEK_NULL	((snek_poly_t) { .u = SNEK_NULL_U })
-#define SNEK_GLOBAL_U	0xfffffffeu
+#define SNEK_GLOBAL_U	0xfffffff8u
 #define SNEK_GLOBAL	((snek_poly_t) { .u = SNEK_GLOBAL_U })
 #define SNEK_ZERO	((snek_poly_t) { .f = 0.0f })
 #define SNEK_ONE	((snek_poly_t) { .f = 1.0f })
@@ -605,9 +605,6 @@ bool
 snek_mark_block_addr(const struct snek_mem *type, void *addr);
 
 bool
-snek_mark_block_offset(const struct snek_mem *type, snek_offset_t offset);
-
-bool
 snek_mark_addr(const struct snek_mem *type, void *addr);
 
 bool
@@ -655,7 +652,9 @@ snek_pool_ref(snek_offset_t offset);
 snek_offset_t
 snek_pool_offset(const void *addr);
 
-extern const struct snek_mem SNEK_MEMS_DECLARE(snek_mems)[];
+extern const struct snek_mem SNEK_MEMS_DECLARE(_snek_mems)[];
+
+#define snek_mems	(&_snek_mems[-1])
 
 /* snek-name.c */
 
@@ -846,18 +845,19 @@ snek_poly_to_builtin(snek_poly_t a)
 	return snek_builtins + (snek_poly_to_builtin_id(a) - 1);
 }
 
-static inline snek_poly_t
-snek_bool_to_poly(bool b)
+static inline bool
+snek_offset_is_none(snek_offset_t offset)
 {
-	return b ? SNEK_ONE : SNEK_ZERO;
+	return offset == SNEK_OFFSET_NONE;
 }
+
+snek_poly_t
+snek_bool_to_poly(bool b);
 
 static inline snek_offset_t
 snek_offset_value(snek_offset_t offset)
 {
 	offset = offset & ~3;
-	if (offset)
-		offset -= 3;
 	return offset;
 }
 
@@ -888,8 +888,6 @@ snek_offset_set_flag_1(snek_offset_t offset, bool flag)
 static inline snek_offset_t
 snek_offset_set_value(snek_offset_t offset, snek_offset_t value)
 {
-	if (value)
-		value += 3;
 #if SNEK_DEBUG
 	if (value & 3)
 		snek_panic("note_next bad alignment");

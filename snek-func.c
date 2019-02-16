@@ -74,8 +74,7 @@ snek_func_mark(void *addr)
 {
 	snek_func_t *func = addr;
 
-	if (func->code)
-		snek_mark_offset(&snek_code_mem, func->code);
+	snek_mark_offset(&snek_code_mem, func->code);
 }
 
 void
@@ -83,6 +82,5 @@ snek_func_move(void *addr)
 {
 	snek_func_t *func = addr;
 
-	if (func->code)
-		snek_move_offset(&snek_code_mem, &func->code);
+	snek_move_offset(&snek_code_mem, &func->code);
 }

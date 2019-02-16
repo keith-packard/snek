@@ -78,7 +78,9 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	default:
 		break;
 	}
-	switch (atype) {
+	if (snek_is_null(a))
+		buf->put_s("None", closure);
+	else switch (atype) {
 	case snek_float:
 		sprintf_const(tmp, "%.7g", snek_poly_to_float(a));
 		buf->put_s(tmp, closure);

@@ -122,7 +122,7 @@ typedef snek_offset_t snek_uchunk_t;
 
 #endif
 
-static snek_offset_t	snek_note_list;
+static snek_offset_t	snek_note_list = SNEK_OFFSET_NONE;
 
 static snek_offset_t	snek_top;
 
@@ -178,7 +178,7 @@ note_list(snek_list_t *list_old, snek_list_t *list_new)
 		debug_memory("\tnote list %d -> %d\n", pool_offset(list_old), pool_offset(list_new));
 		snek_list_set_note_next(list_new, snek_note_list);
 		snek_list_set_noted(list_new, true);
-		snek_note_list = snek_pool_offset(list_old);
+		snek_note_list = pool_offset(list_old);
 		return false;
 	}
 	debug_memory("\tnote list %d -> %d already noted (noted %d busy %d)\n",
@@ -291,12 +291,12 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 			}
 		}
 	}
-	while (snek_note_list) {
+	while (!snek_offset_is_none(snek_note_list)) {
 		snek_offset_t note = snek_note_list;
-		snek_note_list = 0;
-		debug_memory("processing list %d\n", pool_offset(snek_pool_ref(note)));
-		while (note) {
-			snek_list_t *list = snek_pool_ref(note);
+		snek_note_list = SNEK_OFFSET_NONE;
+		debug_memory("processing list %d\n", note);
+		while (!snek_offset_is_none(note)) {
+			snek_list_t *list = pool_addr(note);
 			debug_memory("\tprocess list %d\n", pool_offset(list));
 			visit_addr(&snek_mems[snek_list], (void **) &list);
 			note = snek_list_note_next(list);
@@ -469,21 +469,42 @@ snek_mark_blob(void *addr, snek_offset_t size)
 	return false;
 }
 
+#ifdef DEBUG_MEMORY
+static const char *
+type_name(const struct snek_mem *type)
+{
+	if (type == &snek_code_mem)
+		return "code";
+	if (type == &snek_compile_mem)
+		return "compile";
+	if (type == &snek_frame_mem)
+		return "frame";
+	if (type == &snek_name_mem)
+		return "name";
+	snek_type_t t = (type - _snek_mems) + 1;
+	switch (t) {
+	case snek_list:
+		return "list";
+	case snek_string:
+		return "string";
+	case snek_func:
+		return "func";
+	default:
+		snek_panic("invalid mem type\n");
+		return NULL;
+	}
+}
+#endif
+
 bool
 snek_mark_block_addr(const struct snek_mem *type, void *addr)
 {
 	bool ret;
 	ret = snek_mark_blob(addr, snek_size(type, addr));
 	if (!ret) {
-		debug_memory("\tmark %s %d %d\n", type->name, pool_offset(addr), snek_size(type, addr));
+		debug_memory("\tmark %s %d %d\n", type_name(type), pool_offset(addr), snek_size(type, addr));
 	}
 	return ret;
-}
-
-bool
-snek_mark_block_offset(const struct snek_mem *type, snek_offset_t offset)
-{
-	return snek_mark_block_addr(type, snek_pool_ref(offset));
 }
 
 /*
@@ -502,21 +523,23 @@ snek_mark_addr(const struct snek_mem *type, void *addr)
 bool
 snek_mark_offset(const struct snek_mem *type, snek_offset_t offset)
 {
-	return snek_mark_addr(type, snek_pool_ref(offset));
+	if (snek_offset_is_none(offset))
+		return true;
+	return snek_mark_addr(type, pool_addr(offset));
 }
 
-const struct snek_mem SNEK_MEMS_DECLARE(snek_mems)[] = {
-	[snek_list] = {
+const struct snek_mem SNEK_MEMS_DECLARE(_snek_mems)[] = {
+	[snek_list-1] = {
 		.size = snek_list_size,
 		.mark = snek_list_mark,
 		.move = snek_list_move,
 	},
-	[snek_string] = {
+	[snek_string-1] = {
 		.size = snek_string_size,
 		.mark = snek_string_mark_move,
 		.move = snek_string_mark_move,
 	},
-	[snek_func] = {
+	[snek_func-1] = {
 		.size = snek_func_size,
 		.mark = snek_func_mark,
 		.move = snek_func_move,
@@ -535,6 +558,9 @@ snek_poly_mark(snek_poly_t p)
 	snek_type_t	type;
 	void		*addr;
 	bool		ret;
+
+	if (snek_is_null(p))
+		return true;
 
 	type = snek_poly_type(p);
 
@@ -583,10 +609,13 @@ bool
 snek_move_block_offset(void *ref)
 {
 	snek_offset_t	offset;
+
 	memcpy(&offset, ref, sizeof (snek_offset_t));
-	offset = move_map(offset - 1) + 1;
+	if (snek_offset_is_none(offset))
+		return true;
+
+	offset = move_map(offset);
 	memcpy(ref, &offset, sizeof (snek_offset_t));
-	offset -= 1;
 
 	if (busy(offset))
 		return true;
@@ -607,9 +636,9 @@ snek_move_block_addr(void **ref)
 		snek_panic("non-pool address");
 #endif
 
-	offset = snek_pool_offset(addr);
+	offset = pool_offset(addr);
 	ret = snek_move_block_offset(&offset);
-	*ref = snek_pool_ref(offset);
+	*ref = pool_addr(offset);
 
 	return ret;
 }
@@ -631,7 +660,7 @@ snek_move_offset(const struct snek_mem *type, snek_offset_t *ref)
 	bool ret;
 	ret = snek_move_block_offset(ref);
 	if (!ret)
-		SNEK_MEM_MOVE(type)(snek_pool_ref(*ref));
+		SNEK_MEM_MOVE(type)(pool_addr(*ref));
 	return ret;
 }
 
@@ -705,28 +734,28 @@ snek_code_fetch(void)
 void *
 snek_pool_ref(snek_offset_t offset)
 {
-	if (offset == 0)
+	if (snek_offset_is_none(offset))
 		return NULL;
 
 #if SNEK_DEBUG
-	if (((offset - 1) & (SNEK_ALLOC_ROUND-1)) != 0)
+	if ((offset & (SNEK_ALLOC_ROUND-1)) != 0)
 		snek_panic("bad offset");
 #endif
 
-	return snek_pool + offset - 1;
+	return snek_pool + offset;
 }
 
 snek_offset_t
 snek_pool_offset(const void *addr)
 {
 	if (addr == NULL)
-		return 0;
+		return SNEK_OFFSET_NONE;
 
 #if SNEK_DEBUG
 	if (((uintptr_t) addr & (SNEK_ALLOC_ROUND-1)) != 0)
 		snek_panic("bad address");
 #endif
 
-	return ((const uint8_t *) addr) - snek_pool + 1;
+	return ((const uint8_t *) addr) - snek_pool;
 }
 
