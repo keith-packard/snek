@@ -31,20 +31,36 @@ snek_current_window = 0
 snek_edit_win = 0
 snek_repl_win = 0
 
+snek_monitor = False
+
 snek_device = False
+
+snek_dialog_waiting = False
+
+snek_debug_file = open('log', 'w')
+
+def snek_debug(message):
+    snek_debug_file.write(message + '\n')
+    snek_debug_file.flush()
 
 #
 # Read a character from the keyboard, releasing the
 # global lock while blocked so that serial input can arrive
 #
 
-def my_getch(window):
-    global snek_lock, snek_current_window
-    if snek_current_window:
-        snek_current_window.set_cursor()
-    snek_lock.release()
-    c = window.getch()
-    snek_lock.acquire()
+def my_getch(edit_win):
+    global snek_lock, snek_current_window, snek_dialog_waiting
+    while True:
+        edit_win.set_cursor()
+        snek_lock.release()
+        c = edit_win.window.getch()
+        snek_lock.acquire()
+        if not snek_dialog_waiting:
+            break
+        if c == ord('\n'):
+            snek_dialog_waiting.close()
+            snek_dialog_waiting = False
+
     #
     # Check for resize
     #
@@ -82,13 +98,6 @@ class SnekDevice:
                                     rtscts=False,
                                     dsrdtr=False)
         
-    def _stop_reader(self):
-        """Stop reader thread only, wait for clean exit of thread"""
-        self._reader_alive = False
-        if hasattr(self.serial, 'cancel_read'):
-            self.serial.cancel_read()
-        self.receiver_thread.join()
-
     def start(self):
         """start worker threads"""
 
@@ -105,20 +114,32 @@ class SnekDevice:
         self.transmitter_thread.daemon = True
         self.transmitter_thread.start()
 
-    def stop(self):
-        """set flag to stop worker threads"""
-        self.alive = False
-
-    def join(self, transmit_only=False):
-        """wait for worker threads to terminate"""
-        self.transmitter_thread.join()
-        if not transmit_only:
-            if hasattr(self.serial, 'cancel_read'):
-                self.serial.cancel_read()
+    def stop_reader(self):
+        if self.receiver_thread and threading.current_thread() != self.receiver_thread:
+            self.serial.cancel_read()
+            self.interface.cv.release()
             self.receiver_thread.join()
+            self.interface.cv.acquire()
+
+    def stop_writer(self):
+        """set flag to stop worker threads"""
+        if self.transmitter_thread and threading.current_thread() != self.transmitter_thread:
+            self.interface.cv.notify()
+            self.interface.cv.release()
+            self.transmitter_thread.join()
+            self.interface.cv.acquire()
 
     def close(self):
-        self.serial.write(b'\x0f')
+        self.alive = False
+        snek_debug("stop_reader")
+        self.stop_reader()
+        snek_debug("stop_writer")
+        self.stop_writer()
+        self.serial.write_timeout = 1
+        try:
+            self.serial.write(b'\x0f')
+        except serial.SerialException:
+            pass
         self.serial.close()
 
     def reader(self):
@@ -129,9 +150,11 @@ class SnekDevice:
                 data = self.serial.read(self.serial.in_waiting or 1)
                 if data:
                     self.interface.receive(str(data, encoding='utf-8', errors='ignore'))
-        except serial.SerialException:
-            self.alive = False
-            raise       # XXX handle instead of re-raise?
+        except serial.SerialException as e:
+            self.interface.failed(self.device)
+        finally:
+            self.receiver_thread = False
+            snek_debug("receiver_thread exit")
 
     def writer(self):
         """Copy queued data to the serial port."""
@@ -139,14 +162,18 @@ class SnekDevice:
             while self.alive:
                 send_data = ""
                 with self.interface.cv:
-                    while not self.write_queue:
+                    while not self.write_queue and self.alive:
                         self.interface.cv.wait()
+                    if not self.alive:
+                        return
                     send_data = self.write_queue
                     self.write_queue = False
                 self.serial.write(send_data.encode('utf-8'))
-        except:
-            self.alive = False
-            raise
+        except serial.SerialException as e:
+            self.interface.failed(self.device)
+        finally:
+            self.transmitter_thread = False
+            snek_debug("transmitter_thread exit")
 
     def write(self, data):
         if self.write_queue:
@@ -502,7 +529,7 @@ class EditWin:
 
     def getch(self):
         self.repaint()
-        return my_getch(self.window)
+        return my_getch(self)
 
     # Return the contents of the previous line
 
@@ -553,11 +580,13 @@ class ErrorWin:
     y = 0
     nlines = 5
     ncols = 40
+    inputthread = True
 
     window = False
 
-    def __init__(self, label):
+    def __init__(self, label, inputthread=True):
         self.label = label
+        self.inputthread = inputthread
         self.ncols = min(curses.COLS, max(40, len(label) + 2))
         self.x = (curses.COLS - self.ncols) // 2
         self.y = (curses.LINES - self.nlines) // 2
@@ -573,12 +602,20 @@ class ErrorWin:
         self.window.addstr(1, (self.ncols - l) // 2, self.label)
         self.window.addstr(3, 2, "OK")
 
-    def run_dialog(self):
-        self.repaint()
-        self.window.move(3, 4)
-        name = self.window.getstr()
+    def close(self):
         del self.window
         screen_repaint()
+
+    def run_dialog(self):
+        global snek_dialog_waiting
+        self.repaint()
+        self.window.move(3, 4)
+        self.window.refresh()
+        if self.inputthread:
+            self.window.getstr()
+            self.close()
+        else:
+            snek_dialog_waiting = self
 
 class GetTextWin:
     """Prompt for line of text"""
@@ -660,6 +697,8 @@ def screen_repaint():
     snek_edit_win.repaint()
     snek_repl_win.repaint()
     screen_paint()
+    if snek_current_window:
+        snek_current_window.set_cursor()
 
 def screen_resize():
     global snek_edit_win, snek_repl_win
@@ -690,19 +729,22 @@ def screen_fini():
     curses.endwin()
 
 def snekde_open_device():
-    global snek_device
+    global snek_device, snek_monitor
     dialog = GetTextWin("Open Device", prompt="Port:")
     name = dialog.run_dialog()
     try:
-        snek_monitor = SnekMonitor()
         device = SnekDevice(name, snek_monitor)
         device.start()
         if snek_device:
+            snek_device.close()
             del snek_device
         snek_device = device
         screen_paint()
     except OSError as e:
-        ErrorWin(e.strerror)
+        message = e.strerror
+        if not message:
+            message = "failed"
+        ErrorWin("%s: %s" % (name, message))
 
 def snekde_get_text():
     global snek_edit_win, snek_device
@@ -838,8 +880,21 @@ class SnekMonitor:
             self.add_to(snek_repl_win, data_repl)
         snek_lock.release()
 
+    def failed(self, device):
+        global snek_device
+        snek_lock.acquire()
+        if snek_device:
+            snek_device.close()
+            del snek_device
+            snek_device = False
+        ErrorWin("Device %s failed" % device, inputthread=False)
+        snek_lock.release()
+        
+
 def main():
-    global snek_device, snek_edit_win
+    global snek_device, snek_edit_win, snek_monitor
+
+    snek_monitor = SnekMonitor()
 
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("--list", action='store_true', help="List available serial devices")
@@ -848,7 +903,6 @@ def main():
     args = arg_parser.parse_args()
     snek_device = False
     if args.port:
-        snek_monitor = SnekMonitor()
         try:
             snek_device = SnekDevice(args.port, snek_monitor)
         except OSError as e:

@@ -40,7 +40,7 @@ snek_list_resize(snek_list_t *list, snek_offset_t size)
 		snek_offset_t to_copy = size;
 		if (to_copy > list->size)
 			to_copy = list->size;
-		memcpy(data, snek_pool_ref(list->data), to_copy * sizeof (snek_poly_t));
+		memcpy(data, snek_pool_addr(list->data), to_copy * sizeof (snek_poly_t));
 	}
 	list->data = snek_pool_offset(data);
 	list->size = size;
@@ -79,8 +79,8 @@ snek_list_append(snek_list_t *list, snek_list_t *append)
 	append = snek_stack_pop_list();
 
 	if (list)
-		memcpy((snek_poly_t *) snek_pool_ref(list->data) + oldsize,
-		       snek_pool_ref(append->data),
+		memcpy((snek_poly_t *) snek_pool_addr(list->data) + oldsize,
+		       snek_pool_addr(append->data),
 		       append->size * sizeof(snek_poly_t));
 	return list;
 }
@@ -95,11 +95,11 @@ snek_list_plus(snek_list_t *a, snek_list_t *b)
 	a = snek_stack_pop_list();
 	if (!n)
 		return NULL;
-	memcpy(snek_pool_ref(n->data),
-	       snek_pool_ref(a->data),
+	memcpy(snek_pool_addr(n->data),
+	       snek_pool_addr(a->data),
 	       a->size * sizeof(snek_poly_t));
-	memcpy((snek_poly_t *) snek_pool_ref(n->data) + a->size,
-	       snek_pool_ref(b->data),
+	memcpy((snek_poly_t *) snek_pool_addr(n->data) + a->size,
+	       snek_pool_addr(b->data),
 	       b->size * sizeof(snek_poly_t));
 	return n;
 }
@@ -115,8 +115,8 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 	a = snek_stack_pop_list();
 	if (!n)
 		return NULL;
-	snek_poly_t *src = snek_pool_ref(a->data);
-	snek_poly_t *dst = snek_pool_ref(n->data);
+	snek_poly_t *src = snek_pool_addr(a->data);
+	snek_poly_t *dst = snek_pool_addr(n->data);
 	while (count--) {
 		memcpy(dst, src, size * sizeof (snek_poly_t));
 		dst += size;
@@ -153,8 +153,8 @@ snek_list_equal(snek_list_t *a, snek_list_t *b)
 		return false;
 	if (a->size != b->size)
 		return false;
-	snek_poly_t *adata = snek_pool_ref(a->data);
-	snek_poly_t *bdata = snek_pool_ref(b->data);
+	snek_poly_t *adata = snek_pool_addr(a->data);
+	snek_poly_t *bdata = snek_pool_addr(b->data);
 	for (snek_offset_t o = 0; o < a->size; o++)
 		if (!snek_poly_equal(adata[o], bdata[o], false))
 			return false;
@@ -171,7 +171,7 @@ snek_list_imm(snek_offset_t size, bool readonly)
 		return SNEK_NULL;
 	}
 
-	snek_poly_t	*data = snek_pool_ref(list->data);
+	snek_poly_t	*data = snek_pool_addr(list->data);
 	while (size--)
 		data[size] = snek_stack_pop();
 	return snek_list_to_poly(list);
@@ -189,8 +189,8 @@ snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 	if (!n)
 		return NULL;
 	snek_offset_t i = 0;
-	snek_poly_t *data = snek_pool_ref(list->data);
-	snek_poly_t *ndata = snek_pool_ref(n->data);
+	snek_poly_t *data = snek_pool_addr(list->data);
+	snek_poly_t *ndata = snek_pool_addr(n->data);
 	for (snek_slice_start(slice); snek_slice_test(slice); snek_slice_step(slice))
 		ndata[i++] = data[slice->pos];
 	return n;
@@ -221,7 +221,7 @@ snek_list_mark(void *addr)
 	snek_list_t *list = addr;
 	debug_memory("\t\tmark list size %d alloc %d data %d\n", list->size, list->alloc, list->data);
 	if (list->data) {
-		snek_poly_t *data = snek_pool_ref(list->data);
+		snek_poly_t *data = snek_pool_addr(list->data);
 		snek_mark_blob(data, list->alloc * sizeof (snek_poly_t));
 		for (snek_offset_t i = 0; i < list->size; i++)
 			snek_poly_mark_ref(&data[i]);
@@ -235,7 +235,7 @@ snek_list_move(void *addr)
 	debug_memory("\t\tmove list size %d alloc %d data %d\n", list->size, list->alloc, list->data);
 	if (list->data) {
 		snek_move_block_offset(&list->data);
-		snek_poly_t *data = snek_pool_ref(list->data);
+		snek_poly_t *data = snek_pool_addr(list->data);
 		for (snek_offset_t i = 0; i < list->size; i++)
 			snek_poly_move(&data[i]);
 	}

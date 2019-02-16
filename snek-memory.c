@@ -748,7 +748,7 @@ snek_code_fetch(void)
 }
 
 void *
-snek_pool_ref(snek_offset_t offset)
+snek_pool_addr(snek_offset_t offset)
 {
 	if (snek_offset_is_none(offset))
 		return NULL;

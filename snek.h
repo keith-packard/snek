@@ -647,7 +647,7 @@ snek_code_t *
 snek_code_fetch(void);
 
 void *
-snek_pool_ref(snek_offset_t offset);
+snek_pool_addr(snek_offset_t offset);
 
 snek_offset_t
 snek_pool_offset(const void *addr);
@@ -800,7 +800,7 @@ snek_poly_to_list(snek_poly_t poly)
 static inline snek_poly_t *
 snek_list_data(snek_list_t *list)
 {
-	return snek_pool_ref(list->data);
+	return snek_pool_addr(list->data);
 }
 
 static inline snek_poly_t

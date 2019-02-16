@@ -89,7 +89,7 @@ snek_name_id(char *name, bool *keyword)
 	*keyword = false;
 
 	id = snek_id;
-	for (n = snek_names; n; n = snek_pool_ref(n->next)) {
+	for (n = snek_names; n; n = snek_pool_addr(n->next)) {
 		if (!strcmp(n->name, name))
 			return id;
 		id--;
@@ -116,7 +116,7 @@ snek_name_string(snek_id_t match_id)
 
 	snek_id_t id = snek_id;
 
-	for (n = snek_names; n; n = snek_pool_ref(n->next)) {
+	for (n = snek_names; n; n = snek_pool_addr(n->next)) {
 		if (id == match_id)
 			return n->name;
 		id--;
@@ -138,7 +138,7 @@ snek_name_mark(void *addr)
 	snek_name_t *n = addr;
 
 	for (;;) {
-		n = snek_pool_ref(n->next);
+		n = snek_pool_addr(n->next);
 		if (!n)
 			break;
 		snek_mark_block_addr(&snek_name_mem, n);
@@ -153,7 +153,7 @@ snek_name_move(void *addr)
 	for (;;) {
 		if (snek_move_block_offset(&n->next))
 			break;
-		n = snek_pool_ref(n->next);
+		n = snek_pool_addr(n->next);
 	}
 }
 

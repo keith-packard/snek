@@ -169,7 +169,7 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 		break;
 	case snek_op_string:
 		memcpy(&o, &code->code[ip], sizeof(snek_offset_t));
-		dbg("%s\n", (char *) snek_pool_ref(o));
+		dbg("%s\n", (char *) snek_pool_addr(o));
 		break;
 	case snek_op_list:
 	case snek_op_tuple:
@@ -1111,7 +1111,7 @@ snek_code_run(snek_code_t *code_in)
 					if (!snek_func_push(nposition, nnamed, ip - 1))
 						break;
 					snek_a = snek_stack_pop();	/* get function back */
-					snek_code = snek_pool_ref(snek_poly_to_func(snek_a)->code);
+					snek_code = snek_pool_addr(snek_poly_to_func(snek_a)->code);
 					ip = 0;
 					push = false;	/* will pick up push on return */
 					goto done_func;

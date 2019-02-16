@@ -17,7 +17,7 @@
 static snek_offset_t
 snek_func_line(snek_func_t *func)
 {
-	snek_code_t	*code = snek_pool_ref(func->code);
+	snek_code_t	*code = snek_pool_addr(func->code);
 	if (code)
 		return snek_code_line(code);
 	return 0;
@@ -104,7 +104,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	{
 		snek_list_t *list = snek_poly_to_list(a);
 		buf->put_c(snek_list_readonly(list) ? '(' : '[', closure);
-		snek_poly_t *data = snek_pool_ref(list->data);
+		snek_poly_t *data = snek_pool_addr(list->data);
 		for (snek_offset_t o = 0; o < list->size; o++) {
 			if (o)
 				buf->put_c(' ', closure);
