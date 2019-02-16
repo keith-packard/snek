@@ -127,12 +127,28 @@ static snek_offset_t	snek_note_list = SNEK_OFFSET_NONE;
 static snek_offset_t	snek_top;
 
 /* Offset of an address within the pool. */
-static snek_offset_t pool_offset(void *addr) {
+static snek_offset_t pool_offset(const void *addr) {
+#if SNEK_DEBUG
+	if (addr == NULL)
+		snek_panic("null in pool_offset");
+	if ((uint8_t *) addr < snek_pool || &snek_pool[SNEK_POOL] <= (uint8_t *) addr)
+		snek_panic("out of bounds in pool_offset");
+	if (((uintptr_t) addr & (SNEK_ALLOC_ROUND-1)) != 0)
+		snek_panic("unaligned addr in pool_offset");
+#endif
 	return ((uint8_t *) addr) - snek_pool;
 }
 
 /* Address of an offset within the pool */
 static void *pool_addr(snek_offset_t offset) {
+#if SNEK_DEBUG
+	if (snek_offset_is_none(offset))
+		snek_panic("none in pool_addr");
+	if (offset >= SNEK_POOL)
+		snek_panic("out of bounds in pool_addr");
+	if ((offset & (SNEK_ALLOC_ROUND-1)) != 0)
+		snek_panic("unaligned offset in pool_addr");
+#endif
 	return snek_pool + offset;
 }
 
@@ -737,12 +753,7 @@ snek_pool_ref(snek_offset_t offset)
 	if (snek_offset_is_none(offset))
 		return NULL;
 
-#if SNEK_DEBUG
-	if ((offset & (SNEK_ALLOC_ROUND-1)) != 0)
-		snek_panic("bad offset");
-#endif
-
-	return snek_pool + offset;
+	return pool_addr(offset);
 }
 
 snek_offset_t
@@ -750,12 +761,6 @@ snek_pool_offset(const void *addr)
 {
 	if (addr == NULL)
 		return SNEK_OFFSET_NONE;
-
-#if SNEK_DEBUG
-	if (((uintptr_t) addr & (SNEK_ALLOC_ROUND-1)) != 0)
-		snek_panic("bad address");
-#endif
-
-	return ((const uint8_t *) addr) - snek_pool;
+	return pool_offset(addr);
 }
 
