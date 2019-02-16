@@ -135,8 +135,8 @@ class SnekDevice:
         self.stop_reader()
         snek_debug("stop_writer")
         self.stop_writer()
-        self.serial.write_timeout = 1
         try:
+            self.serial.write_timeout = 1
             self.serial.write(b'\x0f')
         except serial.SerialException:
             pass
@@ -873,23 +873,20 @@ class SnekMonitor:
                     data_edit += c
                 else:
                     data_repl += c
-        snek_lock.acquire()
-        if data_edit:
-            self.add_to(snek_edit_win, data_edit)
-        if data_repl:
-            self.add_to(snek_repl_win, data_repl)
-        snek_lock.release()
+        with snek_lock:
+            if data_edit:
+                self.add_to(snek_edit_win, data_edit)
+            if data_repl:
+                self.add_to(snek_repl_win, data_repl)
 
     def failed(self, device):
-        global snek_device
-        snek_lock.acquire()
-        if snek_device:
-            snek_device.close()
-            del snek_device
-            snek_device = False
-        ErrorWin("Device %s failed" % device, inputthread=False)
-        snek_lock.release()
-        
+        global snek_device, snek_lock
+        with snek_lock:
+            if snek_device:
+                snek_device.close()
+                del snek_device
+                snek_device = False
+            ErrorWin("Device %s failed" % device, inputthread=False)
 
 def main():
     global snek_device, snek_edit_win, snek_monitor
