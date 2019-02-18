@@ -36,12 +36,10 @@ snek_list_resize(snek_list_t *list, snek_offset_t size)
 
 	if (!data)
 		return false;
-	if (list->data) {
-		snek_offset_t to_copy = size;
-		if (to_copy > list->size)
-			to_copy = list->size;
-		memcpy(data, snek_pool_addr(list->data), to_copy * sizeof (snek_poly_t));
-	}
+	snek_offset_t to_copy = size;
+	if (to_copy > list->size)
+		to_copy = list->size;
+	memcpy(data, snek_pool_addr(list->data), to_copy * sizeof (snek_poly_t));
 	list->data = snek_pool_offset(data);
 	list->size = size;
 	list->alloc = alloc;
@@ -51,18 +49,12 @@ snek_list_resize(snek_list_t *list, snek_offset_t size)
 snek_list_t *
 snek_list_make(snek_offset_t size, bool readonly)
 {
-	snek_list_t	*list;
-
-	list = snek_alloc(sizeof (snek_list_t));
-	if (!list)
-		return NULL;
-
-	snek_list_set_readonly(list, readonly);
-
-	list = snek_list_resize(list, size);
-	if (!list)
-		return NULL;
-
+	snek_list_t *list = snek_alloc(sizeof(snek_list_t));
+	if (list) {
+		snek_list_set_readonly(list, readonly);
+		if (list)
+			list = snek_list_resize(list, size);
+	}
 	return list;
 }
 
@@ -180,11 +172,12 @@ snek_list_imm(snek_offset_t size, bool readonly)
 snek_list_t *
 snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 {
-	if (snek_list_readonly(list) && slice->identity)
+	bool readonly = snek_list_readonly(list);
+	if (readonly && slice->identity)
 	    return list;
 
 	snek_stack_push_list(list);
-	snek_list_t *n = snek_list_make(slice->count, snek_list_readonly(list));
+	snek_list_t *n = snek_list_make(slice->count, readonly);
 	list = snek_stack_pop_list();
 	if (!n)
 		return NULL;
@@ -220,7 +213,7 @@ snek_list_mark(void *addr)
 {
 	snek_list_t *list = addr;
 	debug_memory("\t\tmark list size %d alloc %d data %d\n", list->size, list->alloc, list->data);
-	if (list->data) {
+	if (list->alloc) {
 		snek_poly_t *data = snek_pool_addr(list->data);
 		snek_mark_blob(data, list->alloc * sizeof (snek_poly_t));
 		for (snek_offset_t i = 0; i < list->size; i++)
@@ -233,7 +226,7 @@ snek_list_move(void *addr)
 {
 	snek_list_t *list = addr;
 	debug_memory("\t\tmove list size %d alloc %d data %d\n", list->size, list->alloc, list->data);
-	if (list->data) {
+	if (list->alloc) {
 		snek_move_block_offset(&list->data);
 		snek_poly_t *data = snek_pool_addr(list->data);
 		for (snek_offset_t i = 0; i < list->size; i++)
