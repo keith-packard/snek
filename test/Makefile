@@ -26,6 +26,7 @@ TESTS = \
 	if.py \
 	op.py \
 	range.py \
+	slice.py \
 	while.py \
 	while-break.py \
 	while-else.py

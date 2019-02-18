@@ -180,7 +180,7 @@ snek_list_imm(snek_offset_t size, bool readonly)
 snek_list_t *
 snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 {
-	if (snek_list_readonly(list) && snek_slice_identity(slice))
+	if (snek_list_readonly(list) && slice->identity)
 	    return list;
 
 	snek_stack_push_list(list);
@@ -191,7 +191,7 @@ snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 	snek_offset_t i = 0;
 	snek_poly_t *data = snek_pool_addr(list->data);
 	snek_poly_t *ndata = snek_pool_addr(n->data);
-	for (snek_slice_start(slice); snek_slice_test(slice); snek_slice_step(slice))
+	for (; snek_slice_test(slice); snek_slice_step(slice))
 		ndata[i++] = data[slice->pos];
 	return n;
 }

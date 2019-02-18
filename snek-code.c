@@ -812,63 +812,76 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	return ret;
 }
 
-static bool
-snek_slice_canon(snek_slice_t *slice)
-{
-	if (slice->start == SNEK_SLICE_DEFAULT)
-		slice->start = 0;
-	if (slice->stride == SNEK_SLICE_DEFAULT)
-		slice->stride = 1;
-	if (slice->end == SNEK_SLICE_DEFAULT) {
-		if (slice->stride < 0)
-			slice->end = -slice->len - 1;
-		else
-			slice->end = slice->len;
-	}
-	if (slice->start < 0) {
-		slice->start = slice->len + slice->start;
-		if (slice->start < 0)
-			slice->start = 0;
-	}
-	if (slice->end < 0) {
-		slice->end = slice->len + slice->end;
-	}
-	if (slice->start > slice->len)
-		return false;
-	if (slice->end > slice->len)
-		return false;
-	if (slice->stride == 0)
-		return false;
-	slice->count = (slice->end - slice->start) / abs(slice->stride);
-	return true;
+static inline snek_soffset_t
+soffset_sgn(snek_soffset_t s) {
+	return (s > 0) - (s < 0);
 }
 
 static void
 snek_slice(uint8_t bits)
 {
-	snek_slice_t	slice = {
-		.start = SNEK_SLICE_DEFAULT,
-		.end = SNEK_SLICE_DEFAULT,
-		.stride = SNEK_SLICE_DEFAULT,
-
-		.len = 0,
-		.count = 0,
-		.pos = 0,
-	};
+	snek_soffset_t	start = SNEK_SOFFSET_NONE;
+	snek_soffset_t	end = SNEK_SOFFSET_NONE;
+	snek_soffset_t	stride = 1;
+	snek_soffset_t	len;
 
 	if (bits & SNEK_OP_SLICE_STRIDE)
-		slice.stride = snek_stack_pop_soffset();
+		stride = snek_stack_pop_soffset();
 
 	if (bits & SNEK_OP_SLICE_END)
-		slice.end = snek_stack_pop_soffset();
+		end = snek_stack_pop_soffset();
 
 	if (bits & SNEK_OP_SLICE_START)
-		slice.start = snek_stack_pop_soffset();
+		start = snek_stack_pop_soffset();
 
-	slice.len = snek_poly_len(snek_a = snek_stack_pop());
+	snek_a = snek_stack_pop();
 
-	if (!snek_slice_canon(&slice))
+	len = snek_poly_len(snek_a);
+
+	if (stride == 0) {
+		snek_error("slice step cannot be zero");
 		return;
+	}
+
+	/* Negative positions are relative to end */
+	if (start < 0)
+		start = len + start;
+
+	if (end < 0)
+		end = len + end;
+
+	if (stride > 0) {
+		/* Use zero by default, or if negative */
+		if (start == SNEK_SOFFSET_NONE || start < 0)
+			start = 0;
+
+		/* use len by default or if too big */
+		if (end == SNEK_SOFFSET_NONE || end > len)
+			end = len;
+
+	} else {
+		/* Use len-1 by default, or if too big */
+		if (start == SNEK_SOFFSET_NONE || start >= len)
+			start = len - 1;
+
+		/* Use -1 by default or if too small */
+		if (end == SNEK_SOFFSET_NONE || end < -1)
+			end = -1;
+	}
+
+	snek_slice_t slice;
+
+	slice.pos = start;
+	slice.stride = stride;
+
+	snek_soffset_t count = (end + stride - soffset_sgn(stride) - start) / stride;
+
+	if (count < 0)
+		count = 0;
+
+	slice.count = count;
+	slice.identity = start == 0 && count == len && stride == 1;
+
 	switch (snek_poly_type(snek_a)) {
 	case snek_string:
 		snek_a = snek_string_to_poly(snek_string_slice(snek_poly_to_string(snek_a), &slice));

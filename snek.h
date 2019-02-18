@@ -250,19 +250,17 @@ typedef struct snek_frame {
 
 
 typedef struct snek_slice {
-	/* provided parameters */
-	snek_soffset_t		start;
-	snek_soffset_t		end;
-	snek_soffset_t		stride;
+	/* number of outputs */
+	snek_offset_t	count;
 
-	/* provided length of object */
-	snek_soffset_t	len;
+	/* position of current object */
+	snek_offset_t	pos;
 
-	/* computed number of outputs */
-	snek_soffset_t	count;
+	/* stride between inputs */
+	snek_soffset_t	stride;
 
-	/* computed position of current object */
-	snek_soffset_t	pos;
+	/* slice is identity */
+	bool		identity;
 } snek_slice_t;
 
 #define SNEK_SLICE_DEFAULT	SNEK_SOFFSET_NONE		/* empty value provided [1:] */
@@ -753,28 +751,17 @@ snek_string_mark_move(void *addr);
 
 /* inlines */
 
-static inline void
-snek_slice_start(snek_slice_t *slice)
-{
-	slice->pos = slice->start;
-}
-
 static inline bool
 snek_slice_test(snek_slice_t *slice)
 {
-	return slice->stride > 0 ? slice->pos < slice->end : slice->pos > slice->end;
+	return slice->count != 0;
 }
 
 static inline void
 snek_slice_step(snek_slice_t *slice)
 {
+	slice->count--;
 	slice->pos += slice->stride;
-}
-
-static inline bool
-snek_slice_identity(snek_slice_t *slice)
-{
-	return slice->start == 0 && slice->end == slice->len && slice->stride == 1;
 }
 
 static inline snek_poly_t

@@ -66,13 +66,16 @@ snek_string_cat(char *a, char *b)
 char *
 snek_string_slice(char *a, snek_slice_t *slice)
 {
+	if (slice->identity)
+		return a;
+
 	snek_stack_push_string(a);
-	char	*r = snek_alloc(slice->len + 1);
+	char	*r = snek_alloc(slice->count + 1);
 	a = snek_stack_pop_string();
 	if (!r)
 		return NULL;
 	snek_offset_t i = 0;
-	for (snek_slice_start(slice); snek_slice_test(slice); snek_slice_step(slice))
+	for (; snek_slice_test(slice); snek_slice_step(slice))
 		r[i++] = a[slice->pos];
 	r[i] = '\0';
 	return r;
