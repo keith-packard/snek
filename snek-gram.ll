@@ -103,7 +103,7 @@ small-stats-p	: SEMI small-stat small-stats-p
 		|
 		;
 small-stat	: assign-expr
-		| RETURN expr
+		| RETURN ret-expr
 			@{ snek_code_add_forward(snek_forward_return); }@
 		| BREAK
 			@{ snek_code_add_forward(snek_forward_break); }@
@@ -111,6 +111,10 @@ small-stat	: assign-expr
 			@{ snek_code_add_forward(snek_forward_continue); }@
 		| PASS
 		| GLOBAL globals
+		;
+ret-expr	: expr
+		|
+			@{ snek_code_add_op(snek_op_null); }@
 		;
 assign-expr	: expr assign-expr-p
 		;
