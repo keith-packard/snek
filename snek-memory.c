@@ -27,8 +27,6 @@ struct snek_root {
 	void			**addr;
 };
 
-static snek_code_t		*stash_code;
-
 #ifndef SNEK_ROOT_DECLARE
 #define SNEK_ROOT_DECLARE(n) n
 #define SNEK_ROOT_TYPE(n) ((n)->type)
@@ -50,7 +48,7 @@ static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
 	},
 	{
 		.type = &snek_code_mem,
-		.addr = (void **) (void *) &stash_code,
+		.addr = (void **) (void *) &snek_stash_code,
 	},
 	{
 		.type = &snek_code_mem,
@@ -730,21 +728,6 @@ snek_alloc(snek_offset_t size)
 	debug_memory("Alloc %d size %d\n", snek_top, size);
 	snek_top += size;
 	return addr;
-}
-
-void
-snek_code_stash(snek_code_t *code)
-{
-	stash_code = code;
-}
-
-snek_code_t *
-snek_code_fetch(void)
-{
-	snek_code_t	*code;
-	code = stash_code;
-	stash_code = 0;
-	return code;
 }
 
 void *

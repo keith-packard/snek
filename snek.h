@@ -505,6 +505,8 @@ extern const snek_mem_t snek_frame_mem;
 
 /* snek-func.c */
 
+extern snek_code_t	*snek_stash_code;
+
 snek_func_t *
 snek_func_alloc(snek_code_t *code);
 
@@ -637,12 +639,6 @@ snek_stack_push_list(snek_list_t *list);
 
 snek_list_t *
 snek_stack_pop_list(void);
-
-void
-snek_code_stash(snek_code_t *code);
-
-snek_code_t *
-snek_code_fetch(void);
 
 void *
 snek_pool_addr(snek_offset_t offset);

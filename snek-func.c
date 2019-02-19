@@ -14,14 +14,17 @@
 
 #include "snek.h"
 
+snek_code_t		*snek_stash_code;
+
 snek_func_t *
 snek_func_alloc(snek_code_t *code)
 {
 	snek_func_t *func;
 
-	snek_code_stash(code);
+	snek_stash_code = code;
 	func = snek_alloc(sizeof (snek_func_t) + snek_parse_nformal * sizeof (snek_id_t));
-	code = snek_code_fetch();
+	code = snek_stash_code;
+	snek_stash_code = NULL;
 	if (!func)
 		return NULL;
 	func->code = snek_pool_offset(code);
