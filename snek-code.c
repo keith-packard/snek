@@ -978,6 +978,9 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 			snek_a = SNEK_BUILTIN_FUNC3(builtin)(actuals[0], actuals[1], actuals[2]);
 			break;
 #endif
+#if SNEK_BUILTIN_NAMES_MAX_ARGS >= 4
+#error Need more builtin calls
+#endif
 		}
 	}
 }
