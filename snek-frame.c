@@ -73,6 +73,7 @@ snek_variable_delete(snek_offset_t i)
 	memcpy(&frame->variables[i],
 	       &snek_globals->variables[i+1],
 	       snek_globals->nvariables - i - 1);
+	snek_globals = frame;
 }
 
 static snek_variable_t *
