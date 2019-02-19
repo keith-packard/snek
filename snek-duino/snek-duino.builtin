@@ -12,6 +12,7 @@
 # General Public License for more details.
 #
 time.sleep, 1
+time.monotonic, 0
 talkto, 1
 listento, 1
 setpower, 1
@@ -27,4 +28,6 @@ eeprom.show, -1
 eeprom.load, 0
 eeprom.erase, 0
 reset, 0
+random.seed, 1
+random.randrange, 1
 #include <snek-duino.h>
