@@ -71,7 +71,7 @@ snek_name_string_builtin(snek_id_t id)
 	     i < sizeof (snek_builtin_names);
 	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+1]) + 2)
 	{
-		if (snek_builtin_names[i] == id)
+		if (SNEK_BUILTIN_NAMES(i) == id)
 			return snek_builtin_names_return(&snek_builtin_names[i+1]);
 	}
 	return NULL;
