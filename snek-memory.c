@@ -55,6 +55,10 @@ static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
 		.addr = (void **) (void *) &snek_code,
 	},
 	{
+		.type = &_snek_mems[snek_list - 1],
+		.addr = (void **) (void *) &snek_empty_tuple,
+	},
+	{
 		.type = NULL,
 		.addr = (void **) (void *) &snek_a,
 	},

@@ -538,6 +538,8 @@ extern char snek_lex_text[];
 
 /* snek-list.c */
 
+extern snek_list_t *snek_empty_tuple;
+
 snek_list_t *
 snek_list_make(snek_offset_t size, bool readonly);
 

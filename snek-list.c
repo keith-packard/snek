@@ -46,15 +46,29 @@ snek_list_resize(snek_list_t *list, snek_offset_t size)
 	return list;
 }
 
+snek_list_t	*snek_empty_tuple;
+
+static snek_list_t *
+snek_list_head_alloc(bool readonly)
+{
+	snek_list_t *list = snek_alloc(sizeof(snek_list_t));
+	if (list)
+		snek_list_set_readonly(list, readonly);
+	return list;
+}
+
 snek_list_t *
 snek_list_make(snek_offset_t size, bool readonly)
 {
-	snek_list_t *list = snek_alloc(sizeof(snek_list_t));
-	if (list) {
-		snek_list_set_readonly(list, readonly);
-		if (list)
-			list = snek_list_resize(list, size);
+	if (size == 0 && readonly) {
+		if (!snek_empty_tuple)
+			return snek_empty_tuple = snek_list_head_alloc(true);
+		return snek_empty_tuple;
 	}
+	snek_list_t *list = snek_list_head_alloc(readonly);
+	if (list)
+		list = snek_list_resize(list, size);
+
 	return list;
 }
 
