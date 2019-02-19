@@ -13,6 +13,7 @@
 #
 exit, 1
 time.sleep, 1
+time.monotonic, 0
 curses.initscr, 0
 curses.noecho, 0
 curses.echo, 0

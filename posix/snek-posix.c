@@ -52,6 +52,18 @@ snek_builtin_time_sleep(snek_poly_t a)
 }
 
 snek_poly_t
+snek_builtin_time_monotonic(void)
+{
+	struct timespec t;
+	static time_t start_sec;
+
+	clock_gettime(CLOCK_MONOTONIC, &t);
+	if (!start_sec)
+		start_sec = t.tv_sec;
+	return snek_float_to_poly((float) (t.tv_sec - start_sec) + (float) t.tv_nsec / 1e9f);
+}
+
+snek_poly_t
 snek_builtin_random_seed(void)
 {
 	srandom(time(NULL));
