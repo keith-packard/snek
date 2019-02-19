@@ -195,9 +195,9 @@ elif-stats	: ELIF
 				snek_code_patch_branch(if_expr_off, elif_stats_off);
 			}@
 		| ELSE COLON
-			@{
+			@
 				goto else_branch;
-			}@
+			@
 		  suite
 		|
 			@{
@@ -263,14 +263,11 @@ for-stat	: FOR NAME
 				for_depth--;
 			}@
 		  while-else-stat
-			@{
+			@
 				goto patch_loop;
-			}@
+			@
 		;
-for-params	: RANGE
-			@{
-			}@
-		  OP opt-actuals CP COLON
+for-params	: RANGE OP opt-actuals CP COLON
 			@{
 				snek_offset_t num = value_pop().offset;
 				snek_id_t id = value_pop().id;
@@ -330,9 +327,9 @@ expr-and-p	: AND
 				value_push_offset(snek_compile_prev);
 			}@
 		  expr-not
-			@{
+			@
 				goto short_second;
-			}@
+			@
 		  expr-and-p
 		|
 		;
