@@ -73,7 +73,7 @@ snek-duino.hex: snek-duino
 
 snek-duino: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino.map
+	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino.map
 
 clean::
 	rm -f snek-duino snek-duino.hex
