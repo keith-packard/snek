@@ -288,13 +288,13 @@ reset_chunks(void)
 
 static void
 walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
-     bool (*visit_poly)(snek_poly_t *p),
-     void (*visit_run)(void))
+     bool (*visit_poly)(snek_poly_t *p))
 {
 	snek_offset_t i;
 
 	memset(snek_busy, '\0', SNEK_BUSY_SIZE);
-	visit_run();
+	for (i = 0; i < snek_stackp; i++)
+		visit_poly(&snek_stack[i]);
 	for (i = 0; i < (snek_offset_t) SNEK_ROOT; i++) {
 		const snek_mem_t *mem = SNEK_ROOT_TYPE(&snek_root[i]);
 		if (mem) {
@@ -383,7 +383,7 @@ snek_collect(uint8_t style)
 		/* Find the sizes of the first chunk of objects to move */
 		reset_chunks();
 		debug_memory("mark\n");
-		walk(snek_mark_ref, snek_poly_mark_ref, snek_run_mark);
+		walk(snek_mark_ref, snek_poly_mark_ref);
 		dump_busy();
 		debug_memory("done\n");
 
@@ -436,7 +436,7 @@ snek_collect(uint8_t style)
 		if (chunk_first < chunk_last) {
 			/* Relocate all references to the objects */
 			debug_memory("move\n");
-			walk(snek_move_addr, snek_poly_move, snek_run_move);
+			walk(snek_move_addr, snek_poly_move);
 			debug_memory("done\n");
 		}
 

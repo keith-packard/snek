@@ -985,26 +985,6 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 	}
 }
 
-static void
-snek_run_do(bool (*poly)(snek_poly_t *p))
-{
-	snek_offset_t s;
-	for (s = 0; s < snek_stackp; s++)
-		poly(&snek_stack[s]);
-}
-
-void
-snek_run_mark(void)
-{
-	snek_run_do(snek_poly_mark_ref);
-}
-
-void
-snek_run_move(void)
-{
-	snek_run_do(snek_poly_move);
-}
-
 snek_poly_t
 snek_code_run(snek_code_t *code_in)
 {
