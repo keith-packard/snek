@@ -25,24 +25,26 @@ builtin_id = 1
 
 class SnekBuiltin:
     name = ""
-    id = 0
+    id = -1
     nformal = 0
     keyword = False
     def __init__(self, name, param):
-        global builtin_id
         self.name = name
         if param[0].isalpha():
             self.keyword = param
         else:
             self.keyword = False
             self.nformal = int(param)
-            self.id = builtin_id
-            builtin_id += 1
 
     def __eq__(self,other):
         return self.name == other.name
 
     def __lt__(self,other):
+        if self.nformal != other.nformal:
+            if self.nformal == -2:
+                return False
+            if other.nformal == -2:
+                return True
         return self.name < other.name
 
     def snek_name(self):
@@ -54,11 +56,16 @@ class SnekBuiltin:
     def func_name(self):
         return "snek_builtin_%s" % (self.name.replace(".", "_"))
 
-
     def func_field(self):
         if self.nformal == -1:
             return ".funcv"
         return ".func%d" % self.nformal
+
+    def set_id(self):
+        global builtin_id
+        if not self.keyword and self.id == -1:
+            self.id = builtin_id
+            builtin_id += 1
 
 headers=[]
 builtins = []
@@ -90,6 +97,10 @@ def dump_max_len(fp):
             max_len = len(name.name)
     fprint("#define SNEK_BUILTIN_NAMES_MAX_LEN %d" % max_len, file=fp)
     fprint("#define SNEK_BUILTIN_NAMES_MAX_ARGS %d" % max_args(), file=fp)
+
+def set_ids():
+    for name in sorted(builtins):
+        name.set_id()
 
 def dump_names(fp):
     fprint("static const uint8_t SNEK_BUILTIN_NAMES_DECLARE(snek_builtin_names)[] = {", file=fp)
@@ -149,9 +160,13 @@ def dump_builtins(fp):
     fprint("};", file=fp)
 
 def dump_cpp(fp):
+    marked_funcs = False
     for name in sorted(builtins):
         if name.keyword:
             continue
+        if name.nformal == -2 and not marked_funcs:
+            fprint("#define SNEK_BUILTIN_MAX_FUNC %d" % name.id, file=fp)
+            marked_funcs = True
         fprint("#define %s %d" % (name.cpp_name(), name.id), file=fp)
 
     fprint("#define SNEK_BUILTIN_END %d" % (builtin_id), file=fp)
@@ -179,6 +194,8 @@ def builtin_main():
     fprint("#ifndef SNEK_BUILTIN_NAMES_DECLARE", file=fp)
     fprint("#define SNEK_BUILTIN_NAMES_DECLARE(n) n", file=fp)
     fprint("#endif", file=fp)
+
+    set_ids()
 
     dump_names(fp)
 

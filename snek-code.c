@@ -1081,7 +1081,7 @@ snek_code_run(snek_code_t *code_in)
 					snek_a = *ref;
 					break;
 				}
-				if (id < SNEK_BUILTIN_END) {
+				if (id < SNEK_BUILTIN_MAX_FUNC) {
 					snek_a = snek_builtin_id_to_poly(id);
 					break;
 				}
