@@ -31,6 +31,9 @@ snek_current_window = 0
 snek_edit_win = 0
 snek_repl_win = 0
 
+snek_cols = 0
+snek_lines = 0
+
 snek_monitor = False
 
 snek_device = False
@@ -186,6 +189,7 @@ class EditWin:
 
     window = 0
     lines = 0
+    cols = 0
     y = 0
     point = 0
     top_line = 0
@@ -198,6 +202,7 @@ class EditWin:
 
     def __init__(self, lines, cols, y, x):
         self.lines = lines
+        self.cols = cols
         self.y = y
         self.window = curses.newwin(lines, cols, y, x)
         self.window.keypad(True)
@@ -247,6 +252,17 @@ class EditWin:
         while self.point_to_cursor(self.point)[1] >= self.top_line + self.lines:
             self.top_line += 1
 
+    def addstr(self, line, col, text, attrib=None):
+        if col < self.cols:
+            if line == self.top_line + self.lines - 1:
+                text = text[:self.cols - col - 1]
+            else:
+                text = text[:self.cols - col]
+            if attrib:
+                self.window.addstr(line - self.top_line, col, text, attrib)
+            else:
+                self.window.addstr(line - self.top_line, col, text)
+
     # Repaint the window
 
     def repaint(self):
@@ -274,11 +290,11 @@ class EditWin:
                         middle = middle[:end_selection[0]]
                     else:
                         after = ""
-                    self.window.addstr(line - self.top_line, 0, before)
-                    self.window.addstr(line - self.top_line, len(before), middle, curses.A_REVERSE)
-                    self.window.addstr(line - self.top_line, len(before) + len(middle), after)
+                    self.addstr(line - self.top_line, 0, before)
+                    self.addstr(line - self.top_line, len(before), middle, curses.A_REVERSE)
+                    self.addstr(line - self.top_line, len(before) + len(middle), after)
                 else:
-                    self.window.addstr(line - self.top_line, 0, s)
+                    self.addstr(line - self.top_line, 0, s)
             line += 1
         self.window.refresh()
 
@@ -286,6 +302,7 @@ class EditWin:
 
     def resize(self, lines, cols, y, x):
         self.lines = lines
+        self.cols = cols
         self.window.resize(lines, cols)
         self.window.mvwin(y, x)
         self.repaint()
@@ -583,9 +600,9 @@ class ErrorWin:
     def __init__(self, label, inputthread=True):
         self.label = label
         self.inputthread = inputthread
-        self.ncols = min(curses.COLS, max(40, len(label) + 2))
-        self.x = (curses.COLS - self.ncols) // 2
-        self.y = (curses.LINES - self.nlines) // 2
+        self.ncols = min(snek_cols, max(40, len(label) + 2))
+        self.x = (snek_cols - self.ncols) // 2
+        self.y = (snek_lines - self.nlines) // 2
         self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
         self.window.keypad(True)
         self.run_dialog()
@@ -628,8 +645,8 @@ class GetTextWin:
     def __init__(self, label, prompt="File:"):
         self.label = label
         self.prompt = prompt
-        self.x = (curses.COLS - self.ncols) // 2
-        self.y = (curses.LINES - self.nlines) // 2
+        self.x = (snek_cols - self.ncols) // 2
+        self.y = (snek_lines - self.nlines) // 2
         self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
         self.window.keypad(True)
 
@@ -649,8 +666,10 @@ class GetTextWin:
         return str(name, encoding='utf-8', errors='ignore')
 
 def screen_get_sizes():
-    repl_lines = curses.LINES // 3
-    edit_lines = curses.LINES - repl_lines - 2
+    global snek_lines, snek_cols, stdscr
+    snek_lines, snek_cols = stdscr.getmaxyx()
+    repl_lines = snek_lines // 3
+    edit_lines = snek_lines - repl_lines - 2
     edit_y = 1
     repl_y = edit_y + edit_lines + 1
     return (edit_lines, edit_y, repl_lines, repl_y)
@@ -667,15 +686,15 @@ help_text = (
 def screen_paint():
     global stdscr, snek_device, snek_edit_win
     help_col = 0
-    help_cols = min(curses.COLS // len(help_text), 13)
-    stdscr.addstr(0, 0, " " * curses.COLS)
+    help_cols = min(snek_cols // len(help_text), 13)
+    stdscr.addstr(0, 0, " " * snek_cols)
     for (f, t) in help_text:
         stdscr.addstr(0, help_col, " %2s: %-6s " % (f, t), curses.A_REVERSE)
         help_col += help_cols
     device_name = "<no device>"
     if snek_device:
         device_name = snek_device.device
-    device_col = curses.COLS - len(device_name)
+    device_col = snek_cols - len(device_name)
     if device_col < 0:
         device_col = 0
     mid_y = snek_edit_win.y + snek_edit_win.lines
@@ -696,13 +715,18 @@ def screen_repaint():
     if snek_current_window:
         snek_current_window.set_cursor()
 
+# Handle screen resize
+
 def screen_resize():
     global snek_edit_win, snek_repl_win
-    curses.update_lines_cols()
+    #
+    # Update desired window sizes
+    #
     (edit_lines, edit_y, repl_lines, repl_y) = screen_get_sizes()
+    stdscr.clear()
+    snek_edit_win.resize(edit_lines, snek_cols, edit_y, 0)
+    snek_repl_win.resize(repl_lines, snek_cols, repl_y, 0)
     screen_paint()
-    snek_edit_win.resize(edit_lines, curses.COLS, edit_y, 0)
-    snek_repl_win.resize(repl_lines, curses.COLS, repl_y, 0)
 
 def screen_init(text):
     global stdscr, snek_edit_win, snek_repl_win
@@ -711,10 +735,10 @@ def screen_init(text):
     curses.raw()
     stdscr.keypad(True)
     (edit_lines, edit_y, repl_lines, repl_y) = screen_get_sizes()
-    snek_edit_win = EditWin(edit_lines, curses.COLS, edit_y, 0)
+    snek_edit_win = EditWin(edit_lines, snek_cols, edit_y, 0)
     if text:
         snek_edit_win.set_text(text)
-    snek_repl_win = EditWin(repl_lines, curses.COLS, repl_y, 0)
+    snek_repl_win = EditWin(repl_lines, snek_cols, repl_y, 0)
     screen_paint()
 
 def screen_fini():
