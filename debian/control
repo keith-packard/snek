@@ -1,0 +1,29 @@
+Source: snek
+Section: interpreters
+Priority: optional
+Maintainer: Keith Packard <keithp@keithp.com>
+Homepage: https://keithp.com
+Build-Depends: debhelper (>= 11), libreadline-dev, avr-libc, gcc-avr, python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf
+Standards-Version: 4.2.1
+
+Package: snek
+Architecture: all
+Suggests: snek-bin
+Depends: ${misc:Depends}, python3, python3-serial, usbutils
+Description: Embedded system programming language
+ Snek is a small python-like language designed for embedded
+ computers. It can run on systems as small as an Arduino Duemilanova
+ board, which is an ATmega 328 processor with 32kB of flash and 2kB of
+ ram. This package includes a binary for that target, the
+ snek-duino-install tool for installing Snek on Arduino boards, the
+ snekde integrated development environment
+
+Package: snek-bin
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Host binary version of Snek programming language
+ Snek is a small python-like language designed for embedded
+ computers. It can run on systems as small as an Arduino Duemilanova
+ board, which is an ATmega 328 processor with 32kB of flash and 2kB of
+ ram. This package provides a host snek binary for playing with the
+ language on your host machine.

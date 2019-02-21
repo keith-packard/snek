@@ -1,0 +1,10 @@
+usr/bin/snek-duino-install
+usr/bin/snekde
+usr/lib/pkgconfig/*
+usr/share/applications/snekde.desktop
+usr/share/doc
+usr/share/icons
+usr/share/man/man1/snek-duino-install.1
+usr/share/man/man1/snekde.1
+usr/share/snek
+
