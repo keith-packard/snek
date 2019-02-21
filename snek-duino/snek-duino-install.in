@@ -1,0 +1,44 @@
+#!/bin/sh
+
+SHAREDIR=@SHAREDIR@
+
+SNEKDUINO=$SHAREDIR/snek-duino.hex
+
+action="load"
+
+ISP=usbtiny
+
+mode=arg
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		fuse)
+		    action=fuse
+		    ;;
+		-isp)
+		    mode=isp
+		    ;;
+		*)
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {load|fuse}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	isp)
+	    ISP="$i"
+	    ;;
+    esac
+done
+
+case "$action" in
+    load)
+	avrdude -F -V -c $ISP -p ATMEGA328P -U flash:w:snek-duino.hex
+	;;
+    fuse)
+	avrdude -F -V -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m
+	avrdude -F -V -c $ISP -p ATMEGA328P -U hfuse:w:0xd7:m
+	avrdude -F -V -c $ISP -p ATMEGA328P -U efuse:w:0xfd:m
+	;;
+esac

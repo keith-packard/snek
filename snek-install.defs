@@ -1,0 +1,9 @@
+DESTDIR =
+PREFIX = /usr/local
+LIBDIR = $(PREFIX)/lib
+BINDIR = $(PREFIX)/bin
+SHAREDIR = $(PREFIX)/share/snek
+PKGCONFIG = $(LIBDIR)/pkgconfig
+APPDIR = $(PREFIX)/share/applications
+ICONDIR = $(PREFIX)/share/icons/hicolor/scalable/apps
+MANDIR = $(PREFIX)/share/man

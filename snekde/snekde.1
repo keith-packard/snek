@@ -1,0 +1,58 @@
+.\"
+.\" Copyright © 2019 Keith Packard <keithp@keithp.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 2 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.TH SNEKDE 1 "snekde" ""
+.SH NAME
+snekde \- Snek Development Environment
+.SH SYNOPSIS
+.B "snekde" [OPTION]...
+.SH OPTIONS
+.TP
+\--port <serial port>
+Specifies the serial port to use to communicate with the target device.
+.SH DESCRIPTION
+.I snekde
+is an integrated development environment for Snek on embedded
+computers. It runs in a terminal and displays two panes. The upper
+pane is the editor pane and is designed to edit Snek source code. The
+lower pan is the interaction pane and displays output from the target
+device and sends commands to the target device.
+.SH KEY BINDINGS
+.I snekde
+is entirely keyboard operated; it does not use the mouse at all. For
+the most part, both panes accept the same commands. Normal characters
+are inserted into the current pane.
+.TP
+Page-Up/Page-Down
+These change the current pane, moving from edit pane to interaction
+pane and back.
+.TP
+Ctrl-X/Ctrl-C/Ctrl-V
+These are the bindings for Cut/Copy/Paste operations.
+.TP
+Ctrl-C
+In the interaction pane, Ctrl-C does not copy text, instead it
+interrupts execution in the target device.
+.TP
+Function keys
+The function keys F1-F6 perform various global operations. These
+operations are displayed at the top of the screen. F1 selects a new
+target device. F2/F3 get and put the contents of the edit pane to the
+target device program storage. F5/F6 load and save the edit pane
+contents to files on the local computer.
+.TP
+Movement
+The usual cursor keys, along with Home and End move the cursor within
+the current pane.
+.SH AUTHOR
+Keith Packard

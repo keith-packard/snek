@@ -14,8 +14,7 @@
 
 SNEK_ROOT=..
 
-PREFIX=$(DESTDIR)/usr/local
-BINDIR = $(PREFIX)/bin
+include $(SNEK_ROOT)/snek-install.defs
 
 SNEK_LOCAL_SRC = \
 	snek-main.c \
@@ -38,8 +37,9 @@ LIBS=-lreadline -lm
 snek: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
 
-install: snek
-	install $^ $(BINDIR)
+install: snek snek.1
+	install snek $(DESTDIR)$(BINDIR)
+	install snek.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
 	rm -f snek

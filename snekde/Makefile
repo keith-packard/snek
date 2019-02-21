@@ -12,11 +12,25 @@
 # General Public License for more details.
 #
 
-PREFIX=$(DESTDIR)/usr/local
-BINDIR = $(PREFIX)/bin
+include ../snek-install.defs
+
+all: snekde snekde.desktop
 
 %:
 	@echo done $@
 
-install: snekde.py
-	install snekde.py $(BINDIR)/snekde
+install: snekde snekde.desktop snekde.1
+	install snekde $(DESTDIR)$(BINDIR)
+	install snekde.desktop $(DESTDIR)$(APPDIR)
+	install ../snek.svg $(DESTDIR)$(ICONDIR)
+	install snekde.1 $(DESTDIR)$(MANDIR)/man1
+
+snekde.desktop: snekde.desktop.in
+	sed -e 's;@ICONDIR@;$(ICONDIR);g' -e 's;@BINDIR@;$(BINDIR);g' $^ > $@
+
+snekde: snekde.py
+	cp $^ $@
+	chmod +x $@
+
+clean:
+	rm -f snekde snekde.desktop

@@ -12,6 +12,8 @@
 # General Public License for more details.
 #
 
+include ../snek-install.defs
+
 SNEK_ROOT = ..
 SNEK_LOCAL_SRC = \
 	snek-duino.c \
@@ -21,7 +23,7 @@ SNEK_LOCAL_SRC = \
 SNEK_LOCAL_INC = snek-duino.h
 SNEK_LOCAL_BUILTINS = snek-duino.builtin
 
-all: snek-duino.hex
+all: snek-duino.hex snek-duino-install
 
 include ../snek.defs
 
@@ -75,5 +77,13 @@ snek-duino: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino.map
 
+snek-duino-install: snek-duino-install.in
+	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
+
+install: snek-duino-install snek-duino.hex snek-duino-install.1
+	install snek-duino-install $(DESTDIR)$(BINDIR)
+	install snek-duino.hex $(DESTDIR)$(SHAREDIR)
+	install snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
+
 clean::
-	rm -f snek-duino snek-duino.hex
+	rm -f snek-duino snek-duino.hex snek-duino.map snek-duino-install
