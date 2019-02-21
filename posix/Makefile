@@ -38,7 +38,9 @@ snek: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
 
 install: snek snek.1
+	install -d $(DESTDIR)$(BINDIR)
 	install snek $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(MANDIR)/man1
 	install snek.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::

@@ -20,13 +20,19 @@ all: snekde snekde.desktop
 	@echo done $@
 
 install: snekde snekde.desktop snekde.1
+	install -d $(DESTDIR)$(BINDIR)
 	install snekde $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(APPDIR)
 	install snekde.desktop $(DESTDIR)$(APPDIR)
-	install ../snek.svg $(DESTDIR)$(ICONDIR)
+	install -d $(DESTDIR)$(ICONDIR)
+	install -m 644 ../snek.svg $(DESTDIR)$(ICONDIR)
+	install -d $(DESTDIR)$(MANDIR)/man1
 	install snekde.1 $(DESTDIR)$(MANDIR)/man1
 
-snekde.desktop: snekde.desktop.in
-	sed -e 's;@ICONDIR@;$(ICONDIR);g' -e 's;@BINDIR@;$(BINDIR);g' $^ > $@
+snekde.desktop: snekde.desktop.in ALWAYS
+	sed -e 's;@ICONDIR@;$(ICONDIR);g' -e 's;@BINDIR@;$(BINDIR);g' snekde.desktop.in > snekde.desktop
+
+ALWAYS:
 
 snekde: snekde.py
 	cp $^ $@

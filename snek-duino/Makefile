@@ -81,8 +81,11 @@ snek-duino-install: snek-duino-install.in
 	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
 
 install: snek-duino-install snek-duino.hex snek-duino-install.1
+	install -d $(DESTDIR)$(BINDIR)
 	install snek-duino-install $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(SHAREDIR)
 	install snek-duino.hex $(DESTDIR)$(SHAREDIR)
+	install -d $(DESTDIR)$(MANDIR)/man1
 	install snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::

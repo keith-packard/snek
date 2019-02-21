@@ -43,7 +43,9 @@ PKGFILES = \
 	snek.pc
 
 install: $(SHAREFILES) $(PKGFILES)
+	install -d $(DESTDIR)$(SHAREDIR)
 	for i in $(SHAREFILES); do install --mode=644 "$$i" $(DESTDIR)$(SHAREDIR); done
+	install -d $(DESTDIR)$(PKGCONFIG)
 	for i in $(PKGFILES); do install --mode=644 "$$i" $(DESTDIR)$(PKGCONFIG); done
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) install); done
 
