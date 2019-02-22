@@ -25,7 +25,7 @@
 #define strtof(a,b) strtod(a,b)
 #define VALUE_STACK_SIZE	16
 #define PARSE_STACK_SIZE	64
-#define SNEK_STACK		16
+#define SNEK_STACK		32
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
 #define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
 #define PARSE_TABLE_FETCH_INDEX(a)	((uint8_t) pgm_read_byte(a))
