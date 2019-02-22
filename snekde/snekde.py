@@ -907,8 +907,7 @@ def snekde_put_text():
     global snek_edit_win, snek_device
     snek_device.command("eeprom.write()\n")
     snek_device.write(snek_edit_win.text + '\x04')
-    snek_device.command("eeprom.load()\n")
-    snek_device.command('print("All done")\n')
+    snek_device.command("reset()\n")
 
 def snekde_load_file():
     global snek_edit_win
