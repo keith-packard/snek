@@ -204,7 +204,7 @@ class SnekDevice:
         try:
             while self.alive and self._reader_alive:
                 # read all that is there or wait for one byte
-                data = self.serial.read(self.serial.in_waiting or 1)
+                data = self.serial.read(1)
                 if data:
                     self.interface.receive(str(data, encoding='utf-8', errors='ignore'))
         except serial.SerialException as e:
