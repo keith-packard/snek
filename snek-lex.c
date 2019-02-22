@@ -347,21 +347,23 @@ snek_lex(void)
 
 			unlexchar(c);
 
-			if (snek_lex_indent > snek_current_indent) {
-				snek_token_val.indent = snek_current_indent;
-				snek_current_indent = snek_lex_indent;
-				RETURN(INDENT);
-			}
+			if (!snek_ignore_nl) {
+				if (snek_lex_indent > snek_current_indent) {
+					snek_token_val.indent = snek_current_indent;
+					snek_current_indent = snek_lex_indent;
+					RETURN(INDENT);
+				}
 
-			if (snek_lex_indent < snek_current_indent)
-				snek_lex_exdent = true;
+				if (snek_lex_indent < snek_current_indent)
+					snek_lex_exdent = true;
+			}
 		}
 
 		/* Generate EXDENT tokens until snek_current_indent is no
 		 * bigger than the indent for this line
 		 */
 
-		if (snek_lex_exdent) {
+		if (snek_lex_exdent && !snek_ignore_nl) {
 			if (snek_lex_indent < snek_current_indent) {
 				snek_token_val.indent = snek_lex_indent;
 				RETURN(EXDENT);
