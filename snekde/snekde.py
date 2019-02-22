@@ -310,14 +310,14 @@ class EditWin:
 
     def addstr(self, line, col, text, attrib=None):
         if col < self.cols:
-            if line == self.top_line + self.lines - 1:
+            if line == self.lines - 1:
                 text = text[:self.cols - col - 1]
             else:
                 text = text[:self.cols - col]
             if attrib:
-                self.window.addstr(line - self.top_line, col, text, attrib)
+                self.window.addstr(line, col, text, attrib)
             else:
-                self.window.addstr(line - self.top_line, col, text)
+                self.window.addstr(line, col, text)
 
     # Repaint the window
 
