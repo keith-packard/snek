@@ -19,6 +19,7 @@ import time
 import curses
 import threading
 import serial
+import serial.tools.list_ports
 
 from curses import ascii
 
@@ -70,6 +71,61 @@ def my_getch(edit_win):
     if c == curses.KEY_RESIZE:
         screen_resize()
     return c
+
+class SnekPort:
+    """Emulate new pySerial from old pySerial"""
+
+    name = None
+    description = None
+    device = None
+
+    def __init__(self, port):
+        if type(port) is tuple:
+            self.device = port[0]
+            if len(port[1]) > 20:
+                self.name = self.device
+                if '/' in self.name:
+                    self.name = self.name[self.name.rfind('/')+1:]
+            else:
+                self.name = port[1]
+            self.description = port[2]
+        else:
+            self.device = port.device
+            self.name = port.name
+            self.description = port.description
+
+# A special hack for pre-3.5 pySerial
+#
+# That code is missing a call to 'str' to convert the check_output
+# result to a string.
+
+if 'list_ports_posix' in serial.tools.__dict__:
+    if hasattr(serial.tools.list_ports_posix, 'popen'):
+        del serial.tools.list_ports_posix.popen
+
+        try:
+            import subprocess
+        except ImportError:
+            def popen(argv):
+                try:
+                    si, so =  os.popen4(' '.join(argv))
+                    return so.read().strip()
+                except:
+                    raise IOError('lsusb failed')
+        else:
+            def popen(argv):
+                try:
+                    return str(subprocess.check_output(argv, stderr=subprocess.STDOUT)).strip()
+                except:
+                    raise IOError('lsusb failed')
+
+        serial.tools.list_ports_posix.popen = popen
+
+def snek_list_ports():
+    ports = []
+    for port in serial.tools.list_ports.comports():
+        ports += [SnekPort(port)]
+    return ports
 
 class SnekDevice:
     """Link to snek device"""
@@ -665,6 +721,80 @@ class GetTextWin:
         screen_repaint()
         return str(name, encoding='utf-8', errors='ignore')
 
+class GetPortWin:
+    """Prompt for serial port"""
+
+    ports = False
+    x = 0
+    y = 0
+    nlines = 0
+    ncols = 40
+    curline = 1
+    fakeport = None
+    title = None
+
+    def label(self, port):
+        l = "%-15.15s %s" % (port.name, port.description)
+        return l[:snek_cols-3]
+
+    def make_fake(self, description):
+        return SnekPort(("Cancel", "Cancel", description))
+
+    def __init__(self, title="Select Port"):
+        self.title = title
+        self.ports = snek_list_ports()
+        if len(self.ports) == 0:
+            self.fakeport = self.make_fake("No ports available")
+        else:
+            self.fakeport = self.make_fake("")
+        maxlen = len(self.title)
+        for port in self.ports:
+            maxlen = max(maxlen, len(self.label(port)))
+        maxlen = max(maxlen, len(self.label(self.fakeport)))
+        self.ncols = maxlen + 3
+        self.nlines = 2 + 1 + len(self.ports) + 1
+        self.curline = 0
+        self.x = (snek_cols - self.ncols) // 2
+        self.y = (snek_lines - self.nlines) // 2
+        
+        self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
+        self.window.keypad(True)
+
+    def paint_port(self, line, port):
+        if line == self.curline:
+            self.window.addstr(line+2, 1, " " * (self.ncols - 3), curses.A_REVERSE)
+            self.window.addstr(line+2, 1, self.label(port), curses.A_REVERSE)
+        else:
+            self.window.addstr(line+2, 1, " " * (self.ncols - 3))
+            self.window.addstr(line+2, 1, self.label(port))
+
+    def repaint(self):
+        self.window.border()
+        self.window.addstr(1, (self.ncols - len(self.title)) // 2, self.title)
+        line = 0
+        for port in self.ports:
+            self.paint_port(line, port)
+            line += 1
+        self.paint_port(line, self.fakeport)
+
+    def set_cursor(self):
+        self.window.move(self.curline + 2,self.ncols-2)
+
+    def run_dialog(self):
+        while True:
+            self.repaint()
+            ch = my_getch(self)
+            if ch == ord('\n'):
+                del self.window
+                screen_repaint()
+                if self.curline >= len(self.ports):
+                    return None
+                return self.ports[self.curline].device
+            elif ch == curses.KEY_UP or ch == ord('p') & 0x1f:
+                self.curline = max(0, self.curline-1)
+            elif ch == curses.KEY_DOWN or ch == ord('n') & 0x1f:
+                self.curline = min(len(self.ports), self.curline+1)
+
 def screen_get_sizes():
     global snek_lines, snek_cols, stdscr
     snek_lines, snek_cols = stdscr.getmaxyx()
@@ -750,8 +880,10 @@ def screen_fini():
 
 def snekde_open_device():
     global snek_device, snek_monitor
-    dialog = GetTextWin("Open Device", prompt="Port:")
+    dialog = GetPortWin()
     name = dialog.run_dialog()
+    if not name:
+        return
     try:
         device = SnekDevice(name, snek_monitor)
         device.start()
@@ -919,6 +1051,10 @@ def main():
     arg_parser.add_argument("file", nargs="*", help="Read file into edit window")
     args = arg_parser.parse_args()
     snek_device = False
+    if args.list:
+        for port in snek_list_ports():
+            print("%-15.15s %s" % (port.name, port.description))
+        exit(0)
     if args.port:
         try:
             snek_device = SnekDevice(args.port, snek_monitor)
