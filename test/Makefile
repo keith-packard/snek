@@ -15,6 +15,7 @@
 TESTS = \
 	andor.py \
 	list.py \
+	dict.py \
 	equal_is.py \
 	float.py \
 	for-array.py \
