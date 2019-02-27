@@ -252,8 +252,8 @@ snek_builtin_talkto(snek_poly_t a)
 
 	if (snek_poly_type(a) == snek_list) {
 		l = snek_poly_to_list(a);
-		p = snek_poly_get_pin(snek_list_get(l, 0, true));
-		d = snek_poly_get_pin(snek_list_get(l, 1, true));
+		p = snek_poly_get_pin(snek_list_get(l, SNEK_ZERO, true));
+		d = snek_poly_get_pin(snek_list_get(l, SNEK_ONE, true));
 	} else {
 		p = d = snek_poly_get_pin(a);
 	}

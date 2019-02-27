@@ -404,6 +404,13 @@ snek_lex(void)
 			if (snek_ignore_nl)
 				--snek_ignore_nl;
 			RETURN(CS);
+		case '{':
+			++snek_ignore_nl;
+			RETURN(OC);
+		case '}':
+			if (snek_ignore_nl)
+				--snek_ignore_nl;
+			RETURN(CC);
 		case '+':
 			return check_equal(PLUS, snek_op_plus, snek_op_assign_plus);
 		case '-':

@@ -629,9 +629,15 @@ snek_in_step(snek_offset_t ip)
 	/* Compute current value */
 	snek_poly_t value = SNEK_NULL;
 
+	snek_list_t *list;
+
 	switch (snek_poly_type(array)) {
 	case snek_list:
-		value = snek_list_get(snek_poly_to_list(array), i, false);
+		list = snek_poly_to_list(array);
+		if (snek_list_type(list) == snek_list_dict)
+			i *= 2;
+		if (i < list->size)
+			value = snek_list_data(list)[i];
 		break;
 	case snek_string:
 		value = snek_string_get(snek_poly_to_string(array), i, false);
@@ -683,14 +689,12 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	snek_type_t	bt = snek_poly_type(b);
 
 	if (op == snek_op_array) {
-		snek_soffset_t bo = snek_poly_get_soffset(b);
-
 		switch (at) {
 		case snek_list:
-			ret = snek_list_get(snek_poly_to_list(a), bo, true);
+			ret = snek_list_get(snek_poly_to_list(a), b, true);
 			break;
 		case snek_string:
-			ret = snek_string_get(snek_poly_to_string(a), bo, true);
+			ret = snek_string_get(snek_poly_to_string(a), snek_poly_get_soffset(b), true);
 			break;
 		default:
 			break;
@@ -759,10 +763,10 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 		case snek_op_in:
 		case snek_op_not_in:
 			if (bt == snek_list) {
-				snek_offset_t	o;
 				bl = snek_poly_to_list(b);
+				snek_offset_t o, step = snek_list_type(bl) == snek_list_dict ? 2 : 1;
 				found = false;
-				for (o = 0; o < bl->size; o++) {
+				for (o = 0; o < bl->size; o += step) {
 					if (snek_poly_equal(a, snek_list_data(bl)[o], false)) {
 						found = true;
 						break;
@@ -783,20 +787,24 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 				al = snek_poly_to_list(a);
 				bl = snek_poly_to_list(b);
 
-				if (snek_list_readonly(al) == snek_list_readonly(bl)) {
-					if (inplace && !snek_list_readonly(al))
-						al = snek_list_append(al, bl);
-					else
-						al = snek_list_plus(al, bl);
-					ret = snek_list_to_poly(al);
+				if (snek_list_type(al) == snek_list_type(bl)) {
+					if (snek_list_type(al) != snek_list_dict) {
+						if (inplace && !snek_list_readonly(al))
+							al = snek_list_append(al, bl);
+						else
+							al = snek_list_plus(al, bl);
+						ret = snek_list_to_poly(al);
+					}
 				}
 			}
 			break;
 		case snek_op_times:
 			if (at == snek_list && bt == snek_float) {
 				al = snek_poly_to_list(a);
-				snek_soffset_t bo = snek_poly_get_soffset(b);
-				ret = snek_list_to_poly(snek_list_times(al, bo));
+				if (snek_list_type(al) != snek_list_dict) {
+					snek_soffset_t bo = snek_poly_get_soffset(b);
+					ret = snek_list_to_poly(snek_list_times(al, bo));
+				}
 			}
 			break;
 		case snek_op_mod:
@@ -930,8 +938,7 @@ snek_assign(snek_id_t id, snek_op_t op)
 				return;
 			}
 
-			snek_soffset_t	o = snek_poly_get_soffset(ip);
-			ref = snek_list_ref(l, o, true);
+			ref = snek_list_ref(l, ip, true);
 			if (!ref)
 				return;
 		}
@@ -1069,9 +1076,10 @@ snek_code_run(snek_code_t *code_in)
 				break;
 			case snek_op_list:
 			case snek_op_tuple:
+			case snek_op_dict:
 				memcpy(&o, &snek_code->code[ip], sizeof(snek_offset_t));
 				ip += sizeof (snek_offset_t);
-				snek_a = snek_list_imm(o, op == snek_op_tuple);
+				snek_a = snek_list_imm(o, op - snek_op_list);
 				break;
 			case snek_op_id:
 				memcpy(&id, &snek_code->code[ip], sizeof(snek_id_t));

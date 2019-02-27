@@ -125,6 +125,7 @@ typedef enum {
 	snek_op_string,
 	snek_op_list,
 	snek_op_tuple,
+	snek_op_dict,
 	snek_op_id,
 
 	snek_op_not,
@@ -195,10 +196,16 @@ typedef struct snek_mem {
 #define SNEK_MEM_DECLARE_NAME(_name)
 #endif
 
+typedef enum {
+	snek_list_list,
+	snek_list_tuple,
+	snek_list_dict
+} __attribute__((packed)) snek_list_type_t;
+
 typedef struct snek_list {
 	snek_offset_t	size;
 	snek_offset_t	alloc;
-	snek_offset_t	note_next_and_readonly;
+	snek_offset_t	note_next_and_type;
 	snek_offset_t	data;
 } snek_list_t;
 
@@ -541,7 +548,7 @@ extern char snek_lex_text[];
 extern snek_list_t *snek_empty_tuple;
 
 snek_list_t *
-snek_list_make(snek_offset_t size, bool readonly);
+snek_list_make(snek_offset_t size, snek_list_type_t type);
 
 snek_list_t *
 snek_list_append(snek_list_t *list, snek_list_t *append);
@@ -553,16 +560,16 @@ snek_list_t *
 snek_list_times(snek_list_t *a, snek_soffset_t count);
 
 snek_poly_t *
-snek_list_ref(snek_list_t *list, snek_soffset_t o, bool report_error);
+snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error);
 
 snek_poly_t
-snek_list_get(snek_list_t *list, snek_soffset_t i, bool report_error);
+snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error);
 
 bool
 snek_list_equal(snek_list_t *a, snek_list_t *b);
 
 snek_poly_t
-snek_list_imm(snek_offset_t size, bool readonly);
+snek_list_imm(snek_offset_t size, snek_list_type_t type);
 
 snek_list_t *
 snek_list_slice(snek_list_t *list, snek_slice_t *slice);
@@ -868,6 +875,12 @@ snek_offset_flag_1(snek_offset_t offset)
 	return !!(offset & 2);
 }
 
+static inline uint8_t
+snek_offset_flags(snek_offset_t offset)
+{
+	return offset & 3;
+}
+
 static inline snek_offset_t
 snek_offset_set_flag_0(snek_offset_t offset, bool flag)
 {
@@ -878,6 +891,12 @@ static inline snek_offset_t
 snek_offset_set_flag_1(snek_offset_t offset, bool flag)
 {
 	return (offset & ~2) | (flag ? 2 : 0);
+}
+
+static inline snek_offset_t
+snek_offset_set_flags(snek_offset_t offset, uint8_t flags)
+{
+	return offset | flags;
 }
 
 static inline snek_offset_t
@@ -893,37 +912,31 @@ snek_offset_set_value(snek_offset_t offset, snek_offset_t value)
 static inline bool
 snek_list_readonly(snek_list_t *list)
 {
-	return snek_offset_flag_0(list->note_next_and_readonly);
+	return snek_offset_flags(list->note_next_and_type) == snek_list_tuple;
 }
 
-static inline bool
-snek_list_noted(snek_list_t *list)
+static inline snek_list_type_t
+snek_list_type(snek_list_t *list)
 {
-	return snek_offset_flag_1(list->note_next_and_readonly);
+	return snek_offset_flags(list->note_next_and_type);
 }
 
 static inline snek_offset_t
 snek_list_note_next(snek_list_t *list)
 {
-	return snek_offset_value(list->note_next_and_readonly);
+	return snek_offset_value(list->note_next_and_type);
 }
 
 static inline void
-snek_list_set_readonly(snek_list_t *list, bool readonly)
+snek_list_set_type(snek_list_t *list, uint8_t type)
 {
-	list->note_next_and_readonly = snek_offset_set_flag_0(list->note_next_and_readonly, readonly);
-}
-
-static inline void
-snek_list_set_noted(snek_list_t *list, bool noted)
-{
-	list->note_next_and_readonly = snek_offset_set_flag_1(list->note_next_and_readonly, noted);
+	list->note_next_and_type = snek_offset_set_flags(list->note_next_and_type, type);
 }
 
 static inline void
 snek_list_set_note_next(snek_list_t *list, snek_offset_t note_next)
 {
-	list->note_next_and_readonly = snek_offset_set_value(list->note_next_and_readonly, note_next);
+	list->note_next_and_type = snek_offset_set_value(list->note_next_and_type, note_next);
 }
 
 static inline snek_offset_t

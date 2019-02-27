@@ -189,20 +189,12 @@ snek_size(const snek_mem_t *mem, void *addr)
 	return snek_size_round(SNEK_MEM_SIZE(mem)(addr));
 }
 
-static bool
+static void
 note_list(snek_list_t *list_old, snek_list_t *list_new)
 {
-	if (!snek_list_noted(list_new)) {
-		debug_memory("\tnote list %d -> %d\n", pool_offset(list_old), pool_offset(list_new));
-		snek_list_set_note_next(list_new, snek_note_list);
-		snek_list_set_noted(list_new, true);
-		snek_note_list = pool_offset(list_old);
-		return false;
-	}
-	debug_memory("\tnote list %d -> %d already noted (noted %d busy %d)\n",
-		     pool_offset(list_old), pool_offset(list_new),
-		     snek_list_noted(list_new), busy(pool_offset(list_old)));
-	return true;
+	debug_memory("\tnote list %d -> %d\n", pool_offset(list_old), pool_offset(list_new));
+	snek_list_set_note_next(list_new, snek_note_list);
+	snek_note_list = pool_offset(list_old);
 }
 
 static snek_offset_t	chunk_low, chunk_high;
@@ -321,7 +313,6 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 			debug_memory("\t\tprocessed, list is now %d next now %d\n",
 				     pool_offset(list), note);
 			snek_list_set_note_next(list, 0);
-			snek_list_set_noted(list, false);
 		}
 		debug_memory("done procesing list\n");
 	}

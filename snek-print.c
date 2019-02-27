@@ -23,6 +23,30 @@ snek_func_line(snek_func_t *func)
 	return 0;
 }
 
+static inline char snek_list_open(snek_list_type_t type)
+{
+	switch(type) {
+	case snek_list_list:
+		return '[';
+	case snek_list_tuple:
+		return '(';
+	default:
+		return '{';
+	}
+}
+
+static inline char snek_list_close(snek_list_type_t type)
+{
+	switch(type) {
+	case snek_list_list:
+		return ']';
+	case snek_list_tuple:
+		return ')';
+	default:
+		return '}';
+	}
+}
+
 void
 snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 {
@@ -103,16 +127,19 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	case snek_list:
 	{
 		snek_list_t *list = snek_poly_to_list(a);
-		buf->put_c(snek_list_readonly(list) ? '(' : '[', closure);
+		snek_list_type_t type = snek_list_type(list);
+		buf->put_c(snek_list_open(type), closure);
 		snek_poly_t *data = snek_pool_addr(list->data);
 		for (snek_offset_t o = 0; o < list->size; o++) {
-			if (o)
+			if ((type == snek_list_dict) ? !(o & 1) : o)
 				buf->put_c(' ', closure);
 			snek_poly_format(buf, data[o], format);
-			if (o < list->size - 1 || (list->size == 1 && snek_list_readonly(list)))
-				buf->put_c(',', closure);
+			if (o < list->size - 1 || (list->size == 1 && type == snek_list_tuple))
+				buf->put_c((type == snek_list_dict && !(o&1)) ? ':' : ',', closure);
 		}
-		buf->put_c(snek_list_readonly(list) ? ')' : ']', closure);
+		if (type == snek_list_dict && list->size)
+			buf->put_c(' ', closure);
+		buf->put_c(snek_list_close(type), closure);
 		break;
 	}
 	}

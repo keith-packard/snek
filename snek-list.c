@@ -49,23 +49,23 @@ snek_list_resize(snek_list_t *list, snek_offset_t size)
 snek_list_t	*snek_empty_tuple;
 
 static snek_list_t *
-snek_list_head_alloc(bool readonly)
+snek_list_head_alloc(snek_list_type_t type)
 {
 	snek_list_t *list = snek_alloc(sizeof(snek_list_t));
 	if (list)
-		snek_list_set_readonly(list, readonly);
+		snek_list_set_type(list, type);
 	return list;
 }
 
 snek_list_t *
-snek_list_make(snek_offset_t size, bool readonly)
+snek_list_make(snek_offset_t size, snek_list_type_t type)
 {
-	if (size == 0 && readonly) {
+	if (size == 0 && type == snek_list_tuple) {
 		if (!snek_empty_tuple)
-			return snek_empty_tuple = snek_list_head_alloc(true);
+			return snek_empty_tuple = snek_list_head_alloc(type);
 		return snek_empty_tuple;
 	}
-	snek_list_t *list = snek_list_head_alloc(readonly);
+	snek_list_t *list = snek_list_head_alloc(type);
 	if (list)
 		list = snek_list_resize(list, size);
 
@@ -96,7 +96,7 @@ snek_list_plus(snek_list_t *a, snek_list_t *b)
 {
 	snek_stack_push_list(a);
 	snek_stack_push_list(b);
-	snek_list_t *n = snek_list_make(a->size + b->size, snek_list_readonly(a));
+	snek_list_t *n = snek_list_make(a->size + b->size, snek_list_type(a));
 	b = snek_stack_pop_list();
 	a = snek_stack_pop_list();
 	if (!n)
@@ -117,7 +117,7 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 		count = 0;
 	snek_stack_push_list(a);
 	snek_offset_t size = a->size;
-	snek_list_t *n = snek_list_make(size * count, snek_list_readonly(a));
+	snek_list_t *n = snek_list_make(size * count, snek_list_type(a));
 	a = snek_stack_pop_list();
 	if (!n)
 		return NULL;
@@ -131,31 +131,52 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 }
 
 snek_poly_t *
-snek_list_ref(snek_list_t *list, snek_soffset_t o, bool report_error)
+snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error)
 {
-	if (o < 0)
-		o = list->size + o;
-	if (list->size <= (snek_offset_t) o) {
-		if (report_error)
-			snek_error_range(o);
-		return NULL;
+	snek_offset_t o;
+
+	if (snek_list_type(list) == snek_list_dict) {
+		for (o = 0; o < list->size; o += 2) {
+			if (snek_poly_equal(p, snek_list_data(list)[o], false)) {
+				o++;
+				goto done;
+			}
+		}
+		snek_stack_push(p);
+		list = snek_list_resize(list, list->size + 2);
+		p = snek_stack_pop();
+		if (!list)
+			return NULL;
+		snek_list_data(list)[o] = p;
+		o++;
+	} else {
+		snek_soffset_t so = snek_poly_get_soffset(p);
+		o = so;
+		if (so < 0)
+			o = list->size + so;
+		if (list->size <= o) {
+			if (report_error)
+				snek_error_range(o);
+			return NULL;
+		}
 	}
+done:
 	return &snek_list_data(list)[o];
 }
 
 snek_poly_t
-snek_list_get(snek_list_t *list, snek_soffset_t o, bool report_error)
+snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error)
 {
-	snek_poly_t *p = snek_list_ref(list, o, report_error);
-	if (p)
-		return *p;
+	snek_poly_t *r = snek_list_ref(list, p, report_error);
+	if (r)
+		return *r;
 	return SNEK_NULL;
 }
 
 bool
 snek_list_equal(snek_list_t *a, snek_list_t *b)
 {
-	if (snek_list_readonly(a) != snek_list_readonly(b))
+	if (snek_list_type(a) != snek_list_type(b))
 		return false;
 	if (a->size != b->size)
 		return false;
@@ -168,9 +189,9 @@ snek_list_equal(snek_list_t *a, snek_list_t *b)
 }
 
 snek_poly_t
-snek_list_imm(snek_offset_t size, bool readonly)
+snek_list_imm(snek_offset_t size, snek_list_type_t type)
 {
-	snek_list_t	*list = snek_list_make(size, readonly);
+	snek_list_t	*list = snek_list_make(size, type);
 
 	if (!list) {
 		snek_stack_drop(size);
