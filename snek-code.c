@@ -636,8 +636,8 @@ snek_in_step(snek_offset_t ip)
 		list = snek_poly_to_list(array);
 		if (snek_list_type(list) == snek_list_dict)
 			i *= 2;
-		if (i < list->size)
-			value = snek_list_data(list)[i];
+		if ((snek_offset_t) i < list->size)
+			value = snek_list_data(list)[(snek_offset_t) i];
 		break;
 	case snek_string:
 		value = snek_string_get(snek_poly_to_string(array), i, false);
