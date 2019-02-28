@@ -23,6 +23,9 @@ def check(expect,got,which):
 a = { 1:2, 3:4 }
 b = { "a":"b", "c":"d" }
 
+check({3:4, 1:2}, a, "a == {3:4, 1:2}")
+check({"c":"d", "a":"b"}, b, 'b = {"c":"d", "a":"b"}')
+
 check(True, 1 in a, "1 in a")
 check(False, 2 in a, "2 not in a")
 check(True, 3 in a, "3 in a")
@@ -56,11 +59,11 @@ check("bd", sum_b_1, "sum b values == 'bd'")
 a[1] = 5
 b["a"] = "e"
 
-check(True, a[1] == 5, "a[1] == 5")
-check(True, b["a"] == "e", "b['a'] == 'e'")
+check(5, a[1], "a[1] == 5")
+check("e", b["a"], "b['a'] == 'e'")
 
 a[6] = 7
 b["f"] = "g"
 
-check(True, a[1] == 5, "a[1] == 5")
-check(True, b["a"] == "e", "b['a'] == 'e'")
+check(7, a[6], "a[6] == 7")
+check("g", b["f"], "b['f'] == 'g'")
