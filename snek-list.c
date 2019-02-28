@@ -139,22 +139,33 @@ static snek_poly_t *
 _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 {
 	snek_offset_t o;
+	snek_poly_t *data = snek_list_data(list);
 
 	if (snek_list_type(list) == snek_list_dict) {
-		for (o = 0; o < list->size; o += 2) {
-			if (snek_poly_cmp(p, snek_list_data(list)[o], false) == 0) {
-				o++;
-				goto done;
-			}
+		snek_offset_t l = 0, r = list->size;
+		while (l < r) {
+			o = ((l + r) >> 1) & ~1;
+			snek_poly_t i = data[o];
+			if (snek_poly_cmp(i, p, false) < 0)
+				l = o + 2;
+			else
+				r = o;
 		}
-		if (!add)
-			goto fail;
-		snek_stack_push(p);
-		list = snek_list_resize(list, list->size + 2);
-		p = snek_stack_pop();
-		if (!list)
-			return NULL;
-		snek_list_data(list)[o] = p;
+		o = l;
+		if (o >= list->size || snek_poly_cmp(p, data[o], false) != 0) {
+			if (!add)
+				goto fail;
+			if (snek_poly_type(p) == snek_list && !snek_list_readonly(snek_poly_to_list(p)))
+				goto fail;
+			snek_stack_push(p);
+			list = snek_list_resize(list, list->size + 2);
+			p = snek_stack_pop();
+			if (!list)
+				return NULL;
+			data = snek_list_data(list);
+			memmove(data + o + 2, data + o, (list->size - o - 2) * sizeof (snek_poly_t));
+			data[o] = p;
+		}
 		o++;
 	} else {
 		snek_soffset_t so = snek_poly_get_soffset(p);
@@ -164,8 +175,7 @@ _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 		if (list->size <= o)
 			goto fail;
 	}
-done:
-	return &snek_list_data(list)[o];
+	return &data[o];
 fail:
 	if (report_error)
 		snek_error_range(p);
