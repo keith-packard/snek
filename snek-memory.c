@@ -115,11 +115,9 @@ static uint8_t			snek_busy[SNEK_BUSY_SIZE];
 static struct snek_chunk	snek_chunk[SNEK_NCHUNK];
 
 #if SNEK_NCHUNK < 127
-typedef int8_t snek_chunk_t;
-typedef uint8_t snek_uchunk_t;
+typedef uint8_t snek_chunk_t;
 #else
-typedef snek_soffset_t snek_chunk_t;
-typedef snek_offset_t snek_uchunk_t;
+typedef snek_offset_t snek_chunk_t;
 #endif
 
 #endif
@@ -207,13 +205,13 @@ find_chunk(snek_offset_t offset)
 
 	/* Binary search for the location */
 	l = chunk_first;
-	r = chunk_last - 1;
-	while (l <= r) {
-		snek_chunk_t m = ((snek_uchunk_t) (l + r)) >> 1;
+	r = chunk_last;
+	while (l < r) {
+		snek_chunk_t m = (l + r - 1) >> 1;
 		if (snek_chunk[m].old_offset < offset)
 			l = m + 1;
 		else
-			r = m - 1;
+			r = m;
 	}
 	return l;
 }
