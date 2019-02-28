@@ -54,18 +54,10 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				if (ref)
 					*ref = poly;
 			}@
-		| DEL
+		| DEL NAME
 			@{
-				snek_parse_nformal = 0;
-			}@
-		  formals
-			@{
-				uint8_t i;
-				for (i = 0; i < snek_parse_nformal; i++)
-					if (!snek_id_del(snek_parse_formals[i])) {
-						snek_undefined(snek_parse_formals[i]);
-						break;
-					}
+				if (!snek_id_del(snek_token_val.id))
+					snek_undefined(snek_token_val.id);
 			}@
 		| IMPORT NAME
 		;
