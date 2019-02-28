@@ -565,6 +565,9 @@ snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error);
 snek_poly_t
 snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error);
 
+snek_poly_t *
+snek_list_data(snek_list_t *list);
+
 bool
 snek_list_equal(snek_list_t *a, snek_list_t *b);
 
@@ -797,12 +800,6 @@ static inline snek_list_t *
 snek_poly_to_list(snek_poly_t poly)
 {
 	return snek_ref(poly);
-}
-
-static inline snek_poly_t *
-snek_list_data(snek_list_t *list)
-{
-	return snek_pool_addr(list->data);
 }
 
 static inline snek_poly_t

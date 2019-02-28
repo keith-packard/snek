@@ -129,7 +129,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 		snek_list_t *list = snek_poly_to_list(a);
 		snek_list_type_t type = snek_list_type(list);
 		buf->put_c(snek_list_open(type), closure);
-		snek_poly_t *data = snek_pool_addr(list->data);
+		snek_poly_t *data = snek_list_data(list);
 		for (snek_offset_t o = 0; o < list->size; o++) {
 			if ((type == snek_list_dict) ? !(o & 1) : o)
 				buf->put_c(' ', closure);
