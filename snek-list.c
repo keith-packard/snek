@@ -194,7 +194,19 @@ snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error)
 	snek_poly_t *r = _snek_list_ref(list, p, report_error, false);
 	if (r)
 		return *r;
-	return SNEK_ZERO;
+	return SNEK_NULL;
+}
+
+void
+snek_list_del(snek_list_t *list, snek_poly_t p)
+{
+	snek_poly_t *r = snek_list_ref(list, p, true);
+	if (!r)
+		return;
+	r--;
+	snek_offset_t remain = snek_list_data(list) + list->size - r;
+	memmove(r, r+2, (remain - 2) * sizeof (snek_poly_t));
+	list->size -= 2;
 }
 
 int8_t

@@ -137,6 +137,7 @@ typedef enum {
 	snek_op_slice,
 
 	snek_op_global,
+	snek_op_del,
 
 	snek_op_branch,
 	snek_op_branch_true,
@@ -580,6 +581,9 @@ snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error);
 
 snek_poly_t *
 snek_list_data(snek_list_t *list);
+
+void
+snek_list_del(snek_list_t *list, snek_poly_t p);
 
 int8_t
 snek_list_cmp(snek_list_t *a, snek_list_t *b);

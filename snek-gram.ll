@@ -54,12 +54,21 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				if (ref)
 					*ref = poly;
 			}@
-		| DEL NAME
-			@{
-				if (!snek_id_del(snek_token_val.id))
-					snek_undefined(snek_token_val.id);
-			}@
+		| DEL del dels-p
 		| IMPORT NAME
+		;
+dels-p		: COMMA del
+		  dels-p
+		|
+		;
+del		: expr-array
+			@{
+				snek_token_val.op = snek_op_del;
+				goto extract_lvalue;
+			}@
+			@{
+				goto add_op_lvalue;
+			}@
 		;
 opt-formals	: formals
 		|
@@ -112,6 +121,7 @@ assign-expr	: expr assign-expr-p
 		;
 assign-expr-p	: ASSIGN
 			@{
+			extract_lvalue:
 				snek_print_val = false;
 				snek_offset_t prev_offset = snek_code_prev_insn();
 				uint8_t *prev = snek_code_at(prev_offset);
@@ -125,7 +135,8 @@ assign-expr-p	: ASSIGN
 					memcpy(&id, prev + 1, sizeof (snek_id_t));
 					break;
 				case snek_op_array:
-					snek_code_set_push(snek_code_prev_prev_insn());
+					if (snek_token_val.op != snek_op_del)
+						snek_code_set_push(snek_code_prev_prev_insn());
 					id = SNEK_ID_NONE;
 					break;
 				default:
@@ -141,6 +152,7 @@ assign-expr-p	: ASSIGN
 			}@
 		  expr
 			@{
+			add_op_lvalue:;
 				snek_op_t op = value_pop().offset;
 				snek_id_t id = value_pop().id;
 				
