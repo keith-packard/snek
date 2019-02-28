@@ -130,8 +130,8 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 	return n;
 }
 
-snek_poly_t *
-snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error)
+static snek_poly_t *
+_snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 {
 	snek_offset_t o;
 
@@ -142,6 +142,8 @@ snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error)
 				goto done;
 			}
 		}
+		if (!add)
+			goto fail;
 		snek_stack_push(p);
 		list = snek_list_resize(list, list->size + 2);
 		p = snek_stack_pop();
@@ -154,23 +156,30 @@ snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error)
 		o = so;
 		if (so < 0)
 			o = list->size + so;
-		if (list->size <= o) {
-			if (report_error)
-				snek_error_range(o);
-			return NULL;
-		}
+		if (list->size <= o)
+			goto fail;
 	}
 done:
 	return &snek_list_data(list)[o];
+fail:
+	if (report_error)
+		snek_error_range(p);
+	return NULL;
+}
+
+snek_poly_t *
+snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error)
+{
+	return _snek_list_ref(list, p, report_error, true);
 }
 
 snek_poly_t
 snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error)
 {
-	snek_poly_t *r = snek_list_ref(list, p, report_error);
+	snek_poly_t *r = _snek_list_ref(list, p, report_error, false);
 	if (r)
 		return *r;
-	return SNEK_NULL;
+	return SNEK_ZERO;
 }
 
 bool

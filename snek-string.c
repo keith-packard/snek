@@ -24,11 +24,13 @@ snek_string_make(char c)
 }
 
 snek_poly_t
-snek_string_get(char *string, snek_soffset_t o, bool report_error)
+snek_string_get(char *string, snek_poly_t p, bool report_error)
 {
+	snek_soffset_t o = snek_poly_get_soffset(p);
+
 	if (o < 0 || strlen(string) <= (snek_offset_t) o) {
 		if (report_error)
-			snek_error_range(o);
+			snek_error_range(p);
 		return SNEK_NULL;
 	}
 	return snek_string_to_poly(snek_string_make(string[o]));

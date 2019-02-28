@@ -472,7 +472,7 @@ snek_poly_t
 snek_error_name(const char *format, ...);
 
 snek_poly_t
-snek_error_range(snek_soffset_t o);
+snek_error_range(snek_poly_t p);
 
 #if SNEK_DEBUG
 void
@@ -737,7 +737,7 @@ char *
 snek_string_make(char c);
 
 snek_poly_t
-snek_string_get(char *string, snek_soffset_t i, bool report_error);
+snek_string_get(char *string, snek_poly_t p, bool report_error);
 
 snek_poly_t
 snek_string_cat(char *a, char *b);

@@ -68,9 +68,9 @@ snek_error_name(const char *format, ...)
 }
 
 snek_poly_t
-snek_error_range(snek_soffset_t o)
+snek_error_range(snek_poly_t p)
 {
-	return snek_error("index out of range: %d", o);
+	return snek_error("index out of range: %p", p);
 }
 
 #if SNEK_DEBUG

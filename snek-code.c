@@ -640,7 +640,7 @@ snek_in_step(snek_offset_t ip)
 			value = snek_list_data(list)[(snek_offset_t) i];
 		break;
 	case snek_string:
-		value = snek_string_get(snek_poly_to_string(array), i, false);
+		value = snek_string_get(snek_poly_to_string(array), snek_float_to_poly(i), false);
 		break;
 	default:
 		snek_error("not iterable: %p", array);
@@ -694,7 +694,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			ret = snek_list_get(snek_poly_to_list(a), b, true);
 			break;
 		case snek_string:
-			ret = snek_string_get(snek_poly_to_string(a), snek_poly_get_soffset(b), true);
+			ret = snek_string_get(snek_poly_to_string(a), b, true);
 			break;
 		default:
 			break;
