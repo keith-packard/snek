@@ -142,7 +142,7 @@ _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 
 	if (snek_list_type(list) == snek_list_dict) {
 		for (o = 0; o < list->size; o += 2) {
-			if (snek_poly_equal(p, snek_list_data(list)[o], false)) {
+			if (snek_poly_cmp(p, snek_list_data(list)[o], false) == 0) {
 				o++;
 				goto done;
 			}
@@ -187,19 +187,25 @@ snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error)
 	return SNEK_ZERO;
 }
 
-bool
-snek_list_equal(snek_list_t *a, snek_list_t *b)
+int8_t
+snek_list_cmp(snek_list_t *a, snek_list_t *b)
 {
-	if (snek_list_type(a) != snek_list_type(b))
-		return false;
-	if (a->size != b->size)
-		return false;
+	int8_t diff = snek_list_type(a) - snek_list_type(b);
+	if (diff)
+		return diff;
 	snek_poly_t *adata = snek_list_data(a);
 	snek_poly_t *bdata = snek_list_data(b);
-	for (snek_offset_t o = 0; o < a->size; o++)
-		if (!snek_poly_equal(adata[o], bdata[o], false))
-			return false;
-	return true;
+
+	snek_offset_t o;
+	for (o = 0; o < a->size; o++) {
+		if (o >= b->size)
+			return 1;
+
+		diff = snek_poly_cmp(adata[o], bdata[o], false);
+		if (diff)
+			return diff;
+	}
+	return b->size > o;
 }
 
 snek_poly_t

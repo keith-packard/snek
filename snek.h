@@ -568,8 +568,8 @@ snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error);
 snek_poly_t *
 snek_list_data(snek_list_t *list);
 
-bool
-snek_list_equal(snek_list_t *a, snek_list_t *b);
+int8_t
+snek_list_cmp(snek_list_t *a, snek_list_t *b);
 
 snek_poly_t
 snek_list_imm(snek_offset_t size, snek_list_type_t type);
@@ -718,8 +718,8 @@ snek_poly_type(snek_poly_t v);
 void
 snek_poly_print(FILE *file, snek_poly_t poly, char format);
 
-bool
-snek_poly_equal(snek_poly_t a, snek_poly_t b, bool is);
+int8_t
+snek_poly_cmp(snek_poly_t a, snek_poly_t b, bool is);
 
 bool
 snek_poly_true(snek_poly_t a);

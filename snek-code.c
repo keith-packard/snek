@@ -672,17 +672,33 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	bool		found;
 	snek_poly_t	ret = SNEK_NULL;
 
-	switch (op) {
-	case snek_op_eq:
-		return snek_bool_to_poly(snek_poly_equal(a, b, false));
-	case snek_op_ne:
-		return snek_bool_to_poly(!snek_poly_equal(a, b, false));
-	case snek_op_is:
-		return snek_bool_to_poly(snek_poly_equal(a, b, true));
-	case snek_op_is_not:
-		return snek_bool_to_poly(!snek_poly_equal(a, b, true));
-	default:
-		break;
+	if (op <= snek_op_is_not) {
+		int8_t cmp = snek_poly_cmp(a, b, op >= snek_op_is);
+		bool v;
+		switch (op) {
+		case snek_op_eq:
+		case snek_op_is:
+			v = cmp == 0;
+			break;
+		case snek_op_ne:
+		case snek_op_is_not:
+			v = cmp != 0;
+			break;
+		case snek_op_gt:
+			v = cmp > 0;
+			break;
+		case snek_op_lt:
+			v = cmp < 0;
+			break;
+		case snek_op_ge:
+			v = cmp >= 0;
+			break;
+		case snek_op_le:
+		default:
+			v = cmp <= 0;
+			break;
+		}
+		return snek_bool_to_poly(v);
 	}
 
 	snek_type_t	at = snek_poly_type(a);
@@ -703,61 +719,46 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 		af = snek_poly_to_float(a);
 		bf = snek_poly_to_float(b);
 		switch (op) {
-		case snek_op_lt:
-			ret = snek_bool_to_poly(af < bf);
+		case snek_op_plus:
+			af = af + bf;
 			break;
-		case snek_op_gt:
-			ret = snek_bool_to_poly(af > bf);
+		case snek_op_minus:
+			af = af - bf;
 			break;
-		case snek_op_le:
-			ret = snek_bool_to_poly(af <= bf);
+		case snek_op_times:
+			af = af * bf;
 			break;
-		case snek_op_ge:
-			ret = snek_bool_to_poly(af >= bf);
+		case snek_op_divide:
+			af = af / bf;
+			break;
+		case snek_op_div:
+			af = (float) ((int32_t) af / (int32_t) bf);
+			break;
+		case snek_op_mod:
+			af = (float) ((int32_t) af % (int32_t) bf);
+			break;
+		case snek_op_pow:
+			af = powf(af, bf);
+			break;
+		case snek_op_land:
+			af = (float) ((int32_t) af & (int32_t) bf);
+			break;
+		case snek_op_lor:
+			af = (float) ((int32_t) af | (int32_t) bf);
+			break;
+		case snek_op_lxor:
+			af = (float) ((int32_t) af ^ (int32_t) bf);
+			break;
+		case snek_op_lshift:
+			af = (float) ((int32_t) af << (int32_t) bf);
+			break;
+		case snek_op_rshift:
+			af = (float) ((int32_t) af >> (int32_t) bf);
 			break;
 		default:
-			switch (op) {
-			case snek_op_plus:
-				af = af + bf;
-				break;
-			case snek_op_minus:
-				af = af - bf;
-				break;
-			case snek_op_times:
-				af = af * bf;
-				break;
-			case snek_op_divide:
-				af = af / bf;
-				break;
-			case snek_op_div:
-				af = (float) ((int32_t) af / (int32_t) bf);
-				break;
-			case snek_op_mod:
-				af = (float) ((int32_t) af % (int32_t) bf);
-				break;
-			case snek_op_pow:
-				af = powf(af, bf);
-				break;
-			case snek_op_land:
-				af = (float) ((int32_t) af & (int32_t) bf);
-				break;
-			case snek_op_lor:
-				af = (float) ((int32_t) af | (int32_t) bf);
-				break;
-			case snek_op_lxor:
-				af = (float) ((int32_t) af ^ (int32_t) bf);
-				break;
-			case snek_op_lshift:
-				af = (float) ((int32_t) af << (int32_t) bf);
-				break;
-			case snek_op_rshift:
-				af = (float) ((int32_t) af >> (int32_t) bf);
-				break;
-			default:
-				break;
-			}
-			ret = snek_float_to_poly(af);
+			break;
 		}
+		ret = snek_float_to_poly(af);
 	} else {
 		switch (op) {
 		case snek_op_in:
@@ -767,7 +768,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 				snek_offset_t o, step = snek_list_type(bl) == snek_list_dict ? 2 : 1;
 				found = false;
 				for (o = 0; o < bl->size; o += step) {
-					if (snek_poly_equal(a, snek_list_data(bl)[o], false)) {
+					if (snek_poly_cmp(a, snek_list_data(bl)[o], false) == 0) {
 						found = true;
 						break;
 					}

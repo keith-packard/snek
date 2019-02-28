@@ -69,26 +69,27 @@ snek_poly_print(FILE *file, snek_poly_t poly, char format)
 	snek_poly_format(&buf, poly, format);
 }
 
-bool
-snek_poly_equal(snek_poly_t a, snek_poly_t b, bool is)
+int8_t
+snek_poly_cmp(snek_poly_t a, snek_poly_t b, bool is)
 {
-	if (a.u == b.u)
-		return true;
 	snek_type_t atype = snek_poly_type(a);
 	snek_type_t btype = snek_poly_type(b);
-	if (atype != btype)
-		return false;
+
+	int8_t tdiff = atype - btype;
+	if (tdiff)
+		return tdiff;
 	switch (atype) {
+	case snek_float:
+		return (b.f < a.f) - (a.f < b.f);
 	case snek_string:
-		return !strcmp(snek_poly_to_string(a), snek_poly_to_string(b));
+		return strcmp(snek_poly_to_string(a), snek_poly_to_string(b));
 	case snek_list:
 		if (!is)
-			return snek_list_equal(snek_poly_to_list(a), snek_poly_to_list(b));
-		break;
+			return snek_list_cmp(snek_poly_to_list(a), snek_poly_to_list(b));
+		/* fall through */
 	default:
-		break;
+		return (b.u < a.u) - (a.u < b.u);
 	}
-	return false;
 }
 
 bool
