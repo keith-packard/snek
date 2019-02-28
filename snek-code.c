@@ -309,7 +309,7 @@ snek_code_add_string(char *string)
 	snek_code_add_op(snek_op_string);
 	strpos = snek_compile_size;
 	compile_extend(sizeof (snek_offset_t), NULL);
-	s = snek_pool_offset(snek_stack_pop_string());
+	s = snek_pool_offset(snek_stack_pop_string(string));
 	memcpy(snek_compile + strpos, &s, sizeof (snek_offset_t));
 }
 

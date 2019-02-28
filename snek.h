@@ -641,7 +641,7 @@ void
 snek_stack_push_string(const char *s);
 
 char *
-snek_stack_pop_string(void);
+snek_stack_pop_string(const char *s);
 
 void
 snek_stack_push_list(snek_list_t *list);

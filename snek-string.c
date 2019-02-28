@@ -41,15 +41,11 @@ snek_string_catn(char *a, snek_offset_t aoff, snek_offset_t alen,
 		 char *b, snek_offset_t boff, snek_offset_t blen)
 {
 	char *new;
-	if (snek_is_pool_addr(a))
-		snek_stack_push_string(a);
-	if (snek_is_pool_addr(b))
-		snek_stack_push_string(b);
+	snek_stack_push_string(a);
+	snek_stack_push_string(b);
 	new = snek_alloc(alen + blen + 1);
-	if (snek_is_pool_addr(b))
-		b = snek_stack_pop_string();
-	if (snek_is_pool_addr(a))
-		a = snek_stack_pop_string();
+	b = snek_stack_pop_string(b);
+	a = snek_stack_pop_string(a);
 	if (new) {
 		memcpy(new, a + aoff, alen);
 		memcpy(new + alen, b + boff, blen);
@@ -73,7 +69,7 @@ snek_string_slice(char *a, snek_slice_t *slice)
 
 	snek_stack_push_string(a);
 	char	*r = snek_alloc(slice->count + 1);
-	a = snek_stack_pop_string();
+	a = snek_stack_pop_string(a);
 	if (!r)
 		return NULL;
 	snek_offset_t i = 0;
@@ -100,11 +96,9 @@ snek_buf_realloc(char **str_p, snek_offset_t add)
 	char *new;
 	snek_offset_t len = old ? strlen(old) : 0;
 
-	if (old)
-		snek_stack_push_string(old);
+	snek_stack_push_string(old);
 	new = snek_alloc(len + add + 1);
-	if (old)
-		old = snek_stack_pop_string();
+	old = snek_stack_pop_string(old);
 	if (!new)
 		return NULL;
 	memcpy(new, old, len);
@@ -130,13 +124,10 @@ snek_buf_sprints(const char *s, void *closure)
 	char	**str_p = closure;
 	char	*new;
 	int	len = strlen(s);
-	bool	is_pool = snek_is_pool_addr(s);
 
-	if (is_pool)
-		snek_stack_push_string((char *) s);
+	snek_stack_push_string(s);
 	new = snek_buf_realloc(str_p, len);
-	if (is_pool)
-		s = snek_stack_pop_string();
+	s = snek_stack_pop_string(s);
 	if (new)
 		memcpy(new, s, len);
 	return 0;
@@ -160,7 +151,7 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 		snek_stack_push_string(a);
 		result = snek_string_catn(result, 0, result ? strlen(result) : 0,
 					  a, percent, next-percent);
-		a = snek_stack_pop_string();
+		a = snek_stack_pop_string(a);
 		poly = snek_stack_pop();
 		percent = next;
 		if (a[percent] == '%') {
@@ -184,7 +175,7 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 				snek_stack_push(poly);
 				snek_stack_push_string(a);
 				snek_poly_format(&buf, v, format);
-				a = snek_stack_pop_string();
+				a = snek_stack_pop_string(a);
 				poly = snek_stack_pop();
 			}
 		}
@@ -195,13 +186,16 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 void
 snek_stack_push_string(const char *s)
 {
-	snek_stack_push(snek_string_to_poly((char *) s));
+	if (snek_is_pool_addr(s))
+		snek_stack_push(snek_string_to_poly((char *) s));
 }
 
 char *
-snek_stack_pop_string(void)
+snek_stack_pop_string(const char *s)
 {
-	return snek_poly_to_string(snek_stack_pop());
+	if (snek_is_pool_addr(s))
+		return snek_poly_to_string(snek_stack_pop());
+	return (char *) s;
 }
 
 snek_offset_t
