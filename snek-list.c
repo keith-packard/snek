@@ -229,8 +229,20 @@ snek_list_imm(snek_offset_t size, snek_list_type_t type)
 	}
 
 	snek_poly_t	*data = snek_list_data(list);
-	while (size--)
-		data[size] = snek_stack_pop();
+	if (type == snek_list_dict) {
+		list->size = 0;
+		while (size) {
+			size -= 2;
+			snek_poly_t value = snek_stack_pop();
+			snek_poly_t key = snek_stack_pop();
+			snek_poly_t *ref = _snek_list_ref(list, key, false, true);
+			if (ref)
+				*ref = value;
+		}
+	} else {
+		while (size--)
+			data[size] = snek_stack_pop();
+	}
 	return snek_list_to_poly(list);
 }
 
