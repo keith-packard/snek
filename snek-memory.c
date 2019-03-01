@@ -114,7 +114,7 @@ snek_mem_alloc(snek_poly_t pool_size)
 static uint8_t			snek_busy[SNEK_BUSY_SIZE];
 static struct snek_chunk	snek_chunk[SNEK_NCHUNK];
 
-#if SNEK_NCHUNK < 127
+#if SNEK_NCHUNK < 255
 typedef uint8_t snek_chunk_t;
 #else
 typedef snek_offset_t snek_chunk_t;
@@ -207,7 +207,7 @@ find_chunk(snek_offset_t offset)
 	l = chunk_first;
 	r = chunk_last;
 	while (l < r) {
-		snek_chunk_t m = (l + r - 1) >> 1;
+		snek_chunk_t m = (l + r) >> 1;
 		if (snek_chunk[m].old_offset < offset)
 			l = m + 1;
 		else
