@@ -58,6 +58,14 @@ def my_getch(edit_win):
         edit_win.set_cursor()
         snek_lock.release()
         c = edit_win.window.getch()
+        if c == 27:
+            c = edit_win.window.getch()
+            if c == ord('0'):
+                c = curses.KEY_F10
+            elif ord('1') <= c and c <= ord('9'):
+                c = curses.KEY_F1 + c - ord('1')
+            elif ord('a') <= c and c <= ord('z'):
+                c += 128
         snek_lock.acquire()
         if not snek_dialog_waiting:
             break
