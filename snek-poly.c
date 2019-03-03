@@ -110,11 +110,17 @@ snek_poly_true(snek_poly_t a)
 snek_offset_t
 snek_poly_len(snek_poly_t a)
 {
+	snek_offset_t len;
+	snek_list_t *al;
 	switch (snek_poly_type(a)) {
 	case snek_string:
 		return strlen(snek_poly_to_string(a));
 	case snek_list:
-		return snek_poly_to_list(a)->size;
+		al = snek_poly_to_list(a);
+		len = al->size;
+		if (snek_list_type(al) == snek_list_dict)
+			len /= 2;
+		return len;
 	default:
 		return 0;
 	}
