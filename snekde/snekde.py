@@ -146,6 +146,7 @@ class SnekDevice:
     interface = False
     write_queue = False
     device = ""
+    interrupt_pending = False
 
     #
     # The interface needs to have a condition variable (cv) that is
@@ -203,9 +204,11 @@ class SnekDevice:
         try:
             self.serial.write_timeout = 1
             self.serial.write(b'\x0f')
+            self.serial.reset_output_buffer()
+            self.serial.xonxoff = False
+            self.serial.close()
         except serial.SerialException:
             pass
-        self.serial.close()
 
     def reader(self):
         """loop and copy serial->"""
@@ -225,18 +228,31 @@ class SnekDevice:
         try:
             while self.alive:
                 send_data = ""
+                interrupt = False
                 with self.interface.cv:
-                    while not self.write_queue and self.alive:
+                    while not self.write_queue and not self.interrupt_pending and self.alive:
                         self.interface.cv.wait()
                     if not self.alive:
                         return
                     send_data = self.write_queue
+                    interrupt = self.interrupt_pending
                     self.write_queue = False
-                self.serial.write(send_data.encode('utf-8'))
+                    self.interrupt_pending = False
+                if interrupt:
+                    self.serial.reset_output_buffer()
+                    self.serial.xonxoff = False
+                    self.serial.write(b'\x03')
+                    self.serial.xonxoff = True
+                if send_data:
+                    self.serial.write(send_data.encode('utf-8'))
         except serial.SerialException as e:
             self.interface.failed(self.device)
         finally:
             self.transmitter_thread = False
+
+    def interrupt(self):
+        self.interrupt_pending = True
+        self.interface.cv.notify()
 
     def write(self, data):
         if self.write_queue:
@@ -952,10 +968,9 @@ def run():
                 snek_current_window = snek_repl_win
             else:
                 snek_current_window = snek_edit_win
-            continue
-        if ch == 3:
+        elif ch == 3:
             if snek_device:
-                snek_device.write(chr(3))
+                snek_device.interrupt()
         elif ch == curses.KEY_F1:
             snekde_open_device()
         elif ch == curses.KEY_F2:
