@@ -277,6 +277,7 @@ class EditWin:
     text = ""
     cut = ""
     mark = -1
+    changed = False
 
     undo = []
 
@@ -294,6 +295,7 @@ class EditWin:
         self.point = 0
         self.mark = -1
         self.top_line = 0
+        self.changed = False
 
     # Convert text index to x/y coord
     
@@ -480,6 +482,7 @@ class EditWin:
 
         self.point = self_point
         self.mark = self_mark
+        self.changed = True
         return True
 
     # Insert some text, adjusting self.point and self.mark if the text
@@ -492,6 +495,7 @@ class EditWin:
             self.point += len(text)
         if point < self.mark:
             self.mark += len(text)
+        self.changed = True
 
     def insert_at_point(self, text):
         self.insert(self.point, text)
@@ -515,6 +519,7 @@ class EditWin:
         self.point = self._adjust_delete_position(point, count, self.point, False)
         if self.mark >= 0:
             self.mark = self._adjust_delete_position(point, count, self.mark, True)
+        self.changed = True
 
     def delete_at_point(self, count):
         self.delete(self.point, count)
@@ -935,6 +940,7 @@ def snekde_put_text():
     snek_device.command("eeprom.write()\n")
     snek_device.write(snek_edit_win.text + '\x04')
     snek_device.command("reset()\n")
+    snek_edit_win.changed = False
 
 def snekde_load_file():
     global snek_edit_win
@@ -947,7 +953,6 @@ def snekde_load_file():
     except OSError as e:
         ErrorWin("%s: %s" % (e.filename, e.strerror))
         
-
 def snekde_save_file():
     global snek_edit_win
     dialog = GetTextWin("Save File", prompt="File:")
@@ -955,12 +960,14 @@ def snekde_save_file():
     try:
         with open(name, 'w') as myfile:
             myfile.write(snek_edit_win.text)
+            snek_edit_win.changed = False
     except OSError as e:
         ErrorWin("%s: %s" % (e.filename, e.strerror))
 
 def run():
     global snek_current_window, snek_edit_win, snek_repl_win, snek_device
     snek_current_window = snek_edit_win
+    prev_exit = False
     while True:
         ch = snek_current_window.getch()
         if ch == curses.KEY_NPAGE or ch == curses.KEY_PPAGE:
@@ -984,6 +991,10 @@ def run():
             else:
                 ErrorWin("No device")
         elif ch == curses.KEY_F4:
+            if snek_edit_win.changed and not prev_exit:
+                ErrorWin("Unsaved changes, quit again to abandon them")
+                prev_exit = True
+                continue
             sys.exit(0)
         elif ch == curses.KEY_F5:
             snekde_load_file()
@@ -1004,6 +1015,7 @@ def run():
                         else:
                             break
                     snek_device.command(data)
+        prev_exit = False
 
 
 # Class to monitor the serial device for data and
