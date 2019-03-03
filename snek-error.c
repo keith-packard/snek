@@ -68,16 +68,40 @@ snek_error_name(const char *format, ...)
 }
 
 snek_poly_t
-snek_error_range(snek_poly_t p)
+snek_error_0_name(const char *string)
 {
-	return snek_error("index out of range: %p", p);
+	return snek_error_name(string);
+}
+
+snek_poly_t
+snek_error_value(snek_poly_t p)
+{
+	return snek_error("invalid value: %p", p);
+}
+
+snek_poly_t
+snek_error_type_2(snek_poly_t a, snek_poly_t b)
+{
+	return snek_error("type mismatch: %p %p", a, b);
+}
+
+snek_poly_t
+snek_error_type_1(snek_poly_t a)
+{
+	return snek_error("invalid type: %p", a);
+}
+
+snek_poly_t
+snek_error_step(void)
+{
+	return snek_error("zero step");
 }
 
 #if SNEK_DEBUG
 void
 snek_panic(const char *message)
 {
-	snek_error("%s\n", message);
+	snek_error(message);
 	abort();
 }
 #endif

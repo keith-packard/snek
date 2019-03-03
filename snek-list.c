@@ -178,7 +178,7 @@ _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 	return &data[o];
 fail:
 	if (report_error)
-		snek_error_range(p);
+		snek_error_value(p);
 	return NULL;
 }
 

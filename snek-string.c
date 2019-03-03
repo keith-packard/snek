@@ -30,7 +30,7 @@ snek_string_get(char *string, snek_poly_t p, bool report_error)
 
 	if (o < 0 || strlen(string) <= (snek_offset_t) o) {
 		if (report_error)
-			snek_error_range(p);
+			snek_error_value(p);
 		return SNEK_NULL;
 	}
 	return snek_string_to_poly(snek_string_make(string[o]));

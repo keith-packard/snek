@@ -460,7 +460,7 @@ snek_poly_get_float(snek_poly_t a)
 {
 	if (snek_poly_type(a) == snek_float)
 		return snek_poly_to_float(a);
-	snek_error("not a number: %p", a);
+	snek_error_type_1(a);
 	return 0.0f;
 }
 
@@ -474,7 +474,7 @@ void
 snek_stack_push(snek_poly_t p)
 {
 	if (snek_stackp == SNEK_STACK) {
-		snek_error("stack overflow");
+		snek_error_0("stack overflow");
 		return;
 	}
 	snek_stack[snek_stackp++] = p;
@@ -551,7 +551,7 @@ snek_range_start(snek_offset_t ip)
 		limit = snek_stack_pop_float();
 		current = snek_stack_pop_float();
 		if (step == 0) {
-			snek_error("zero range step");
+			snek_error_step();
 			return;
 		}
 		break;
@@ -643,7 +643,7 @@ snek_in_step(snek_offset_t ip)
 		value = snek_string_get(snek_poly_to_string(array), snek_float_to_poly(i), false);
 		break;
 	default:
-		snek_error("not iterable: %p", array);
+		snek_error_type_1(array);
 		return true;
 	}
 	/* End of iteration */
@@ -817,7 +817,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 		}
 	}
 	if (snek_is_null(ret))
-		snek_error("type mismatch: %p %p", a, b);
+		return snek_error_type_2(a, b);
 	return ret;
 }
 
@@ -848,7 +848,7 @@ snek_slice(uint8_t bits)
 	len = snek_poly_len(snek_a);
 
 	if (stride == 0) {
-		snek_error("slice step cannot be zero");
+		snek_error_step();
 		return;
 	}
 
@@ -935,7 +935,7 @@ snek_assign(snek_id_t id, snek_op_t op)
 			if (snek_poly_type(lp) != snek_list ||
 			    snek_list_readonly(l = snek_poly_to_list(lp)))
 			{
-				snek_error("not a list: %p", lp);
+				snek_error_type_1(lp);
 				return;
 			}
 
@@ -1124,7 +1124,7 @@ snek_code_run(snek_code_t *code_in)
 					snek_call_builtin(snek_poly_to_builtin(snek_a), nposition, nnamed);
 					break;
 				default:
-					snek_error("not a func: %p", snek_a);
+					snek_error_type_1(snek_a);
 					break;
 				}
 				ip += sizeof (snek_offset_t);
@@ -1156,7 +1156,7 @@ snek_code_run(snek_code_t *code_in)
 					ip += sizeof (snek_offset_t);
 				break;
 			case snek_op_forward:
-				snek_error("not in loop");
+				snek_error_0("not in loop");
 				break;
 			case snek_op_range_start:
 				snek_range_start(ip);

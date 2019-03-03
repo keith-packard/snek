@@ -52,10 +52,10 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 {
 	void *closure = buf->closure;
 	static char tmp[32];
-	char format_string[3] = "%.";
+	static char format_string[3] = "%.";
 	snek_type_t atype = snek_poly_type(a);
+	int i;
 
-	format_string[1] = format;
 	format_string[1] = format;
 	switch (format) {
 	case 'd':
@@ -65,7 +65,10 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	case 'X':
 		if (atype != snek_float)
 			break;
-		sprintf(tmp, format_string, (int) snek_poly_to_float(a));
+	print_float:
+		i = (int) snek_poly_to_float(a);
+	print_int:
+		sprintf(tmp, format_string, i);
 		buf->put_s(tmp, closure);
 		return;
 	case 'e':
@@ -82,13 +85,10 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	case 'c':
 		switch (atype) {
 		case snek_float:
-			sprintf(tmp, format_string, (int) snek_poly_to_float(a));
-			buf->put_s(tmp, closure);
-			return;
+			goto print_float;
 		case snek_string:
-			sprintf(tmp, format_string, (int) snek_poly_to_string(a)[0]);
-			buf->put_s(tmp, closure);
-			return;
+			i = snek_poly_to_string(a)[0];
+			goto print_int;
 		default:
 			break;
 		}

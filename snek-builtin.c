@@ -53,10 +53,8 @@ snek_builtin_sys_stdout_flush(void)
 snek_poly_t
 snek_builtin_ord(snek_poly_t a)
 {
-	if (snek_poly_type(a) != snek_string) {
-		snek_error("expected string");
-		return SNEK_NULL;
-	}
+	if (snek_poly_type(a) != snek_string)
+		return snek_error_type_1(a);
 	return snek_float_to_poly(snek_poly_to_string(a)[0]);
 }
 

@@ -229,7 +229,7 @@ note_chunk(snek_offset_t offset, snek_offset_t size)
 
 #if SNEK_DEBUG
 	if (chunk >= SNEK_NCHUNK)
-		snek_error("note chunk failed");
+		snek_error_0("note chunk failed");
 #endif
 
 	/*
@@ -713,7 +713,7 @@ snek_alloc(snek_offset_t size)
 	    snek_collect(SNEK_COLLECT_INCREMENTAL) < size &&
 	    snek_collect(SNEK_COLLECT_FULL) < size)
 	{
-		snek_error("out of memory");
+		snek_error_0("out of memory");
 		return NULL;
 	}
 	addr = pool_addr(snek_top);

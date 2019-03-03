@@ -40,6 +40,12 @@
 		snek_internal_error(__fmt__, ## args);		\
 	})
 
+#define snek_error_0_name snek_internal_error_0
+#define snek_error_0(string) ({						\
+			static const char PROGMEM __string__[] = (string); \
+			snek_internal_error_0(__string__);		\
+		})
+
 #define fprintf(file, fmt, args...) ({				\
 		static const char PROGMEM __fmt__[] = (fmt);	\
 		fprintf_P(file, __fmt__, ## args);		\

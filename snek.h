@@ -466,13 +466,26 @@ extern const snek_mem_t snek_compile_mem;
 
 #ifndef snek_error_name
 #define snek_error_name snek_error
+#define snek_error_0_name snek_error_0
 #endif
 
 snek_poly_t
 snek_error_name(const char *format, ...);
 
 snek_poly_t
-snek_error_range(snek_poly_t p);
+snek_error_0_name(const char *string);
+
+snek_poly_t
+snek_error_step(void);
+
+snek_poly_t
+snek_error_value(snek_poly_t p);
+
+snek_poly_t
+snek_error_type_2(snek_poly_t a, snek_poly_t b);
+
+snek_poly_t
+snek_error_type_1(snek_poly_t a);
 
 #if SNEK_DEBUG
 void

@@ -229,18 +229,12 @@ set_dir(uint8_t pin, uint8_t d)
 	}
 }
 
-static snek_poly_t
-snek_error_duino_pin(snek_poly_t a)
-{
-	return snek_error("invalid pin %p", a);
-}
-
 static uint8_t
 snek_poly_get_pin(snek_poly_t a)
 {
 	snek_soffset_t p = snek_poly_get_soffset(a);
 	if (p < 0 || NUM_PIN <= p)
-		snek_error_duino_pin(a);
+		snek_error_value(a);
 	return p;
 }
 

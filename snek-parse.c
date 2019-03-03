@@ -62,7 +62,7 @@ _value_pop(const char *file, int line)
 #endif
 #if SNEK_DEBUG
 	if (value_stack_p == 0) {
-		snek_error("value stack underflow");
+		snek_error_0("value stack underflow");
 		return (snek_parse_val_t) { .offset = 0 };
 	}
 #endif
@@ -171,7 +171,7 @@ snek_parse(void)
 		case parse_return_success:
 			return snek_parse_success;
 		case parse_return_end:
-			snek_error("Syntax error at end of file.");
+			snek_error_0("Syntax error at end of file.");
 			return snek_parse_error;
 		case parse_return_error:
 		case parse_return_oom:
