@@ -913,6 +913,9 @@ def snekde_get_text():
 
 def snekde_put_text():
     global snek_edit_win, snek_device
+    if len(snek_edit_win.text.strip()) == 0:
+        ErrorWin("No program to put")
+        return
     snek_device.command("eeprom.write()\n")
     snek_device.write(snek_edit_win.text + '\x04')
     snek_device.command("reset()\n")
