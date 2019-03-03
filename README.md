@@ -18,10 +18,10 @@ Python.
 ### Datatypes
 
 To keep things simple, Snek does not support Python objects at
-all. Inspired by BASIC, Snek provides only a single numeric data
-type, 32-bit floats. In addition, there are lists, tuples, strings and
-functions. True and False are just syntax for 1 and 0. None doesn't
-exist at all.
+all. Inspired by BASIC, Snek provides only a single numeric data type,
+32-bit floats. In addition, there are lists, tuples, dictionaries,
+strings and functions. True and False are just syntax for 1 and
+0.
 
 ### Programming constructs
 
@@ -30,13 +30,18 @@ For expressions, snek includes the usual arithmetic (+, -, *, /, %,
 operators.
 
 Snek implements 'if', 'while' and 'for' control flow, along with
-'break', 'continue' and 'return'.
+'break', 'continue' and 'return'. There's also 'del' to clean up
+global variables and remove dictionary entries.
 
 ### Functions
 
 You can define new functions in Snek; parameters and local variables
 have lexical scope, and you can refer to global variables with the
-'global' statement (just like python).
+'global' statement (just like python). Snek also provides named
+parameters, so you can do things like
+
+	print('hello', end='')
+	print(' world')
 
 ## GPIO interface
 
