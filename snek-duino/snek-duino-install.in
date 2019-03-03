@@ -14,10 +14,10 @@ for i in "$@"; do
     case "$mode" in
 	arg)
 	    case "$i" in
-		fuse)
-		    action=fuse
+		fuse|load)
+		    action="$i"
 		    ;;
-		-isp)
+		-isp|--isp)
 		    mode=isp
 		    ;;
 		*)
@@ -28,6 +28,7 @@ for i in "$@"; do
 	    ;;
 	isp)
 	    ISP="$i"
+	    mode=arg
 	    ;;
     esac
 done
