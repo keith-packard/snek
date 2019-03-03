@@ -1,0 +1,392 @@
+/*
+  CSS stylesheet for XHTML produced by DocBook XSL stylesheets.
+*/
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('fonts/OpenSans-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('fonts/OpenSans-Italic.ttf');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('fonts/OpenSans-Semibold.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('fonts/OpenSans-SemiboldItalic.ttf');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans Mono';
+    src: url('fonts/DejaVuSansMono.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans Mono';
+    src: url('fonts/DejaVuSansMono-Oblique.ttf');
+    font-weight: normal;
+    font-style: oblique;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans Mono';
+    src: url('fonts/DejaVuSansMono-Bold.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DejaVu Sans Mono';
+    src: url('fonts/DejaVuSansMono-BoldOblique.ttf');
+    font-weight: bold;
+    font-style: oblique;
+}
+
+body {
+    font-family: "Open Sans",sans-serif;
+    font-size: 12pt;
+    margin: 0;
+}
+
+code, pre {
+  font-family: "DejaVu Sans Mono", monospace;
+}
+
+span.strong {
+  font-weight: bold;
+}
+
+body blockquote {
+  margin-top: .75em;
+  line-height: 1.5;
+  margin-bottom: .75em;
+}
+
+a:link {
+    color: #55cf1f;
+}
+
+a:visited {
+    color: #55cf1f;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+  color: #55cf1f;
+  font-family: "Open Sans",sans-serif;
+}
+
+div#content, div#header, div#footer {
+    margin-left: 330px;
+    margin-right: 2em;
+    margin-top: 2em;
+    margin-bottom: 2em;
+}
+
+div.toc {
+    position: fixed;
+    left: 0px;
+    top: 240px;
+    bottom: 0;
+    width: 300px;
+    margin-right: 0;
+    margin-left: 0;
+    margin-top: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    float: left;
+    border-right: 2px solid #808080;
+    border-collapse: collapse;
+    overflow: auto;
+}
+
+div#logo img {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 320px;
+    height: 240px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+}
+
+td.icon {
+    width: 4em;
+    height: 3em;
+}
+
+td.icon img {
+    height: 100%;
+    width: 100%
+}
+
+div.toc a:link {
+    text-decoration: none;
+}
+
+div.toc a:visited {
+    text-decoration: none;
+}
+
+div.toc a:hover {
+    text-decoration: underline;
+}
+
+div.toc a:active {
+    text-decoration: underline;
+}
+
+div.details {
+    padding-top: 1em;
+    padding-left: 3em;
+}
+
+span.author {
+    font-weight: bold;
+    color: #55cf1f;
+}
+
+span.email {
+    font-size: 10pt;
+}
+
+span#revnumber {
+    font-size: 8pt;
+}
+
+span#revdate {
+    font-size: 8pt;
+}
+
+span#revremark {
+    font-size: 8pt;
+}
+
+div#footer {
+    border-top: 2px solid #808080;
+}
+
+body h1 {
+  margin: .0em 0 0 -4%;
+  line-height: 1.3;
+  border-bottom: 2px solid #808080;
+}
+
+body h2 {
+  margin: 0.5em 0 0 -4%;
+  line-height: 1.3;
+  border-bottom: 2px solid #808080;
+}
+
+body h3 {
+  margin: .8em 0 0 -3%;
+  line-height: 1.3;
+}
+
+body h4 {
+  margin: .8em 0 0 -3%;
+  line-height: 1.3;
+}
+
+body h5 {
+  margin: .8em 0 0 -2%;
+  line-height: 1.3;
+}
+
+body h6 {
+  margin: .8em 0 0 -1%;
+  line-height: 1.3;
+}
+
+body hr {
+  border: none; /* Broken on IE6 */
+}
+
+body td {
+  line-height: 1.2
+}
+
+body th {
+  line-height: 1.2;
+}
+
+ol {
+  line-height: 1.2;
+}
+
+ul, body dir, body menu {
+  line-height: 1.2;
+}
+
+body h1, body h2, body h3, body h4, body h5, body h6 {
+  margin-left: 0
+} 
+
+body pre {
+  margin: 0.5em 10% 0.5em 1em;
+  line-height: 1.0;
+}
+
+tt.literal, code.literal {
+}
+
+.programlisting, .screen {
+  border: 1px solid #808080;
+  background: #f4f4f4;
+  margin: 0.5em 10% 0.5em 0;
+  padding: 0.5em 1em;
+}
+
+div.sidebar {
+  background: #ffffee;
+  margin: 1.0em 10% 0.5em 0;
+  padding: 0.5em 1em;
+  border: 1px solid #808080;
+}
+div.sidebar * { padding: 0; }
+div.sidebar div { margin: 0; }
+div.sidebar p.title {
+  margin-top: 0.5em;
+  margin-bottom: 0.2em;
+}
+
+div.bibliomixed {
+  margin: 0.5em 5% 0.5em 1em;
+}
+
+div.glossary dt {
+  font-weight: bold;
+}
+div.glossary dd p {
+  margin-top: 0.2em;
+}
+
+dl {
+  margin: .8em 0;
+  line-height: 1.2;
+}
+
+dt {
+  margin-top: 0.5em;
+}
+
+dt span.term {
+  font-weight: bold;
+}
+
+div.variablelist dd p {
+  margin-top: 0;
+}
+
+div.itemizedlist li, div.orderedlist li {
+  margin-left: -0.8em;
+  margin-top: 0.5em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+
+div.sidebar ul, div.sidebar ol {
+    margin-left: 2.8em;
+}
+
+div.itemizedlist p.title,
+div.orderedlist p.title,
+div.variablelist p.title
+{
+  margin-bottom: -0.8em;
+}
+
+div.revhistory {
+    border-style: none;
+}
+
+div.revhistory table, div.revhistory th, div.revhistory td {
+    border-collapse: collapse;
+    border: 1px solid #808080;
+    padding: 0.25em;
+}
+
+div.revhistory th {
+    color: black;
+}
+
+/* Keep TOC and index lines close together. */
+div.toc dl, div.toc dt
+{
+  line-height: normal;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+div.admonitionblock {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+div.admonitionblock div {
+    margin-left: 0em;
+    margin-right: 1em;
+}    
+
+div.admonitionblock div.title {
+    color:  #c70909;
+    font-style: bold;
+    font-size: 24pt;
+}
+
+div#content table.tableblock {
+    border-style: solid;
+    border-width: 1px;
+    border-collapse: collapse;
+}
+
+div#content table.tableblock td,th {
+    border-right-style: solid;
+    border-right-width: 1px;
+}
+
+div#content table.tableblock tbody p {
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+}
+
+div#content table.tableblock tbody tr:nth-child(odd) {
+    background: #cccccc;
+}
+    
+div.imageblock{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+div.imageblock img {
+    margin-bottom: 0.5em;
+}
+
+@media print {
+  div.navheader, div.navfooter { display: none; }
+}

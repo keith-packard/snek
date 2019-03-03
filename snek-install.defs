@@ -3,6 +3,7 @@ PREFIX = /usr/local
 LIBDIR = $(PREFIX)/lib
 BINDIR = $(PREFIX)/bin
 SHAREDIR = $(PREFIX)/share/snek
+DOCDIR = $(PREFIX)/share/doc/snek
 PKGCONFIG = $(LIBDIR)/pkgconfig
 APPDIR = $(PREFIX)/share/applications
 ICONDIR = $(PREFIX)/share/icons/hicolor/scalable/apps

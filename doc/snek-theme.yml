@@ -1,0 +1,61 @@
+base:
+  font_family: Open Sans Light
+heading:
+  font_color: #55cf1f
+  font_size: 17
+font:
+  catalog:
+    Open Sans Light:
+      normal: OpenSans-Light.ttf
+      italic: OpenSans-LightItalic.ttf
+      bold: OpenSans-Semibold.ttf
+      bold_italic: OpenSans-SemiboldItalic.ttf
+    DejaVu Sans Mono:
+      normal: DejaVuSansMono.ttf
+      italic: DejaVuSansMono-Oblique.ttf
+      bold: DejaVuSansMono-Bold.ttf
+      bold_italic: DejaVuSansMono-BoldOblique.ttf
+title_page:
+  align: right
+  logo:
+    top: 10%
+  title:
+    top: 75%
+    font_size: $heading_h1_font_size
+    font_color: #000000
+    font_style: bold
+    line_height: 0.9
+  subtitle:
+    font_size: $heading_h3_font_size
+    font_style: bold_italic
+    line_height: 1
+  authors:
+    margin_top: $base_font_size * 1.25
+    font_size: $base_font_size * 1.5
+    font_color: #000000
+  revision:
+    margin_top: $base_font_size * 1.25
+admonition_label:
+  font_color: #c70909
+  font_style: bold
+  font_size: $heading_h2_font_size
+page:
+  background_color: ffffff
+  layout: portrait
+  margin: [0.5in, 0.67in, 0.75in, 0.67in]
+  size: letter
+footer:
+  height: 0.5in
+  border_color: #55cf1f
+  recto:
+    left:
+      content: '{page-number}'
+    right:
+      content: '© 2019 Keith Packard. Creative Commons ShareAlike 3.0 License'
+  verso:
+    left:
+      content: $footer_recto_right_content
+    right:
+      content: '{page-number}'
+literal:
+  font_family: DejaVu Sans Mono

@@ -1,0 +1,438 @@
+= The Snek Programming Language: A Python-inspired Embedded Computing System
+Keith Packard <keithp@keithp.com
+:title-logo-image: image:../snek.svg[Snek]
+.revnumber: v1.0
+:revdate: 1 Mar 2019
+:icons:
+:icontype: svg
+:copyright: Keith Packard 2019
+:doctype: book
+:numbered:
+:stylesheet: snek.css
+:linkcss:
+:toc:
+:pdf-stylesdir: .
+:pdf-style: snek
+:pdf-fontsdir: fonts
+
+ifndef::backend-pdf[]
+[#logo]
+[link=https://keithp.com/snek]
+image::snek.svg[Snek]
+endif::[]
+
+[license]
+== License
+
+Copyright © 2019 Keith Packard
+
+This document is released under the terms of the link:http://creativecommons.org/licenses/by-sa/3.0/[Creative Commons ShareAlike 3.0 License]
+
+[dedication]
+== Acknowledgments
+
+Thanks to Jane Kenny-Norberg for building a science and technology
+education program using Lego. Jane taught my kids science in
+elementary school and Lego after school, and let me come and play
+too. I'm still there helping teach, even though my kids are nearly
+done with their undergraduate degrees.
+
+Thanks to Christopher Reekie and Henry Gillespie who are both students
+and student-teacher in Jane's program and who have both helped teach
+Arduino programming using Lego robots. Christopher has also been
+helping design and test Snek.
+
+[verse]
+Keith Packard
+keithp@keithp.com
+http://keithp.com
+
+== History and Motivations
+
+Teaching computer programming to students in the 10-14 age range
+offers some interesting challenges. Introductory, "blocks", languages
+can become frustratingly slow to create code, and don't provide any
+concrete skills to bring to more advanced languages. Sophisticated
+languages like C, Java and even Python are so large as to overwhelm
+the student with rich semantics like objects and higher level
+programming constructs.
+
+In days long past, beginning programmers were usually presented with
+microcomputers running very small languages, like BASIC, Forth or
+Logo. These languages were restricted not to help the student, but
+because the hosts they ran on were very small.
+
+Because computing is so ubiquitous these days, introductory
+programming is taught today in a huge range of environments, from
+embedded systems through cloud-based systems. Many of these are
+technological dead-ends; closed systems that offer no way to even
+extract source code and re-use it in another environment.
+
+Some systems, such as Raspberry PI and Arduino are open and allow
+developers to share code. However, while the smallest of these are
+similar in memory and CPU size to those early machines, they are
+programmed as embedded computers using a full C++ compiler running on
+a desktop or laptop system.
+
+=== Arduino in the Lego Program
+
+I brought Arduino systems into the classroom about five years ago. The
+hardware was fabulous and we built a number of fun robots. However,
+students struggled with the complex syntax, especially typing the
+obscure punctuation marks and remembering to insert semicolons. The
+lack of any interactive mode made experimenting a bit slower than
+other systems.
+
+After a couple of years, I built some custom Arduino hardware for our
+needs -- I used screw terminals for all of the inputs and outputs,
+stuck a battery pack on the back and included four high-current
+H-bridge motor controllers to help animate the robots. They're still
+Arduinos though, there's an ATmega 328P processor and a FTDI USB to
+serial converter, so we were able to use the stock Arduino development
+tools.
+
+There have been students who got past the obstacles and figured out
+how to use them:
+
+ * Chris Reekie an 11th-grade student-teacher in the program, took the
+   line follower robot design and re-wrote the Arduino firmware to
+   include a PID controller algorithm. The results were spectacular,
+   with the robot capable of smoothly following a line at high speed.
+
+ * Henry Gillespie, another 11th-grade student-teacher, created a
+   height-measuring robot to automatically measure people's
+   height. This used an optical sensor to monitor movement of a sensor
+   and communication with an attached 7-segment display. We've shown
+   this device at numerous local Lego shows.
+
+However, other students dreaded having to use the Arduino systems with
+complaints about "too much typing" and "why is it so picky about
+semicolons".
+
+The hardware was just what we wanted, but the software was not aimed
+at young students just starting to write code.
+
+=== A New Language
+
+Instead of throwing out our existing systems and starting over, I
+wondered if we couldn't keep using the same (hand-made) hardware and
+just change the programming environment.
+
+So I searched for a tiny programming language that could run on
+Arduino and offer an experience more like Lego Logo. I wanted
+something that students could use as a foundation for further computer
+education and exploration, something very much like Python.
+
+There is a smaller version of Python, called MicroPython, but that is
+still a large language which takes a few hundred kB of ROM and a
+significant amount of RAM. This would require new hardware, which
+isn't a huge deal, but it's still a fairly large language which we
+couldn't cover in any detail in our class time.
+
+I finally decided to just try and write a small Python-inspired
+language that could fit on the Arduino. An Arduino Duemilanova has:
+
+ * 32kB of Flash
+ * 2kb of RAM
+ * 1kB of EEPROM
+ * 1 UART hooked to a USB/serial converter
+ * 1 SPI port
+ * 6 Analog inputs
+ * 14 Digital input/output pins
+
+In modern terms, that's a really tiny machine. In particular, to avoid
+having to erase and re-write the Flash constantly, I decided to
+restrict applications and data to RAM, and to store source code in
+EEPROM.
+
+== Introducing Snek
+
+The goals of the Snek language are:
+
+ * Text-based. Instead of building software using icons and a mouse, a
+   text-based language offers a richer environment for people comfortable
+   with using a keyboard.
+
+ * Forward-looking. Skills developed while learning Snek should be
+   transferrable to other development environments.
+
+ * Small. Not just to fit in smaller devices, the Snek language should
+   be small enough to teach in a few hours to people with limited
+   exposure to software.
+
+Snek is Python-inspired, but it is not Python. It is possible to write
+Snek programs that run under a full Python (version 3) system, but few
+Python3 programs will run under Snek.
+
+=== Data Types
+
+Like Python, Snek does not have type declarations. Instead, each value
+has an intrinsic representation and all variables may hold values of
+any representation. To keep things reasonably simple, Snek has only a
+handful of representation types:
+
+Numbers::
+Instead of having integers and floating point values, Snek
+dispenses with integers and provides only 32-bit IEEE floats. Integer
+values of less than 24 bits can be represented exactly in these
+floating point values, so programs requiring precise integer behaviour
+can still work, as long as the values can be held in 24-bits.
+
+Strings::
+Strings are just lists of bytes. Snek does not have any intrinsic
+support for encodings. However, because they are just lists of bytes,
+you can store UTF-8 values in them comfortably. Just don't expect
+indexing to return Unicode code points.
+
+Lists::
+Lists are an ordered set of values. You can change the contents of a
+list, add or remove elements. In other languages, these are often
+called arrays or vectors. Lists are 'mutable' values.
+
+Tuples::
+Tuples are immutable lists of values. That is, you can't change the
+contents of a list once created, although if one of the elements of
+the list *is* mutable, you can modify that and see the changed results
+in the tuple.
+
+Dictionaries::
+A dictionary is a mapping between 'keys' and 'values. They work
+somewhat like Lists in that you can store and retrieve values in
+them. However, unlike Lists, the index into a Dictionary may be any
+immutable value, which is any value other than a List or Dictionary or
+Tuple containing a List or Dictionary. Dictionaries are 'mutable'
+values.
+
+Functions::
+Functions are values in Snek. You can store them in variables or
+lists, and then fetch them later.
+
+Boolean::
+Like Python, Snek doesn't have an explicit Boolean type. Instead, a
+variety of values work in Boolean contexts as True or False
+values. All non-zero Numbers, non-empty
+Strings/Lists/Tuples/Dictionaries and all Functions are True. Zero, empty
+Strings/Lists/Tuples/Dictionaries are False. The name True is just
+another way of typing the number one. Similarly, the name False is
+just another way of typing the number zero.
+
+=== Operators
+
+Operators are things like '+' or '-' — they are part of the grammar of
+the language and serve to make programs more readable than they would
+be if everything was a function call. Like Python, the behaviour of
+Snek operators often depends on the values they are operating on.
+Snek includes many (most?) of the Python operators. Some numeric
+operations work on floating point values, others work on integer
+values. Operators which work only on integer values convert floating
+point values to integers, and then take the integer result and convert
+back to a floating point value.
+
+_value_ *+* _value_::
+The Plus operator performs addition on numbers or concatenation on
+strings, lists and tuples.
+
+_value_ *–* _value_::
+The Minus operator performs subtraction on numbers.
+
+_value_ *&#42;* _value_::
+The Multiplication operator performs multiplication on numbers. If you
+multiply a string, 's', by a number, 'n', you get 'n' copies of 's'
+concatenated together.
+
+_value_ */* _value_::
+The Divide operator performs division on numbers.
+
+_value_ *//* _value_::
+The Div operator performs division on integer values, producing an
+integer result.
+
+_value_ *%* _value_::
+The Modulous operator computes an integer remainder on integer
+values. If the left operand is a string, it performs “interpolation”
+with either a single value or a list/tuple of values and is used to
+generate formatted output. See the String Interpolation section in the
+String chapter for details.
+
+_value_ *&#42;&#42;* _value_::
+The Power operator performs exponentiation on numbers.
+
+_value_ *&* _value_::
+The Logical And operator performs bit-wise AND on integers.
+
+_value_ *|* _value_::
+The Logical Or operator performs bit-wise OR on integers.
+
+_value_ *^* _value_::
+The Logical Xor operator performs bit-wise XOR on integers.
+
+_value_ *<<* _value_::
+The Left Shift operator does bit-wise left shift on integers.
+
+_value_ *>>* _value_::
+The Right Shift operator does bit-wise left shift on integers.
+
+_location_ *=* _value_::
+The Assign operator takes the value on the right operand and stores it in
+the location indicated by the left operand. The left operand may be a
+variable, a list location or a dictionary location.
+
+_location_ *+=*, *-=*, *&#42;=*, /=, //=, %=, *&#42;&#42;=*, *&=*, *|=*, *^=*, *<\<=*, *>>=* _value_::
+The Operation Assign operators take the value of the left operand and
+the value of the left operand and performs the operation indicated by
+the operator. Then it stores the result back in the location indicated
+by the left operand. There are some subtleties about this which are
+discussed in the List chapter.
+
+*!* _value_::
+The Not operator performs a boolean Not operation on its one right
+operand. That is, if the operand is one of the True values, then Not returns
+False (which is 0), and if the operand is a False value, then Not
+returns True (which is 1).
+
+*~* _value_::
+The Logical Not operator performs a bit-wise NOT operation on its
+integer operand.
+
+*–* _value_::
+When used as a unary prefix operator, the Unary Minus operator
+performs negation on numbers.
+
+_value_ *[* _index_ *]*::
+The Index operator selects the _index_ member of strings, lists,
+tuples and dictionaries.
+
+*[* _value_ _[_ *,* _value_ … _]_ *]*::
+The List operator creates a new List with the provided members. Note
+that a List of one value does not have any comma after the value and
+is distinguished from the Index operator solely by how it appears in
+the input.
+
+*(* _value_ *)*::
+Parenthesis serve to control the evaluation order within
+expressions. Values inside the parenthesis are computed before they
+are used as values for other operators.
+
+*(* _value_ *,* *)* or *(* _value_ _[_ *,* _value_ … _]_ *)*::
+The Tuple operator creates a new Tuple with the provided members. A
+Tuple of one value needs a trailing comma so that it can be
+distinguished from an expression inside of parenthesis.
+
+*{* _key_ *:* _value_ _[_ *,* _key_ *:* _value_ … _]_ *}*::
+The Dictionary operator creates a new Dictionary with the provided
+key/value pairs. All of the _keys_ must be immutable.
+
+=== Control Flow
+
+Snek has a subset of the Python control flow operations, including
+trailing else blocks for loops.
+
+if::
+An If statement contains an initial 'if' block, any number of 'elif'
+blocks and then (optionally) an 'else' block in the following
+structure:
+
+	if _if value_ :
+		if statements
+	elif _elif value_ :
+		elif statements
+	…
+	else:
+		else statements
+
+If _if value_ is True, then the 'if statements' are
+executed. Otherwise, if _elif_value_ is True, then the 'elif
+statements' are executed. If none of the if or elif values are True,
+then the 'else statements' are executed. 
+
+while::
+A While statements consists of a 'while' block followed by an optional
+'else' block:
+
+	while _while_value_:
+		while statements
+	else:
+		else statements
+
+The _while_value_ is evaluated and if it evaluates as True, the 'while
+statements' are executed. Then the system evaluates _while_value
+again, and if it evaluates as True again, the 'while statements' are
+again executed. This continues until the _while_value_ evaluates as
+False.
+
+When the _while_value_ evaluates as false, then the 'else statements'
+executed. If a break statement is executed as a part of the 'while
+statements', then the program immediately jumps past the 'else statements'.
+
+for::
+
+return _value_::
+The Return statement causes the currently executing function 
+immediately evaluate to _value_ in the enclosing context.
+
+break::
+The Break statement causes the closest enclosing While or For statement to
+terminate. Any optional Else clause associated with the While or For
+statement is skipped
+
+continue::
+The Continue statement causes the closest enclosing While or For
+statement to jump back to the portion of the loop which evaluates the
+termination contition. In While statements, that is where the
+_while_value_ is evaluated. In For statements, that is where
+the next value in the sequence is computed.
+
+pass::
+The Pass statement is simply a place-holder that does nothing and can
+be used anyplace a statement is needed when no execution is desired.
+
+== Other Statements
+
+import _name_::
+The Import statement is ignored and is part of Snek so that they can
+be run using Python3.
+
+global _name_ _[_ , _name_ … _]_::
+The Global statement marks the names as non-local; assignment to them
+will not cause a new variable to be created.
+
+del _location_::
+The Del statement deletes either variables or elements within a List
+or Dictionary.
+
+== Functions
+
+Functions in Snek (as in any language) provide a way to encapsulate a
+sequence of operations. They can be used to help document what a
+program does, to shorten the overall length of a program or to hide
+the details of an operation from other parts of the program.
+
+Functions take a list of 'positional' parameters, then a list of
+'named' parameters. Each of these parameters is assigned to a variable
+in a new scope; variables in this new scope will hide global variables
+and variables from other functions with the same name. When the
+function returns, all variables in this new scope are discarded.
+
+Additional variables in this new scope are created when they are
+assigned to, unless they are marked as 'global' via the Global statement
+
+== Built-in Functions
+
+len::
+Len returns the number of characters for a String or the number of
+elements in a Tuple, List or Dictionary
+
+print::
+Print writes stuff
+
+sys.stdout.flush::
+flush output
+
+ord::
+Converts the first charcater in a string to its ASCII value
+
+chr::
+Converts an ASCII value to a one character string
+
+math.sqrt::
+Compute the square root of its numeric argument.

@@ -20,7 +20,7 @@ include snek.defs
 
 include snek-install.defs
 
-SUBDIRS = posix snek-duino snekde
+SUBDIRS = posix snek-duino snekde doc
 
 all:
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done
@@ -39,14 +39,22 @@ SHAREFILES = \
 	$(SNEK_ROOT)/snek-gram.ll \
 	$(SNEK_ROOT)/snek-builtin.py
 
+IMAGEFILES = \
+	snek.svg
+
+DOCFILES = \
+	$(IMAGEFILES)
+
 PKGFILES = \
 	snek.pc
 
-install: $(SHAREFILES) $(PKGFILES)
+install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 	install -d $(DESTDIR)$(SHAREDIR)
 	for i in $(SHAREFILES); do install --mode=644 "$$i" $(DESTDIR)$(SHAREDIR); done
 	install -d $(DESTDIR)$(PKGCONFIG)
 	for i in $(PKGFILES); do install --mode=644 "$$i" $(DESTDIR)$(PKGCONFIG); done
+	install -d $(DESTDIR)$(DOCDIR)
+	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR); done
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) install); done
 
 snek.pc: snek.pc.in
