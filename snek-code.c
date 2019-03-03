@@ -1145,14 +1145,10 @@ snek_code_run(snek_code_t *code_in)
 				ip += sizeof (snek_id_t);
 				if (id == SNEK_ID_NONE) {
 					snek_poly_t lp = snek_stack_pop();
-
-					snek_list_t *l;
-					if (snek_poly_type(lp) != snek_list ||
-					    snek_list_type(l = snek_poly_to_list(lp)) != snek_list_dict)
-					{
+					if (snek_poly_type(lp) != snek_list) {
 						snek_error_type_1(lp);
 					} else {
-						snek_list_del(l, snek_a);
+						snek_list_del(lp, snek_a);
 						snek_a = SNEK_NULL;
 					}
 				} else {

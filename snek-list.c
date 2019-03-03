@@ -198,15 +198,27 @@ snek_list_get(snek_list_t *list, snek_poly_t p, bool report_error)
 }
 
 void
-snek_list_del(snek_list_t *list, snek_poly_t p)
+snek_list_del(snek_poly_t lp, snek_poly_t p)
 {
+	snek_list_t *list = snek_poly_to_list(lp);
 	snek_poly_t *r = snek_list_ref(list, p, true);
 	if (!r)
 		return;
-	r--;
+	snek_offset_t	num = 1;
+	switch (snek_list_type(list)) {
+	case snek_list_dict:
+		r--;
+		num = 2;
+		break;
+	case snek_list_tuple:
+		snek_error_value(lp);
+		return;
+	default:
+		break;
+	}
 	snek_offset_t remain = snek_list_data(list) + list->size - r;
-	memmove(r, r+2, (remain - 2) * sizeof (snek_poly_t));
-	list->size -= 2;
+	memmove(r, r + num, (remain - num) * sizeof (snek_poly_t));
+	list->size -= num;
 }
 
 int8_t
