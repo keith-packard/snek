@@ -29,10 +29,8 @@ install: snekde snekde.desktop snekde.1
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install snekde.1 $(DESTDIR)$(MANDIR)/man1
 
-snekde.desktop: snekde.desktop.in ALWAYS
-	sed -e 's;@ICONDIR@;$(ICONDIR);g' -e 's;@BINDIR@;$(BINDIR);g' snekde.desktop.in > snekde.desktop
-
-ALWAYS:
+snekde.desktop: snekde.desktop.in
+	$(SNEK_SED) $^ > $@
 
 snekde: snekde.py
 	cp $^ $@
