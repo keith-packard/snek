@@ -17,7 +17,12 @@ SNEK_ROOT = .
 
 include snek-install.defs
 
-SUBDIRS = posix snek-duino snekde doc
+SNEK_OTHEROS?=1
+ifeq ($(SNEK_OTHEROS),1)
+SNEK_OTHEROS_DIR=linux
+endif
+
+SUBDIRS = posix snek-duino snekde doc $(SNEK_OTHEROS_DIR)
 
 all:
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done
@@ -56,6 +61,7 @@ install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 
 upload:
 	+cd doc && make upload
+	+cd linux && make upload
 
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@
