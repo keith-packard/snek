@@ -12,8 +12,6 @@
 # General Public License for more details.
 #
 
-VERSION = 1.0
-
 SNEK_NO_BUILD_TARGETS = 1
 SNEK_ROOT = .
 include snek.defs
@@ -61,4 +59,4 @@ upload:
 	+cd doc && make upload
 
 snek.pc: snek.pc.in
-	sed -e 's;@SNEKLIB@;$(SNEKLIB);' -e 's/@VERSION@/$(VERSION)/' $^ > $@
+	$(SNEK_SED) $^ > $@
