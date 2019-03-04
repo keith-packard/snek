@@ -24,8 +24,6 @@ SNEK_LOCAL_SRC = \
 SNEK_LOCAL_INC = snek-posix.h
 SNEK_LOCAL_BUILTINS = snek-posix.builtin
 
-all: snek
-
 include $(SNEK_ROOT)/snek.defs
 
 OPT=-O0
@@ -34,14 +32,22 @@ CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror
 
 LIBS=-lreadline -lm
 
+all: snek snek.desktop
+
 snek: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
 
 install: snek snek.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(APPDIR)
+	install snek.desktop $(DESTDIR)$(APPDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install snek.1 $(DESTDIR)$(MANDIR)/man1
 
+snek.desktop: snek.desktop.in
+	$(SNEK_SED) $^ > $@
+
+
 clean::
-	rm -f snek
+	rm -f snek snek.desktop

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Snek
+GenericName=Programming Language
+Comment=Snek Programming Language
+Icon=@ICONDIR@/snek.svg
+Exec=@BINDIR@/snek
+Terminal=true
+Categories=Education;Electronics;
+Keywords=Arduino;Snek;Python;
