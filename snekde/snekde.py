@@ -58,6 +58,8 @@ def my_getch(edit_win):
         edit_win.set_cursor()
         snek_lock.release()
         c = edit_win.window.getch()
+        if c == ord('\r'):
+            c = ord('\n')
         if c == 27:
             c = edit_win.window.getch()
             if c == ord('0'):
@@ -652,7 +654,7 @@ class EditWin:
             self.delete_to_eol()
         elif ch == ord('z') & 0x1f:
             self.pop_undo()
-        if ch == curses.KEY_LEFT or ch == ord('b') & 0x1f:
+        elif ch == curses.KEY_LEFT or ch == ord('b') & 0x1f:
             self.left()
         elif ch == curses.KEY_RIGHT or ch == ord('f') & 0x1f:
             self.right()
