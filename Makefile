@@ -19,7 +19,7 @@ include snek-install.defs
 
 SNEK_OTHEROS?=1
 ifeq ($(SNEK_OTHEROS),1)
-SNEK_OTHEROS_DIR=linux
+SNEK_OTHEROS_DIR=linux windows
 endif
 
 SUBDIRS = posix snek-duino snekde doc $(SNEK_OTHEROS_DIR)
@@ -62,6 +62,7 @@ install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 upload:
 	+cd doc && make upload
 	+cd linux && make upload
+	+cd windows && make upload
 
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@
