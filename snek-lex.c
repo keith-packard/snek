@@ -274,7 +274,6 @@ string(char q)
 					} while (is_octal(c));
 					unlexchar(c);
 					c = t;
-				} else {
 				}
 				break;
 			}
