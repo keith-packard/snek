@@ -984,21 +984,155 @@ assigned to, unless they are marked as 'global' via the Global statement
 
 == Built-in Functions
 
-len::
+``len(value)``::
 Len returns the number of characters for a String or the number of
 elements in a Tuple, List or Dictionary
 
-print::
-Print writes stuff
+	> len('hello, world')
+	12
+	> len((1,2,3))
+	3
+	> len([1,2,3])
+	3
+	> len({ 1:2, 3:4, 5:6, 7:8 })
+	4
 
-sys.stdout.flush::
-flush output
+``print(string, end='\n')``::
+Print writes a string to the console followed by the end value
+(default: newline).
 
-ord::
+	> print('hello world', end='.')
+	hello world.> 
+
+``sys.stdout.flush()``::
+Flush output to the console, in case there is buffering somewhere.
+
+``ord(string)``::
 Converts the first character in a string to its ASCII value
 
-chr::
-Converts an ASCII value to a one character string
+	>ord('A')
+	65
 
-math.sqrt::
+``chr(number)``::
+Converts an ASCII value to a one character string.
+
+	> chr(65)
+	'A'
+
+``math.sqrt(number)``::
 Compute the square root of its numeric argument.
+
+	> math.sqrt(2)
+	1.414214
+
+== Common System Builtin Functions
+
+These functions are system-dependent, but generally available.
+
+``time.sleep(seconds)``::
+Pause for the specified amount of time (which can include a fractional
+part).
+
+	> time.sleep(1)
+	> 
+
+``time.monotonic()``::
+Return the time (in seconds) since some unspecified point in the
+system history. This time always increases, even if the system clock
+is adjusted (hence the name). 
+
+	> time.monotonic()
+	6.859814
+
+``random.seed(seed)``::
+Re-seeds the random number generator with ``seed``. The random number
+generator will always generate the same sequence of numbers if started
+with the same seed.
+
+	> random.seed(time.monotonic())
+	> 
+
+``random.randrange(max)``::
+Generates a random integer between 0 and max-1 inclusive.
+
+	> random.randrange(10)
+	3
+
+
+[appendix]
+== Arduino Built-in Functions
+
+The Arduino version of Snek has a range of functions designed to make
+manipulating the GPIO pins convenient. Snek keeps track of two pins
+for output and one pin for input. The two output pins are called Power
+and Direction. Each output function specifies which pins it operates
+on. All input and output values range between 0 and 1. Digital pins
+use only 0 or 1, analog pins support the full range of values from 0
+to 1.
+
+Output pins are either *on* or *off*. A pin which is *on* has its
+value set to the current power for that pin; changes to the current
+power for the pin are effective immediately. A pin which is *off* has
+its output set to zero, but Snek remembers the setpower level and will
+restore the pin to that level when it is turned *on*.
+
+``talkto(p)``::
+Set the current output pins. If ``p`` is a number, this sets both the
+Power and Direction pins. If ``p`` is a List or Tuple, then the first
+element sets the Power pin and the second sets the Direction pin.
+
+``listento(p)``::
+Sets the current input pin to ``p``.
+
+``setpower(v)``::
+Sets the power level on the current Power pin to ``v``. If the Power
+pin is currently *on*, then this is effectively
+immediately. Otherwise, Snek remembers the desired power level and
+will use it when the pin is turned *on*.
+
+``setleft()``::
+Turns the current Direction pin *on*.
+
+``setright()``::
+Turns the current Direction pin *off*.
+
+``on()``::
+Turns the current Power pin *on*.
+
+``off()``::
+Turns the current Power pin *off*.
+
+``onfor(s)``::
+Turns the current Power pin *on*, delays for ``s`` seconds and then
+turns the current Power pin *off*.
+
+``read()``::
+Returns the value of the current Input pin. If this is an analog pin,
+then ``read()`` returns a value from 0 to 1. If this a digital pin,
+then ``read()`` returns either 0 or 1.
+
+``stopall()``::
+Turns all pins off.
+
+The ATmega 328P processor also has a small EEPROM on-chip which can
+hold 1kB of data. Snek uses that to hold source code. This code is
+read at boot time, allowing Arduino boards with Snek loaded to run
+stand-alone. These functions are used by Snekde to get and put
+programs to the device.
+
+``eeprom.write()``::
+Reads characters from the console and writes them to eeprom until a ^D
+character is read.
+
+``eeprom.show()``::
+``eeprom.show(1)``::
+Dumps the current contents of eeprom out to the console. If a
+parameter is passed to this function then a ^B character is sent
+before the text, anda ^C is sent afterwards. Snekde uses this feature
+to accurately capture the program text when the Get command is invoked.
+
+``eeprom.load()``::
+Re-parses the current eeprom contents, just as Snek does at boot time.
+
+``eeprom.erase()``::
+Erase the eeprom.
