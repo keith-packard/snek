@@ -154,7 +154,7 @@ The goals of the Snek language are:
    with using a keyboard.
 
  * Forward-looking. Skills developed while learning Snek should be
-   transferrable to other development environments.
+   transferable to other development environments.
 
  * Small. Not just to fit in smaller devices, the Snek language should
    be small enough to teach in a few hours to people with limited
@@ -164,7 +164,531 @@ Snek is Python-inspired, but it is not Python. It is possible to write
 Snek programs that run under a full Python (version 3) system, but few
 Python3 programs will run under Snek.
 
-=== Data Types
+== A Gentle Snek Tutorial
+
+Before we get into the details of the language, let's pause and just
+explore the language a bit to get a flavor of how it works. We won't
+be covering anything in detail, nor will all the subtleties be
+explored. The hope is to just provide some a framework within which
+those details can be filled in later on.
+
+=== Hello World
+
+A traditional exercise in any new language is to get it to print the
+words "hello, world" to the console. Because snek offers an
+interactive command line, we can actually do this in several ways.
+
+The first way is to simply evaluate an expression. Start up Snek on
+your computer (perhaps by typing 'snek' at the usual command prompt):
+
+	$ snek
+	Welcome to Snek version 1.0
+	>
+
+At this prompt, the result of any expression typed in will be printed:
+
+	> 'hello, world'
+	'hello, world'
+
+Here we see that Snek strings can be enclosed in single quotes. They
+can also be enclosed in double quotes, which can be useful if you want
+to include single quote marks in them.
+
+	> "hello, world"
+	'hello, world'
+
+Stepping up a notch, instead of simply inputting the string directly,
+we can write an expression which computes the result:
+
+	> 'hello,' + ' world'
+	'hello, world'
+
+At this point, we're using the feature of the interactive environment
+which prints out the value of expressions entered. Let's try printing
+the value directly:
+
+	> print('hello, world')
+	hello, world
+
+This time, Snek printed the string without quote marks. That's because
+the print function displays exactly what it was given, without
+decoration, while the command processor prints values in the same
+format as they would appear in a program.
+
+Finally, let's write a function which prints the value and call it:
+
+	> def hello():
+	+     print('hello, world')
+	+ 
+	> hello()
+	hello, world
+
+There's lots of stuff going on here. First, we see how to declare a
+function by using the 'def' keyword, followed by the name of the
+function, followed by a list of arguments. After that list there's a
+colon.
+
+Colons appear in several places in Snek and they are always used in
+the same way. After a colon, Snek expects to see a list of
+statements. The usual way of including a list of statements is to type
+them, one per line, indented from the line containing the colon by a
+few spaces. The number of spaces doesn't matter, but each line has to
+use the same indentation. When you're done with the list of
+statements, you enter a line with the old indentation level.
+
+While entering a long compound statement like this, the command
+processor will prompt with '+' instead of '>' to let you know that
+it's still waiting for more input before it does anything. It's the
+'line with the old indentation level' that displays the second
+'+'. Hitting enter on that line ends the list of statements for
+'hello' and gets you back to the regular command prompt.
+
+Finally, we invoke the new 'hello' function and see the results.
+
+So far, in these examples, Snek ends each print operation by moving to
+the next line. That's because the print function has a named parameter
+called 'end' which is set to 'newline' by default. You can change it
+to whatever you like, as in:
+
+	> def hello():
+	+     print('hello', end=',')
+	+     print(' world', end='\n')
+	+ 
+	> hello()
+	hello, world
+
+The first call appends a ',' to the output, while the second call
+explicitly appends a newline character, causing the output to move to
+the next line. There are a few characters that use this backslash
+notation, those are described in the section on Strings.
+
+=== Simple Arithmetic
+
+Let's write a function to convert from Fahrenheit temperatures to
+Celsius. If you recall, that's just
+
+	°C = (5/9)(°F - 32)
+
+Snek can't use the ° sign in variable names, so we'll just use C and
+F:
+
+	> # Convert from Fahrenheit to Celsius
+	> def f_to_c(F):
+	+     return (5/9) * (F - 32)
+	+ 
+	> f_to_c(38)
+	3.333333
+
+The '#' character introduces a comment, which extends to the end of
+the line. Anything within a comment is ignored by the compiler. Snek
+requires an explicit multiplication (*) operator as it doesn't understand
+the mathematical convention that adjacent values should be
+multiplied. The return statement is how we tell Snek that this
+function computes a value that should be given back to the user,
+rather than just printing it directly.
+
+=== Loops, Ranges and Printing Two Values
+
+Now that we have a function to do this conversion, we can print a
+handy reference table for offline use:
+
+	> # Print a handy conversion table
+	> def f_to_c_table():
+	+     for F in range(0, 100, 10):
+	+         print("%f F = %f C" % (F, f_to_c(F)))
+	+ 
+	> f_to_c_table()
+	0.000000 F = -17.777779 C
+	10.000000 F = -12.222223 C
+	20.000000 F = -6.666667 C
+	30.000000 F = -1.111111 C
+	40.000000 F = 4.444445 C
+	50.000000 F = 10.000000 C
+	60.000000 F = 15.555556 C
+	70.000000 F = 21.111113 C
+	80.000000 F = 26.666668 C
+	90.000000 F = 32.222225 C
+
+First off, we've got a new statement, the 'for' statement. This walks
+over a range of values, assigning the control variable (F, in this
+case) all of the values in the range and then evaluating the
+statements within it. The range operator creates this set of values
+for F by starting at the first value and stepping to just before the
+second value. Each time, it steps by the third value. You can elide
+the first value and Snek will use 0 as the starting point. You can
+elide the third value and Snek will step by 1.
+
+Second, we need to insert the numeric values into the string shown by
+print. In many languages, that's done with a special formatted
+printing function. In Snek, there's a more general purpose mechanism
+called 'String Interpolation'. Using the % operator, Snek walks over
+the string on the left and inserts values from the set of values
+enclosed in parenthesis on the right wherever there is a % followed by
+a character. The result of string interpolation is another string
+which is then passed to print, which displays it.
+
+How the values are inserted depends on the character following the %
+mark; that's discussed in the section on String Interpolation
+below. How to format that set of values on the right is discussed in
+the next section on Lists and Tuples.
+
+=== Lists and Tuples
+
+Lists and Tuples in Snek are closely related data types. Both
+represent an ordered set of objects. The only difference is that Lists
+can be modified after creation while Tuples cannot. We call Lists
+'mutable' and Tuples 'immutable'. Lists are input as objects separated
+by commas and enclosed in square brackets, Tuples are input as objects
+separated by commas and enclosed in parentheses:
+
+	> [ 'hello,', ' world' ]
+	['hello,', ' world']
+	> ( 'hello,', ' world' )
+	('hello,', ' world')
+
+Let's assign these to variables so we can explore them in more detail:
+
+	> l = [ 'hello,', ' world' ]
+	> t = ( 'hello,', ' world' )
+	
+As mentioned above, Lists and Tuples are ordered. That means that each
+element in a List or Tuple can be referenced by number. This number is
+called the index of the element, in Snek, indices start at 0:
+
+	> l[0]
+	'hello,'
+	> t[1]
+	' world'
+
+Lists can be modified, Tuples cannot:
+
+	> l[0] = 'goodbye,'
+	> l
+	['goodbye,', ' world']
+	> t[0] = 'beautiful'
+	<stdin>:5 invalid type: ('hello,', ' world')
+
+That last output is the Snek machine telling us that the value
+('hello', ' world') cannot be modified.
+
+We can use another form of the 'for' statement to iterate over the
+values in a List or Tuple:
+
+	> def print_list(list):
+	+     for e in list:
+	+         print(e)
+	+ 
+	> print_list(l)
+	goodbye,
+	 world
+	> print_list(t)
+	hello,
+	 world
+
+Similar to the range form above, this for statement assigns the
+control variable (e in this case) to each of the elements of the list
+in turn and evaluates the statements within it.
+
+Lists and Tuples can be concatenated with the + operator:
+
+	> ['hello,'] + [' world']
+	['hello,', ' world']
+
+Finally, Tuples of one element have a slightly odd syntax. To
+distinguish them from expressions enclosed in parenthesis, the value
+within the Tuple is followed by a comma:
+
+	> ( 'hello' , ) + ( 'world' , )
+	('hello', 'world')
+	
+=== Dictionaries
+
+Dictionaries are the fanciest data structure in Snek. Like Lists and
+Tuples, Dictionaries hold multiple values. Unlike those, Dictionaries
+are not indexed by numbers. Instead, Dictionaries are index by
+another Snek value. The only requirement is that the value be
+unchanging, which means Dictionaries can only be indexed by immutable
+values. Lists and Dictionaries are the only mutable data structures in
+Snek, so there are lots of options for Dictionary indices.
+
+The indexing value in a Dictionary is called the 'key', the indexing
+value is called the 'value'. Dictionaries are input by enclosing
+key/value pairs, separated by commas, inside curly braces:
+
+	> { 1:2, 'hello,' : ' world' }
+	{ 'hello,':' world', 1:2 }
+	
+Note that Snek re-ordered our dictionary. That's because Dictionaries
+are always stored in sorted order, and that sorting includes the type
+of the keys. Dictionaries can contain only one element with the same
+key, although you're free to specify them with duplicate keys; only
+the first value will occur in the resulting Dictionary.
+
+Let's assign our Dictionary to a variable and play with it a bit:
+
+	> d = { 1:2, 'hello,' : ' world' }
+	> d[1]
+	2
+	> d['hello,']
+	' world'
+	> d[1] = 3
+	> d['goodnight'] = 'moon'
+	> d
+	{ 'goodnight':'moon', 'hello,':' world', 1:3 }
+
+This example shows creating the Dictionary and assigning it to d, then
+fetching elements of the dictionary and assigning to them. You can add
+elements to a dictionary by using a index which is not already
+present.
+
+You can also iterate over the keys in a Dictionary using the same ``for
+v in a`` syntax above. Let's try our print_list function on d:
+
+	> print_list(d)
+	goodnight
+	hello,
+	1
+
+=== While
+
+The For statement is useful when iterating over a range of
+values. Sometimes we want to use more general control flow. We can
+re-write our temperature conversion chart program using a while loop
+as follows:
+
+	> def f_to_c_table():
+	+     F = 0
+	+     while F < 100:
+	+         print("%f F = %f C" % (F, f_to_c(F)))
+	+         F = F + 10
+	+ 
+	> f_to_c_table()
+	0.000000 F = -17.777779 C
+	10.000000 F = -12.222223 C
+	20.000000 F = -6.666667 C
+	30.000000 F = -1.111111 C
+	40.000000 F = 4.444445 C
+	50.000000 F = 10.000000 C
+	60.000000 F = 15.555556 C
+	70.000000 F = 21.111113 C
+	80.000000 F = 26.666668 C
+	90.000000 F = 32.222225 C
+
+This does exactly what the for loop did above; it first assigns F to
+0, then iterates over the statements until F is no longer less than
+100.
+
+=== If
+
+If statements provide a way of selecting one of many paths of
+execution. Each block of statements is preceded by an expression, if
+that expression is True, then the following statements are
+executed. Otherwise, the next test is tried until the end of the
+If is reached. Here's a function which measures how many upper case,
+lower case and digits are in a string:
+
+	> def count_chars(s):
+	+     d = 0
+	+     l = 0
+	+     u = 0
+	+     o = 0
+	+     for c in s:
+	+         if '0' <= c and c <= '9':
+	+             d += 1
+	+         elif 'a' <= c and c <= 'z':
+	+             l += 1
+	+         elif 'A' <= c and c <= 'Z':
+	+             u += 1
+	+         else:
+	+             o += 1
+	+     print("digits %d lower %d upper %d other %d" % (d, l, u, o))
+	+ 
+	> count_chars("4 Score and 7 Years Ago")
+	digits 2 lower 13 upper 3 other 5
+
+This example also introduces the less-than-or-equal comparison
+operator, ``\<=``, and demonstrates that ``for v in a`` also works on strings.
+
+== Lexical Structure
+
+Snek programs are broken into a sequence of tokens by the compiler,
+then the sequence of tokens is recognized by a parser.
+
+=== String Constants
+
+String constants in Snek are enclosed by either single or double
+quotes. Use single quotes to easily include double quotes in the
+string, and vice-versa. Strings cannot span multiple lines, but you
+can input multiple strings adjacent to one another and they will be
+merged into a single string constant in the program.
+
+\n::
+Newline. Advance to the first column of the next line.
+
+\t::
+Tab. Advance to the next 'tab stop' in the output. This is usually the
+next multiple-of-8.
+
+\\::
+Backslash. Use two backslashes in the input to get one backslash in
+the string constant.
+
+\003::
+Octal value. You can place any octal value you like here, 003 is just
+an example.
+
+Anything else following the backslash is just that character.
+
+=== Numbers
+
+Snek supports 32-bit floating point numbers and understands the usual
+floating point number format:
+
+	<integer><fraction><exponent>
+	123.456e+12
+
+integer::
+A non-empty sequence of decimal digits
+
+fraction::
+A decimal point (period) followed by a possibly empty sequence of
+decimal digits
+
+exponent::
+The letter 'e' or 'E' followed by an optional sign and a non-empty
+sequence of digits indicating the exponent magnitude.
+
+All parts are optional, although the number must include either an
+integer-part or a fraction and if only the fraction, then that must
+have at least one digit.
+
+32-bit IEEE floating point values range from approximately
+-1.70141e+38 to 1.70141e+38. There is 1 sign bit, 8 bits of exponent
+and 23 stored/24 effective bits of significand (often referred to as
+the mantissa). There are two values of infinity (plus and minus) and
+one value of NaN. Because Snek does not have an explicit integer type,
+computations on integer values will convert floats to integers,
+perform the operation and convert back to floats. Operations on values
+more than 24 bits wide will lose precision in this process.
+
+Only positive numbers are part of a Snek program; use the unary minus
+operator to construct negative values.
+
+=== Names
+
+Names in Snek are used to refer to variables, both global and local to
+a particular function. Names consist of an initial letter or
+underscore followed by a sequence of letters, digits, underscore and
+period. Here are some valid names:
+
+	hello
+	_hello
+	_h4
+	math.sqrt
+
+And here are some invalid names:
+
+	.hello
+	4square
+	
+=== Keywords
+
+Keywords look like regular Snek names, but they are handled specially
+by the parser and thus cannot be used as names. Here is the list of
+Snek keywords:
+
+	and
+	break
+	continue
+	def
+	del
+	elif
+	else
+	for
+	global
+	if
+	import
+	in
+	is
+	not
+	or
+	pass
+	range
+	return
+	while
+
+=== Punctuation
+
+Snek uses many special characters to make programs more readable;
+separating out names and keywords from operators and other syntax.
+
+	:
+	;
+	,
+	(
+	)
+	[
+	]
+	{
+	}
+	+
+	-
+	*
+	**
+	/
+	//
+	%
+	&
+	|
+	~
+	!
+	^
+	<<
+	>>
+	=
+	+=
+	-=
+	*=
+	**=
+	/=
+	//=
+	%=
+	&=
+	|=
+	~=
+	^=
+	<<=
+	>>=
+	>
+	!=
+	<
+	<=
+	==
+	>=
+	>
+	
+=== White Space (Spaces and Newlines)
+
+Snek uses indentation to identify program structure. Snek does not
+permit tabs to be used for indentation; tabs are invalid characters in
+Snek programs. Statements in the same block are indented the same
+amount; statements in deeper blocks are indented more, statements in
+external blocks less.
+
+When typing Snek directly at the Snek prompt, blank lines become
+significant as Snek cannot know what you will type next. You can see
+this in the Tutorial where Snek finishes an indented block at the
+blank line.
+
+When loading Snek from a file, blank lines (and lines which contain
+only a comment) are entirely ignored; indentation of those lines
+doesn't affect the block indentation level. Only lines with Snek
+tokens matter in this case.
+
+Spaces are only significant if they are necessary to separate tokens;
+you can insert as many or as few as you like in other places.
+
+== Data Types
 
 Like Python, Snek does not have type declarations. Instead, each value
 has an intrinsic representation and all variables may hold values of
@@ -175,7 +699,7 @@ Numbers::
 Instead of having integers and floating point values, Snek
 dispenses with integers and provides only 32-bit IEEE floats. Integer
 values of less than 24 bits can be represented exactly in these
-floating point values, so programs requiring precise integer behaviour
+floating point values, so programs requiring precise integer behavior
 can still work, as long as the values can be held in 24-bits.
 
 Strings::
@@ -216,23 +740,23 @@ Strings/Lists/Tuples/Dictionaries are False. The name True is just
 another way of typing the number one. Similarly, the name False is
 just another way of typing the number zero.
 
-=== Operators
+== Operators
 
-Operators are things like '+' or '-' — they are part of the grammar of
-the language and serve to make programs more readable than they would
-be if everything was a function call. Like Python, the behaviour of
-Snek operators often depends on the values they are operating on.
-Snek includes many (most?) of the Python operators. Some numeric
-operations work on floating point values, others work on integer
-values. Operators which work only on integer values convert floating
-point values to integers, and then take the integer result and convert
-back to a floating point value.
+Operators are things like ``+`` or ``-`` — they are part of the
+grammar of the language and serve to make programs more readable than
+they would be if everything was a function call. Like Python, the
+behavior of Snek operators often depends on the values they are
+operating on.  Snek includes many (most?) of the Python
+operators. Some numeric operations work on floating point values,
+others work on integer values. Operators which work only on integer
+values convert floating point values to integers, and then take the
+integer result and convert back to a floating point value.
 
-_value_ *+* _value_::
+_value_ ``+`` _value_::
 The Plus operator performs addition on numbers or concatenation on
 strings, lists and tuples.
 
-_value_ *–* _value_::
+_value_ ``–`` _value_::
 The Minus operator performs subtraction on numbers.
 
 _value_ *&#42;* _value_::
@@ -240,15 +764,15 @@ The Multiplication operator performs multiplication on numbers. If you
 multiply a string, 's', by a number, 'n', you get 'n' copies of 's'
 concatenated together.
 
-_value_ */* _value_::
+_value_ ``/`` _value_::
 The Divide operator performs division on numbers.
 
-_value_ *//* _value_::
+_value_ ``//`` _value_::
 The Div operator performs division on integer values, producing an
 integer result.
 
-_value_ *%* _value_::
-The Modulous operator computes an integer remainder on integer
+_value_ ``%`` _value_::
+The Modulus operator computes an integer remainder on integer
 values. If the left operand is a string, it performs “interpolation”
 with either a single value or a list/tuple of values and is used to
 generate formatted output. See the String Interpolation section in the
@@ -257,146 +781,188 @@ String chapter for details.
 _value_ *&#42;&#42;* _value_::
 The Power operator performs exponentiation on numbers.
 
-_value_ *&* _value_::
+_value_ ``&`` _value_::
 The Logical And operator performs bit-wise AND on integers.
 
-_value_ *|* _value_::
+_value_ ``|`` _value_::
 The Logical Or operator performs bit-wise OR on integers.
 
-_value_ *^* _value_::
+_value_ ``^`` _value_::
 The Logical Xor operator performs bit-wise XOR on integers.
 
-_value_ *<<* _value_::
+_value_ ``<<`` _value_::
 The Left Shift operator does bit-wise left shift on integers.
 
-_value_ *>>* _value_::
+_value_ ``>>`` _value_::
 The Right Shift operator does bit-wise left shift on integers.
 
-_location_ *=* _value_::
+_location_ ``=`` _value_::
 The Assign operator takes the value on the right operand and stores it in
 the location indicated by the left operand. The left operand may be a
 variable, a list location or a dictionary location.
 
-_location_ *+=*, *-=*, *&#42;=*, /=, //=, %=, *&#42;&#42;=*, *&=*, *|=*, *^=*, *<\<=*, *>>=* _value_::
+_location_ ``+=``, ``-=``, ``*=``, ``/=``, ``//=``, ``%=``, ``**=``, ``&=``, ``|=``, ``^=``, ``<\<=``, ``>>=`` _value_::
 The Operation Assign operators take the value of the left operand and
 the value of the left operand and performs the operation indicated by
 the operator. Then it stores the result back in the location indicated
 by the left operand. There are some subtleties about this which are
 discussed in the List chapter.
 
-*!* _value_::
-The Not operator performs a boolean Not operation on its one right
+``!`` _value_::
+The Not operator performs a Boolean Not operation on its one right
 operand. That is, if the operand is one of the True values, then Not returns
 False (which is 0), and if the operand is a False value, then Not
 returns True (which is 1).
 
-*~* _value_::
+``~`` _value_::
 The Logical Not operator performs a bit-wise NOT operation on its
 integer operand.
 
-*–* _value_::
+``–`` _value_::
 When used as a unary prefix operator, the Unary Minus operator
 performs negation on numbers.
 
-_value_ *[* _index_ *]*::
+``+`` _value_::
+When used as a unary prefix operator, the Unary Plus operator
+does nothing at all.
+
+_value_ ``[`` _index_ ``]``::
 The Index operator selects the _index_ member of strings, lists,
 tuples and dictionaries.
 
-*[* _value_ _[_ *,* _value_ … _]_ *]*::
+``[`` _value_ _[_ ``,`` _value_ … _]_ ``]``::
 The List operator creates a new List with the provided members. Note
 that a List of one value does not have any comma after the value and
 is distinguished from the Index operator solely by how it appears in
 the input.
 
-*(* _value_ *)*::
+``(`` _value_ ``)``::
 Parenthesis serve to control the evaluation order within
 expressions. Values inside the parenthesis are computed before they
 are used as values for other operators.
 
-*(* _value_ *,* *)* or *(* _value_ _[_ *,* _value_ … _]_ *)*::
+``(`` _value_ ``,`` ``)`` or ``(`` _value_ _[_ ``,`` _value_ … _]_ ``)``::
 The Tuple operator creates a new Tuple with the provided members. A
 Tuple of one value needs a trailing comma so that it can be
 distinguished from an expression inside of parenthesis.
 
-*{* _key_ *:* _value_ _[_ *,* _key_ *:* _value_ … _]_ *}*::
+``{`` _key_ ``:`` _value_ _[_ ``,`` _key_ ``:`` _value_ … _]_ ``}``::
 The Dictionary operator creates a new Dictionary with the provided
 key/value pairs. All of the _keys_ must be immutable.
 
-=== Control Flow
+== Control Flow
 
 Snek has a subset of the Python control flow operations, including
-trailing else blocks for loops.
+trailing ``else:`` blocks for loops.
 
-if::
+``if`` _value_ ``:`` block _[_ ``elif`` _value_ ``:`` … _] [_  ``else:`` block _]_::
 An If statement contains an initial 'if' block, any number of 'elif'
 blocks and then (optionally) an 'else' block in the following
 structure:
 
-	if _if value_ :
+	if if_value :
 		if statements
-	elif _elif value_ :
-		elif statements
+	elif elif_value :
+		elif_statements
 	…
 	else:
-		else statements
+		else_statements
 
-If _if value_ is True, then the 'if statements' are
-executed. Otherwise, if _elif_value_ is True, then the 'elif
-statements' are executed. If none of the if or elif values are True,
-then the 'else statements' are executed. 
+If _if_value_ is True, then _if_statements_ are executed. Otherwise,
+if _elif_value_ is True, then _elif_statements_ are executed. If none
+of the if or elif values are True, then the _else_statements_ are
+executed.
 
-while::
+``while`` _value_ ``:`` block ::
 A While statements consists of a 'while' block followed by an optional
 'else' block:
 
-	while _while_value_:
+	while while_value:
 		while statements
 	else:
 		else statements
 
-The _while_value_ is evaluated and if it evaluates as True, the 'while
-statements' are executed. Then the system evaluates _while_value
-again, and if it evaluates as True again, the 'while statements' are
+The _while_value_ is evaluated and if it evaluates as True, the while
+statements are executed. Then the system evaluates _while_value_
+again, and if it evaluates as True again, the while statements are
 again executed. This continues until the _while_value_ evaluates as
 False.
 
-When the _while_value_ evaluates as false, then the 'else statements'
-executed. If a break statement is executed as a part of the 'while
-statements', then the program immediately jumps past the 'else statements'.
+When the _while_value_ evaluates as false, then the else statements
+are executed. If a ``break`` statement is executed as a part of the
+while statements, then the program immediately jumps past the else
+statements. If a ``continue`` statement is executed as a part of the
+``while`` statements, execution jumps back to the evaluation of
+_while_value_. The ``else:`` portion (with else statements) is optional.
 
-for::
 
-return _value_::
+``for``::
+The ``for`` statement assigns _name_ to each of the list of _values_ and
+then executes a block of statements. It comes in two forms, the first
+is:
+
+	for name in value:
+		for statements
+	else:
+		else statements
+
+In this case, the _value_ must be a List,
+Tuple, Dictionary or String. For Lists and Tuples, the values are the
+elements of the object. For Strings, the values are strings of each
+separate character in the string. For Dictionaries, the values are the
+keys in the dictionary.
+
+The other form of the ``for`` statement looks like this:
+
+	for name in range ( [ start , ] stop [ , step ] ):
+		for statements
+	else:
+		else statements
+
+In this form, the ``for`` statement assigns a range of numeric values
+to _name_. Starting with _start_, and going while not beyond _stop_,
+_name_ gets _step_ added at each iteration. _Start_ is optional; if
+not present, 0 will be used. _Step_ is also optional; if not present,
+1 will be used.
+
+If a ``break`` statement is executed as a part of the ``for``
+statements, then the program immediately jumps past the else
+statements. If a ``continue`` statement is executed as a part of the
+``for`` statements, execution jumps back to the assignment of the next
+value to _name_. In both forms, the ``else:`` portion (with else
+statements) is optional.
+
+``return`` _value_::
 The Return statement causes the currently executing function 
 immediately evaluate to _value_ in the enclosing context.
 
-break::
+``break``::
 The Break statement causes the closest enclosing While or For statement to
 terminate. Any optional Else clause associated with the While or For
 statement is skipped
 
-continue::
+``continue``::
 The Continue statement causes the closest enclosing While or For
 statement to jump back to the portion of the loop which evaluates the
-termination contition. In While statements, that is where the
+termination condition. In While statements, that is where the
 _while_value_ is evaluated. In For statements, that is where
 the next value in the sequence is computed.
 
-pass::
+``pass``::
 The Pass statement is simply a place-holder that does nothing and can
 be used anyplace a statement is needed when no execution is desired.
 
 == Other Statements
 
-import _name_::
-The Import statement is ignored and is part of Snek so that they can
+``import`` _name_::
+The Import statement is ignored and is part of Snek so that Snek programs can
 be run using Python3.
 
-global _name_ _[_ , _name_ … _]_::
+``global`` _name_ _[_ ``,`` _name_ … _]_::
 The Global statement marks the names as non-local; assignment to them
 will not cause a new variable to be created.
 
-del _location_::
+``del`` _location_::
 The Del statement deletes either variables or elements within a List
 or Dictionary.
 
@@ -429,7 +995,7 @@ sys.stdout.flush::
 flush output
 
 ord::
-Converts the first charcater in a string to its ASCII value
+Converts the first character in a string to its ASCII value
 
 chr::
 Converts an ASCII value to a one character string
