@@ -8,6 +8,7 @@ vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
 SNEK_VERSION = 1.0
+SNEK_DATE = 2019-03-04
 
 SNEK_SRC = \
 	snek-builtin.c \

@@ -8,3 +8,6 @@ PKGCONFIG = $(LIBDIR)/pkgconfig
 APPDIR = $(PREFIX)/share/applications
 ICONDIR = $(PREFIX)/share/icons/hicolor/scalable/apps
 MANDIR = $(PREFIX)/share/man
+SNEKLIB = $(PREFIX)/share/snek
+SNEKDIST = keithp.com:/var/www/snek/dist
+SNEKDOC = keithp.com:/var/www/snek

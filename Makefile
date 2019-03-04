@@ -57,5 +57,8 @@ install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR); done
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) install); done
 
+upload:
+	+cd doc && make upload
+
 snek.pc: snek.pc.in
 	sed -e 's;@SNEKLIB@;$(SNEKLIB);' -e 's/@VERSION@/$(VERSION)/' $^ > $@
