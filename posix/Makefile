@@ -14,8 +14,6 @@
 
 SNEK_ROOT=..
 
-include $(SNEK_ROOT)/snek-install.defs
-
 SNEK_LOCAL_SRC = \
 	snek-main.c \
 	snek-posix.c \
@@ -24,7 +22,7 @@ SNEK_LOCAL_SRC = \
 SNEK_LOCAL_INC = snek-posix.h
 SNEK_LOCAL_BUILTINS = snek-posix.builtin
 
-include $(SNEK_ROOT)/snek.defs
+include $(SNEK_ROOT)/snek-install.defs
 
 OPT=-O0
 

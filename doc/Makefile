@@ -1,3 +1,4 @@
+SNEK_NO_BUILD_TARGETS = 1
 SNEK_ROOT=..
 
 include $(SNEK_ROOT)/snek-install.defs
@@ -29,5 +30,5 @@ install: $(DOCFILES)
 upload:
 	scp -rp $(DOCFILES) fonts $(SNEKDOC)
 
-clean:
+clean::
 	rm -f $(PDF_FILES) $(HTML_FILES)

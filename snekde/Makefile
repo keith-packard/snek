@@ -12,7 +12,10 @@
 # General Public License for more details.
 #
 
-include ../snek-install.defs
+SNEK_NO_BUILD_TARGETS = 1
+SNEK_ROOT=..
+
+include $(SNEK_ROOT)/snek-install.defs
 
 all: snekde snekde.desktop
 
@@ -36,5 +39,5 @@ snekde: snekde.py
 	cp $^ $@
 	chmod +x $@
 
-clean:
+clean::
 	rm -f snekde snekde.desktop

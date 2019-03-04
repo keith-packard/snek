@@ -11,3 +11,5 @@ MANDIR = $(PREFIX)/share/man
 SNEKLIB = $(PREFIX)/share/snek
 SNEKDIST = keithp.com:/var/www/snek/dist
 SNEKDOC = keithp.com:/var/www/snek
+
+include $(SNEK_ROOT)/snek.defs

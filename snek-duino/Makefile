@@ -12,8 +12,6 @@
 # General Public License for more details.
 #
 
-include ../snek-install.defs
-
 SNEK_ROOT = ..
 SNEK_LOCAL_SRC = \
 	snek-duino.c \
@@ -23,10 +21,10 @@ SNEK_LOCAL_SRC = \
 SNEK_LOCAL_INC = snek-duino.h
 SNEK_LOCAL_BUILTINS = snek-duino.builtin
 
-all: snek-duino.hex snek-duino-install
 
-include ../snek.defs
+include ../snek-install.defs
 
+HEX=snek-duino.hex
 CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -g -fno-jump-tables $(SNEK_CFLAGS)
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
@@ -62,13 +60,7 @@ ISP = usbtiny
 #	BODLEVEL1	0	brown out 2.5-2.9V
 #	BODLEVEL0	1	brown out 2.5-2.9V
 
-set-fuse:
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U lfuse:w:0xff:m
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U hfuse:w:0xd7:m
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U efuse:w:0xfd:m
-
-load: snek-duino.hex
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:snek-duino.hex
+all: $(HEX) snek-duino-install
 
 snek-duino.hex: snek-duino
 	avr-objcopy -O ihex -R .eeprom snek-duino $@
@@ -80,6 +72,14 @@ snek-duino: $(SNEK_OBJ)
 snek-duino-install: snek-duino-install.in
 	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
 
+set-fuse:
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U lfuse:w:0xff:m
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U hfuse:w:0xd7:m
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U efuse:w:0xfd:m
+
+load: snek-duino.hex
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:snek-duino.hex
+
 install: snek-duino-install snek-duino.hex snek-duino-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-duino-install $(DESTDIR)$(BINDIR)
@@ -89,4 +89,4 @@ install: snek-duino-install snek-duino.hex snek-duino-install.1
 	install snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f snek-duino snek-duino.hex snek-duino.map snek-duino-install
+	rm -f snek-duino $(HEX) snek-duino.map snek-duino-install

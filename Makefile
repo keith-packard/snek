@@ -14,7 +14,6 @@
 
 SNEK_NO_BUILD_TARGETS = 1
 SNEK_ROOT = .
-include snek.defs
 
 include snek-install.defs
 
