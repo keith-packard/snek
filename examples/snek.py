@@ -96,6 +96,9 @@ def done(msg):
     print("You %s. Score %d" % (msg, len(snek)))
     exit(0)
 
+def getch():
+    return chr(stdscr.getch())
+
 def main():
     global snek, dx, dy, snak, grow
     global stdscr, lines, cols
@@ -118,27 +121,27 @@ def main():
         stdscr.move(_y(snek[0]), _x(snek[0]))
         stdscr.refresh()
         time.sleep(.1)
-        c = stdscr.getch()
+        c = getch()
         ndx = dx
         ndy = dy
-        if c == ord('h'):
+        if c == 'h':
             ndx = -1
             ndy = 0
-        elif c == ord('j'):
+        elif c == 'j':
             ndx = 0
             ndy = 1
-        elif c == ord('k'):
+        elif c == 'k':
             ndx = 0
             ndy = -1
-        elif c == ord('l'):
+        elif c == 'l':
             ndx = 1
             ndy = 0
-        elif c == ord('q') or c == ord('x'):
+        elif c == 'q' or c == 'x':
             done("quit")
-        elif c == ord('p'):
-            while stdscr.getch() != ord('p'):
+        elif c == 'p':
+            while getch() != 'p':
                 time.sleep(.1)
-        if ndx != -dx and ndy != -dy:
+        if ndx != -dx or ndy != -dy:
             dx = ndx
             dy = ndy
         hit = move_snek()
