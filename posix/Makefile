@@ -24,16 +24,16 @@ SNEK_LOCAL_BUILTINS = snek-posix.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
-OPT=-O0
+OPT?=-O0
 
-CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror
+CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
 
 LIBS=-lreadline -lm
 
 all: snek snek.desktop
 
 snek: $(SNEK_OBJ)
-	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
 
 install: snek snek.1
 	install -d $(DESTDIR)$(BINDIR)

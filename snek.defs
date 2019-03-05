@@ -85,7 +85,7 @@ $(SNEK_OBJ): $(SNEK_INC)
 
 ifndef quiet
 
-V=0
+V?=0
 # The user has explicitly enabled quiet compilation.
 ifeq ($(V),0)
 quiet = @printf "  $1 $2 $@\n"; $($1)
