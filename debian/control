@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Keith Packard <keithp@keithp.com>
 Homepage: https://keithp.com
 Build-Depends: debhelper (>= 11), libreadline-dev, avr-libc, gcc-avr, python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf
-Standards-Version: 4.2.1
+Standards-Version: 4.3.0
 
 Package: snek
 Architecture: all
