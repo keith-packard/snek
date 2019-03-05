@@ -1,4 +1,3 @@
-#!/usr/bin/snek
 #
 # Copyright © 2019 Keith Packard <keithp@keithp.com>
 #

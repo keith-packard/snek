@@ -4,6 +4,7 @@ LIBDIR ?= $(PREFIX)/lib
 BINDIR ?= $(PREFIX)/bin
 SHAREDIR ?= $(PREFIX)/share/snek
 DOCDIR ?= $(PREFIX)/share/doc/snek
+EXAMPLEDIR ?= $(PREFIX)/share/doc/snek/examples
 PKGCONFIG ?= $(LIBDIR)/pkgconfig
 APPDIR ?= $(PREFIX)/share/applications
 ICONDIR ?= $(PREFIX)/share/icons/hicolor/scalable/apps
