@@ -4,6 +4,7 @@
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 export SNEK_OTHEROS=0
 export PREFIX=/usr
+export OPT=-O2
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
