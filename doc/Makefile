@@ -13,11 +13,13 @@ CSS_FILES=snek.css
 
 all: $(HTML_FILES) $(PDF_FILES)
 
+ATTRIBUTES= --attribute="revdate=$(SNEK_DATE)" --attribute="revnumber=v$(SNEK_VERSION)"
+
 .adoc.html:
-	asciidoctor -b html5 $*.adoc
+	asciidoctor $(ATTRIBUTES) -b html5 $*.adoc
 
 .adoc.pdf:
-	asciidoctor-pdf $*.adoc
+	asciidoctor-pdf $(ATTRIBUTES) $*.adoc
 
 $(PDF_FILES): snek-theme.yml
 
