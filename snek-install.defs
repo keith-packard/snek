@@ -1,15 +1,15 @@
 DESTDIR =
-PREFIX = /usr/local
-LIBDIR = $(PREFIX)/lib
-BINDIR = $(PREFIX)/bin
-SHAREDIR = $(PREFIX)/share/snek
-DOCDIR = $(PREFIX)/share/doc/snek
-PKGCONFIG = $(LIBDIR)/pkgconfig
-APPDIR = $(PREFIX)/share/applications
-ICONDIR = $(PREFIX)/share/icons/hicolor/scalable/apps
-MANDIR = $(PREFIX)/share/man
-SNEKLIB = $(PREFIX)/share/snek
-SNEKDIST = keithp.com:/var/www/snek/dist
-SNEKDOC = keithp.com:/var/www/snek
+PREFIX ?= /usr/local
+LIBDIR ?= $(PREFIX)/lib
+BINDIR ?= $(PREFIX)/bin
+SHAREDIR ?= $(PREFIX)/share/snek
+DOCDIR ?= $(PREFIX)/share/doc/snek
+PKGCONFIG ?= $(LIBDIR)/pkgconfig
+APPDIR ?= $(PREFIX)/share/applications
+ICONDIR ?= $(PREFIX)/share/icons/hicolor/scalable/apps
+MANDIR ?= $(PREFIX)/share/man
+SNEKLIB ?= $(PREFIX)/share/snek
+SNEKDIST ?= keithp.com:/var/www/snek/dist
+SNEKDOC ?= keithp.com:/var/www/snek
 
 include $(SNEK_ROOT)/snek.defs
