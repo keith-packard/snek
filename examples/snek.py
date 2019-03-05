@@ -106,7 +106,7 @@ def main():
     curses.cbreak()
     stdscr.nodelay(True)
     stdscr.erase()
-    random.seed()
+    random.seed(time.monotonic())
     snek = [_p(1,1)]
     put_snak()
     for x in range(1,cols-1):
