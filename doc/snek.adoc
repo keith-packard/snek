@@ -1,6 +1,6 @@
 = The Snek Programming Language: A Python-inspired Embedded Computing System
 Keith Packard <keithp@keithp.com
-:title-logo-image: image:../snek.svg[Snek]
+:title-logo-image: image:snek.svg[Snek]
 .revnumber: v0.0
 :revdate: 1 Jan 1970
 :icons:

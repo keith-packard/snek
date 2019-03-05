@@ -10,18 +10,19 @@ ADOC_FILES=snek.adoc
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css
+IMAGE_FILES=../snek.svg
 
 all: $(HTML_FILES) $(PDF_FILES)
 
 ATTRIBUTES= --attribute="revdate=$(SNEK_DATE)" --attribute="revnumber=v$(SNEK_VERSION)"
 
 .adoc.html:
-	asciidoctor $(ATTRIBUTES) -b html5 $*.adoc
+	asciidoctor -B$(SNEK_ROOT) $(ATTRIBUTES) -b html5 $*.adoc
 
 .adoc.pdf:
-	asciidoctor-pdf $(ATTRIBUTES) $*.adoc
+	asciidoctor-pdf -B$(SNEK_ROOT) $(ATTRIBUTES) $*.adoc
 
-$(PDF_FILES): snek-theme.yml
+$(PDF_FILES): snek-theme.yml $(IMAGE_FILES)
 
 DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES)
 

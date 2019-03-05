@@ -1,7 +1,7 @@
 base:
   font_family: Open Sans Light
 heading:
-  font_color: #55cf1f
+  font_color: #7ab306
   font_size: 17
 font:
   catalog:
@@ -36,7 +36,7 @@ title_page:
   revision:
     margin_top: $base_font_size * 1.25
 admonition_label:
-  font_color: #c70909
+  font_color: #7ab306
   font_style: bold
   font_size: $heading_h2_font_size
 page:
@@ -46,7 +46,7 @@ page:
   size: letter
 footer:
   height: 0.5in
-  border_color: #55cf1f
+  border_color: #7ab306
   recto:
     left:
       content: '{page-number}'
