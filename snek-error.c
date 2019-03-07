@@ -25,9 +25,17 @@ puts_clean(char *s)
 {
 	unsigned char c;
 	while ((c = (unsigned char) *s++)) {
-		if (c < ' ')
-			fprintf(stderr, "\\x%02x", c);
-		else
+		if (c < ' ') {
+			putc('\\', stderr);
+			switch (c) {
+			case '\n':
+				putc('n', stderr);
+				break;
+			default:
+				fprintf(stderr, "x%02x", c);
+				break;
+			}
+		} else
 			putc(c, stderr);
 	}
 }
