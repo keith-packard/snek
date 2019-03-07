@@ -259,6 +259,10 @@ string(char q)
 			snek_token_val.string = ret;
 			RETURN(STRING);
 		}
+		if (c == '\n') {
+			unlexchar(c);
+			RETURN(FIRST_NON_TERMINAL);
+		}
 		if (c == '\\') {
 			c = lexchar();
 			switch (c) {
