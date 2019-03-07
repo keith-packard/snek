@@ -60,7 +60,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	switch (format) {
 	case 'd':
 	case 'i':
-	case 'u':
+	case 'o':
 	case 'x':
 	case 'X':
 		if (atype != snek_float)
