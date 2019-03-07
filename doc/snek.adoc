@@ -1,7 +1,8 @@
 = The Snek Programming Language: A Python-inspired Embedded Computing System
 Keith Packard <keithp@keithp.com
 :title-logo-image: image:snek.svg[Snek]
-.revnumber: v0.0
+:version: 0.0
+:revnumber: v{version}
 :revdate: 1 Jan 1970
 :icons:
 :icontype: svg
@@ -179,11 +180,12 @@ words "hello, world" to the console. Because snek offers an
 interactive command line, we can actually do this in several ways.
 
 The first way is to simply evaluate an expression. Start up Snek on
-your computer (perhaps by typing 'snek' at the usual command prompt):
+your computer (perhaps by finding Snek in your system menu or by
+typing 'snek' at the usual command prompt):
 
-	$ snek
-	Welcome to Snek version 1.0
-	>
+[source,python,subs="attributes+"]
+Welcome to Snek version {revnumber}
+>
 
 At this prompt, the result of any expression typed in will be printed:
 

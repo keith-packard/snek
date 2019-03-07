@@ -14,7 +14,7 @@ IMAGE_FILES=../snek.svg
 
 all: $(HTML_FILES) $(PDF_FILES)
 
-ATTRIBUTES= --attribute="revdate=$(SNEK_DATE)" --attribute="revnumber=v$(SNEK_VERSION)"
+ATTRIBUTES= --attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
 
 .adoc.html:
 	asciidoctor -B$(SNEK_ROOT) $(ATTRIBUTES) -b html5 $*.adoc
