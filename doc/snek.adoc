@@ -514,31 +514,6 @@ operator, ``\<=``, and demonstrates that ``for v in a`` also works on strings.
 Snek programs are broken into a sequence of tokens by the compiler,
 then the sequence of tokens is recognized by a parser.
 
-=== String Constants
-
-String constants in Snek are enclosed by either single or double
-quotes. Use single quotes to easily include double quotes in the
-string, and vice-versa. Strings cannot span multiple lines, but you
-can input multiple strings adjacent to one another and they will be
-merged into a single string constant in the program.
-
-\n::
-Newline. Advance to the first column of the next line.
-
-\t::
-Tab. Advance to the next 'tab stop' in the output. This is usually the
-next multiple-of-8.
-
-\\::
-Backslash. Use two backslashes in the input to get one backslash in
-the string constant.
-
-\003::
-Octal value. You can place any octal value you like here, 003 is just
-an example.
-
-Anything else following the backslash is just that character.
-
 === Numbers
 
 Snek supports 32-bit floating point numbers and understands the usual
@@ -597,76 +572,24 @@ Keywords look like regular Snek names, but they are handled specially
 by the parser and thus cannot be used as names. Here is the list of
 Snek keywords:
 
-	and
-	break
-	continue
-	def
-	del
-	elif
-	else
-	for
-	global
-	if
-	import
-	in
-	is
-	not
-	or
-	pass
-	range
-	return
-	while
+        and       break     continue  def
+        del       elif      else      for
+        global    if        import    in
+        is        not       or        pass
+        range     return    while
 
 === Punctuation
 
 Snek uses many special characters to make programs more readable;
 separating out names and keywords from operators and other syntax.
 
-	:
-	;
-	,
-	(
-	)
-	[
-	]
-	{
-	}
-	+
-	-
-	*
-	**
-	/
-	//
-	%
-	&
-	|
-	~
-	!
-	^
-	<<
-	>>
-	=
-	+=
-	-=
-	*=
-	**=
-	/=
-	//=
-	%=
-	&=
-	|=
-	~=
-	^=
-	<<=
-	>>=
-	>
-	!=
-	<
-	<=
-	==
-	>=
-	>
-	
+        :       ;       ,       (       )       [       ]       {
+        }       +       -       *       **      /       //      %
+        &       |       ~       !       ^       <<      >>      =
+        +=      -=      *=      **=     /=      //=     %=      &=
+        |=      ~=      ^=      <<=     >>=     >       !=      <
+        <=      ==      >=      >       
+
 === White Space (Spaces and Newlines)
 
 Snek uses indentation to identify program structure. Snek does not
@@ -685,8 +608,77 @@ only a comment) are entirely ignored; indentation of those lines
 doesn't affect the block indentation level. Only lines with Snek
 tokens matter in this case.
 
-Spaces are only significant if they are necessary to separate tokens;
-you can insert as many or as few as you like in other places.
+Spaces in the middle of the line are only significant if they are
+necessary to separate tokens; you can insert as many or as few as you
+like in other places.
+
+=== String Constants
+
+String constants in Snek are enclosed by either single or double
+quotes. Use single quotes to easily include double quotes in the
+string, and vice-versa. Strings cannot span multiple lines, but you
+can input multiple strings adjacent to one another and they will be
+merged into a single string constant in the program.
+
+\n::
+Newline. Advance to the first column of the next line.
+
+\t::
+Tab. Advance to the next 'tab stop' in the output. This is usually the
+next multiple-of-8.
+
+\xdd::
+Hex value. Use two hex digits to represent any character.
+
+\\::
+Backslash. Use two backslashes in the input to get one backslash in
+the string constant.
+
+Anything else following the backslash is just that character.
+
+=== List and Tuple Constants
+
+List and Tuple constants in Snek are values separated by commas
+enclosed in either square brackes (for Lists) or parentheses (for
+Tuples).
+
+Here are some valid Lists:
+
+	[1, 2, 3]
+	["hello", "world"]
+	[12]
+
+Here are some valid Tuples:
+
+	(1, 2, 3)
+	("hello", "world")
+	(12,)
+
+Note the last case — to distinguish between a value in parentheses and
+Tuple with one value, the Tuple needs to have a trailing comma. Only
+single-valued Tuples are represented with a trailing comma.
+
+=== Dictionary Constants
+
+Dictionaries in Snek are key/value pairs separated by commas and all
+enclosed in curly braces. Keys are separated from values with a colon.
+
+Here are some valid Dictionaries:
+
+	{ 1:2, 3:4 }
+	{ 'pi' : 3.14, 'e' : 2.72 }
+	{ 1: 'one' }
+
+You can include entries with duplicate keys, the resulting Dictionary
+will contain only the last entry. The order of the entries does not
+matter; the resulting dictionary will always be the same:
+
+	> { 1:2, 3:4 } == { 3:4, 1:2 }
+	1
+
+When Snek prints dictionaries, they are always printed in the same
+order, so two equal dictionaries will have the same string
+representation.
 
 == Data Types
 
@@ -740,9 +732,34 @@ Strings/Lists/Tuples/Dictionaries are False. The name True is just
 another way of typing the number one. Similarly, the name False is
 just another way of typing the number zero.
 
+=== Lists and Tuples
+
+The ``+=`` operator works a bit different on Lists than any other
+type — it appends to the existing list rather than creating a new
+list. This can be seen in the following example:
+
+	> a = [1,2]
+	> b = a
+	> a += [3]
+	> b
+	[1, 2, 3]
+
+Compare this with Tuples, which (as they are immutable) cannot be
+appended to. In this example, ``b`` retains the original Tuple value.
+``a`` gets a new Tuple consisting of ``(3,)`` appended to the original
+value.
+
+	> a = (1,2)
+	> b = a
+	> a += (3,)
+	> b
+	(1, 2)
+	> a
+	(1, 2, 3)
+
 == Operators
 
-Operators are things like ``+`` or ``-`` — they are part of the
+Operators are things like ``+`` or ``–``. They are part of the
 grammar of the language and serve to make programs more readable than
 they would be if everything was a function call. Like Python, the
 behavior of Snek operators often depends on the values they are
@@ -775,8 +792,8 @@ _value_ ``%`` _value_::
 The Modulus operator computes an integer remainder on integer
 values. If the left operand is a string, it performs “interpolation”
 with either a single value or a list/tuple of values and is used to
-generate formatted output. See the String Interpolation section in the
-String chapter for details.
+generate formatted output. See the String Interpolation section below
+for details.
 
 _value_ *&#42;&#42;* _value_::
 The Power operator performs exponentiation on numbers.
@@ -795,18 +812,6 @@ The Left Shift operator does bit-wise left shift on integers.
 
 _value_ ``>>`` _value_::
 The Right Shift operator does bit-wise left shift on integers.
-
-_location_ ``=`` _value_::
-The Assign operator takes the value on the right operand and stores it in
-the location indicated by the left operand. The left operand may be a
-variable, a list location or a dictionary location.
-
-_location_ ``+=``, ``-=``, ``*=``, ``/=``, ``//=``, ``%=``, ``**=``, ``&=``, ``|=``, ``^=``, ``<\<=``, ``>>=`` _value_::
-The Operation Assign operators take the value of the left operand and
-the value of the left operand and performs the operation indicated by
-the operator. Then it stores the result back in the location indicated
-by the left operand. There are some subtleties about this which are
-discussed in the List chapter.
 
 ``!`` _value_::
 The Not operator performs a Boolean Not operation on its one right
@@ -849,6 +854,156 @@ distinguished from an expression inside of parenthesis.
 ``{`` _key_ ``:`` _value_ _[_ ``,`` _key_ ``:`` _value_ … _]_ ``}``::
 The Dictionary operator creates a new Dictionary with the provided
 key/value pairs. All of the _keys_ must be immutable.
+
+=== Slices
+
+The Slice operator, _value_ ``[`` _base_ ``:`` _bound_ ``:`` _stride_
+``]``, extracts a sequence of values from Strings, Lists and Tuples. It
+creates a new object with the specified subset of values from the
+original. The new object matches the type of the original.
+
+_base_::
+The first element of _value_ selected for the slice. If _base_ is
+negative, then it counts from the end of _value_ instead the
+begining.
+
+_bound_::
+The first element of _value_ beyond the range selected for the slice.
+
+_stride_::
+The spacing between selected elements. _Stride_ may be negative, in
+which case elements are selected in reverse order, starting towards
+the end of _value_ and working towards the begining. It is an error
+for _stride_ to be zero.
+
+All three values are optional. The default value for _stride_ is
+one. If _stride_ is positive, the default value for _base_ is 0 and
+the default for _bound_ is the length of the array. If _stride_ is
+negative, the default value for _base_ is the index of the last
+element in _value_ (which is ``len(``_value_``) – 1``) and the default
+value for _bound_ is ``–1``. Here are some examples:
+
+	> # initialize a to a Tuple of characters
+	> a = ('a', 'b', 'c', 'd', 'e', 'f', 'g')
+	> # With all default values, a[:] looks the same as a	
+	> a[:]
+	('a', 'b', 'c', 'd', 'e', 'f', 'g')
+	> # Reverse the Tuple
+	> a[::-1]
+	('g', 'f', 'e', 'd', 'c', 'b', 'a')
+	> # Select the end of the Tuple starting at index 3
+	> a[3:]
+	('d', 'e', 'f', 'g')
+	> # Select the begining of the Tuple, ending before index 3
+	> a[:3]
+	('a', 'b', 'c')
+
+=== String Interpolation
+
+String interpolation in Snek can be confused with formatted printing
+in other languages. In Snek, the ``print`` function takes a single
+S. String interpolation is how this String is generated from a format
+specification String and a List or Tuple of parameters.
+
+If only a single value is needed, it need not be enclosed in a List or
+Tuple. Beware that if this single value is itself a Tuple or List,
+then String interpolation will get the wrong answer.
+
+Within the format specification String are conversion specifiers which
+indicate where to insert values from the parameters. These are
+indicated with a ``%`` sign followed by a single character which is
+the format indicator and specifies how to format the value. The first
+conversion specifier uses the first element from the parameters,
+etc. The format indicator characters are:
+
+``%d``::
+``%i``::
+``%o``::
+``%x``::
+``%X``::
+Format a number as a whole number, discarding any fractional part and
+without any exponent. ``%d`` and ``%i`` present the value in base 10.
+``%o`` uses base 8 (octal) and ``%x`` and ``%X`` use base 16
+(hexidecimal), with ``%x`` using lower case letters (a-f) and ``%X``
+using upper case letters (A-F).
+
+``%e``::
+``%E``::
+``%f``::
+``%F``::
+``%g``::
+``%G``::
+Format a number as floating point. The upper case variants use ``E``
+for the exponent separator, lower case uses ``e`` and are otherwise
+identical. ``%e`` always uses exponent notation, ``%f`` never uses
+exponent notation. ``%g`` uses whichever notation makes the output smaller.
+
+``%c``::
+Output a single character. If the parameter value is a number, it is
+converted to the character. If the parameter is a string, the first
+character from the string is used.
+
+``%s``::
+Output a string. This does not insert quote marks or backslashes.
+
+``%r``::
+Generate a printable representation of any value, similar to how the
+value would be represented in a Snek program.
+
+If the parameter value doesn't match the format indicator
+requirements, or if any other character is used as a format indicator,
+then ``%r`` will be used instead.
+
+Here are some examples of String interpolation:
+
+	> print('hello %s' % "world")
+	hello world
+	> print('hello %r' % 'world')
+	hello 'world'
+	> print('pi = %d' % 3.1415)
+	pi = 3
+	> print('pi = %f' % 3.1415)
+	pi = 3.141500
+	> print('pi = %e' % 3.1415)
+	pi = 3.141500e+00
+	> print('pi = %g' % 3.1415)
+	pi = 3.1415
+	> print('star is %c' % 42)
+	star is *
+	> print('%d %d %d' % (1, 2, 3))
+	1 2 3
+
+And here are a couple of examples showing why a single value may need
+to be enclosed in a Tuple:
+
+	> a = (1,2,3)
+	> print("a is %r" % a)
+	a is 1
+	> print("a is %r" % (a,))
+	a is (1, 2, 3)
+
+In the first case, String interpolatiton is using the first element of
+``a`` as the value instead of using all of ``a``.
+
+== Expression and Assignment Statements
+
+_value_::
+An Expression statement simply evaluates _value_.  This can be useful
+if _value_ has a side-effect, like a function call that sets some
+global state. At the top-level, _value_ is printed, otherwise it is
+discarded.
+
+_location_ ``=`` _value_::
+The Assignment statement takes the value on the right operand and stores it in
+the location indicated by the left operand. The left operand may be a
+variable, a list location or a dictionary location.
+
+_location_ ``+=``, ``–=``, ``*=``, ``/=``, ``//=``, ``%=``, ``**=``, ``&=``, ``|=``, ``^=``, ``<\<=``, ``>>=`` _value_::
+The Operation Assignment statements take the value of the left operand and
+the value of the left operand and performs the operation indicated by
+the operator. Then it stores the result back in the location indicated
+by the left operand. There are some subtleties about this which are
+discussed in the Lists and Tuples section of the Datatypes chapter.
 
 == Control Flow
 
@@ -982,7 +1137,36 @@ function returns, all variables in this new scope are discarded.
 Additional variables in this new scope are created when they are
 assigned to, unless they are marked as 'global' via the Global statement
 
-== Built-in Functions
+``def``::
+
+``def`` _fname_ ``(`` _pos1 [_ ``,`` _posn … ] [_ ``,`` _name1_ ``=`` _default1 … ]_ ``) :`` block _]_::
+
+A ``def`` statement declares (or redeclares) a function. There are two
+kinds of parameters, positional parameters (which come first), and
+named parameters (which come last). Positional parameters are all
+required, and are passed in the caller in the same order they appear
+in the declaration. Named parameters are optional; they will be set to
+the provided default value if not passed by the caller. They can
+appear in any order in the call.
+
+Here's an example of a function with two parameters:
+
+	def subtract(a,b):
+	    return a - b
+
+And here's a function with one positional parameter and two named
+parameters:
+
+	def step(value, times=1, plus=0):
+	    return value * times + plus
+
+== Standard Built-in Functions
+
+Snek includes a small set of standard built-in functions, but it may
+be extended with a number of system-dependent functions as well. This
+chapter describes the set of builtin functions which are considered a
+“standard” part of the Snek language and are provided in all Snek
+implementations.
 
 ``len(value)``::
 Len returns the number of characters for a String or the number of
@@ -1027,7 +1211,15 @@ Compute the square root of its numeric argument.
 
 == Common System Builtin Functions
 
-These functions are system-dependent, but generally available.
+These functions are system-dependent, but are generally available. If
+they are available, they will work as described below.
+
+``exit(value)``::
+Terminate snek and return _value_ to the operating system. How that
+value is intepreted depends on the operating system. On
+Posix-compatible systems, _value_ should be a number which forms the
+exit code for the Snek process with zero indicating Success and
+non-zero indicating Failure.
 
 ``time.sleep(seconds)``::
 Pause for the specified amount of time (which can include a fractional
@@ -1136,3 +1328,54 @@ Re-parses the current eeprom contents, just as Snek does at boot time.
 
 ``eeprom.erase()``::
 Erase the eeprom.
+
+[appendix]
+== Curses built-in functions
+
+Curses provides a simple mechanism for displaying text on the
+console. The API is designed to be reasonably compatible with the
+Python3 curses module, although it is much less flexible. Snek only
+supports ANSI terminals, and doesn't have any idea what the dimensions
+of the console are. Not all Snek implementations provide the curses
+functions.
+
+``curses.initscr()``::
+Puts the console into “visual” mode. Disables echo. Makes ``stdscr.getch()`` stop
+waiting for newline.
+
+``curses.endwin()``::
+Resets the console back to “normal” mode. Enables echo. Makes
+``stdscr.getch()`` wait for newlines.
+
+``curses.noecho()``::
+``curses.echo()``::
+``curses.cbreak()``::
+``curses.nocbreak()``::
+All four of these functions are no-ops and are part of the API solely
+to make it more compatible with Python3 curses.
+
+``stdscr.nodelay(nodelay)``::
+If _nodelay_ is True, then ``stdscr.getch()`` will return -1 if there
+is no character waiting. If _nodelay_ is False, the ``stdscr.getch()``
+will block waiting for a character to return.
+
+``stdscr.erase()``::
+Erase the screen.
+
+``stdscr.addstr(row, column, string)``::
+Displays _string_ at _row_, _column_. _Row_ 0 is the top row of the
+screen. _Column_ 0 is the left column. The cursor is left at the end
+of the string.
+
+``stdscr.move(row, column)``::
+Moves the cursor to _row_, _column_ without displaying anything there.
+
+``stdscr.refresh()``::
+Flushes any pending screen updates.
+
+``stdscr.getch()``::
+Reads a character from the console input. Returns a number indicating
+the character read, which can be converted to a string using
+``chr(c)``. If ``stdscr.nodelay(nodelay)`` was most recently called
+with _nodelay_ ``= True``, then ``stdscr.getch()`` will immediately
+return -1 if no characters are pending.
