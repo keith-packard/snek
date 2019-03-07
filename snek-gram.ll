@@ -54,21 +54,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				if (ref)
 					*ref = poly;
 			}@
-		| DEL del dels-p
 		| IMPORT NAME
-		;
-dels-p		: COMMA del
-		  dels-p
-		|
-		;
-del		: expr-array
-			@{
-				snek_token_val.op = snek_op_del;
-				goto extract_lvalue;
-			}@
-			@{
-				goto add_op_lvalue;
-			}@
 		;
 opt-formals	: formals
 		|
@@ -112,6 +98,20 @@ small-stat	: assign-expr
 			@{ snek_code_add_forward(snek_forward_continue); }@
 		| PASS
 		| GLOBAL globals
+		| DEL del dels-p
+		;
+dels-p		: COMMA del
+		  dels-p
+		|
+		;
+del		: expr-array
+			@{
+				snek_token_val.op = snek_op_del;
+				goto extract_lvalue;
+			}@
+			@{
+				goto add_op_lvalue;
+			}@
 		;
 ret-expr	: expr
 		|
