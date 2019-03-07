@@ -38,6 +38,8 @@ snek_error_name(const char *format, ...)
 	va_list		args;
 	char		c;
 
+	if (snek_abort)
+		return SNEK_NULL;
 	snek_abort = true;
 	va_start(args, format);
 	fprintf(stderr, "%s:%d ", snek_file, snek_line);
