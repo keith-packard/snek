@@ -107,12 +107,15 @@ is_name(char c, bool first)
 	return false;
 }
 
-static bool
-is_octal(char c)
+static int8_t __attribute__ ((noinline))
+hex(char c)
 {
-	if ('0' <= c && c <= '7')
-		return true;
-	return false;
+	if ('0' <= c && c <= '9')
+		return c - '0';
+	c |= ('a' - 'A');
+	if ('a' <= c && c <= 'f')
+		return c - ('a' - 10);
+	return -1;
 }
 
 static bool
@@ -126,7 +129,7 @@ comment(void)
 	return true;
 }
 
-static void
+static void __attribute__((noinline))
 start_token(void)
 {
 	snek_lex_len = 0;
@@ -243,7 +246,7 @@ static token_t
 string(char q)
 {
 	char c;
-	char t;
+	int8_t t;
 
 	start_token();
 	for (;;) {
@@ -265,16 +268,15 @@ string(char q)
 			case 't':
 				c = '\t';
 				break;
+			case 'x':
+				t = hex(lexchar()) << 4;
+				t |= hex(lexchar());
+				if (t < 0)
+					RETURN(TOKEN_NONE);
+				c = t;
+				break;
 			default:
-				if (is_octal(c)) {
-					t = 0;
-					do {
-						t = t << 3 | (c - '0');
-						c = lexchar();
-					} while (is_octal(c));
-					unlexchar(c);
-					c = t;
-				}
+				c = lexchar();
 				break;
 			}
 		}
