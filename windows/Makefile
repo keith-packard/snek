@@ -68,7 +68,7 @@ install:
 	echo install done
 
 upload: $(WINDOWS_INSTALL)
-	scp $(WINDOWS_INSTALL) $(SNEKDIST)
+	rsync -avz $(WINDOWS_INSTALL) $(SNEKDIST)
 
 clean::
 	rm -f snek.exe snek.ico snekde.py snek.cfg

@@ -31,7 +31,7 @@ install: $(DOCFILES)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR); done
 
 upload:
-	scp -rp $(DOCFILES) fonts $(SNEKDOC)
+	rsync -avz $(DOCFILES) fonts $(SNEKDOC)
 
 clean::
 	rm -f $(PDF_FILES) $(HTML_FILES)

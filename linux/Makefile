@@ -41,7 +41,7 @@ $(LINUX_DIST): $(LINUX_FILES) $(LINUX_EXTRA)
 	tar cjf $@ -C linux Snek
 
 upload: $(LINUX_SH)
-	scp $(LINUX_SH) $(SNEKDIST)
+	rsync -avz $(LINUX_SH) $(SNEKDIST)
 
 clean:
 	rm -f $(LINUX_SH) $(LINUX_DIST)
