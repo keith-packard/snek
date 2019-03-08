@@ -51,7 +51,7 @@ http://keithp.com
 == History and Motivations
 
 Teaching computer programming to students in the 10-14 age range
-offers some interesting challenges. Introductory, "blocks", languages
+offers some interesting challenges. Introductory, “blocks”, languages
 can become frustratingly slow to create code, and don't provide any
 concrete skills to bring to more advanced languages. Sophisticated
 languages like C, Java and even Python are so large as to overwhelm
@@ -107,8 +107,8 @@ how to use them:
    this device at numerous local Lego shows.
 
 However, other students dreaded having to use the Arduino systems with
-complaints about "too much typing" and "why is it so picky about
-semicolons".
+complaints about “too much typing” and “why is it so picky about
+semicolons”.
 
 The hardware was just what we wanted, but the software was not aimed
 at young students just starting to write code.
@@ -173,15 +173,19 @@ be covering anything in detail, nor will all the subtleties be
 explored. The hope is to just provide some a framework within which
 those details can be filled in later on.
 
+This tutorial shows what appears on the screen, which merges what Snek
+displays along with user input. User input is shown on the lines which
+start with `>` or `+`, Snek output is shown on other lines.
+
 === Hello World
 
 A traditional exercise in any new language is to get it to print the
-words "hello, world" to the console. Because snek offers an
+words `hello, world` to the console. Because snek offers an
 interactive command line, we can actually do this in several ways.
 
 The first way is to simply evaluate an expression. Start up Snek on
 your computer (perhaps by finding Snek in your system menu or by
-typing 'snek' at the usual command prompt):
+typing `snek` at the usual command prompt):
 
 [source,python,subs="attributes+"]
 Welcome to Snek version {revnumber}
@@ -239,17 +243,17 @@ use the same indentation. When you're done with the list of
 statements, you enter a line with the old indentation level.
 
 While entering a long compound statement like this, the command
-processor will prompt with '+' instead of '>' to let you know that
+processor will prompt with `+` instead of `>` to let you know that
 it's still waiting for more input before it does anything. It's the
 'line with the old indentation level' that displays the second
-'+'. Hitting enter on that line ends the list of statements for
-'hello' and gets you back to the regular command prompt.
+`+`. Hitting enter on that line ends the list of statements for the
+`hello` function and gets you back to the regular command prompt.
 
-Finally, we invoke the new 'hello' function and see the results.
+Finally, we invoke the new `hello` function and see the results.
 
 So far, in these examples, Snek ends each print operation by moving to
 the next line. That's because the print function has a named parameter
-called 'end' which is set to 'newline' by default. You can change it
+called `end` which is set to a newline by default. You can change it
 to whatever you like, as in:
 
 	> def hello():
@@ -259,7 +263,7 @@ to whatever you like, as in:
 	> hello()
 	hello, world
 
-The first call appends a ',' to the output, while the second call
+The first call appends a `,` to the output, while the second call
 explicitly appends a newline character, causing the output to move to
 the next line. There are a few characters that use this backslash
 notation, those are described in the section on Strings.
@@ -267,7 +271,7 @@ notation, those are described in the section on Strings.
 === Simple Arithmetic
 
 Let's write a function to convert from Fahrenheit temperatures to
-Celsius. If you recall, that's just
+Celsius. If you recall, that's:
 
 	°C = (5/9)(°F - 32)
 
@@ -281,12 +285,12 @@ F:
 	> f_to_c(38)
 	3.333333
 
-The '#' character introduces a comment, which extends to the end of
+The `#` character introduces a comment, which extends to the end of
 the line. Anything within a comment is ignored by the compiler. Snek
-requires an explicit multiplication (*) operator as it doesn't understand
+requires an explicit multiplication operator, `*`, as it doesn't understand
 the mathematical convention that adjacent values should be
 multiplied. The return statement is how we tell Snek that this
-function computes a value that should be given back to the user,
+function computes a value that should be given back to the caller,
 rather than just printing it directly.
 
 === Loops, Ranges and Printing Two Values
@@ -297,7 +301,7 @@ handy reference table for offline use:
 	> # Print a handy conversion table
 	> def f_to_c_table():
 	+     for F in range(0, 100, 10):
-	+         print("%f F = %f C" % (F, f_to_c(F)))
+	+         print('%f F = %f C' % (F, f_to_c(F)))
 	+ 
 	> f_to_c_table()
 	0.000000 F = -17.777779 C
@@ -311,7 +315,7 @@ handy reference table for offline use:
 	80.000000 F = 26.666668 C
 	90.000000 F = 32.222225 C
 
-First off, we've got a new statement, the 'for' statement. This walks
+First off, we've got a new statement, the `for` statement. This walks
 over a range of values, assigning the control variable (F, in this
 case) all of the values in the range and then evaluating the
 statements within it. The range operator creates this set of values
@@ -373,7 +377,7 @@ Lists can be modified, Tuples cannot:
 That last output is the Snek machine telling us that the value
 ('hello', ' world') cannot be modified.
 
-We can use another form of the 'for' statement to iterate over the
+We can use another form of the `for` statement to iterate over the
 values in a List or Tuple:
 
 	> def print_list(list):
@@ -461,7 +465,7 @@ as follows:
 	> def f_to_c_table():
 	+     F = 0
 	+     while F < 100:
-	+         print("%f F = %f C" % (F, f_to_c(F)))
+	+         print('%f F = %f C' % (F, f_to_c(F)))
 	+         F = F + 10
 	+ 
 	> f_to_c_table()
@@ -503,9 +507,9 @@ lower case and digits are in a string:
 	+             u += 1
 	+         else:
 	+             o += 1
-	+     print("digits %d lower %d upper %d other %d" % (d, l, u, o))
+	+     print('digits %d lower %d upper %d other %d' % (d, l, u, o))
 	+ 
-	> count_chars("4 Score and 7 Years Ago")
+	> count_chars('4 Score and 7 Years Ago')
 	digits 2 lower 13 upper 3 other 5
 
 This example also introduces the less-than-or-equal comparison
@@ -647,13 +651,13 @@ Tuples).
 Here are some valid Lists:
 
 	[1, 2, 3]
-	["hello", "world"]
+	['hello', 'world']
 	[12]
 
 Here are some valid Tuples:
 
 	(1, 2, 3)
-	("hello", "world")
+	('hello', 'world')
 	(12,)
 
 Note the last case — to distinguish between a value in parentheses and
@@ -958,7 +962,7 @@ then ``%r`` will be used instead.
 
 Here are some examples of String interpolation:
 
-	> print('hello %s' % "world")
+	> print('hello %s' % 'world')
 	hello world
 	> print('hello %r' % 'world')
 	hello 'world'
@@ -979,9 +983,9 @@ And here are a couple of examples showing why a single value may need
 to be enclosed in a Tuple:
 
 	> a = (1,2,3)
-	> print("a is %r" % a)
+	> print('a is %r' % a)
 	a is 1
-	> print("a is %r" % (a,))
+	> print('a is %r' % (a,))
 	a is (1, 2, 3)
 
 In the first case, String interpolatiton is using the first element of
@@ -1012,7 +1016,7 @@ discussed in the Lists and Tuples section of the Datatypes chapter.
 Snek has a subset of the Python control flow operations, including
 trailing ``else:`` blocks for loops.
 
-``if`` _value_ ``:`` block _[_ ``elif`` _value_ ``:`` … _] [_  ``else:`` block _]_::
+=== ``if`` _value_ ``:`` block _[_ ``elif`` _value_ ``:`` … _] [_  ``else:`` block _]_
 An If statement contains an initial 'if' block, any number of 'elif'
 blocks and then (optionally) an 'else' block in the following
 structure:
@@ -1030,38 +1034,41 @@ if _elif_value_ is True, then _elif_statements_ are executed. If none
 of the if or elif values are True, then the _else_statements_ are
 executed.
 
-``while`` _value_ ``:`` block ::
-A While statements consists of a 'while' block followed by an optional
-'else' block:
+=== ``while`` _value_ ``:`` block _[_ `else:` block _]_
+A While statements consists of a `while` block followed by an optional
+`else` block:
 
-	while while_value:
-		while statements
-	else:
-		else statements
+[source,python,subs="normal"]
+while _while_value_ :
+	block
+else:
+	block
 
-The _while_value_ is evaluated and if it evaluates as True, the while
-statements are executed. Then the system evaluates _while_value_
-again, and if it evaluates as True again, the while statements are
+_While_value_ is evaluated and if it evaluates as `True`, the
+while block is executed. Then the system evaluates _while_value_
+again, and if it evaluates as `True` again, the while block is
 again executed. This continues until the _while_value_ evaluates as
-False.
+`False`.
 
-When the _while_value_ evaluates as false, then the else statements
-are executed. If a ``break`` statement is executed as a part of the
+When the _while_value_ evaluates as `False`, then the `else:` block
+is executed. If a ``break`` statement is executed as a part of the
 while statements, then the program immediately jumps past the else
-statements. If a ``continue`` statement is executed as a part of the
-``while`` statements, execution jumps back to the evaluation of
-_while_value_. The ``else:`` portion (with else statements) is optional.
+statements. If a `continue` statement is executed as a part of the
+`while` statements, execution jumps back to the evaluation of
+_while_value_. The `else:` portion (with else statements) is optional.
 
+=== `for` _name_ `in` _value_ `:` block _[_ `else:` block _]_
 
-``for``::
-The ``for`` statement assigns _name_ to each of the list of _values_ and
-then executes a block of statements. It comes in two forms, the first
-is:
+The `for` statement assigns _name_ to each of the list of _values_ and
+then executes a block of statements. _Value_ can be specified in two
+different ways, either as a List, Tuple Dictionary or String value, or
+as a range expression involving numbers:
 
-	for name in value:
-		for statements
-	else:
-		else statements
+[source,python,subs="normal"]
+for _name_ in _value_:
+	for statements
+else:
+	else statements
 
 In this case, the _value_ must be a List,
 Tuple, Dictionary or String. For Lists and Tuples, the values are the
@@ -1069,57 +1076,174 @@ elements of the object. For Strings, the values are strings of each
 separate character in the string. For Dictionaries, the values are the
 keys in the dictionary.
 
-The other form of the ``for`` statement looks like this:
+[source,python,subs="normal"]
+for name in range ( _[_ start , _]_ stop _[_ , step _]_ ):
+	for statements
+else:
+	else statements
 
-	for name in range ( [ start , ] stop [ , step ] ):
-		for statements
-	else:
-		else statements
-
-In this form, the ``for`` statement assigns a range of numeric values
+In this form, the `for` statement assigns a range of numeric values
 to _name_. Starting with _start_, and going while not beyond _stop_,
 _name_ gets _step_ added at each iteration. _Start_ is optional; if
 not present, 0 will be used. _Step_ is also optional; if not present,
 1 will be used.
 
-If a ``break`` statement is executed as a part of the ``for``
+	> for x in (1,2,3):
+	+     print(x)
+	+ 
+	1
+	2
+	3
+	> for c in 'hi':
+	+     print(c)
+	+ 
+	h
+	i
+	> a = { 1:2, 3:4 }
+	> for k in a:
+	+     print('key is %r value is %r' % (k, a[k]))
+	+ 
+	key is 1 value is 2
+	key is 3 value is 4
+	> for i in range(3):
+	+     print(i)
+	+ 
+	0
+	1
+	2
+	> for i in range(2, 10, 2):
+	+     print(i)
+	+ 
+	2
+	4
+	6
+	8
+
+If a `break` statement is executed as a part of the `for`
 statements, then the program immediately jumps past the else
-statements. If a ``continue`` statement is executed as a part of the
-``for`` statements, execution jumps back to the assignment of the next
-value to _name_. In both forms, the ``else:`` portion (with else
+statements. If a `continue` statement is executed as a part of the
+`for` statements, execution jumps back to the assignment of the next
+value to _name_. In both forms, the `else:` portion (with else
 statements) is optional.
 
-``return`` _value_::
+=== `return` _value_
 The Return statement causes the currently executing function 
 immediately evaluate to _value_ in the enclosing context.
 
-``break``::
-The Break statement causes the closest enclosing While or For statement to
-terminate. Any optional Else clause associated with the While or For
-statement is skipped
+	> def r():
+	+     return 1
+	+     print('hello')
+	+ 
+	> r()
+	1
 
-``continue``::
-The Continue statement causes the closest enclosing While or For
+In this case, the `print` statement did not execute because the
+`return` happened before it.
+
+=== `break`
+The Break statement causes the closest enclosing `while` or `for` statement to
+terminate. Any optional `else:` clause associated with the `while` or `for`
+statement is skipped when the `break` is executed.
+
+	> for x in (1,2):
+	+     if x == 2:
+	+         break
+	+     print(x)
+	+ else:
+	+     print('else')
+	+ 
+	1
+
+
+	> for x in (1,2):
+	+     if x == 3:
+	+         break
+	+     print(x)
+	+ else:
+	+     print('else')
+	+ 
+	1
+	2
+	else
+
+In this case, the first example does not print `else` due to the
+`break` statement execution rules. The second example prints `else`
+because the `break` statement is never executed.
+
+=== `continue`
+The `continue` statement causes the closest enclosing `while` or `for`
 statement to jump back to the portion of the loop which evaluates the
-termination condition. In While statements, that is where the
-_while_value_ is evaluated. In For statements, that is where
+termination condition. In `while` statements, that is where the
+_while_value_ is evaluated. In `for` statements, that is where
 the next value in the sequence is computed.
 
-``pass``::
-The Pass statement is simply a place-holder that does nothing and can
+	> vowels = 0
+	> other = 0
+	> for a in 'hello, world':
+	+     if a in 'aeiou':
+	+         vowels += 1
+	+         continue
+	+     other += 1
+	+ 
+	> vowels
+	3
+	> other
+	9
+
+The `continue` statement skips the execution of `other += 1`,
+otherwise `other` would be `12`.
+
+=== `pass`
+The `pass` statement is a place-holder that does nothing and can
 be used anyplace a statement is needed when no execution is desired.
+
+	> if 1 != 2:
+	+     pass
+	+ else:
+	+     print('equal')
+	+
+
+This example ends up doing nothing as the condition directs execution
+through the `pass` statement.
 
 == Other Statements
 
-``import`` _name_::
+=== `import` _name_
+
 The Import statement is ignored and is part of Snek so that Snek programs can
 be run using Python3.
 
-``global`` _name_ _[_ ``,`` _name_ … _]_::
+	> import curses
+
+=== `global` _name_ _[_ `,` _name_ … _]_
+
 The Global statement marks the names as non-local; assignment to them
 will not cause a new variable to be created.
 
-``del`` _location_::
+	> g = 0
+	> def set_local(v):
+	+     g = v
+	+ 
+	> def set_global(v):
+	+     global g
+	+     g = v
+	+ 
+	>  set_local(12)
+	> g
+	0
+	> set_global(12)
+	> g
+	12
+	> 
+
+Because `set_local` does not include `global g`, the assignment to `g`
+creates a new local variable, which is then discarded when the
+function returns. `set_global` does include the `global g` statement,
+so the assignment to `g` references the global variable and the change
+is visible after that function finishes.
+
+=== `del`  _location_
+
 The Del statement deletes either variables or elements within a List
 or Dictionary.
 
@@ -1130,37 +1254,47 @@ sequence of operations. They can be used to help document what a
 program does, to shorten the overall length of a program or to hide
 the details of an operation from other parts of the program.
 
-Functions take a list of 'positional' parameters, then a list of
-'named' parameters. Each of these parameters is assigned to a variable
-in a new scope; variables in this new scope will hide global variables
-and variables from other functions with the same name. When the
-function returns, all variables in this new scope are discarded.
+Functions take a list of “positional” parameters, then a list of
+“named” parameters. Positional parameters are all required, and are
+passed in the caller in the same order they appear in the
+declaration. Named parameters are optional; they will be set to the
+provided default value if not passed by the caller. They can appear in
+any order in the call. Each of these parameters is assigned to a
+variable in a new scope; variables in this new scope will hide global
+variables and variables from other functions with the same name. When
+the function returns, all variables in this new scope are discarded.
 
 Additional variables in this new scope are created when they are
-assigned to, unless they are marked as 'global' via the Global statement
+assigned to, unless they are included in a `global` statement.
 
-``def``::
+=== `def` _fname_ `(` _pos1 [_ `,` _posn … ] [_ `,` _namen_ `=` _defaultn … ]_ `) :` block
 
-``def`` _fname_ ``(`` _pos1 [_ ``,`` _posn … ] [_ ``,`` _name1_ ``=`` _default1 … ]_ ``) :`` block _]_::
-
-A ``def`` statement declares (or redeclares) a function. There are two
-kinds of parameters, positional parameters (which come first), and
-named parameters (which come last). Positional parameters are all
-required, and are passed in the caller in the same order they appear
-in the declaration. Named parameters are optional; they will be set to
-the provided default value if not passed by the caller. They can
-appear in any order in the call.
+A `def` statement declares (or redeclares) a function. The positional
+and named parameters are all visible as local variables while the
+function is executing.
 
 Here's an example of a function with two parameters:
 
-	def subtract(a,b):
-	    return a - b
+	> def subtract(a,b):
+	+     return a - b
+	+
+	> subtract(3,2)
+	1
 
 And here's a function with one positional parameter and two named
 parameters:
 
-	def step(value, times=1, plus=0):
-	    return value * times + plus
+	> def step(value, times=1, plus=0):
+	+     return value * times + plus
+	+
+	> step(12)
+	12
+	> step(12, times=2)
+	24
+	> step(12, plus=1)
+	13
+	> step(12, times=2, plus=1)
+	25
 
 == Standard Built-in Functions
 
@@ -1170,7 +1304,8 @@ chapter describes the set of builtin functions which are considered a
 “standard” part of the Snek language and are provided in all Snek
 implementations.
 
-``len(value)``::
+=== `len(value)`
+
 Len returns the number of characters for a String or the number of
 elements in a Tuple, List or Dictionary
 
@@ -1183,29 +1318,33 @@ elements in a Tuple, List or Dictionary
 	> len({ 1:2, 3:4, 5:6, 7:8 })
 	4
 
-``print(string, end='\n')``::
+=== `print(` _string_ `, end='\n')`
+
 Print writes a string to the console followed by the end value
-(default: newline).
+(default: `'\n'`).
 
 	> print('hello world', end='.')
 	hello world.> 
 
-``sys.stdout.flush()``::
+=== `sys.stdout.flush()`
+
 Flush output to the console, in case there is buffering somewhere.
 
-``ord(string)``::
+=== `ord(` _string_ `)`
+
 Converts the first character in a string to its ASCII value
 
 	>ord('A')
 	65
 
-``chr(number)``::
+=== `chr(` _number_ `)`
+
 Converts an ASCII value to a one character string.
 
 	> chr(65)
 	'A'
 
-``math.sqrt(number)``::
+=== `math.sqrt(` _number_ `)`
 Compute the square root of its numeric argument.
 
 	> math.sqrt(2)
@@ -1216,42 +1355,49 @@ Compute the square root of its numeric argument.
 These functions are system-dependent, but are generally available. If
 they are available, they will work as described below.
 
-``exit(value)``::
+=== `exit(` _value_ `)`
+
 Terminate snek and return _value_ to the operating system. How that
 value is intepreted depends on the operating system. On
 Posix-compatible systems, _value_ should be a number which forms the
 exit code for the Snek process with zero indicating Success and
 non-zero indicating Failure.
 
-``time.sleep(seconds)``::
+=== `time.sleep(` _seconds_ `)`
+
 Pause for the specified amount of time (which can include a fractional
 part).
 
 	> time.sleep(1)
 	> 
 
-``time.monotonic()``::
-Return the time (in seconds) since some unspecified point in the
-system history. This time always increases, even if the system clock
-is adjusted (hence the name). 
+=== `time.monotonic()`
+
+Return the time (in seconds) since some unspecified reference point in
+the system history. This time always increases, even if the system
+clock is adjusted (hence the name). Because Snek uses single-precision
+floating point values for all numbers, the reference point will be
+close to the starting time of the Snek system, so values may be quite
+small.
 
 	> time.monotonic()
 	6.859814
 
-``random.seed(seed)``::
-Re-seeds the random number generator with ``seed``. The random number
+=== `random.seed(` _seed_ `)`
+
+Re-seeds the random number generator with `seed`. The random number
 generator will always generate the same sequence of numbers if started
-with the same seed.
+with the same `seed`.
 
 	> random.seed(time.monotonic())
 	> 
 
-``random.randrange(max)``::
+=== `random.randrange(` _max_ `)`
+
 Generates a random integer between 0 and max-1 inclusive.
 
 	> random.randrange(10)
 	3
-
 
 [appendix]
 == Arduino Built-in Functions
@@ -1270,42 +1416,51 @@ power for the pin are effective immediately. A pin which is *off* has
 its output set to zero, but Snek remembers the setpower level and will
 restore the pin to that level when it is turned *on*.
 
-``talkto(p)``::
-Set the current output pins. If ``p`` is a number, this sets both the
-Power and Direction pins. If ``p`` is a List or Tuple, then the first
+=== `talkto(` _pin_ `)`
+
+Set the current output pins. If _pin_ is a number, this sets both the
+Power and Direction pins. If _pin_ is a List or Tuple, then the first
 element sets the Power pin and the second sets the Direction pin.
 
-``listento(p)``::
-Sets the current input pin to ``p``.
+=== `listento(` _pin_ `)`
+Sets the current input pin to _pin_.
 
-``setpower(v)``::
-Sets the power level on the current Power pin to ``v``. If the Power
-pin is currently *on*, then this is effectively
+=== `setpower(` _power_ `)`
+
+Sets the power level on the current Power pin to _power_. If the Power
+pin is currently *on*, then this is effective
 immediately. Otherwise, Snek remembers the desired power level and
 will use it when the pin is turned *on*.
 
-``setleft()``::
+=== `setleft()`
+
 Turns the current Direction pin *on*.
 
-``setright()``::
+=== `setright()`
+
 Turns the current Direction pin *off*.
 
-``on()``::
+=== `on()`
+
 Turns the current Power pin *on*.
 
-``off()``::
+=== `off()`
+
 Turns the current Power pin *off*.
 
-``onfor(s)``::
-Turns the current Power pin *on*, delays for ``s`` seconds and then
+=== `onfor(` _seconds_ `)`
+
+Turns the current Power pin *on*, delays for _seconds_ and then
 turns the current Power pin *off*.
 
-``read()``::
-Returns the value of the current Input pin. If this is an analog pin,
-then ``read()`` returns a value from 0 to 1. If this a digital pin,
-then ``read()`` returns either 0 or 1.
+=== `read()`
 
-``stopall()``::
+Returns the value of the current Input pin. If this is an analog pin,
+then `read()` returns a value from `0 to 1` (inclusive). If this a digital pin, then
+`read()` returns either `0` or `1`.
+
+=== `stopall()`
+
 Turns all pins off.
 
 The ATmega 328P processor also has a small EEPROM on-chip which can
@@ -1314,21 +1469,25 @@ read at boot time, allowing Arduino boards with Snek loaded to run
 stand-alone. These functions are used by Snekde to get and put
 programs to the device.
 
-``eeprom.write()``::
+
+=== `eeprom.write()`
 Reads characters from the console and writes them to eeprom until a ^D
 character is read.
 
-``eeprom.show()``::
-``eeprom.show(1)``::
+=== `eeprom.show()` / `eeprom.show(1)`
+
 Dumps the current contents of eeprom out to the console. If a
 parameter is passed to this function then a ^B character is sent
-before the text, anda ^C is sent afterwards. Snekde uses this feature
-to accurately capture the program text when the Get command is invoked.
+before the text, anda ^C is sent afterwards. `Snekde` uses this feature
+to accurately capture the program text when the Get command is
+invoked.
 
-``eeprom.load()``::
+=== `eeprom.load()`
+
 Re-parses the current eeprom contents, just as Snek does at boot time.
 
-``eeprom.erase()``::
+=== `eeprom.erase()`
+
 Erase the eeprom.
 
 [appendix]
@@ -1341,43 +1500,49 @@ supports ANSI terminals, and doesn't have any idea what the dimensions
 of the console are. Not all Snek implementations provide the curses
 functions.
 
-``curses.initscr()``::
-Puts the console into “visual” mode. Disables echo. Makes ``stdscr.getch()`` stop
+=== `curses.initscr()`
+
+Puts the console into “visual” mode. Disables echo. Makes `stdscr.getch()` stop
 waiting for newline.
 
-``curses.endwin()``::
-Resets the console back to “normal” mode. Enables echo. Makes
-``stdscr.getch()`` wait for newlines.
+=== `curses.endwin()`
 
-``curses.noecho()``::
-``curses.echo()``::
-``curses.cbreak()``::
-``curses.nocbreak()``::
+Resets the console back to “normal” mode. Enables echo. Makes
+`stdscr.getch()` wait for newlines.
+
+=== `curses.noecho()`, `curses.echo()`, `curses.cbreak()`, `curses.nocbreak()`
+
 All four of these functions are no-ops and are part of the API solely
 to make it more compatible with Python3 curses.
 
-``stdscr.nodelay(nodelay)``::
-If _nodelay_ is True, then ``stdscr.getch()`` will return -1 if there
-is no character waiting. If _nodelay_ is False, the ``stdscr.getch()``
+=== `stdscr.nodelay(` _nodelay_ `)`
+
+If _nodelay_ is True, then `stdscr.getch()` will return -1 if there
+is no character waiting. If _nodelay_ is False, the `stdscr.getch()`
 will block waiting for a character to return.
 
-``stdscr.erase()``::
+=== `stdscr.erase()`
+
 Erase the screen.
 
-``stdscr.addstr(row, column, string)``::
-Displays _string_ at _row_, _column_. _Row_ 0 is the top row of the
-screen. _Column_ 0 is the left column. The cursor is left at the end
+=== `stdscr.addstr(` _row_ `,` _column_ `,` _string_ `)`
+
+Displays _string_ at _row_, _column_. _Row_ `0` is the top row of the
+screen. _Column_ `0` is the left column. The cursor is left at the end
 of the string.
 
-``stdscr.move(row, column)``::
+=== `stdscr.move(` _row_ `,` _column_ `)`
+
 Moves the cursor to _row_, _column_ without displaying anything there.
 
-``stdscr.refresh()``::
+=== `stdscr.refresh()`
+
 Flushes any pending screen updates.
 
-``stdscr.getch()``::
+=== `stdscr.getch()`
+
 Reads a character from the console input. Returns a number indicating
 the character read, which can be converted to a string using
-``chr(c)``. If ``stdscr.nodelay(nodelay)`` was most recently called
-with _nodelay_ ``= True``, then ``stdscr.getch()`` will immediately
+`chr(c)`. If `stdscr.nodelay(nodelay)` was most recently called
+with _nodelay_ `= True`, then `stdscr.getch()` will immediately
 return -1 if no characters are pending.
