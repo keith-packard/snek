@@ -1,1 +1,1 @@
-Tests: upstream
+Test-Command: make SNEK=snek -C test check
