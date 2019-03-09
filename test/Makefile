@@ -12,6 +12,8 @@
 # General Public License for more details.
 #
 
+SNEK?=../posix/snek
+
 TESTS = \
 	andor.py \
 	list.py \
@@ -42,7 +44,7 @@ check:
 			echo "    ***************** python fail *********************"; \
 			exit=1; \
 		fi; \
-		if ../posix/snek $$TEST; then \
+		if $(SNEK) $$TEST; then \
 			echo "    snek pass"; \
 		else \
 			echo "    ***************** snek fail ***********************"; \
