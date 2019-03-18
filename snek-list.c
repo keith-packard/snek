@@ -82,18 +82,22 @@ snek_list_t *
 snek_list_append(snek_list_t *list, snek_list_t *append)
 {
 	snek_offset_t oldsize = list->size;
+	snek_offset_t append_size = append->size;
 
-	if (snek_list_readonly(list))
-		return NULL;
-
-	snek_stack_push_list(append);
-	list = snek_list_resize(list, list->size + append->size);
-	append = snek_stack_pop_list();
+	if (append == list)
+		append = NULL;
+	else
+		snek_stack_push_list(append);
+	list = snek_list_resize(list, list->size + append_size);
+	if (append)
+		append = snek_stack_pop_list();
+	else
+		append = list;
 
 	if (list)
 		memcpy((snek_poly_t *) snek_list_data(list) + oldsize,
 		       snek_list_data(append),
-		       append->size * sizeof(snek_poly_t));
+		       append_size * sizeof(snek_poly_t));
 	return list;
 }
 
