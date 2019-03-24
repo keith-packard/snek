@@ -17,7 +17,9 @@ start		: command @{ snek_parse_middle = false; }@ start
 command		: @{ snek_print_val = snek_interactive; }@ stat
 			@{
 				snek_code_t *code = snek_code_finish();
+				SNEK_CODE_HOOK_START
 				snek_poly_t p = snek_code_run(code);
+				SNEK_CODE_HOOK_STOP
 				if (snek_abort)
 					return parse_return_error;
 				if (snek_print_val && !snek_is_null(p)) {

@@ -339,6 +339,14 @@ extern uint32_t	snek_pool_size;
 extern uint8_t	snek_pool[SNEK_POOL] __attribute__((aligned(SNEK_ALLOC_ROUND)));
 #endif
 
+#ifndef SNEK_CODE_HOOK_START
+#define SNEK_CODE_HOOK_START
+#endif
+
+#ifndef SNEK_CODE_HOOK_STOP
+#define SNEK_CODE_HOOK_STOP
+#endif
+
 #include "snek-gram.h"
 
 typedef union {
