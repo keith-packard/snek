@@ -12,15 +12,17 @@
 # General Public License for more details.
 #
 
-led = 3
+led = 13
 
 def up():
     for i in range(0,1,0.001):
         setpower(i)
+        sleep(0.001)
 
 def down():
     for i in range(1,0,-0.001):
         setpower(i)
+        sleep(0.001)
 
 def blink():
     talkto(led)
