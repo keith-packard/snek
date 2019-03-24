@@ -247,7 +247,7 @@ class SnekDevice:
                     self.serial.xonxoff = True
                 if send_data:
                     self.serial.write(send_data.encode('utf-8'))
-        except serial.SerialException as e:
+        except (serial.SerialException, termios.error):
             self.interface.failed(self.device)
         finally:
             self.transmitter_thread = False
