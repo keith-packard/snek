@@ -67,7 +67,7 @@ snek-duino-$(SNEK_VERSION).hex: snek-duino-$(SNEK_VERSION)
 
 snek-duino-$(SNEK_VERSION): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino.map
+	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino-$(SNEK_VERSION).map
 
 snek-duino-install: snek-duino-install.in
 	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
@@ -80,13 +80,13 @@ set-fuse:
 load: snek-duino.hex
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:snek-duino.hex
 
-install: snek-duino-install snek-duino.hex snek-duino-install.1
+install: snek-duino-install snek-duino-$(SNEK_VERSION).hex snek-duino-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-duino-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
-	install snek-duino.hex $(DESTDIR)$(SHAREDIR)
+	install snek-duino-$(SNEK_VERSION).hex $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f snek-duino $(HEX) snek-duino.map snek-duino-install
+	rm -f snek-duino-$(SNEK_VERSION) $(HEX) snek-duino-$(SNEK_VERSION).map snek-duino-install
