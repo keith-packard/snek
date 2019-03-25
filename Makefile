@@ -22,7 +22,7 @@ ifeq ($(SNEK_OTHEROS),1)
 SNEK_OTHEROS_DIR=linux windows
 endif
 
-SUBDIRS = posix snek-duino snekde doc examples $(SNEK_OTHEROS_DIR)
+SUBDIRS = posix snek-duino metro-snek snekde doc examples $(SNEK_OTHEROS_DIR)
 
 all:
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done

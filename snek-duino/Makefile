@@ -24,14 +24,14 @@ SNEK_LOCAL_BUILTINS = snek-duino.builtin
 
 include ../snek-install.defs
 
-HEX=snek-duino.hex
+HEX=snek-duino-$(SNEK_VERSION).hex
 CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -g -fno-jump-tables $(SNEK_CFLAGS)
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
 	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7a0 \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
-	-Wl,-Map=snek-duino.map
+	-Wl,-Map=snek-duino-$(SNEK_VERSION).map
 
 ISP = usbtiny
 #ISP = avrisp2
@@ -62,12 +62,12 @@ ISP = usbtiny
 
 all: $(HEX) snek-duino-install
 
-snek-duino.hex: snek-duino
-	avr-objcopy -O ihex -R .eeprom snek-duino $@
+snek-duino-$(SNEK_VERSION).hex: snek-duino-$(SNEK_VERSION)
+	avr-objcopy -O ihex -R .eeprom snek-duino-$(SNEK_VERSION) $@
 
-snek-duino: $(SNEK_OBJ)
+snek-duino-$(SNEK_VERSION): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino.map
+	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino-$(SNEK_VERSION).map
 
 snek-duino-install: snek-duino-install.in
 	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
@@ -80,13 +80,13 @@ set-fuse:
 load: snek-duino.hex
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:snek-duino.hex
 
-install: snek-duino-install snek-duino.hex snek-duino-install.1
+install: snek-duino-install snek-duino-$(SNEK_VERSION).hex snek-duino-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-duino-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
-	install snek-duino.hex $(DESTDIR)$(SHAREDIR)
+	install snek-duino-$(SNEK_VERSION).hex $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f snek-duino $(HEX) snek-duino.map snek-duino-install
+	rm -f snek-duino-$(SNEK_VERSION) $(HEX) snek-duino-$(SNEK_VERSION).map snek-duino-install

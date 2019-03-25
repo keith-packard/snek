@@ -26,7 +26,9 @@ EXAMPLES = \
 	morse.py \
 	snek-bsd.py \
 	snek.py \
-	track-light.py
+	track-light.py \
+	badshuffle.py \
+	goodshuffle.py
 
 install:
 	install -d "$(DESTDIR)$(EXAMPLEDIR)"

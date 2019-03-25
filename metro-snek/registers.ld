@@ -1,0 +1,53 @@
+samd21_scs	= 0xe000e000;
+samd21_systick	= 0xe000e010;
+samd21_nvic	= 0xe000e100;
+samd21_scb	= 0xe000ed00;
+
+samd21_ahb_apb_a = 0x40000000;
+samd21_pac0	= 0x40000000;
+samd21_pm	= 0x40000400;
+samd21_sysctrl	= 0x40000800;
+samd21_gclk	= 0x40000c00;
+samd21_wdt	= 0x40001000;
+samd21_rtc	= 0x40001400;
+samd21_rtc	= 0x40001400;
+samd21_eic	= 0x40001800;
+
+samd21_ahb_apb_b = 0x41000000;
+samd21_pac1	= 0x41000000;
+samd21_dsu	= 0x41002000;
+samd21_nvmctrl	= 0x41004000;
+samd21_port_a	= 0x41004400;
+samd21_port_b	= 0x41004480;
+samd21_dmac	= 0x41004800;
+samd21_usb	= 0x41005000;
+samd21_mtb	= 0x41006000;
+
+samd21_ahb_apb_c = 0x42000000;
+samd21_pac2	= 0x42000000;
+samd21_evsys	= 0x42000400;
+samd21_sercom0	= 0x42000800;
+samd21_sercom1	= 0x42000c00;
+samd21_sercom2	= 0x42001000;
+samd21_sercom3	= 0x42001400;
+samd21_sercom4	= 0x42001800;
+samd21_sercom5	= 0x42001c00;
+samd21_tcc0	= 0x42002000;
+samd21_tcc1	= 0x42002400;
+samd21_tcc2	= 0x42002800;
+samd21_tc3	= 0x42002c00;
+samd21_tc4	= 0x42003000;
+samd21_tc5	= 0x42003400;
+samd21_tc6	= 0x42003800;
+samd21_tc7	= 0x42003c00;
+samd21_adc	= 0x42004000;
+samd21_ac	= 0x42004400;
+samd21_dac	= 0x42004800;
+samd21_ptc	= 0x42004c00;
+samd21_i2s	= 0x42005000;
+samd21_ac1	= 0x42005400;
+samd21_tcc3	= 0x42006000;
+
+samd21_aux0	= 0x00804000;
+samd21_aux1	= 0x00806000;
+samd21_serial	= 0x0080a000;

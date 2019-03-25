@@ -11,26 +11,23 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-
-led = 13
-
-def up():
-    for i in range(0,1,0.001):
-        setpower(i)
-        sleep(0.001)
-
-def down():
-    for i in range(1,0,-0.001):
-        setpower(i)
-        sleep(0.001)
-
-def blink():
-    talkto(led)
-    setpower(0)
-    on()
-    while True:
-        up()
-        down()
-
-blink()
-
+time.sleep, 1
+time.monotonic, 0
+talkto, 1
+listento, 1
+setpower, 1
+setleft, 0
+setright, 0
+onfor, 1
+on, 0
+off, 0
+read, 0
+stopall, 0
+eeprom.write, 0
+eeprom.show, -1
+eeprom.load, 0
+eeprom.erase, 0
+reset, 0
+random.seed, 1
+random.randrange, 1
+#include <ao_snek.h>
