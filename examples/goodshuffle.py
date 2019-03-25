@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import random
+import time
 
 random.seed(time.monotonic())
 
