@@ -3,7 +3,9 @@ Section: interpreters
 Priority: optional
 Maintainer: Keith Packard <keithp@keithp.com>
 Homepage: https://keithp.com
-Build-Depends: debhelper (>= 11), libreadline-dev, avr-libc, gcc-avr, python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf
+Build-Depends: debhelper (>= 11), libreadline-dev, avr-libc, gcc-avr,
+ binutils-arm-none-eabi, gcc-arm-none-eabi, libnewlib-nano-arm-none-eabi,
+ python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf
 Standards-Version: 4.3.0
 
 Package: snek

@@ -1,3 +1,10 @@
+snek (0.9-1) unstable; urgency=medium
+
+  * Version 0.9
+  * Metro-M0 express port
+
+ -- Keith Packard <keithp@keithp.com>  Sun, 24 Mar 2019 19:17:49 -0700
+
 snek (0.8-1) unstable; urgency=medium
 
   * Version 0.8
