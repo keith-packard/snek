@@ -14,7 +14,7 @@ for _ in range(100000):
     for i in range(narray):
         a[i] = i
     for i in range(narray):
-        j = random.randrange(narray)
+        j = i + random.randrange(narray - i)
         tmp = a[j]
         a[j] = a[i]
         a[i] = tmp
