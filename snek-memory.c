@@ -149,7 +149,10 @@ static void *pool_addr(snek_offset_t offset) {
 	if ((offset & (SNEK_ALLOC_ROUND-1)) != 0)
 		snek_panic("unaligned offset in pool_addr");
 #endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
 	return snek_pool + offset;
+#pragma GCC diagnostic pop
 }
 
 static snek_offset_t tag_byte(snek_offset_t offset) {
