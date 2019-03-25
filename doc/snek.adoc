@@ -1546,3 +1546,25 @@ the character read, which can be converted to a string using
 `chr(c)`. If `stdscr.nodelay(nodelay)` was most recently called
 with _nodelay_ `= True`, then `stdscr.getch()` will immediately
 return -1 if no characters are pending.
+
+[appendix]
+== Installing Snek on Arduino Duemilanova
+
+Snek fills the ATMega 328P flash completely leaving no space for the
+usual serial boot loader, so installing Snek requires a programming
+puck, such as the USBTiny device.
+
+Snek includes a Linux shell script to install the binary using
+'avrdude'.
+
+[appendix]
+== Installing Snek on Metro M0 Express
+
+The Adafruit Metro M0 Express board includes a boot loader which
+presents as a USB mass storage device with a FAT file system. You can
+get the board into this mode by connecting the board to your computer
+over USB and then pressing the reset button twice in quick
+succession.
+
+At this point, find the metro-snek-{version}.uf2 file and copy it to
+the CURRENT.UF2 file on the Metro M0 file system.
