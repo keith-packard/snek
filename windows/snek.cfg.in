@@ -18,7 +18,8 @@ pypi_wheels=pyserial==3.4
 	windows-curses==1.0
 
 files =../COPYING
-	../snek-duino/snek-duino.hex
+	../snek-duino/snek-duino-@SNEK_VERSION@.hex
+	../metro-snek/metro-snek-@SNEK_VERSION@.uf2
 
 [Build]
 installer_name=snek-windows-@SNEK_VERSION_DASH@.exe
