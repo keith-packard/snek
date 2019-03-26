@@ -3,8 +3,6 @@
 #
 #
 
-LDFLAGS=$(CFLAGS) -L$(TOPDIR)/samd21 -Wl,-T$(LDSCRIPT)  -n
-
 CC=$(ARM_CC)
 
 SAMD21_CFLAGS=-mlittle-endian -mcpu=cortex-m0 -mthumb\
@@ -55,9 +53,19 @@ SNEK_LOCAL_VPATH=$(AO_VPATH):../snek-bits
 
 SNEK_LOCAL_INC = \
 	ao.h \
+	ao_adc_samd21.h \
 	ao_arch.h \
 	ao_arch_funcs.h \
+	ao_flash.h \
+	ao_led.h \
+	ao_notask.h \
 	ao_pins.h \
+	ao_product.h \
+	ao_serial.h \
+	ao_snek.h \
+	ao_tcc_samd21.h \
+	ao_tc_samd21.h \
+	ao_usb.h \
 	samd21.h
 
 SNEK_LOCAL_SRC = \
@@ -81,7 +89,6 @@ ALTOS_SRC = \
 	ao_interrupt.c \
 	ao_led.c \
 	ao_timer.c \
-	ao_serial_samd21.c \
 	ao_usb_samd21.c \
 	ao_tcc_samd21.c \
 	ao_tc_samd21.c \
@@ -100,6 +107,7 @@ NEWLIB_PRINTF_CFLAGS =
 
 CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS) -I.
 LDSCRIPT=snek.ld
+LDFLAGS=$(CFLAGS) -Wl,-T$(LDSCRIPT)  -n
 
 SRC=$(ALTOS_SRC) $(SNEK_SRC)
 OBJ=$(SRC:.c=.o)
@@ -117,13 +125,16 @@ $(OBJ): $(SNEK_INC)
 distclean:	clean
 
 clean::
-	rm -f *.o *.elf *.bin *.uf2 *.map
+	rm -f *.o *.elf *.bin *.uf2 *.map ao_product.h
 
 newt-builtin.h: newt-builtin.py $(BUILTINS)
 	python3 newt-builtin.py -o $@ $(BUILTINS)
 
 newtram.h: newt-gram.ll
 	lola -o $@ newtram.ll
+
+ao_product.h: ../snek.defs Makefile
+	python3 ./make-product.py -v $(SNEK_VERSION) -p MetroSnek > $@
 
 install:
 

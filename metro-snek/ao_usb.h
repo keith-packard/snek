@@ -24,38 +24,17 @@
  */
 
 /* Put one character to the USB output queue */
-void
-ao_usb_putchar(char c);
+int
+ao_usb_putc(char c, FILE *file);
 
 /* Get one character from the USB input queue */
-char
-ao_usb_getchar(void);
-
-/* Poll for a charcter on the USB input queue.
- * returns AO_READ_AGAIN if none are available
- */
 int
-ao_usb_pollchar(void);
+ao_usb_getc(FILE *file);
 
 /* Flush the USB output queue */
-void
-ao_usb_flush(void);
+int
+ao_usb_flush(FILE *file);
 
-#if AO_USB_HAS_IN2
-void
-ao_usb_flush2(void);
-
-void
-ao_usb_putchar2(char c);
-#endif
-
-#if AO_USB_HAS_IN3
-void
-ao_usb_flush3(void);
-
-void
-ao_usb_putchar3(char c);
-#endif
 /* Enable the USB controller */
 
 void

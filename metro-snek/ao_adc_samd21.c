@@ -18,7 +18,6 @@
 uint16_t
 ao_adc_read(uint8_t channel)
 {
-	printf("intflag %x\n", samd21_adc.intflag);
 	samd21_adc.inputctrl = ((channel << SAMD21_ADC_INPUTCTRL_MUXPOS) |
 				(SAMD21_ADC_INPUTCTRL_MUXNEG_IOGND << SAMD21_ADC_INPUTCTRL_MUXNEG) |
 				(0 << SAMD21_ADC_INPUTCTRL_INPUTSCAN) |
@@ -28,7 +27,6 @@ ao_adc_read(uint8_t channel)
 	while ((samd21_adc.intflag & (1 << SAMD21_ADC_INTFLAG_RESRDY)) == 0)
 		;
 	uint16_t	result = samd21_adc.result;
-	printf("result %d\n", result);
 	return result;
 }
 

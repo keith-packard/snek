@@ -64,6 +64,13 @@ ao_snek_running(bool running)
 		ao_led_on(AO_LED_TX);
 }
 
+int _errno;
+
+int *__errno(void)
+{
+	return &_errno;
+}
+
 int
 main(void)
 {
@@ -72,7 +79,6 @@ main(void)
 	ao_led_init();
 	ao_led_on(AO_LED_TX);
 	ao_timer_init();
-	ao_serial_init();
 	ao_tcc_samd21_init();
 	ao_tc_samd21_init();
 	ao_adc_init();

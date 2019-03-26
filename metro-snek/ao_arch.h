@@ -26,13 +26,7 @@
  * Samd21 definitions and code fragments for AltOS
  */
 
-#ifndef AO_STACK_SIZE
-#define AO_STACK_SIZE	512
-#endif
-
 #define AO_LED_TYPE	uint16_t
-
-#define AO_PORT_TYPE	uint16_t
 
 #define ao_arch_naked_declare	__attribute__((naked))
 #define ao_arch_naked_define
@@ -72,25 +66,8 @@
 #define AO_SAMD21_NVIC_MED_PRIORITY	(2 << 6)
 #define AO_SAMD21_NVIC_LOW_PRIORITY	(3 << 6)
 
-extern const uint32_t	ao_radio_cal;
-
-void
-ao_adc_init(void);
-
 /* ADC maximum reported value */
 #define AO_ADC_MAX			4095
-
-#ifndef HAS_BOOT_LOADER
-#define HAS_BOOT_LOADER			1
-#endif
-
-#if HAS_BOOT_LOADER
-#define AO_BOOT_APPLICATION_BASE	((uint32_t *) 0x00001000)
-#ifndef AO_BOOT_APPLICATION_BOUND
-#define AO_BOOT_APPLICATION_BOUND	((uint32_t *) (0x00000000 + samd21_flash_size()))
-#endif
-#define AO_BOOT_LOADER_BASE		((uint32_t *) 0x00000000)
-#endif
 
 #endif /* _AO_ARCH_H_ */
 

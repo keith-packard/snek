@@ -708,11 +708,12 @@ _ao_usb_in_wait(void)
 		ao_sleep(&ao_usb_in_pending);
 }
 
-void
-ao_usb_flush(void)
+int
+ao_usb_flush(FILE *file)
 {
+	(void) file;
 	if (!ao_usb_running)
-		return;
+		return 0;
 
 	/* Anytime we've sent a character since
 	 * the last time we flushed, we'll need
@@ -726,14 +727,18 @@ ao_usb_flush(void)
 		_ao_usb_in_send();
 
 	ao_arch_release_interrupts();
+	return 0;
 }
 
-void
-ao_usb_putchar(char c)
+int
+ao_usb_putc(char c, FILE *file)
 {
+	(void) file;
 	if (!ao_usb_running)
-		return;
+		return (unsigned char) c;
 
+	if (c == '\n')
+		ao_usb_putc('\r', file);
 	ao_arch_block_interrupts();
 	_ao_usb_in_wait();
 
@@ -745,6 +750,7 @@ ao_usb_putchar(char c)
 		_ao_usb_in_send();
 
 	ao_arch_release_interrupts();
+	return (unsigned char) c;
 }
 #endif
 
@@ -801,9 +807,10 @@ _ao_usb_pollchar(void)
 	return c;
 }
 
-char
-ao_usb_getchar(void)
+int
+ao_usb_getc(FILE *file)
 {
+	(void) file;
 	int	c;
 
 	ao_arch_block_interrupts();
@@ -911,17 +918,11 @@ ao_usb_enable(void)
 void
 ao_usb_init(void)
 {
-#ifndef AO_USB_START_DISABLED
 	ao_usb_enable();
-#endif
 
 #if AO_USB_DEVICE_ID_SERIAL
 	ao_usb_serial_init();
 #endif
 
 	ao_usb_ep0_state = AO_USB_EP0_IDLE;
-
-#if USE_USB_STDIO
-	ao_add_stdio(_ao_usb_pollchar, ao_usb_putchar, ao_usb_flush);
-#endif
 }

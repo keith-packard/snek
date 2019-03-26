@@ -58,11 +58,14 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	return SNEK_NULL;
 }
 
+static int (*save_getc)(FILE *file);
+
 snek_poly_t
 snek_builtin_eeprom_load(void)
 {
 	snek_interactive = false;
 	ao_flash_read_init();
+	save_getc = __iob[0]->get;
 	__iob[0]->get = snek_eeprom_getchar;
 	return SNEK_NULL;
 }
@@ -82,6 +85,6 @@ snek_eeprom_getchar(FILE *stream)
 	if (c != 0xff)
 		return c;
 	snek_interactive = true;
-	__iob[0]->get = ao_getc;
-	return ao_getc(stream);
+	__iob[0]->get = save_getc;
+	return (*save_getc)(stream);
 }
