@@ -72,11 +72,13 @@ SNEK_LOCAL_SRC = \
 	ao_snek.c \
 	snek_altos.c \
 	snek_eeprom.c \
+	snek-math.c \
 	snek_gpio.c \
 	snek_io.c
 
 SNEK_LOCAL_BUILTINS = \
-	snek-altos.builtin
+	snek-altos.builtin \
+	../snek-math.builtin
 
 SNEK_ROOT = $(HOME)/src/snek
 

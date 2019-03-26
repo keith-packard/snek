@@ -17,14 +17,15 @@ SNEK_ROOT=..
 SNEK_LOCAL_SRC = \
 	snek-main.c \
 	snek-posix.c \
+	snek-math.c \
 	snek-curses.c
 
 SNEK_LOCAL_INC = snek-posix.h
-SNEK_LOCAL_BUILTINS = snek-posix.builtin
+SNEK_LOCAL_BUILTINS = snek-posix.builtin ../snek-math.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
-OPT?=-O0
+OPT?=-O99
 
 CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
 

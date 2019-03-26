@@ -79,7 +79,9 @@ def load_builtins(filename):
     f = open(filename)
     for line in f.readlines():
         line = line.rstrip()
-        if line[0] == '#':
+        if len(line) == 0:
+            pass
+        elif line[0] == '#':
             if len(line) > 1 and line[1] != ' ':
                 headers += [line]
         else:
