@@ -26,7 +26,7 @@ snek_list_data(snek_list_t *list)
 	return snek_pool_addr(list->data);
 }
 
-static snek_list_t *
+snek_list_t *
 snek_list_resize(snek_list_t *list, snek_offset_t size)
 {
 	if (list->alloc >= size) {
