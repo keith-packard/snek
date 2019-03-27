@@ -1,7 +1,49 @@
 #
-# AltOS build
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
 #
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
 #
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+
+SNEK_ROOT = ..
+
+SNEK_LOCAL_SRC = \
+	ao_snek.c \
+	snek_altos.c \
+	snek_eeprom.c \
+	snek-math.c \
+	snek_gpio.c \
+	snek_io.c
+
+SNEK_LOCAL_INC = \
+	ao.h \
+	ao_adc_samd21.h \
+	ao_arch.h \
+	ao_arch_funcs.h \
+	ao_flash.h \
+	ao_led.h \
+	ao_notask.h \
+	ao_pins.h \
+	ao_product.h \
+	ao_serial.h \
+	ao_snek.h \
+	ao_tcc_samd21.h \
+	ao_tc_samd21.h \
+	ao_usb.h \
+	samd21.h
+
+SNEK_LOCAL_BUILTINS = \
+	snek-altos.builtin \
+	$(SNEK_ROOT)/snek-math.builtin
+
+include $(SNEK_ROOT)/snek-install.defs
 
 CC=$(ARM_CC)
 
@@ -41,8 +83,6 @@ BIN=$(PROGNAME)-$(SNEK_VERSION).bin
 UF2=$(PROGNAME)-$(SNEK_VERSION).uf2
 MAP=$(PROGNAME)-$(SNEK_VERSION).map
 
-SNEK_LOCAL_VPATH=$(AO_VPATH):../snek-bits
-
 .SUFFIXES: .elf .bin .uf2
 
 .elf.bin:
@@ -51,41 +91,8 @@ SNEK_LOCAL_VPATH=$(AO_VPATH):../snek-bits
 .bin.uf2:
 	python3 ./uf2conv.py -b 0x2000 -c -o $@ $^
 
-SNEK_LOCAL_INC = \
-	ao.h \
-	ao_adc_samd21.h \
-	ao_arch.h \
-	ao_arch_funcs.h \
-	ao_flash.h \
-	ao_led.h \
-	ao_notask.h \
-	ao_pins.h \
-	ao_product.h \
-	ao_serial.h \
-	ao_snek.h \
-	ao_tcc_samd21.h \
-	ao_tc_samd21.h \
-	ao_usb.h \
-	samd21.h
-
-SNEK_LOCAL_SRC = \
-	ao_snek.c \
-	snek_altos.c \
-	snek_eeprom.c \
-	snek-math.c \
-	snek_gpio.c \
-	snek_io.c
-
-SNEK_LOCAL_BUILTINS = \
-	snek-altos.builtin \
-	../snek-math.builtin
-
-SNEK_ROOT = $(HOME)/src/snek
-
-include $(SNEK_ROOT)/snek.defs
-
 #
-# Common AltOS sources
+# AltOS sources
 #
 ALTOS_SRC = \
 	ao_interrupt.c \
@@ -139,5 +146,7 @@ ao_product.h: ../snek.defs Makefile
 	python3 ./make-product.py -v $(SNEK_VERSION) -p MetroSnek > $@
 
 install:
+	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 
 uninstall:

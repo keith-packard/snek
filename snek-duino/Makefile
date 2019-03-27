@@ -84,9 +84,9 @@ install: snek-duino-install snek-duino-$(SNEK_VERSION).hex snek-duino-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-duino-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
-	install snek-duino-$(SNEK_VERSION).hex $(DESTDIR)$(SHAREDIR)
+	install -m 0644 snek-duino-$(SNEK_VERSION).hex $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
-	install snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
 	rm -f snek-duino-$(SNEK_VERSION) $(HEX) snek-duino-$(SNEK_VERSION).map snek-duino-install
