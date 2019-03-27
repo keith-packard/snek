@@ -136,7 +136,8 @@ ao_fifo_insert(struct ao_fifo *f, char c)
 static inline char
 ao_fifo_remove(struct ao_fifo *f)
 {
-	char	c = f->fifo[f->remove++];
+	char	c = f->fifo[f->remove];
+	f->remove = (f->remove + 1) & (AO_FIFO_SIZE - 1);
 	f->count--;
 	return c;
 }
