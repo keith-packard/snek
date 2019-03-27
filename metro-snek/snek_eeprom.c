@@ -24,7 +24,7 @@ snek_builtin_eeprom_write(void)
 
 	ao_flash_write_init();
 	for (;;) {
-		c = getchar();
+		c = SNEK_IO_GETC(stdin);
 		if (c == '\r')
 			c = '\n';
 		if (c == ('d' & 0x1f))
