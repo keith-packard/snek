@@ -21,8 +21,8 @@ math.fabs, 1
 math.factorial, 1
 math.floor, 1
 math.fmod, 2
-# math.frexp, 1
-# math.fsum, 1
+math.frexp, 1
+math.fsum, 1
 math.gcd, 2
 math.isclose, -1
 rel_tol,-2
@@ -31,10 +31,10 @@ math.isfinite, 1
 math.isinf, 1
 math.isnan, 1
 math.ldexp, 2
-# math.modf, 1
+math.modf, 1
 math.remainder, 2
 math.trunc, 1
-math.round, 1
+round, 1
 #
 # Power and logarithmic functions
 #
@@ -46,7 +46,6 @@ math.log1p, 1
 math.log2, 1
 math.log10, 1
 math.pow, 2
-math.cbrt, 1
 #
 # Trigonometric functions
 #

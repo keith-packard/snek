@@ -20,6 +20,18 @@
 #define m1(name,func) snek_poly_t make_builtin(name)(snek_poly_t a) { return snek_float_to_poly(func(snek_poly_to_float(a))); }
 #define m2(name,func) snek_poly_t make_builtin(name)(snek_poly_t a, snek_poly_t b) { return snek_float_to_poly(func(snek_poly_to_float(a), snek_poly_to_float(b))); }
 
+static snek_poly_t
+make_tuple(float a, float b)
+{
+	snek_list_t	*tuple = snek_list_make(2, snek_list_tuple);
+	if (!tuple)
+		return SNEK_NULL;
+	snek_poly_t	*data = snek_list_data(tuple);
+	data[0] = snek_float_to_poly(a);
+	data[1] = snek_float_to_poly(b);
+	return snek_list_to_poly(tuple);
+}
+
 m1(math_ceil, ceilf)
 m2(math_copysign, copysignf)
 m1(math_fabs, fabsf)
@@ -38,8 +50,112 @@ factorialf(float f)
 m1(math_factorial, factorialf)
 m1(math_floor, floorf)
 m2(math_fmod, fmodf)
-/* frexp */
-/* fsum */
+
+snek_poly_t
+snek_builtin_math_frexp(snek_poly_t a) { int exp; float f = frexpf(snek_poly_to_float(a), &exp); return make_tuple(f, exp); }
+
+static float
+getf(snek_list_t *partials, snek_offset_t o) {
+	return snek_poly_to_float(snek_list_data(partials)[o]);
+}
+
+static void
+putf(snek_list_t *partials, snek_offset_t o, float v) {
+	snek_list_data(partials)[o] = snek_float_to_poly(v);
+}
+
+/*
+ * Borrowed from the python3 implementation, this keeps a
+ * full-precision sum by storing partial sums in an array.  Note the
+ * use of 'volatile' to ensure that the compiler doesn't optimize away
+ * some operations.
+ */
+snek_poly_t
+snek_builtin_math_fsum(snek_poly_t a)
+{
+	snek_list_t *l = snek_poly_to_list(a);
+	if (!l)
+		return SNEK_NULL;
+
+	snek_offset_t size = l->size;
+	snek_offset_t o = 0;
+	snek_offset_t s = 1;
+	if (snek_list_type(l) == snek_list_dict) {
+		o++;
+		s = 2;
+	}
+	float t, x, y;
+	float sum = 0.0f;
+	snek_offset_t i, j, n, m;
+	n = 0;
+	m = 4;
+	snek_stack_push_list(l);
+	snek_list_t *partials = snek_list_make(m, snek_list_list);
+	l = snek_stack_pop_list();
+	if (!partials)
+		return SNEK_NULL;
+
+	volatile float hi, yr, lo;
+
+	for (o = 0; o < size; o += s) {
+		x = getf(l, o);
+
+		i = 0;
+		for (j = 0; j < n; j++) {
+			y = getf(partials, j);
+			if (fabsf(x) < fabsf(y)) {
+				t = x;
+				x = y;
+				y = t;
+			}
+			hi = x + y;
+			yr = hi - x;
+			lo = y - yr;
+			if (lo != 0.0f)
+				putf(partials, i++, lo);
+			x = hi;
+		}
+
+		n = i;
+		if (x != 0.0f) {
+			if (n >= m) {
+				snek_stack_push_list(l);
+				partials = snek_list_resize(partials, (m = n + 1));
+				l = snek_stack_pop_list();
+				if (!partials)
+					return SNEK_NULL;
+			}
+			putf(partials, n++, x);
+		}
+
+	}
+
+	hi = 0.0f;
+	if (n > 0) {
+		hi = getf(partials, --n);
+		while (n > 0) {
+			x = hi;
+			y = getf(partials, --n);
+			hi = x + y;
+			yr = hi  - x;
+			lo = y - yr;
+			if (lo != 0.0f)
+				break;
+		}
+
+		if (n > 0 && ((lo < 0.0f && getf(partials, n-1) < 0.0f) ||
+			      (lo > 0.0f && getf(partials, n-1) > 0.0))) {
+			y = lo * 2.0f;
+			x = hi + y;
+			yr = x - hi;
+			if (y == yr)
+				hi = x;
+		}
+	}
+	sum = hi;
+
+	return snek_float_to_poly(sum);
+}
 
 static float
 gcdf(float af, float bf)
@@ -92,10 +208,11 @@ m1(math_isfinite, isfinite)
 m1(math_isinf, isinff)
 m1(math_isnan, isnanf)
 m2(math_ldexp, ldexpf)
-/* modf */
+snek_poly_t
+snek_builtin_math_modf(snek_poly_t a) { float i; float f = modff(snek_poly_to_float(a), &i); return make_tuple(f, i); }
 m2(math_remainder, remainderf)
 m1(math_trunc, truncf)
-m1(math_round, roundf)
+m1(round, roundf)
 
 m1(math_exp, expf)
 m1(math_expm1, expm1f)
@@ -143,6 +260,3 @@ _lgammaf(float f)
 }
 
 m1(math_lgamma, _lgammaf);
-
-m1(math_cbrt, cbrtf)
-
