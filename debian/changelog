@@ -1,3 +1,12 @@
+snek (0.91-1) unstable; urgency=medium
+
+  * Version 0.91
+  * Math functions added to metro-snek and host snek
+  * Fix USB input queue bug on metro-snek
+  * Get snekde working with metro-snek
+
+ -- Keith Packard <keithp@keithp.com>  Wed, 27 Mar 2019 10:11:13 -0700
+
 snek (0.9-1) unstable; urgency=medium
 
   * Version 0.9
