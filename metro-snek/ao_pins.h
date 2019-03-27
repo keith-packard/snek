@@ -29,7 +29,7 @@
 #define AO_APBA_PRESCALER	1
 
 #define HAS_SERIAL_0		1
-#define USE_SERIAL_0_STDIN	1
+#define USE_SERIAL_0_STDIN	0
 #define SERIAL_0_PA10_PA11	1
 
 #define HAS_SPI_1		0
@@ -42,6 +42,7 @@
 #define SPI_2_OSPEEDR		STM_OSPEEDR_10MHz
 
 #define HAS_USB			1
+#define USE_USB_STDIO		0
 #define AO_USB_OUT_HOOK		1
 #define USE_USB_FIFO		1
 #define HAS_BEEP		0
@@ -242,11 +243,13 @@
 #define AO_M25_SPI_CS_MASK	(1 << 13)
 #define AO_M25_SPI_BUS		AO_SPI_PB23_PB03_PB22
 
-#define SNEK_GETC()		ao_snek_getchar(stdin)
+#define SNEK_GETC()		getc(stdin)
 #define SNEK_POOL		(16 * 1024)
 
 #define AO_TCC_PERIOD		65536
 #define SNEK_PWM_MAX		(AO_TCC_PERIOD-1)
+
+#define SNEK_IO_GETC(file)	ao_usb_getc(file)
 
 void
 ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t c, uint16_t value);
@@ -257,7 +260,7 @@ ao_snek_clr_pwm(void *gpio, uint8_t pin);
 #define RX_LINEBUF	132
 
 int
-ao_snek_getchar(FILE *stream);
+ao_snek_getc(FILE *stream);
 
 void
 snek(void);

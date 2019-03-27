@@ -20,7 +20,7 @@ SNEK_LOCAL_SRC = \
 	snek_eeprom.c \
 	snek-math.c \
 	snek_gpio.c \
-	snek_io.c
+	snek-io.c
 
 SNEK_LOCAL_INC = \
 	ao.h \

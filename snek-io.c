@@ -12,60 +12,61 @@
  * General Public License for more details.
  */
 
-#include <ao.h>
-#include <ao_snek.h>
 #include "snek.h"
+#include "snek-io.h"
+
+#ifndef SNEK_IO_PUTS
+#define SNEK_IO_PUTS(s)	fputs(s, stdout)
+#endif
+#ifndef SNEK_IO_PUTC
+#define SNEK_IO_PUTC(c) putchar(c)
+#endif
+#ifndef SNEK_IO_LINEBUF
+#define SNEK_IO_LINEBUF	132
+#endif
 
 static bool	raw_mode;
-static char	buf[RX_LINEBUF];
+static char	buf[SNEK_IO_LINEBUF];
 static uint8_t	used, avail;
 
-void
-ao_usb_out_hook(uint8_t *hook_buf, uint16_t len)
-{
-	uint16_t i;
-
-	for (i = 0; i < len; i++)
-		if (hook_buf[i] == ('c' & 0x1f))
-			snek_abort = true;
-}
-
 static void
-ao_snek_backspace(void)
+snek_io_backspace(void)
 {
 	avail--;
 	if (!raw_mode)
-		fputs("\b \b", stdout);
+		SNEK_IO_PUTS("\b \b");
 }
 
 static void
-ao_snek_addc(char c)
+snek_io_addc(char c)
 {
 	buf[avail++] = c;
 	if (!raw_mode)
-		putchar(c);
+		SNEK_IO_PUTC(c);
 }
 
 int
-ao_snek_getchar(FILE *stream)
+snek_io_getc(FILE *stream)
 {
+	(void) stream;
 	if (used == avail) {
-	restart:
+	restart_cooked:
 		if (snek_parse_middle)
-			putchar('+');
+			SNEK_IO_PUTC('+');
 		else
-			putchar('>');
-		putchar(' ');
+			SNEK_IO_PUTC('>');
+		SNEK_IO_PUTC(' ');
+	restart_raw:
 		used = avail = 0;
 		for (;;) {
 			fflush(stdout);
-			uint8_t c = getc(stream);
+			uint8_t c = SNEK_IO_GETC(stream);
 
 			switch (c)
 			{
 			case '\r':
 			case '\n':
-				ao_snek_addc('\n');
+				snek_io_addc('\n');
 				fflush(stdout);
 				break;
 			case 'n' & 0x1f:
@@ -75,25 +76,27 @@ ao_snek_getchar(FILE *stream)
 				raw_mode = false;
 				continue;
 			case 'c' & 0x1f:
-				fputs("^C\n", stdout);
 				snek_abort = false;
-				goto restart;
+				if (raw_mode)
+					goto restart_raw;
+				SNEK_IO_PUTS("^C\n");
+				goto restart_cooked;
 			case 'h' & 0x1f:
 			case 0x7f:
 				if (avail)
-					ao_snek_backspace();
+					snek_io_backspace();
 				continue;
 			case 'u' & 0x1f:
 				while (avail)
-					ao_snek_backspace();
+					snek_io_backspace();
 				continue;
 			case '\t':
 				c = ' ';
 				/* fall through ... */
 			default:
 				if (c >= (uint8_t)' ') {
-					if (avail < RX_LINEBUF-1)
-						ao_snek_addc(c);
+					if (avail < SNEK_IO_LINEBUF-1)
+						snek_io_addc(c);
 				}
 				continue;
 			}

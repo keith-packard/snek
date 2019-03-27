@@ -17,9 +17,8 @@
  */
 
 #include "ao.h"
+#include "snek-io.h"
 
-uint8_t ao_stdin_ready;
-
-static FILE __stdio = FDEV_SETUP_STREAM(ao_usb_putc, ao_usb_getc, ao_usb_flush, _FDEV_SETUP_RW);
+static FILE __stdio = FDEV_SETUP_STREAM(ao_usb_putc, snek_io_getc, ao_usb_flush, _FDEV_SETUP_RW);
 
 FILE *const __iob[3] = { &__stdio, &__stdio, &__stdio };

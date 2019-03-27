@@ -64,6 +64,16 @@ ao_snek_running(bool running)
 		ao_led_on(AO_LED_TX);
 }
 
+void
+ao_usb_out_hook(uint8_t *hook_buf, uint16_t len)
+{
+	uint16_t i;
+
+	for (i = 0; i < len; i++)
+		if (hook_buf[i] == ('c' & 0x1f))
+			snek_abort = true;
+}
+
 int _errno;
 
 int *__errno(void)

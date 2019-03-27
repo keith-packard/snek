@@ -119,6 +119,19 @@ snek_eeprom_getchar(FILE *stream);
 char
 snek_uart_getch(void);
 
+void
+_snek_uart_puts(const char *PROGMEM string);
+
+void
+snek_uart_putch(char c);
+
+#define snek_uart_puts(string) ({ static const char PROGMEM __string__[] = (string); _snek_uart_puts(__string__); })
+
+#define SNEK_IO_PUTS(s) snek_uart_puts(s)
+#define SNEK_IO_LINEBUF 80
+#define SNEK_IO_PUTC(c) snek_uart_putch(c)
+#define SNEK_IO_GETC(s) snek_uart_getch()
+
 extern FILE snek_duino_file;
 
 #endif /* _SNEK_DUINO_H_ */

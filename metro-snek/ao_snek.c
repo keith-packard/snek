@@ -26,6 +26,7 @@ ao_snek(void)
 	ao_snek_port_init();
 	snek_builtin_eeprom_load();
 	printf("Welcome to snek " SNEK_VERSION "\n");
+	fflush(stdout);
 	ao_snek_running(false);
 	for (;;) {
 		snek_interactive = true;

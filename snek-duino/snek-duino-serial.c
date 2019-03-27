@@ -29,7 +29,6 @@ typedef volatile struct uart_ring {
 static uart_ring_t	rx_ring, tx_ring;
 static volatile uint8_t rx_flow;
 static volatile uint8_t	tx_flow;
-static bool 		raw_mode;
 
 /* Start at EMPTY state so we send a ^Q at startup time */
 #define FLOW_EMPTY	0
@@ -140,12 +139,6 @@ ISR(USART_RX_vect)
 	case 'c' & 0x1f:
 		snek_abort = true;
 		break;
-	case 'n' & 0x1f:
-		raw_mode = true;
-		return;
-	case 'o' & 0x1f:
-		raw_mode = false;
-		return;
 	case 's' & 0x1f:
 		tx_flow = true;
 		return;
@@ -176,9 +169,7 @@ snek_uart_getch(void)
 	return c;
 }
 
-#define RX_LINEBUF	80
-
-static void
+void
 snek_uart_putch(char c)
 {
 	if (c == '\n')
@@ -202,82 +193,12 @@ snek_uart_putchar(char c, FILE *stream)
 	return 0;
 }
 
-static void
+void
 _snek_uart_puts(const char *PROGMEM string)
 {
 	char c;
 	while ((c = pgm_read_byte(string++)))
 		snek_uart_putch(c);
-}
-
-#define snek_uart_puts(string) ({ static const char PROGMEM __string__[] = (string); _snek_uart_puts(__string__); })
-
-static char buf[RX_LINEBUF];
-static uint8_t used, avail;
-
-static void
-snek_uart_backspace(void)
-{
-	avail--;
-	if (!raw_mode)
-		snek_uart_puts("\b \b");
-}
-
-static void
-snek_uart_addc(char c)
-{
-	buf[avail++] = c;
-	if (!raw_mode)
-		snek_uart_putch(c);
-}
-
-int
-snek_uart_getchar(FILE *stream)
-{
-	(void) stream;
-	if (used == avail) {
-	restart:
-		if (snek_parse_middle)
-			snek_uart_putch('+');
-		else
-			snek_uart_putch('>');
-		snek_uart_putch(' ');
-		used = avail = 0;
-		for (;;) {
-			uint8_t c = snek_uart_getch();
-
-			switch (c)
-			{
-			case '\r':
-			case '\n':
-				snek_uart_addc('\n');
-				break;
-			case 'c' & 0x1f:
-				snek_uart_puts("^C\n");
-				snek_abort = false;
-				goto restart;
-			case 'h' & 0x1f:
-			case 0x7f:
-				if (avail)
-					snek_uart_backspace();
-				continue;
-			case 'u' & 0x1f:
-				while (avail)
-					snek_uart_backspace();
-				continue;
-			case '\t':
-				c = ' ';
-			default:
-				if (c >= (uint8_t)' ') {
-					if (avail < RX_LINEBUF-1)
-						snek_uart_addc(c);
-				}
-				continue;
-			}
-			break;
-		}
-	}
-	return buf[used++];
 }
 
 void
