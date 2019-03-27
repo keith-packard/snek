@@ -243,7 +243,7 @@ class SnekDevice:
                 if interrupt:
                     self.serial.reset_output_buffer()
                     self.serial.xonxoff = False
-                    self.serial.write(b'\x03')
+                    self.serial.write(b'\x0f\x03\x0e')
                     self.serial.xonxoff = True
                 if send_data:
                     self.serial.write(send_data.encode('utf-8'))
@@ -263,8 +263,8 @@ class SnekDevice:
             self.write_queue = data
         self.interface.cv.notify()
 
-    def command(self, data):
-        self.write("\x0e" + data)
+    def command(self, data, intr='\x03'):
+        self.write("\x0e" + intr + data)
 
 class EditWin:
     """Editable text object"""
@@ -941,7 +941,7 @@ def snekde_put_text():
         return
     snek_device.command("eeprom.write()\n")
     snek_device.write(snek_edit_win.text + '\x04')
-    snek_device.command("reset()\n")
+    snek_device.command("reset()\n", intr='')
     snek_edit_win.changed = False
 
 def snekde_load_file():
@@ -1016,7 +1016,7 @@ def run():
                             data = data[1:]
                         else:
                             break
-                    snek_device.command(data)
+                    snek_device.command(data,intr='')
         prev_exit = False
 
 
