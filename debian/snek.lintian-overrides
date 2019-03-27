@@ -1,2 +1,2 @@
 snek: pkg-config-unavailable-for-cross-compilation usr/lib/pkgconfig/snek.pc
-snek: executable-not-elf-or-script usr/share/snek/snek-duino.hex
+
