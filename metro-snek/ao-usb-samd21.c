@@ -17,8 +17,8 @@
  */
 
 #include "ao.h"
-#include "ao_usb.h"
-#include "ao_product.h"
+#include "ao-usb.h"
+#include "ao-product.h"
 
 #ifndef AO_POWER_MANAGEMENT
 #define AO_POWER_MANAGEMENT	0

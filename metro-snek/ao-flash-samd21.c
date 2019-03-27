@@ -17,7 +17,7 @@
  */
 
 #include <ao.h>
-#include <ao_flash.h>
+#include <ao-flash.h>
 
 /* Erase rows are four pages */
 static uint32_t

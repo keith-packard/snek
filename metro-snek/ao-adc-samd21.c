@@ -13,7 +13,7 @@
  */
 
 #include <ao.h>
-#include <ao_adc_samd21.h>
+#include <ao-adc-samd21.h>
 
 uint16_t
 ao_adc_read(uint8_t channel)

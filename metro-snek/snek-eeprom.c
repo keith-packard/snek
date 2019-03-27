@@ -13,8 +13,8 @@
  */
 
 #include <ao.h>
-#include <ao_snek.h>
-#include <ao_flash.h>
+#include <ao-snek.h>
+#include <ao-flash.h>
 #include <snek.h>
 
 snek_poly_t

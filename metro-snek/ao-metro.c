@@ -14,10 +14,10 @@
 
 #include <ao.h>
 #include <snek.h>
-#include <ao_snek.h>
-#include <ao_tcc_samd21.h>
-#include <ao_tc_samd21.h>
-#include <ao_adc_samd21.h>
+#include <ao-snek.h>
+#include <ao-tcc-samd21.h>
+#include <ao-tc-samd21.h>
+#include <ao-adc-samd21.h>
 
 void
 ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t config, uint16_t value)

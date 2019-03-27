@@ -15,28 +15,28 @@
 SNEK_ROOT = ..
 
 SNEK_LOCAL_SRC = \
-	ao_snek.c \
-	snek_altos.c \
-	snek_eeprom.c \
+	ao-snek.c \
+	snek-altos.c \
+	snek-eeprom.c \
 	snek-math.c \
-	snek_gpio.c \
+	snek-gpio.c \
 	snek-io.c
 
 SNEK_LOCAL_INC = \
 	ao.h \
-	ao_adc_samd21.h \
-	ao_arch.h \
-	ao_arch_funcs.h \
-	ao_flash.h \
-	ao_led.h \
-	ao_notask.h \
-	ao_pins.h \
-	ao_product.h \
-	ao_serial.h \
-	ao_snek.h \
-	ao_tcc_samd21.h \
-	ao_tc_samd21.h \
-	ao_usb.h \
+	ao-adc-samd21.h \
+	ao-arch.h \
+	ao-arch-funcs.h \
+	ao-flash.h \
+	ao-led.h \
+	ao-notask.h \
+	ao-pins.h \
+	ao-product.h \
+	ao-serial.h \
+	ao-snek.h \
+	ao-tcc-samd21.h \
+	ao-tc-samd21.h \
+	ao-usb.h \
 	samd21.h
 
 SNEK_LOCAL_BUILTINS = \
@@ -95,19 +95,19 @@ MAP=$(PROGNAME)-$(SNEK_VERSION).map
 # AltOS sources
 #
 ALTOS_SRC = \
-	ao_interrupt.c \
-	ao_led.c \
-	ao_timer.c \
-	ao_usb_samd21.c \
-	ao_tcc_samd21.c \
-	ao_tc_samd21.c \
-	ao_adc_samd21.c \
-	ao_flash_samd21.c \
-	ao_stdio.c \
-	ao_notask.c \
-	ao_product.c \
-	ao_panic.c \
-	ao_metro.c
+	ao-interrupt.c \
+	ao-led.c \
+	ao-timer.c \
+	ao-usb-samd21.c \
+	ao-tcc-samd21.c \
+	ao-tc-samd21.c \
+	ao-adc-samd21.c \
+	ao-flash-samd21.c \
+	ao-stdio.c \
+	ao-notask.c \
+	ao-product.c \
+	ao-panic.c \
+	ao-metro.c
 
 PRODUCT=MetroSnek-v0.0
 IDPRODUCT=0x000a
@@ -134,7 +134,7 @@ $(OBJ): $(SNEK_INC)
 distclean:	clean
 
 clean::
-	rm -f *.o *.elf *.bin *.uf2 *.map ao_product.h
+	rm -f *.o *.elf *.bin *.uf2 *.map ao-product.h
 
 newt-builtin.h: newt-builtin.py $(BUILTINS)
 	python3 newt-builtin.py -o $@ $(BUILTINS)
@@ -142,7 +142,7 @@ newt-builtin.h: newt-builtin.py $(BUILTINS)
 newtram.h: newt-gram.ll
 	lola -o $@ newtram.ll
 
-ao_product.h: ../snek.defs Makefile
+ao-product.h: ../snek.defs Makefile
 	python3 ./make-product.py -v $(SNEK_VERSION) -p MetroSnek > $@
 
 install:

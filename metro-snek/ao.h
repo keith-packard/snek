@@ -24,10 +24,10 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <ao_pins.h>
-#include <ao_arch.h>
-#include <ao_notask.h>
-#include <ao_serial.h>
+#include <ao-pins.h>
+#include <ao-arch.h>
+#include <ao-notask.h>
+#include <ao-serial.h>
 
 #define AO_MAX_VERSION		8
 
@@ -94,11 +94,11 @@ ao_clock_resume(void);
  */
 
 #if LEDS_AVAILABLE || HAS_LED
-#include <ao_led.h>
+#include <ao-led.h>
 #endif
 
 #if HAS_USB
-#include <ao_usb.h>
+#include <ao-usb.h>
 #endif
 
 /*
@@ -178,6 +178,6 @@ ao_fifo_barely(struct ao_fifo *f)
 	return f->count <= AO_FIFO_SIZE * 1 / 4;
 }
 
-#include <ao_arch_funcs.h>
+#include <ao-arch-funcs.h>
 
 #endif /* _AO_H_ */

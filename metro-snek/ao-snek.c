@@ -13,7 +13,7 @@
  */
 
 #include "ao.h"
-#include "ao_snek.h"
+#include "ao-snek.h"
 #include "snek.h"
 #include <setjmp.h>
 
