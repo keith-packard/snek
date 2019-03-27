@@ -92,7 +92,6 @@ main (int argc, char **argv)
 	} else {
 		snek_windows_input = stdin;
 		snek_interactive = true;
-		snek_file = "<stdin>";
 		printf("Welcome to Snek version %s\n", SNEK_VERSION);
 	}
 

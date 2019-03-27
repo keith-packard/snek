@@ -16,7 +16,7 @@
 
 uint8_t snek_current_indent;
 
-char *snek_file;
+char *snek_file = "<stdin>";
 uint8_t snek_ignore_nl;
 
 snek_offset_t snek_lex_line = 1;
