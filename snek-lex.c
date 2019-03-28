@@ -16,7 +16,7 @@
 
 uint8_t snek_current_indent;
 
-char *snek_file;
+char *snek_file = "<stdin>";
 uint8_t snek_ignore_nl;
 
 snek_offset_t snek_lex_line = 1;
@@ -536,6 +536,31 @@ snek_lex(void)
 		case SNEK_BUILTIN_True:
 			snek_token_val.number = 1.0f;
 			RETURN(NUMBER);
+#ifdef SNEK_BUILTIN_math_pi
+		case SNEK_BUILTIN_math_pi:
+			snek_token_val.number = M_PI;
+			RETURN(NUMBER);
+#endif
+#ifdef SNEK_BUILTIN_math_e
+		case SNEK_BUILTIN_math_e:
+			snek_token_val.number = M_E;
+			RETURN(NUMBER);
+#endif
+#ifdef SNEK_BUILTIN_math_tau
+		case SNEK_BUILTIN_math_tau:
+			snek_token_val.number = 2 * M_PI;
+			RETURN(NUMBER);
+#endif
+#ifdef SNEK_BUILTIN_math_inf
+		case SNEK_BUILTIN_math_inf:
+			snek_token_val.number = INFINITY;
+			RETURN(NUMBER);
+#endif
+#ifdef SNEK_BUILTIN_math_nan
+		case SNEK_BUILTIN_math_nan:
+			snek_token_val.number = NAN;
+			RETURN(NUMBER);
+#endif
 		}
 
 		snek_token_val.id = id;

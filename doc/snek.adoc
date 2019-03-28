@@ -1400,9 +1400,141 @@ Generates a random integer between 0 and max-1 inclusive.
 	3
 
 [appendix]
-== Arduino Built-in Functions
+== Math Functions
 
-The Arduino version of Snek has a range of functions designed to make
+The Snek math functions offer the same functions as the Python3 math
+package, although at single precision instead of double
+precision. These functions are optional, but if any are provided, all
+are provided and follow the definitions here.
+
+=== Number-theoretic and representation functions
+
+math.ceil(x)::
+Return the ceiling of x, the smallest integer greater than or equal to x.
+math.copysign(x,y)::
+Return a number with the magnitude (absolute value) of x but the sign of y.
+math.fabs(x)::
+Return the absolute value of x
+math.factorial(x)::
+Return the factorial of x.
+math.floor(x)::
+Return the floor of x, the largest integer less than or equal to x.
+math.fmod(x,y)::
+Return the modulus of x and y: x - trunc(x/y) * y
+math.frexp(x)::
+Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 <= abs(frac) < 1, and x = frac * pow(2,exp).
+math.fsum(l)::
+Returns the sum of the numbers in l, which must be a list or tuple.
+math.gcd(x,y)::
+Return the greatest common divisor of x and y.
+math.isclose(x,y,rel_val=1e-6,abs_val=0.0)::
+Returns a boolean indicating whether x and y are 'close' together. This is defined as
+abs(x-y) <= max(rel_tol * max(abs(a), abs(b)), abs_tol).
+math.isfinite(x)::
+Returns True if x is finite else False
+math.isinf::
+Returns True if x is infinite else False
+math.isnan::
+Returns True if x is not a number else False
+math.ldexp(x,y)::
+Returns x * pow(2,y)
+math.modf(x)::
+Returns (x - trunc(x), trunc(x))
+math.remainder(x,y)::
+Returns the remainder of x and y: x - round(x/y) * y
+math.trunc::
+Returns the truncation of x, the integer closest to x which is no further from zero than x.
+round(x)::
+Returns the integer nearest x, with values midway between two integers rounding away from zero.
+
+=== Power and logarithmic functions
+
+math.exp(x)::
+Returns pow(e,x)
+math.expm1(x)::
+Returns exp(x)-1
+math.exp2(x)::
+Returns pow(2,x)
+math.log(x)::
+Returns the natural logarithm of x.
+math.log1p(x)::
+Returns log(x+1)
+math.log2(x)::
+Returns the log base 2 of x.
+math.log10(x)::
+Returns the log base 10 of x.
+math.pow(x,y)::
+Returns x raised to the y^th^ power.
+
+=== Trigonometric functions
+
+math.acos(x)::
+Returns the arc cosine of x in the range of 0 \<= acos(x) \<= π.
+math.asin(x)::
+Returns the arc sine of x in the range of -π/2 \<= asin(x) \<= π/2.
+math.atan(x)::
+Returns the arc tangent of x in the range of -π/2 \<= atan(x) \<= π/2.
+math.atan2(y,x)::
+Returns the arc tangent of y/x in the range of -π \<= atan2(y,x) \<= π.
+math.cos(x)::
+Returns the cosine of x.
+math.hypot(x,y)::
+Returns sqrt(x*x + y*y).
+math.sin(x)::
+Returns the sine of x.
+math.tan(x)::
+Returns the tangent of x.
+
+=== Angular conversion
+
+math.degrees(x)::
+Returns x * 180/π.
+math.radians(x)::
+Returns x * π/180.
+
+=== Hyperbolic functions
+
+math.acosh(x)::
+Returns the inverse hyperbolic cosine of x.
+math.asinh(x)::
+Returns the inverse hyperbolic sine of x.
+math.atanh(x)::
+Returns the inverse hyperbolic tangent of x.
+math.cosh(x)::
+Returns the hyperbolic cosine of x: (exp(x) + exp(-x)) / 2
+math.sinh(x)::
+Returns the hyperbolic sine of x: (exp(x) - exp(-x)) / 2
+math.tanh(x)::
+Returns the hyperbolic tangent of x: sinh(x) / cosh(x)
+
+=== Special functions
+
+math.erf(x)::
+Returns the error function at x.
+math.erfc(x)::
+Returns the complement of the error function at x. This is 1 - erf(x).
+math.gamma(x)::
+Returns the gamma function at x.
+math.lgamma(x)::
+Returns log(gamma(x)).
+
+=== Mathematical constants
+
+math.pi::
+The mathematical constant π, to available precision.
+math.e::
+The mathematical constant e, to available precision.
+math.tau::
+The mathematical constant τ, which is 2π, to available precision.
+math.inf::
+The floating point value which represents infinity.
+math.nan::
+The floating point value which represents Not a Number.
+
+[appendix]
+== GPIO Functions
+
+On embedded devices, Snek has a range of functions designed to make
 manipulating the GPIO pins convenient. Snek keeps track of two pins
 for output and one pin for input. The two output pins are called Power
 and Direction. Each output function specifies which pins it operates
@@ -1463,14 +1595,16 @@ then `read()` returns a value from `0 to 1` (inclusive). If this a digital pin, 
 
 Turns all pins off.
 
-The ATmega 328P processor also has a small EEPROM on-chip which can
-hold 1kB of data. Snek uses that to hold source code. This code is
-read at boot time, allowing Arduino boards with Snek loaded to run
-stand-alone. These functions are used by Snekde to get and put
+[appendix]
+== EEPROM built-in functions
+
+Snek on embedded devices may include persistent storage for source
+code. This code is read at boot time, allowing boards with Snek loaded
+to run stand-alone. These functions are used by Snekde to get and put
 programs to the device.
 
-
 === `eeprom.write()`
+
 Reads characters from the console and writes them to eeprom until a ^D
 character is read.
 
@@ -1489,6 +1623,11 @@ Re-parses the current eeprom contents, just as Snek does at boot time.
 === `eeprom.erase()`
 
 Erase the eeprom.
+
+=== `reset()`
+
+Restart the Snek system, erasing all RAM contents. As part of the
+restart process, Snek will re-read any source code stored in eeprom.
 
 [appendix]
 == Curses built-in functions

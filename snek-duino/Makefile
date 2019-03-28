@@ -16,6 +16,7 @@ SNEK_ROOT = ..
 SNEK_LOCAL_SRC = \
 	snek-duino.c \
 	snek-duino-eeprom.c \
+	snek-io.c \
 	snek-duino-serial.c
 
 SNEK_LOCAL_INC = snek-duino.h
@@ -24,14 +25,16 @@ SNEK_LOCAL_BUILTINS = snek-duino.builtin
 
 include ../snek-install.defs
 
-HEX=snek-duino-$(SNEK_VERSION).hex
+ELF=snek-duino-$(SNEK_VERSION)
+HEX=$(ELF).hex
+MAP=$(ELF).map
 CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -g -fno-jump-tables $(SNEK_CFLAGS)
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
 	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7a0 \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
-	-Wl,-Map=snek-duino-$(SNEK_VERSION).map
+	-Wl,-Map=$(MAP)
 
 ISP = usbtiny
 #ISP = avrisp2
@@ -62,12 +65,12 @@ ISP = usbtiny
 
 all: $(HEX) snek-duino-install
 
-snek-duino-$(SNEK_VERSION).hex: snek-duino-$(SNEK_VERSION)
-	avr-objcopy -O ihex -R .eeprom snek-duino-$(SNEK_VERSION) $@
+$(HEX): $(ELF)
+	avr-objcopy -O ihex -R .eeprom $^ $@
 
-snek-duino-$(SNEK_VERSION): $(SNEK_OBJ)
+$(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' snek-duino-$(SNEK_VERSION).map
+	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-duino-install: snek-duino-install.in
 	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
@@ -77,16 +80,16 @@ set-fuse:
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U hfuse:w:0xd7:m
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U efuse:w:0xfd:m
 
-load: snek-duino.hex
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:snek-duino.hex
+load: $(HEX)
+	avrdude -F -V -c $(ISP) -p ATMEGA328P -U flash:w:$(HEX)
 
-install: snek-duino-install snek-duino-$(SNEK_VERSION).hex snek-duino-install.1
+install: snek-duino-install $(HEX) snek-duino-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-duino-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
-	install snek-duino-$(SNEK_VERSION).hex $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
-	install snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f snek-duino-$(SNEK_VERSION) $(HEX) snek-duino-$(SNEK_VERSION).map snek-duino-install
+	rm -f $(ELF) $(HEX) $(MAP) snek-duino-install

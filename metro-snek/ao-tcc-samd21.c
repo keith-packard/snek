@@ -13,7 +13,7 @@
  */
 
 #include <ao.h>
-#include <ao_tcc_samd21.h>
+#include <ao-tcc-samd21.h>
 
 void
 ao_tcc_set(struct samd21_tcc *tcc, uint8_t channel, uint32_t value)

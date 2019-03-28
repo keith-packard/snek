@@ -17,7 +17,7 @@
  */
 
 #include "ao.h"
-#include "ao_product.h"
+#include "ao-product.h"
 
 /* Defines which mark this particular AltOS product */
 
@@ -51,7 +51,7 @@ const char ao_product[] = AO_iProduct_STRING;
 #define AO_USB_INTERFACE_CLASS_DATA	AO_USB_INTERFACE_CLASS_DATA_CDC
 #endif
 
-#include "ao_usb.h"
+#include "ao-usb.h"
 
 #define HEADER_LEN	       	9
 #define CONTROL_CLASS_LEN	35

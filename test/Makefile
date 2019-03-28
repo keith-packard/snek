@@ -27,6 +27,7 @@ TESTS = \
 	for-nested.py \
 	global.py \
 	if.py \
+	math.py \
 	op.py \
 	range.py \
 	slice.py \

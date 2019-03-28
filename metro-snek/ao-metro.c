@@ -14,10 +14,10 @@
 
 #include <ao.h>
 #include <snek.h>
-#include <ao_snek.h>
-#include <ao_tcc_samd21.h>
-#include <ao_tc_samd21.h>
-#include <ao_adc_samd21.h>
+#include <ao-snek.h>
+#include <ao-tcc-samd21.h>
+#include <ao-tc-samd21.h>
+#include <ao-adc-samd21.h>
 
 void
 ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t config, uint16_t value)
@@ -64,6 +64,23 @@ ao_snek_running(bool running)
 		ao_led_on(AO_LED_TX);
 }
 
+void
+ao_usb_out_hook(uint8_t *hook_buf, uint16_t len)
+{
+	uint16_t i;
+
+	for (i = 0; i < len; i++)
+		if (hook_buf[i] == ('c' & 0x1f))
+			snek_abort = true;
+}
+
+int _errno;
+
+int *__errno(void)
+{
+	return &_errno;
+}
+
 int
 main(void)
 {
@@ -72,7 +89,6 @@ main(void)
 	ao_led_init();
 	ao_led_on(AO_LED_TX);
 	ao_timer_init();
-	ao_serial_init();
 	ao_tcc_samd21_init();
 	ao_tc_samd21_init();
 	ao_adc_init();

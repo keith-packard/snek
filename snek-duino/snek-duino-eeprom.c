@@ -13,6 +13,7 @@
  */
 
 #include "snek.h"
+#include "snek-io.h"
 #include <avr/eeprom.h>
 
 snek_poly_t
@@ -84,6 +85,6 @@ snek_eeprom_getchar(FILE *stream)
 			return c;
 	}
 	snek_interactive = true;
-	snek_duino_file.get = snek_uart_getchar;
+	snek_duino_file.get = snek_io_getc;
 	return '\n';
 }

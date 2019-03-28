@@ -32,14 +32,12 @@ def m(t):
     for c in t:
         if c == ' ':
             time.sleep(6*T)
-        elif c == '.':
-            time.sleep(12*T)
         else:
             l(c)
 
 def cq():
     talkto(13)
     while True:
-        m("cq cq de kd7sqg.")
+        m("cq cq de kd7sqg  ")
 
 cq()

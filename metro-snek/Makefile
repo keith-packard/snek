@@ -1,9 +1,49 @@
 #
-# AltOS build
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
 #
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
 #
 
-LDFLAGS=$(CFLAGS) -L$(TOPDIR)/samd21 -Wl,-T$(LDSCRIPT)  -n
+SNEK_ROOT = ..
+
+SNEK_LOCAL_SRC = \
+	ao-snek.c \
+	snek-altos.c \
+	snek-eeprom.c \
+	snek-math.c \
+	snek-gpio.c \
+	snek-io.c
+
+SNEK_LOCAL_INC = \
+	ao.h \
+	ao-adc-samd21.h \
+	ao-arch.h \
+	ao-arch-funcs.h \
+	ao-flash.h \
+	ao-led.h \
+	ao-notask.h \
+	ao-pins.h \
+	ao-product.h \
+	ao-serial.h \
+	ao-snek.h \
+	ao-tcc-samd21.h \
+	ao-tc-samd21.h \
+	ao-usb.h \
+	samd21.h
+
+SNEK_LOCAL_BUILTINS = \
+	snek-altos.builtin \
+	$(SNEK_ROOT)/snek-math.builtin
+
+include $(SNEK_ROOT)/snek-install.defs
 
 CC=$(ARM_CC)
 
@@ -43,8 +83,6 @@ BIN=$(PROGNAME)-$(SNEK_VERSION).bin
 UF2=$(PROGNAME)-$(SNEK_VERSION).uf2
 MAP=$(PROGNAME)-$(SNEK_VERSION).map
 
-SNEK_LOCAL_VPATH=$(AO_VPATH):../snek-bits
-
 .SUFFIXES: .elf .bin .uf2
 
 .elf.bin:
@@ -53,45 +91,23 @@ SNEK_LOCAL_VPATH=$(AO_VPATH):../snek-bits
 .bin.uf2:
 	python3 ./uf2conv.py -b 0x2000 -c -o $@ $^
 
-SNEK_LOCAL_INC = \
-	ao.h \
-	ao_arch.h \
-	ao_arch_funcs.h \
-	ao_pins.h \
-	samd21.h
-
-SNEK_LOCAL_SRC = \
-	ao_snek.c \
-	snek_altos.c \
-	snek_eeprom.c \
-	snek_gpio.c \
-	snek_io.c
-
-SNEK_LOCAL_BUILTINS = \
-	snek-altos.builtin
-
-SNEK_ROOT = $(HOME)/src/snek
-
-include $(SNEK_ROOT)/snek.defs
-
 #
-# Common AltOS sources
+# AltOS sources
 #
 ALTOS_SRC = \
-	ao_interrupt.c \
-	ao_led.c \
-	ao_timer.c \
-	ao_serial_samd21.c \
-	ao_usb_samd21.c \
-	ao_tcc_samd21.c \
-	ao_tc_samd21.c \
-	ao_adc_samd21.c \
-	ao_flash_samd21.c \
-	ao_stdio.c \
-	ao_notask.c \
-	ao_product.c \
-	ao_panic.c \
-	ao_metro.c
+	ao-interrupt.c \
+	ao-led.c \
+	ao-timer.c \
+	ao-usb-samd21.c \
+	ao-tcc-samd21.c \
+	ao-tc-samd21.c \
+	ao-adc-samd21.c \
+	ao-flash-samd21.c \
+	ao-stdio.c \
+	ao-notask.c \
+	ao-product.c \
+	ao-panic.c \
+	ao-metro.c
 
 PRODUCT=MetroSnek-v0.0
 IDPRODUCT=0x000a
@@ -100,6 +116,7 @@ NEWLIB_PRINTF_CFLAGS =
 
 CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS) -I.
 LDSCRIPT=snek.ld
+LDFLAGS=$(CFLAGS) -Wl,-T$(LDSCRIPT)  -n
 
 SRC=$(ALTOS_SRC) $(SNEK_SRC)
 OBJ=$(SRC:.c=.o)
@@ -117,7 +134,7 @@ $(OBJ): $(SNEK_INC)
 distclean:	clean
 
 clean::
-	rm -f *.o *.elf *.bin *.uf2 *.map
+	rm -f *.o *.elf *.bin *.uf2 *.map ao-product.h
 
 newt-builtin.h: newt-builtin.py $(BUILTINS)
 	python3 newt-builtin.py -o $@ $(BUILTINS)
@@ -125,6 +142,11 @@ newt-builtin.h: newt-builtin.py $(BUILTINS)
 newtram.h: newt-gram.ll
 	lola -o $@ newtram.ll
 
+ao-product.h: ../snek.defs Makefile
+	python3 ./make-product.py -v $(SNEK_VERSION) -p MetroSnek > $@
+
 install:
+	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 
 uninstall:

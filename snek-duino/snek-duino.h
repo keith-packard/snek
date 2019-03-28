@@ -24,7 +24,7 @@
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
 #define VALUE_STACK_SIZE	16
-#define PARSE_STACK_SIZE	64
+#define PARSE_STACK_SIZE	56
 #define SNEK_STACK		32
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
 #define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
@@ -118,6 +118,19 @@ snek_eeprom_getchar(FILE *stream);
 
 char
 snek_uart_getch(void);
+
+void
+_snek_uart_puts(const char *PROGMEM string);
+
+void
+snek_uart_putch(char c);
+
+#define snek_uart_puts(string) ({ static const char PROGMEM __string__[] = (string); _snek_uart_puts(__string__); })
+
+#define SNEK_IO_PUTS(s) snek_uart_puts(s)
+#define SNEK_IO_LINEBUF 80
+#define SNEK_IO_PUTC(c) snek_uart_putch(c)
+#define SNEK_IO_GETC(s) snek_uart_getch()
 
 extern FILE snek_duino_file;
 

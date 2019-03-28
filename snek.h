@@ -570,6 +570,9 @@ extern char snek_lex_text[];
 extern snek_list_t *snek_empty_tuple;
 
 snek_list_t *
+snek_list_resize(snek_list_t *list, snek_offset_t size);
+
+snek_list_t *
 snek_list_make(snek_offset_t size, snek_list_type_t type);
 
 snek_list_t *
