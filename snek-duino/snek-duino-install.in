@@ -1,8 +1,8 @@
 #!/bin/sh
 
-SHAREDIR=@SHAREDIR@
+SHAREDIR="@SHAREDIR@"
 
-SNEKDUINO=$SHAREDIR/snek-duino-@SNEK_VERSION@.hex
+SNEKDUINO="$SHAREDIR/snek-duino-@SNEK_VERSION@.hex"
 
 action="load"
 
@@ -35,7 +35,7 @@ done
 
 case "$action" in
     load)
-	avrdude -F -V -c $ISP -p ATMEGA328P -U flash:w:$(SNEKDUINO)
+	avrdude -F -V -c $ISP -p ATMEGA328P -U flash:w:"${SNEKDUINO}"
 	;;
     fuse)
 	avrdude -F -V -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m

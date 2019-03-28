@@ -62,6 +62,7 @@ SNEK_SED = sed \
 	-e 's;@ICONDIR@;$(ICONDIR);g' \
 	-e 's;@BINDIR@;$(BINDIR);g' \
 	-e 's;@SNEKLIB@;$(SNEKLIB);' \
+	-e 's;@SHAREDIR@;$(SHAREDIR);' \
 	-e 's/@SNEK_VERSION@/$(SNEK_VERSION)/' \
 	-e 's/@SNEK_VERSION_DASH@/$(SNEK_VERSION_DASH)/' \
 	-e 's/@SNEK_DATE@/$(SNEK_DATE)/'

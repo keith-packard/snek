@@ -73,7 +73,8 @@ $(ELF): $(SNEK_OBJ)
 	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-duino-install: snek-duino-install.in
-	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
+	$(SNEK_SED) $^ > $@
+	chmod +x $@
 
 set-fuse:
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U lfuse:w:0xff:m
