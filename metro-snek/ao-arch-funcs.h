@@ -59,41 +59,51 @@ ao_gpio_dir_set(struct samd21_port *port, uint8_t bit, bool output)
 }
 
 static inline void
-ao_enable_output(struct samd21_port *port, uint8_t bit, uint8_t v)
+ao_enable_output(struct samd21_port *port, uint8_t pin, uint8_t v)
 {
 	ao_enable_port(port);
-	ao_gpio_set(port, bit, v);
-	samd21_port_dir_set(port, bit, SAMD21_PORT_DIR_OUT);
+	ao_gpio_set(port, pin, v);
+	samd21_port_dir_set(port, pin, SAMD21_PORT_DIR_OUT);
+	samd21_port_pincfg_set(port, pin,
+			       (1 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (1 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (1 << SAMD21_PORT_PINCFG_INEN) |
+			       (1 << SAMD21_PORT_PINCFG_PMUXEN),
+			       (0 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (0 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (0 << SAMD21_PORT_PINCFG_INEN) |
+			       (0 << SAMD21_PORT_PINCFG_PMUXEN));
 }
 
 static inline void
-ao_gpio_set_mode(struct samd21_port *port, uint8_t bit, uint32_t mode)
+ao_enable_input(struct samd21_port *port, uint8_t pin, uint32_t mode)
 {
-	uint8_t	pincfg = samd21_port_pincfg_get(port, bit);
-	pincfg &= ~(1 << SAMD21_PORT_PINCFG_PULLEN);
+	ao_enable_port(port);
+	samd21_port_dir_set(port, pin, SAMD21_PORT_DIR_IN);
+	uint8_t	pincfg;
+
+	pincfg = ((0 << SAMD21_PORT_PINCFG_DRVSTR) |
+		  (0 << SAMD21_PORT_PINCFG_PULLEN) |
+		  (1 << SAMD21_PORT_PINCFG_INEN) |
+		  (0 << SAMD21_PORT_PINCFG_PMUXEN));
+
 	if (mode != AO_EXTI_MODE_PULL_NONE) {
 		pincfg |= (1 << SAMD21_PORT_PINCFG_PULLEN);
-		ao_gpio_set(port, bit, mode == AO_EXTI_MODE_PULL_UP);
+		ao_gpio_set(port, pin, mode == AO_EXTI_MODE_PULL_UP);
 	}
-	samd21_port_pincfg_set(port, bit, pincfg);
+
+	samd21_port_pincfg_set(port, pin,
+			       (1 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (1 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (1 << SAMD21_PORT_PINCFG_INEN) |
+			       (1 << SAMD21_PORT_PINCFG_PMUXEN),
+			       pincfg);
 }
 
 static inline void
-ao_enable_input(struct samd21_port *port, uint8_t bit, uint32_t mode)
+ao_enable_cs(struct samd21_port *port, uint8_t pin)
 {
-	ao_enable_port(port);
-	samd21_port_dir_set(port, bit, SAMD21_PORT_DIR_IN);
-	samd21_port_pincfg_set(port, bit,
-			       ((0 << SAMD21_PORT_PINCFG_PMUXEN) |
-				(1 << SAMD21_PORT_PINCFG_INEN) |
-				(0 << SAMD21_PORT_PINCFG_DRVSTR)));
-	ao_gpio_set_mode(port, bit, mode);
-}
-
-static inline void
-ao_enable_cs(struct samd21_port *port, uint8_t bit)
-{
-	ao_enable_output(port, bit, 1);
+	ao_enable_output(port, pin, 1);
 }
 
 #define ARM_PUSH32(stack, val)	(*(--(stack)) = (val))
