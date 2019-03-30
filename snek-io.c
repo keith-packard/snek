@@ -67,7 +67,6 @@ snek_io_getc(FILE *stream)
 			case '\r':
 			case '\n':
 				snek_io_addc('\n');
-				fflush(stdout);
 				break;
 			case 'n' & 0x1f:
 				raw_mode = true;
