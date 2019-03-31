@@ -67,3 +67,7 @@ upload:
 
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@
+
+clean:
+	rm -f snek.pc
+	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
