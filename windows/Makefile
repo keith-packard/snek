@@ -71,6 +71,6 @@ upload: $(WINDOWS_INSTALL)
 	rsync -avz $(WINDOWS_INSTALL) $(SNEKDIST)
 
 clean::
-	rm -f snek.exe snek.ico snekde.py snek.cfg
+	rm -f snek.exe snek.ico snekde.py snek.cfg snek-*.png
 	rm -rf build
 
