@@ -101,8 +101,13 @@ class SnekPort:
             self.description = port[2]
         else:
             self.device = port.device
-            self.name = port.name
+            if port.name:
+                self.name = port.name
+            else:
+                self.name = self.device
             self.description = port.description
+        if self.name and '/' in self.name:
+            self.name = self.name[self.name.rfind('/')+1:]
 
 # A special hack for pre-3.5 pySerial
 #
