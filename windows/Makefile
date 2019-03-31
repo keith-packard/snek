@@ -20,7 +20,7 @@ SNEK_LOCAL_SRC = \
 SNEK_LOCAL_INC = snek-windows.h
 SNEK_LOCAL_BUILTINS = snek-windows.builtin
 
-WINDOWS_FILES=snek.exe snek.ico snekde.py
+WINDOWS_FILES=snek.exe snek.ico snekde.py ../doc/snek.pdf ../examples ../COPYING
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -71,6 +71,6 @@ upload: $(WINDOWS_INSTALL)
 	rsync -avz $(WINDOWS_INSTALL) $(SNEKDIST)
 
 clean::
-	rm -f snek.exe snek.ico snekde.py snek.cfg
+	rm -f snek.exe snek.ico snekde.py snek.cfg snek-*.png
 	rm -rf build
 

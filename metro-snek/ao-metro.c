@@ -38,20 +38,49 @@ ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t config, uint16_t v
 		samd21_port_pmux_set(gpio, pin, SAMD21_PORT_PMUX_FUNC_F);
 		break;
 	}
+	samd21_port_pincfg_set(gpio, pin,
+			       (1 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (1 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (1 << SAMD21_PORT_PINCFG_INEN),
+			       (0 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (0 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (0 << SAMD21_PORT_PINCFG_INEN));
+}
+
+static void
+ao_snek_clr_pmux(void *port, uint8_t pin)
+{
+	samd21_port_pincfg_set(port, pin, (1 << SAMD21_PORT_PINCFG_PMUXEN), (0 << SAMD21_PORT_PINCFG_PMUXEN));
 }
 
 void
 ao_snek_clr_pwm(void *port, uint8_t pin)
 {
-	uint8_t pincfg = samd21_port_pincfg_get(port, pin);
-	pincfg &= ~(1 << SAMD21_PORT_PINCFG_PMUXEN);
-	samd21_port_pincfg_set(port, pin, pincfg);
+	ao_snek_clr_pmux(port, pin);
+}
+
+void
+ao_snek_set_adc(void *gpio, uint8_t pin)
+{
+	samd21_port_pmux_set(gpio, pin, SAMD21_PORT_PMUX_FUNC_B);
+	samd21_port_pincfg_set(gpio, pin,
+			       (1 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (1 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (1 << SAMD21_PORT_PINCFG_INEN),
+			       (0 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (0 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (1 << SAMD21_PORT_PINCFG_INEN));
+}
+
+void
+ao_snek_clr_adc(void *gpio, uint8_t pin)
+{
+	ao_snek_clr_pmux(gpio, pin);
 }
 
 uint16_t
-ao_snek_get_adc(void *gpio, uint8_t pin, uint8_t adc)
+ao_snek_get_adc(uint8_t adc)
 {
-	samd21_port_pmux_set(gpio, pin, SAMD21_PORT_PMUX_FUNC_B);
 	return ao_adc_read(adc);
 }
 

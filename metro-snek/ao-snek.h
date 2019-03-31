@@ -20,8 +20,14 @@
 int
 snek_eeprom_getchar(FILE *stream);
 
+void
+ao_snek_set_adc(void *gpio, uint8_t pin);
+
+void
+ao_snek_clr_adc(void *gpio, uint8_t pin);
+
 uint16_t
-ao_snek_get_adc(void *gpio, uint8_t pin, uint8_t adc);
+ao_snek_get_adc(uint8_t adc);
 
 void
 ao_snek_port_init(void);

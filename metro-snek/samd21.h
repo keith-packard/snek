@@ -410,9 +410,9 @@ samd21_port_dir_set(struct samd21_port *port, uint8_t pin, uint8_t dir)
 }
 
 static inline void
-samd21_port_pincfg_set(struct samd21_port *port, uint8_t pin, uint8_t pincfg)
+samd21_port_pincfg_set(struct samd21_port *port, uint8_t pin, uint8_t pincfg_mask, uint8_t pincfg)
 {
-	port->pincfg[pin] = pincfg;
+	port->pincfg[pin] = (port->pincfg[pin] & pincfg_mask) | pincfg;
 }
 
 static inline uint8_t
@@ -429,7 +429,9 @@ samd21_port_pmux_set(struct samd21_port *port, uint8_t pin, uint8_t func)
 	uint8_t mask = 0xf << bit;
 	uint8_t value = (port->pmux[byte] & ~mask) | (func << bit);
 	port->pmux[byte] = value;
-	samd21_port_pincfg_set(port, pin, (1 << SAMD21_PORT_PINCFG_PMUXEN));
+	samd21_port_pincfg_set(port, pin,
+			       (1 << SAMD21_PORT_PINCFG_PMUXEN),
+			       (1 << SAMD21_PORT_PINCFG_PMUXEN));
 }
 
 struct samd21_adc {
@@ -495,6 +497,13 @@ struct samd21_adc {
 #define  SAMD21_ADC_CTRLB_RESSEL_8BIT		3
 #define SAMD21_ADC_CTRLB_PRESCALER	8
 #define  SAMD21_ADC_CTRLB_PRESCALER_DIV4	0
+#define  SAMD21_ADC_CTRLB_PRESCALER_DIV8	1
+#define  SAMD21_ADC_CTRLB_PRESCALER_DIV16	2
+#define  SAMD21_ADC_CTRLB_PRESCALER_DIV32	3
+#define  SAMD21_ADC_CTRLB_PRESCALER_DIV64	4
+#define  SAMD21_ADC_CTRLB_PRESCALER_DIV128	5
+#define  SAMD21_ADC_CTRLB_PRESCALER_DIV256	6
+#define  SAMD21_ADC_CTRLB_PRESCALER_DIV512	7
 
 #define SAMD21_ADC_SWTRIG_FLUSH		0
 #define SAMD21_ADC_SWTRIG_START		1

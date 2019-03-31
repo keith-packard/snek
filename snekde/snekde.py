@@ -101,8 +101,13 @@ class SnekPort:
             self.description = port[2]
         else:
             self.device = port.device
-            self.name = port.name
+            if port.name:
+                self.name = port.name
+            else:
+                self.name = self.device
             self.description = port.description
+        if self.name and '/' in self.name:
+            self.name = self.name[self.name.rfind('/')+1:]
 
 # A special hack for pre-3.5 pySerial
 #
@@ -972,7 +977,7 @@ def run():
     prev_exit = False
     while True:
         ch = snek_current_window.getch()
-        if ch == curses.KEY_NPAGE or ch == curses.KEY_PPAGE:
+        if ch == curses.KEY_NPAGE or ch == curses.KEY_PPAGE or ch == ord('o') & 0x1f:
             if snek_current_window is snek_edit_win:
                 snek_current_window = snek_repl_win
             else:
@@ -1092,14 +1097,14 @@ def main():
     snek_device = False
     if args.list:
         for port in snek_list_ports():
-            print("%-15.15s %s" % (port.name, port.description))
-        exit(0)
+            print("%-30.30s %s" % (port.name, port.description))
+        sys.exit(0)
     if args.port:
         try:
             snek_device = SnekDevice(args.port, snek_monitor)
         except OSError as e:
             print(e.strerror, file=sys.stderr)
-            exit(1)
+            sys.exit(1)
     text = ""
     if args.file:
         try:
@@ -1107,7 +1112,7 @@ def main():
                 text = myfile.read()
         except OSError as e:
             print("%s: %s", (e.filename, e.strerror), file=sys.stderr)
-            exit(1)
+            sys.exit(1)
     try:
         screen_init(text)
         if snek_device:

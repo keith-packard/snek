@@ -94,8 +94,9 @@ ao_snek_port_get(uint8_t p)
 static uint16_t
 ao_snek_port_get_analog(uint8_t p)
 {
-	return ao_snek_get_adc(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, ao_snek_pin[p].adc);
+	return ao_snek_get_adc(ao_snek_pin[p].adc);
 }
+
 static bool
 has_pwm(uint8_t p)
 {
@@ -126,13 +127,40 @@ set_off(uint8_t pin)
 	on_pins &= ~(((uint32_t) 1) << pin);
 }
 
+static snek_poly_t
+set_out(uint8_t pin)
+{
+	uint16_t	p = 0;
+
+	if (is_on(pin))
+		p = power[pin];
+
+	if (has_pwm(pin)) {
+		if (0 < p && p < SNEK_PWM_MAX) {
+			ao_snek_port_set_pwm(pin, p);
+			return SNEK_NULL;
+		}
+		ao_snek_port_clr_pwm(pin);
+	}
+	ao_snek_port_set(pin, p);
+	return SNEK_NULL;
+}
+
 static void
 set_dir(uint8_t pin, uint8_t d)
 {
-	if (d)
+	if (d) {
+		if (has_adc(pin))
+			ao_snek_clr_adc(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin);
 		ao_enable_output(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin, is_on(pin) && power[pin] != 0);
-	else
-		ao_enable_input(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin, AO_EXTI_MODE_PULL_UP);
+		set_out(pin);
+	} else {
+		if (has_adc(pin)) {
+			ao_snek_set_adc(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin);
+			ao_enable_input(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin, AO_EXTI_MODE_PULL_NONE);
+		} else
+			ao_enable_input(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin, AO_EXTI_MODE_PULL_UP);
+	}
 }
 
 static uint8_t
@@ -159,7 +187,8 @@ snek_builtin_talkto(snek_poly_t a)
 	}
 	if (!snek_abort) {
 		set_dir(p, 1);
-		set_dir(d, 1);
+		if (p != d)
+			set_dir(d, 1);
 		power_pin = p;
 		dir_pin = d;
 	}
@@ -177,25 +206,6 @@ snek_builtin_listento(snek_poly_t a)
 	return SNEK_NULL;
 }
 
-
-static snek_poly_t
-set_out(uint8_t pin)
-{
-	uint16_t	p = 0;
-
-	if (is_on(pin))
-		p = power[pin];
-
-	if (has_pwm(pin)) {
-		if (0 < p && p < SNEK_PWM_MAX) {
-			ao_snek_port_set_pwm(pin, p);
-			return SNEK_NULL;
-		}
-		ao_snek_port_clr_pwm(pin);
-	}
-	ao_snek_port_set(pin, p);
-	return SNEK_NULL;
-}
 
 snek_poly_t
 snek_builtin_setpower(snek_poly_t a)

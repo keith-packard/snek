@@ -25,9 +25,10 @@ SNEK_LOCAL_BUILTINS = snek-duino.builtin
 
 include ../snek-install.defs
 
-ELF=snek-duino-$(SNEK_VERSION)
-HEX=$(ELF).hex
-MAP=$(ELF).map
+BASE=snek-duino-$(SNEK_VERSION)
+ELF=$(BASE).elf
+HEX=$(BASE).hex
+MAP=$(BASE).map
 CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -g -fno-jump-tables $(SNEK_CFLAGS)
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
@@ -73,7 +74,8 @@ $(ELF): $(SNEK_OBJ)
 	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-duino-install: snek-duino-install.in
-	sed -e 's;@SHAREDIR@;$(SHAREDIR);g' $^ > $@
+	$(SNEK_SED) $^ > $@
+	chmod +x $@
 
 set-fuse:
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U lfuse:w:0xff:m
@@ -92,4 +94,4 @@ install: snek-duino-install $(HEX) snek-duino-install.1
 	install -m 0644 snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f $(ELF) $(HEX) $(MAP) snek-duino-install
+	rm -f *.elf *.hex *.map snek-duino-install

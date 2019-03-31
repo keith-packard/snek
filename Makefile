@@ -19,7 +19,7 @@ include snek-install.defs
 
 SNEK_OTHEROS?=1
 ifeq ($(SNEK_OTHEROS),1)
-SNEK_OTHEROS_DIR=linux windows
+SNEK_OTHEROS_DIR=linux windows macosx
 endif
 
 SUBDIRS = posix snek-duino metro-snek snekde doc examples $(SNEK_OTHEROS_DIR)
@@ -63,6 +63,11 @@ upload:
 	+cd doc && make upload
 	+cd linux && make upload
 	+cd windows && make upload
+	+cd macosx && make upload
 
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@
+
+clean:
+	rm -f snek.pc
+	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done

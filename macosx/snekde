@@ -1,0 +1,3 @@
+#!/bin/bash
+ME=`dirname $0`
+open -a Terminal $ME/runsnekde
