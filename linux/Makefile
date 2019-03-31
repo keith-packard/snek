@@ -45,4 +45,5 @@ upload: $(LINUX_SH)
 	rsync -avz $(LINUX_SH) $(SNEKDIST)
 
 clean:
-	rm -f $(LINUX_SH) $(LINUX_DIST)
+	rm -f snek-*.sh *.bz2
+	rm -rf linux
