@@ -1,0 +1,170 @@
+; Copyright (C) 2010 Keith Packard (keithp@keithp.com)
+; released under GNU General Public License version 2
+
+[Version]
+Signature	= "$Windows NT$"
+Class   	= Modem
+ClassGUID	= {4D36E96D-E325-11CE-BFC1-08002BE10318}
+Provider	= %Mfg%
+DriverVer	= 06/15/2014,7.1.1.0
+PnpLockDown	= 0
+DriverPackageDisplayName = %DriverName%
+CatalogFile	= altusmetrum.cat
+
+[DestinationDirs]
+FakeModemCopyFileSection = 12
+DefaultDestDir	= 12
+
+[ControlFlags]
+
+[Manufacturer]
+%Mfg% = Models, NTx86, NTamd64, NTia64
+
+[Models]
+%AltusMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000A, AltusMetrumSerial
+%TeleMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000B, AltusMetrumSerial
+%TeleDongle%	= AltusMetrum.Install, USB\VID_FFFE&PID_000C, AltusMetrumSerial
+%TeleTerra%	= AltusMetrum.Install, USB\VID_FFFE&PID_000D, AltusMetrumSerial
+%TeleBT%	= AltusMetrum.Install, USB\VID_FFFE&PID_000e, AltusMetrumSerial
+%TeleLaunch%	= AltusMetrum.Install, USB\VID_FFFE&PID_000f, AltusMetrumSerial
+%TeleLCO%	= AltusMetrum.Install, USB\VID_FFFE&PID_0010, AltusMetrumSerial
+%TeleScience%	= AltusMetrum.Install, USB\VID_FFFE&PID_0011, AltusMetrumSerial
+%TelePyro%	= AltusMetrum.Install, USB\VID_FFFE&PID_0012, AltusMetrumSerial
+%TeleShield%	= AltusMetrum.Install, USB\VID_FFFE&PID_0013, AltusMetrumSerial
+%TeleMega%	= AltusMetrum.Install, USB\VID_FFFE&PID_0023, AltusMetrumSerial
+%MegaDongle	= AltusMetrum.Install, USB\VID_FFFE&PID_0024, AltusMetrumSerial
+%TeleGPS%	= AltusMetrum.Install, USB\VID_FFFE&PID_0025, AltusMetrumSerial
+%EasyMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0026, AltusMetrumSerial
+%TeleMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0027, AltusMetrumSerial
+%AltusMetrum28%	= AltusMetrum.Install, USB\VID_FFFE&PID_0028, AltusMetrumSerial
+%AltusMetrum29%	= AltusMetrum.Install, USB\VID_FFFE&PID_0029, AltusMetrumSerial
+%AltusMetrum2a%	= AltusMetrum.Install, USB\VID_FFFE&PID_002a, AltusMetrumSerial
+%AltusMetrum2b%	= AltusMetrum.Install, USB\VID_FFFE&PID_002b, AltusMetrumSerial
+%AltusMetrum2c%	= AltusMetrum.Install, USB\VID_FFFE&PID_002c, AltusMetrumSerial
+
+[Models.NTx86]
+%AltusMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000A, AltusMetrumSerial
+%TeleMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000B, AltusMetrumSerial
+%TeleDongle%	= AltusMetrum.Install, USB\VID_FFFE&PID_000C, AltusMetrumSerial
+%TeleTerra%	= AltusMetrum.Install, USB\VID_FFFE&PID_000D, AltusMetrumSerial
+%TeleBT%	= AltusMetrum.Install, USB\VID_FFFE&PID_000e, AltusMetrumSerial
+%TeleLaunch%	= AltusMetrum.Install, USB\VID_FFFE&PID_000f, AltusMetrumSerial
+%TeleLCO%	= AltusMetrum.Install, USB\VID_FFFE&PID_0010, AltusMetrumSerial
+%TeleScience%	= AltusMetrum.Install, USB\VID_FFFE&PID_0011, AltusMetrumSerial
+%TelePyro%	= AltusMetrum.Install, USB\VID_FFFE&PID_0012, AltusMetrumSerial
+%TeleShield%	= AltusMetrum.Install, USB\VID_FFFE&PID_0013, AltusMetrumSerial
+%TeleMega%	= AltusMetrum.Install, USB\VID_FFFE&PID_0023, AltusMetrumSerial
+%MegaDongle	= AltusMetrum.Install, USB\VID_FFFE&PID_0024, AltusMetrumSerial
+%TeleGPS%	= AltusMetrum.Install, USB\VID_FFFE&PID_0025, AltusMetrumSerial
+%EasyMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0026, AltusMetrumSerial
+%TeleMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0027, AltusMetrumSerial
+%AltusMetrum28%	= AltusMetrum.Install, USB\VID_FFFE&PID_0028, AltusMetrumSerial
+%AltusMetrum29%	= AltusMetrum.Install, USB\VID_FFFE&PID_0029, AltusMetrumSerial
+%AltusMetrum2a%	= AltusMetrum.Install, USB\VID_FFFE&PID_002a, AltusMetrumSerial
+%AltusMetrum2b%	= AltusMetrum.Install, USB\VID_FFFE&PID_002b, AltusMetrumSerial
+%AltusMetrum2c%	= AltusMetrum.Install, USB\VID_FFFE&PID_002c, AltusMetrumSerial
+
+[Models.NTamd64]
+%AltusMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000A, AltusMetrumSerial
+%TeleMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000B, AltusMetrumSerial
+%TeleDongle%	= AltusMetrum.Install, USB\VID_FFFE&PID_000C, AltusMetrumSerial
+%TeleTerra%	= AltusMetrum.Install, USB\VID_FFFE&PID_000D, AltusMetrumSerial
+%TeleBT%	= AltusMetrum.Install, USB\VID_FFFE&PID_000e, AltusMetrumSerial
+%TeleLaunch%	= AltusMetrum.Install, USB\VID_FFFE&PID_000f, AltusMetrumSerial
+%TeleLCO%	= AltusMetrum.Install, USB\VID_FFFE&PID_0010, AltusMetrumSerial
+%TeleScience%	= AltusMetrum.Install, USB\VID_FFFE&PID_0011, AltusMetrumSerial
+%TelePyro%	= AltusMetrum.Install, USB\VID_FFFE&PID_0012, AltusMetrumSerial
+%TeleShield%	= AltusMetrum.Install, USB\VID_FFFE&PID_0013, AltusMetrumSerial
+%TeleMega%	= AltusMetrum.Install, USB\VID_FFFE&PID_0023, AltusMetrumSerial
+%MegaDongle	= AltusMetrum.Install, USB\VID_FFFE&PID_0024, AltusMetrumSerial
+%TeleGPS%	= AltusMetrum.Install, USB\VID_FFFE&PID_0025, AltusMetrumSerial
+%EasyMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0026, AltusMetrumSerial
+%TeleMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0027, AltusMetrumSerial
+%AltusMetrum28%	= AltusMetrum.Install, USB\VID_FFFE&PID_0028, AltusMetrumSerial
+%AltusMetrum29%	= AltusMetrum.Install, USB\VID_FFFE&PID_0029, AltusMetrumSerial
+%AltusMetrum2a%	= AltusMetrum.Install, USB\VID_FFFE&PID_002a, AltusMetrumSerial
+%AltusMetrum2b%	= AltusMetrum.Install, USB\VID_FFFE&PID_002b, AltusMetrumSerial
+%AltusMetrum2c%	= AltusMetrum.Install, USB\VID_FFFE&PID_002c, AltusMetrumSerial
+
+[Models.NTia64]
+%AltusMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000A, AltusMetrumSerial
+%TeleMetrum%	= AltusMetrum.Install, USB\VID_FFFE&PID_000B, AltusMetrumSerial
+%TeleDongle%	= AltusMetrum.Install, USB\VID_FFFE&PID_000C, AltusMetrumSerial
+%TeleTerra%	= AltusMetrum.Install, USB\VID_FFFE&PID_000D, AltusMetrumSerial
+%TeleBT%	= AltusMetrum.Install, USB\VID_FFFE&PID_000e, AltusMetrumSerial
+%TeleLaunch%	= AltusMetrum.Install, USB\VID_FFFE&PID_000f, AltusMetrumSerial
+%TeleLCO%	= AltusMetrum.Install, USB\VID_FFFE&PID_0010, AltusMetrumSerial
+%TeleScience%	= AltusMetrum.Install, USB\VID_FFFE&PID_0011, AltusMetrumSerial
+%TelePyro%	= AltusMetrum.Install, USB\VID_FFFE&PID_0012, AltusMetrumSerial
+%TeleShield%	= AltusMetrum.Install, USB\VID_FFFE&PID_0013, AltusMetrumSerial
+%TeleMega%	= AltusMetrum.Install, USB\VID_FFFE&PID_0023, AltusMetrumSerial
+%MegaDongle	= AltusMetrum.Install, USB\VID_FFFE&PID_0024, AltusMetrumSerial
+%TeleGPS%	= AltusMetrum.Install, USB\VID_FFFE&PID_0025, AltusMetrumSerial
+%EasyMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0026, AltusMetrumSerial
+%TeleMini%	= AltusMetrum.Install, USB\VID_FFFE&PID_0027, AltusMetrumSerial
+%AltusMetrum28%	= AltusMetrum.Install, USB\VID_FFFE&PID_0028, AltusMetrumSerial
+%AltusMetrum29%	= AltusMetrum.Install, USB\VID_FFFE&PID_0029, AltusMetrumSerial
+%AltusMetrum2a%	= AltusMetrum.Install, USB\VID_FFFE&PID_002a, AltusMetrumSerial
+%AltusMetrum2b%	= AltusMetrum.Install, USB\VID_FFFE&PID_002b, AltusMetrumSerial
+%AltusMetrum2c%	= AltusMetrum.Install, USB\VID_FFFE&PID_002c, AltusMetrumSerial
+
+;----------------------------------------------------------------------------
+; Installation sections
+;----------------------------------------------------------------------------
+
+[AltusMetrum.Install.NT]
+include		= mdmcpq.inf
+CopyFiles	= FakeModemCopyFileSection
+AddReg		= All.AddReg, Modem.AddReg, Uninstall.AddReg
+
+[AltusMetrum.Install.NT.Services]
+include		= mdmcpq.inf
+AddService	= usbser, 0x00000000, LowerFilter_Service_Inst
+
+[AltusMetrum.Install.NT.HW]
+include		= mdmcpq.inf
+AddReg		= LowerFilterAddReg
+
+;----------------------------------------------------------------------------
+; AddReg sections
+;----------------------------------------------------------------------------
+
+[All.AddReg]
+HKR,,FriendlyDriver,,		Unimodem.vxd
+HKR,,DevLoader,,		*vcomm
+HKR,,ConfigDialog,,		modemui.dll
+HKR,,EnumPropPages,,		"modemui.dll,EnumPropPages"
+HKR,,PortSubClass, 1,		02
+HKR,,DeviceType, 1,		01
+
+[Modem.AddReg]
+HKR,, Properties, 1, C0,01,00,00, 00,00,00,00, FF,00,00,00, 07,00,00,00, 0F,00,00,00, F7,0F,00,00, 00,84,03,00, C0,DA,00,00
+
+[Uninstall.AddReg]
+HKLM,Software\Microsoft\Windows\CurrentVersion\Uninstall\%AltusMetrum%,DisplayName,,"%AltusMetrum%"
+
+[Strings]
+Mfg		= "altusmetrum.org"
+AltusMetrum	= "AltusMetrum"
+TeleMetrum	= "TeleMetrum"
+TeleDongle	= "TeleDongle"
+TeleTerra	= "TeleTerra"
+TeleBT		= "TeleBT"
+TeleLaunch	= "TeleLaunch"
+TeleLCO		= "TeleLCO"
+TeleScience	= "TeleScience"
+TelePyro	= "TelePyro"
+TeleShield	= "TeleShield"
+TeleMega	= "TeleMega"
+MegaDongle	= "MegaDongle"
+TeleGPS		= "TeleGPS"
+EasyMini	= "EasyMini"
+TeleMini	= "TeleMini"
+AltusMetrum28	= "AltusMetrum28"
+AltusMetrum29	= "AltusMetrum29"
+AltusMetrum2a	= "AltusMetrum2a"
+AltusMetrum2b	= "AltusMetrum2b"
+AltusMetrum2c	= "AltusMetrum2c"
+
+DriverName	= "Altus Metrum Device Driver"
+

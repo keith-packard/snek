@@ -1,0 +1,137 @@
+; IrCOMM2k.inf
+;
+; Installation file for the Virtual Infrared-COM-Port
+;
+; (c) Copyright 2001, 2002 Jan Kiszka 
+;
+
+[Version]
+Signature="$Windows NT$"
+Provider=%JK%
+Class=Ports
+ClassGUID={4d36e978-e325-11ce-bfc1-08002be10318}
+;DriverVer=03/26/2002,1.2.1.0
+
+[DestinationDirs]
+IrCOMM2k.Copy2Drivers  = 12
+IrCOMM2k.Copy2Winnt    = 10
+IrCOMM2k.Copy2System32 = 11
+IrCOMM2k.Copy2Help     = 18
+
+
+;
+; Driver information
+;
+
+[Manufacturer]
+%JK%   = JK.Mfg
+
+[JK.Mfg]
+%JK.DeviceDescIrCOMM% = IrCOMM2k_inst,IrCOMM2k
+
+
+;
+; General installation section
+;
+
+[IrCOMM2k_inst]
+CopyFiles = IrCOMM2k.Copy2Drivers ;,IrCOMM2k.Copy2System32,IrCOMM2k.Copy2Help,IrCOMM2k.Copy2Winnt
+;AddReg    = IrCOMM2k_inst_AddReg
+
+
+;
+; File sections
+;
+
+[IrCOMM2k.Copy2Drivers]
+ircomm2k.sys,,,2
+
+;[IrCOMM2k.Copy2System32]
+;ircomm2k.exe,,,2
+;ircomm2k.dll,,,2
+
+;[IrCOMM2k.Copy2Help]
+;ircomm2k.hlp,,,2
+
+;[IrCOMM2k.Copy2Winnt]
+;IrCOMM2k-Setup.exe,Setup.exe,,2
+
+
+;
+; Service Installation
+;
+
+[IrCOMM2k_inst.Services]
+AddService = IrCOMM2k,0x00000002,IrCOMM2k_DriverService_Inst,IrCOMM2k_DriverEventLog_Inst
+;AddService = IrCOMM2kSvc,,IrCOMM2k_Service_Inst
+
+[IrCOMM2k_DriverService_Inst]
+DisplayName    = %IrCOMM2k.DrvName%
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 0                  ; SERVICE_ERROR_IGNORE
+ServiceBinary  = %12%\ircomm2k.sys
+
+;[IrCOMM2k_Service_Inst]
+;DisplayName    = %IrCOMM2k.SvcName%
+;Description    = %IrCOMM2k.SvcDesc%
+;ServiceType    = 0x00000120         ; SERVICE_WIN32_SHARE_PROCESS, SERVICE_INTERACTIVE_PROCESS
+;StartType      = 2                  ; SERVICE_AUTO_START
+;ErrorControl   = 0                  ; SERVICE_ERROR_IGNORE
+;ServiceBinary  = %11%\ircomm2k.exe
+;Dependencies   = IrCOMM2k
+;AddReg         = IrCOMM2kSvcAddReg
+
+
+[IrCOMM2k_inst.nt.HW]
+AddReg=IrCOMM2kHwAddReg
+
+[IrCOMM2kHwAddReg]
+HKR,,PortSubClass,REG_BINARY,0x00000001
+;HKR,,TimeoutScaling,REG_DWORD,0x00000001
+;HKR,,StatusLines,REG_DWORD,0x00000000
+
+;[IrCOMM2k_inst_AddReg]
+;HKR,,EnumPropPages32,,"ircomm2k.dll,IrCOMM2kPropPageProvider"
+;HKLM,%UNINSTALL_KEY%,DisplayIcon,0x00020000,"%windir%\IrCOMM2k-Setup.exe"
+;HKLM,%UNINSTALL_KEY%,DisplayName,,"IrCOMM2k 1.2.1 "
+;HKLM,%UNINSTALL_KEY%,DisplayVersion,,"1.2.1"
+;HKLM,%UNINSTALL_KEY%,HelpLink,,"http://www.ircomm2k.de"
+;HKLM,%UNINSTALL_KEY%,Publisher,,%JK%
+;HKLM,%UNINSTALL_KEY%,UninstallString,0x00020000,"%windir%\IrCOMM2k-Setup.exe"
+
+;[IrCOMM2kSvcAddReg]
+;HKR,Parameters,ActiveConnectOnly,REG_DWORD,0x00000000
+
+
+[IrCOMM2k_DriverEventLog_Inst]
+AddReg = IrCOMM2k_DriverEventLog_AddReg
+
+[IrCOMM2k_DriverEventLog_AddReg]
+HKR,,EventMessageFile,REG_EXPAND_SZ,"%SystemRoot%\System32\IoLogMsg.dll;%SystemRoot%\System32\drivers\ircomm2k.sys"
+HKR,,TypesSupported,REG_DWORD,7
+
+
+[Strings]
+
+;
+; Non-Localizable Strings
+;
+
+REG_SZ         = 0x00000000
+REG_MULTI_SZ   = 0x00010000
+REG_EXPAND_SZ  = 0x00020000
+REG_BINARY     = 0x00000001
+REG_DWORD      = 0x00010001
+SERVICEROOT    = "System\CurrentControlSet\Services"
+UNINSTALL_KEY  = "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\IrCOMM2k"
+
+;
+; Localizable Strings
+;
+
+JK                  = "Jan Kiszka"
+JK.DeviceDescIrCOMM = "Virtueller Infrarot-Kommunikationsanschluss"
+IrCOMM2k.DrvName    = "Virtueller Infrarot-Kommunikationsanschluss"
+;IrCOMM2k.SvcName    = "Virtueller Infrarot-Kommunikationsanschluß, Dienstprogramm"
+;IrCOMM2k.SvcDesc    = "Bildet über Infarot einen Kommunikationsanschluß nach."
