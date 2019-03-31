@@ -18,14 +18,15 @@ SNEK_NO_BUILD_TARGETS = 1
 
 include ../snek-install.defs
 
-LINUX_DIST=snek-liniux-$(SNEK_VERSION).tar.bz2
+LINUX_DIST=snek-linux-$(SNEK_VERSION).tar.bz2
 LINUX_SH=snek-linux-$(SNEK_VERSION).sh
 DESKTOP_FILES=../posix/snek.desktop.in ../snekde/snekde.desktop.in
 FIRMWARE=../snek-duino/snek-duino-$(SNEK_VERSION).hex ../metro-snek/metro-snek-$(SNEK_VERSION).uf2
 PROGS=../posix/snek ../snekde/snekde ../snek-duino/snek-duino-install.in
+EXAMPLES=../examples
 ICONS=../snek.svg
-DOC=../doc/snek.pdf ../snek-duino/snek-duino-install.1 ../snekde/snekde.1
-LINUX_FILES=$(PROGS) $(DESKTOP_FILES) $(FIRMWARE) $(ICONS) $(DOC)
+DOC=../doc/snek.pdf ../snek-duino/snek-duino-install.1 ../snekde/snekde.1 ../COPYING
+LINUX_FILES=$(PROGS) $(DESKTOP_FILES) $(FIRMWARE) $(ICONS) $(DOC) $(EXAMPLES)
 
 all: $(LINUX_SH)
 
@@ -37,7 +38,7 @@ $(LINUX_DIST): $(LINUX_FILES) $(LINUX_EXTRA)
 	-rm -f $@
 	-rm -rf linux
 	mkdir -p linux/Snek
-	cp -p $(LINUX_FILES) linux/Snek
+	cp -a $(LINUX_FILES) linux/Snek
 	tar cjf $@ -C linux Snek
 
 upload: $(LINUX_SH)
