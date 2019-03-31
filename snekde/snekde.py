@@ -1097,14 +1097,14 @@ def main():
     snek_device = False
     if args.list:
         for port in snek_list_ports():
-            print("%-15.15s %s" % (port.name, port.description))
-        exit(0)
+            print("%-30.30s %s" % (port.name, port.description))
+        sys.exit(0)
     if args.port:
         try:
             snek_device = SnekDevice(args.port, snek_monitor)
         except OSError as e:
             print(e.strerror, file=sys.stderr)
-            exit(1)
+            sys.exit(1)
     text = ""
     if args.file:
         try:
@@ -1112,7 +1112,7 @@ def main():
                 text = myfile.read()
         except OSError as e:
             print("%s: %s", (e.filename, e.strerror), file=sys.stderr)
-            exit(1)
+            sys.exit(1)
     try:
         screen_init(text)
         if snek_device:
