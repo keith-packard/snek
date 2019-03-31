@@ -977,7 +977,7 @@ def run():
     prev_exit = False
     while True:
         ch = snek_current_window.getch()
-        if ch == curses.KEY_NPAGE or ch == curses.KEY_PPAGE:
+        if ch == curses.KEY_NPAGE or ch == curses.KEY_PPAGE or ch == ord('o') & 0x1f:
             if snek_current_window is snek_edit_win:
                 snek_current_window = snek_repl_win
             else:
