@@ -1,0 +1,7 @@
+#!/bin/bash
+echo -n -e "\033]0;SnekDE\007"
+ME=`dirname $0`
+export PYTHONPATH="$ME"/../Resources/lib/python3.7
+python3 "$ME"/../Resources/snekde.py
+osascript -e 'tell application "Terminal" to close front window' &
+exit 0

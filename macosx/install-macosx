@@ -1,0 +1,37 @@
+#!/bin/bash
+echo -e '\033[34mInstalling Snek\033[39m'
+dir=`dirname "$0"`
+cd "$dir"
+echo -e '\033[34mPreparing Snek directory\033[39m'
+mkdir -p ~/Applications/Snek
+find ~/Applications/Snek -type d -print0 | xargs -0 chmod +w
+echo -n -e '\033[34mCopying Snek files ... \033[39m'
+cp -f -a * ~/Applications/Snek
+case $? in
+    0)
+	echo -e '\033[32mSuccess\033[39m'
+	;;
+    *)
+	echo -e '\033[31mFailed\033[39m'
+	;;
+esac
+echo -n -e '\033[34mAdjusting installed files ... \033[39m'
+find ~/Applications/Snek -print0 | xargs -0 chmod +w
+case $? in
+    0)
+	echo -n -e '\033[32mchmod success ... \033[39m'
+	;;
+    *)
+	echo -n -e '\033[31mchmod failed ... \033[39m'
+	;;
+esac
+find ~/Applications/Snek -print0 | xargs -0 xattr -c
+case $? in
+    0)
+	echo -e '\033[32mxattr -c success\033[39m'
+	;;
+    *)
+	echo -e '\033[31mxattr -c failed\033[39m'
+	;;
+esac
+echo -e '\033[34All done\033[39m'
