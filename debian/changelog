@@ -1,3 +1,11 @@
+snek (0.92-1) unstable; urgency=medium
+
+  * 0.92-1
+  * Get snek-duino-install working
+  * Fix ADC input for metro-snek
+
+ -- Keith Packard <keithp@keithp.com>  Sat, 30 Mar 2019 19:06:36 -0700
+
 snek (0.91-1) unstable; urgency=medium
 
   * Version 0.91
