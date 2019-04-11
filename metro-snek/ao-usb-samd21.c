@@ -241,10 +241,10 @@ ao_usb_set_configuration(void)
 {
 #if AO_USB_HAS_INT
 	ao_usb_init_ep(AO_USB_INT_EP,
-		       SAMD21_USB_EP_EPCFG_EP_TYPE_OUT_INTERRUPT,
-		       ao_usb_int_buf, AO_USB_INT_SIZE,
-		       SAMD21_USB_EP_EPCFG_EP_TYPE_IN_DISABLED,
-		       NULL, 0);
+		       SAMD21_USB_EP_EPCFG_EP_TYPE_OUT_DISABLED,
+		       NULL, 0,
+		       SAMD21_USB_EP_EPCFG_EP_TYPE_IN_INTERRUPT,
+		       ao_usb_int_buf, AO_USB_INT_SIZE);
 #endif
 
 #if AO_USB_HAS_OUT
