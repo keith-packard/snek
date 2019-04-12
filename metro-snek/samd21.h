@@ -412,7 +412,7 @@ samd21_port_dir_set(struct samd21_port *port, uint8_t pin, uint8_t dir)
 static inline void
 samd21_port_pincfg_set(struct samd21_port *port, uint8_t pin, uint8_t pincfg_mask, uint8_t pincfg)
 {
-	port->pincfg[pin] = (port->pincfg[pin] & pincfg_mask) | pincfg;
+	port->pincfg[pin] = (port->pincfg[pin] & ~pincfg_mask) | pincfg;
 }
 
 static inline uint8_t
