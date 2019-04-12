@@ -24,19 +24,11 @@
 #define AO_POWER_MANAGEMENT	0
 #endif
 
-#ifndef USE_USB_STDIO
-#define USE_USB_STDIO	1
-#endif
-
 #if USE_USB_FIFO
 static struct ao_fifo	ao_usb_rx_fifo;
 #endif
 
-#if USE_USB_STDIO
-#define AO_USB_OUT_SLEEP_ADDR	(&ao_stdin_ready)
-#else
 #define AO_USB_OUT_SLEEP_ADDR	(&ao_usb_out_avail)
-#endif
 
 #define SAMD21_USB_ALIGN	__attribute__ ((aligned(4)))
 
@@ -249,9 +241,6 @@ ao_usb_set_configuration(void)
 	ao_wakeup(AO_USB_OUT_SLEEP_ADDR);
 
 	ao_usb_running = 1;
-#if AO_USB_DIRECTIO
-	ao_wakeup(&ao_usb_running);
-#endif
 }
 
 /* Send an IN data packet */
