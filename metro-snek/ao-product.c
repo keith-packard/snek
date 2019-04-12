@@ -167,26 +167,6 @@ const uint8_t ao_usb_descriptors [] =
 	0x00,			/* bInterval */
 #endif
 
-#if AO_USB_HAS_IN2
-	/* Data EP in 2 */
-	0x07,
-	AO_USB_DESC_ENDPOINT,
-	AO_USB_IN2_EP|0x80,	/* bEndpointAddress */
-	0x02,			/* bmAttributes = bulk */
-	LE_WORD(AO_USB_IN_SIZE),/* wMaxPacketSize */
-	0x00,			/* bInterval */
-#endif
-
-#if AO_USB_HAS_IN3
-	/* Data EP in 3 */
-	0x07,
-	AO_USB_DESC_ENDPOINT,
-	AO_USB_IN3_EP|0x80,	/* bEndpointAddress */
-	0x02,			/* bmAttributes = bulk */
-	LE_WORD(AO_USB_IN_SIZE),/* wMaxPacketSize */
-	0x00,			/* bInterval */
-#endif
-
 	/* String descriptors */
 	0x04,
 	AO_USB_DESC_STRING,
