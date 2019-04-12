@@ -810,9 +810,8 @@ _ao_usb_pollchar(void)
 }
 
 int
-ao_usb_getc(FILE *file)
+ao_usb_getc(void)
 {
-	(void) file;
 	int	c;
 
 	ao_arch_block_interrupts();
@@ -821,6 +820,18 @@ ao_usb_getc(FILE *file)
 	ao_arch_release_interrupts();
 	return c;
 }
+
+bool
+ao_usb_waiting(void)
+{
+	bool waiting;
+
+	ao_arch_block_interrupts();
+	waiting = !ao_fifo_empty(&ao_usb_rx_fifo);
+	ao_arch_release_interrupts();
+	return waiting;
+}
+
 #endif
 
 void

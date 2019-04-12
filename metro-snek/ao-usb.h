@@ -29,7 +29,7 @@ ao_usb_putc(char c, FILE *file);
 
 /* Get one character from the USB input queue */
 int
-ao_usb_getc(FILE *file);
+ao_usb_getc(void);
 
 /* Flush the USB output queue */
 int

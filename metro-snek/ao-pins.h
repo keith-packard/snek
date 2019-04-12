@@ -249,7 +249,8 @@
 #define AO_TCC_PERIOD		65536
 #define SNEK_PWM_MAX		(AO_TCC_PERIOD-1)
 
-#define SNEK_IO_GETC(file)	ao_usb_getc(file)
+#define SNEK_IO_GETC(file)	ao_usb_getc()
+#define SNEK_IO_WAITING(file)	ao_usb_waiting()
 
 void
 ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t c, uint16_t value);
@@ -261,6 +262,9 @@ ao_snek_clr_pwm(void *gpio, uint8_t pin);
 
 int
 ao_snek_getc(FILE *stream);
+
+bool
+ao_usb_waiting(void);
 
 void
 snek(void);
