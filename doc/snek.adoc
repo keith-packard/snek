@@ -52,7 +52,7 @@ http://keithp.com
 
 Teaching computer programming to students in the 10-14 age range
 offers some interesting challenges. Introductory, “blocks”, languages
-can become frustratingly slow to create code, and don't provide any
+can become frustratingly slow to create code, and don't develop
 concrete skills to bring to more advanced languages. Sophisticated
 languages like C, Java and even Python are so large as to overwhelm
 the student with rich semantics like objects and higher level
@@ -63,17 +63,17 @@ microcomputers running very small languages, like BASIC, Forth or
 Logo. These languages were restricted not to help the student, but
 because the hosts they ran on were very small.
 
-Because computing is so ubiquitous these days, introductory
-programming is taught today in a huge range of environments, from
-embedded systems through cloud-based systems. Many of these are
-technological dead-ends; closed systems that offer no way to even
-extract source code and re-use it in another environment.
+Introductory programming is taught today in a huge range of
+environments, from embedded systems through cloud-based systems. Many
+of these are technological dead-ends—closed systems that offer no way
+to even extract source code and re-use it in another environment.
 
-Some systems, such as Raspberry PI and Arduino are open and allow
-developers to share code. However, while the smallest of these are
-similar in memory and CPU size to those early machines, they are
-programmed as embedded computers using a full C++ compiler running on
-a desktop or laptop system.
+Some systems, such as Raspberry PI and Arduino are open—they use
+standard languages so that skills learned with them are useful
+elsewhere.. However, while the smallest of these are similar in memory
+and CPU size to those early machines, they are programmed as embedded
+computers using a full C++ compiler running on a desktop or laptop
+system.
 
 === Arduino in the Lego Program
 
@@ -131,7 +131,7 @@ isn't a huge deal, but it's still a fairly large language which we
 couldn't cover in any detail in our class time.
 
 I finally decided to just try and write a small Python-inspired
-language that could fit on the Arduino. An Arduino Duemilanova has:
+language that could fit on the Arduino. An Arduino Duemilanove has:
 
  * 32kB of Flash
  * 2kb of RAM
@@ -163,7 +163,7 @@ The goals of the Snek language are:
 
 Snek is Python-inspired, but it is not Python. It is possible to write
 Snek programs that run under a full Python (version 3) system, but few
-Python3 programs will run under Snek.
+Python programs will run under Snek.
 
 == A Gentle Snek Tutorial
 
@@ -221,7 +221,7 @@ the print function displays exactly what it was given, without
 decoration, while the command processor prints values in the same
 format as they would appear in a program.
 
-Finally, let's write a function which prints the value and call it:
+Now let's write a function which prints the value and call it:
 
 	> def hello():
 	+     print('hello, world')
