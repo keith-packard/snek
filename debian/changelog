@@ -1,3 +1,10 @@
+snek (0.94-1) unstable; urgency=medium
+
+  * 0.94-1
+  * Fix SAMD21 GPIO pincfg computation. GPIOs were not working right.
+
+ -- Keith Packard <keithp@keithp.com>  Thu, 11 Apr 2019 23:46:14 -0700
+
 snek (0.93-1) unstable; urgency=medium
 
   * 0.93-1
