@@ -1,3 +1,13 @@
+snek (0.93-1) unstable; urgency=medium
+
+  * 0.93-1
+  * Fix SAMD21 USB driver INT endpoint HW configuration.
+  * Provide tutorial instructions for GPIO functions
+  * Document snekde in snek.pdf
+  * Expand per-board documentation
+
+ -- Keith Packard <keithp@keithp.com>  Thu, 11 Apr 2019 21:27:59 -0700
+
 snek (0.92-1) unstable; urgency=medium
 
   * 0.92-1
