@@ -1424,7 +1424,7 @@ Compute the square root of its numeric argument.
 	> math.sqrt(2)
 	1.414214
 
-== Common System Builtin Functions
+== Common System Functions
 
 These functions are system-dependent, but are generally available. If
 they are available, they will work as described below.
@@ -1496,14 +1496,14 @@ Return the floor of x, the largest integer less than or equal to x.
 math.fmod(x,y)::
 Return the modulus of x and y: x - trunc(x/y) * y
 math.frexp(x)::
-Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 <= abs(frac) < 1, and x = frac * pow(2,exp).
+Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 ≤ abs(frac) < 1, and x = frac * pow(2,exp).
 math.fsum(l)::
 Returns the sum of the numbers in l, which must be a list or tuple.
 math.gcd(x,y)::
 Return the greatest common divisor of x and y.
 math.isclose(x,y,rel_val=1e-6,abs_val=0.0)::
 Returns a boolean indicating whether x and y are 'close' together. This is defined as
-abs(x-y) <= max(rel_tol * max(abs(a), abs(b)), abs_tol).
+abs(x-y) ≤ max(rel_tol * max(abs(a), abs(b)), abs_tol).
 math.isfinite(x)::
 Returns True if x is finite else False
 math.isinf::
@@ -1543,13 +1543,13 @@ Returns x raised to the y^th^ power.
 === Trigonometric functions
 
 math.acos(x)::
-Returns the arc cosine of x in the range of 0 \<= acos(x) \<= π.
+Returns the arc cosine of x in the range of 0 ≤ acos(x) ≤ π.
 math.asin(x)::
-Returns the arc sine of x in the range of -π/2 \<= asin(x) \<= π/2.
+Returns the arc sine of x in the range of -π/2 ≤ asin(x) ≤ π/2.
 math.atan(x)::
-Returns the arc tangent of x in the range of -π/2 \<= atan(x) \<= π/2.
+Returns the arc tangent of x in the range of -π/2 ≤ atan(x) ≤ π/2.
 math.atan2(y,x)::
-Returns the arc tangent of y/x in the range of -π \<= atan2(y,x) \<= π.
+Returns the arc tangent of y/x in the range of -π ≤ atan2(y,x) ≤ π.
 math.cos(x)::
 Returns the cosine of x.
 math.hypot(x,y)::
@@ -1619,7 +1619,7 @@ to 1.
 Output pins are either *on* or *off*. A pin which is *on* has its
 value set to the current power for that pin; changes to the current
 power for the pin are effective immediately. A pin which is *off* has
-its output set to zero, but Snek remembers the setpower level and will
+its output set to zero, but Snek remembers the `setpower` level and will
 restore the pin to that level when it is turned *on*.
 
 === `talkto(` _pin_ `)`
