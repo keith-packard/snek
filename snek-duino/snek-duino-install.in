@@ -4,7 +4,7 @@ SHAREDIR="@SHAREDIR@"
 
 SNEKDUINO="$SHAREDIR/snek-duino-@SNEK_VERSION@.hex"
 
-action="load"
+action="fuseload"
 
 ISP=usbtiny
 
@@ -14,14 +14,17 @@ for i in "$@"; do
     case "$mode" in
 	arg)
 	    case "$i" in
-		fuse|load)
+		fuse|load|fuseload)
 		    action="$i"
 		    ;;
 		-isp|--isp)
 		    mode=isp
 		    ;;
+		-hex|--hex)
+		    mode=hex
+		    ;;
 		*)
-		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {load|fuse}" 1>&2
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-duino.hex} {fuseload|load|fuse}" 1>&2
 		      exit 1
 		      ;;
 	    esac
@@ -30,16 +33,21 @@ for i in "$@"; do
 	    ISP="$i"
 	    mode=arg
 	    ;;
+	hex)
+	    SNEKDUINO="$i"
+	    mode=arg
+	    ;;
     esac
 done
 
 case "$action" in
+    fuse)
+	avrdude -F -V -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
+	;;
+    fuseload)
+	avrdude -F -V -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m -U flash:w:"${SNEKDUINO}"
+	;;
     load)
 	avrdude -F -V -c $ISP -p ATMEGA328P -U flash:w:"${SNEKDUINO}"
-	;;
-    fuse)
-	avrdude -F -V -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m
-	avrdude -F -V -c $ISP -p ATMEGA328P -U hfuse:w:0xd7:m
-	avrdude -F -V -c $ISP -p ATMEGA328P -U efuse:w:0xfd:m
 	;;
 esac

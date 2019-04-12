@@ -25,10 +25,20 @@ Duemilanova board.
 \-isp <ISP model>
 Specifies the programmer to use, common options are 'usbtiny'
 and 'avrisp2'. The default is 'usbtiny'.
+.TP
+\-hex <snek.hex>
+Specifies the hex file to load to the board. The default is the
+currently installed version of Snek.
 .SH COMMANDS
 .TP
+fuseload
+Sets the target fuse bits for Snek usage and then loads Snek to the
+device. This is the default command
+.TP
 load
-Loads Snek to the device. This is the default command
+Loads Snek to the device without first setting the fuse bits. Snek
+will not work correctly if the fuse bits are not set correctly, so
+only do this if the target has already had the fuse bits set correctly.
 .TP
 fuse
 Sets the target fuse bits suitable for Snek usage. You must do this
