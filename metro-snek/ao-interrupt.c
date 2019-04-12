@@ -14,11 +14,6 @@
 
 #include <ao.h>
 
-#ifndef IS_FLASH_LOADER
-#error Should define IS_FLASH_LOADER
-#define IS_FLASH_LOADER	0
-#endif
-
 extern void main(void);
 extern char __stack__;
 extern char __text_start__, __text_end__;
@@ -45,19 +40,11 @@ samd21_flash_size(void)
 	uint32_t	psz = (samd21_nvmctrl.param >> SAMD21_NVMCTRL_PARAM_PSZ) & SAMD21_NVMCTRL_PARAM_PSZ_MASK;
 
 	/* page size is 2**(3 + psz) */
-
 	return nvmp << (3 + psz);
 }
 
 void start(void)
 {
-#if AO_BOOT_CHAIN
-	if (ao_boot_check_chain()) {
-#if AO_BOOT_PIN
-		ao_boot_check_pin();
-#endif
-	}
-#endif
 	/* Turn on sysctrl */
 	samd21_pm.apbamask |= (1 << SAMD21_PM_APBAMASK_SYSCTRL);
 

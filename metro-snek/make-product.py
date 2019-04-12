@@ -32,6 +32,9 @@ def write_hex(a, description):
     print("#define AO_%s_NUMBER 0x%04x\n" % (description, a))
 
 
+def auto_int(x):
+    return int(x,0)
+
 def make_product():
     manufacturer = "keithp.com"
     product = "MetroSnek"
@@ -44,9 +47,10 @@ def make_product():
     parse = argparse.ArgumentParser()
     parse.add_argument("-m", "--manufacturer", help="manufacturer name", default=manufacturer)
     parse.add_argument("-p", "--product", help="product name", default=product)
-    parse.add_argument("-V", "--id_vendor", type=int, help="vendor id number", default=id_vendor)
-    parse.add_argument("-P", "--id_product", type=int, help="product id number", default=id_product)
+    parse.add_argument("-V", "--id_vendor", type=auto_int, help="vendor id number", default=id_vendor)
+    parse.add_argument("-i", "--id_product", type=auto_int, help="product id number", default=id_product)
     parse.add_argument("-v", "--version", help="version string", default=version)
+    parse.add_argument("-s", "--serial", type=auto_int, help="serial number", default=serial)
     args = parse.parse_args()
     if args.manufacturer:
         manufacturer = args.manufacturer
@@ -58,6 +62,8 @@ def make_product():
         id_product = args.id_product
     if args.version:
         version = args.version
+    if args.serial:
+        serial = args.serial
     write_ucs2(manufacturer, "iManufacturer")
     write_ucs2(product, "iProduct")
     write_ucs2("%06d" % serial, "iSerial")

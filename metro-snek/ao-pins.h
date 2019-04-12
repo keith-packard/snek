@@ -32,26 +32,10 @@
 #define USE_SERIAL_0_STDIN	0
 #define SERIAL_0_PA10_PA11	1
 
-#define HAS_SPI_1		0
-#define SPI_1_PB3_PB4_PB5	1
-#define SPI_1_OSPEEDR		STM_OSPEEDR_10MHz
-
-#define HAS_SPI_2		0
-#define SPI_2_PB13_PB14_PB15	1	/* Flash, Companion, Radio */
-#define SPI_2_PD1_PD3_PD4	0
-#define SPI_2_OSPEEDR		STM_OSPEEDR_10MHz
-
 #define HAS_USB			1
-#define USE_USB_STDIO		0
 #define AO_USB_OUT_HOOK		1
 #define USE_USB_FIFO		1
 #define HAS_BEEP		0
-#define PACKET_HAS_SLAVE	0
-#define IS_FLASH_LOADER		0
-
-#define AO_BOOT_CHAIN		0
-
-#define LOW_LEVEL_DEBUG		0
 
 #define AO_SNEK_TIMER_FUNC_E	0
 #define AO_SNEK_TIMER_FUNC_F	0x80
@@ -232,16 +216,11 @@
 
 #define LEDS_AVAILABLE		(AO_LED_TX)
 
-#define AO_CMD_LEN	128
-#define AO_STACK_SIZE	2048
+#define AO_CMD_LEN		128
+#define AO_STACK_SIZE		2048
 
 #define AO_TICK_TYPE		uint32_t
 #define AO_TICK_SIGNED		int32_t
-
-#define M25_MAX_CHIPS		1
-#define AO_M25_SPI_CS_PORT	(&samd21_gpioa)
-#define AO_M25_SPI_CS_MASK	(1 << 13)
-#define AO_M25_SPI_BUS		AO_SPI_PB23_PB03_PB22
 
 #define SNEK_GETC()		getc(stdin)
 #define SNEK_POOL		(16 * 1024)
@@ -249,7 +228,8 @@
 #define AO_TCC_PERIOD		65536
 #define SNEK_PWM_MAX		(AO_TCC_PERIOD-1)
 
-#define SNEK_IO_GETC(file)	ao_usb_getc(file)
+#define SNEK_IO_GETC(file)	ao_usb_getc()
+#define SNEK_IO_WAITING(file)	ao_usb_waiting()
 
 void
 ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t c, uint16_t value);
@@ -261,6 +241,9 @@ ao_snek_clr_pwm(void *gpio, uint8_t pin);
 
 int
 ao_snek_getc(FILE *stream);
+
+bool
+ao_usb_waiting(void);
 
 void
 snek(void);

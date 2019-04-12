@@ -24,19 +24,11 @@
 #define AO_POWER_MANAGEMENT	0
 #endif
 
-#ifndef USE_USB_STDIO
-#define USE_USB_STDIO	1
-#endif
-
 #if USE_USB_FIFO
 static struct ao_fifo	ao_usb_rx_fifo;
 #endif
 
-#if USE_USB_STDIO
-#define AO_USB_OUT_SLEEP_ADDR	(&ao_stdin_ready)
-#else
 #define AO_USB_OUT_SLEEP_ADDR	(&ao_usb_out_avail)
-#endif
 
 #define SAMD21_USB_ALIGN	__attribute__ ((aligned(4)))
 
@@ -85,17 +77,6 @@ static uint8_t	ao_usb_rx_count, ao_usb_rx_pos;
 static uint8_t	ao_usb_out_buf[2][AO_USB_OUT_SIZE]  SAMD21_USB_ALIGN;
 
 #endif
-#if AO_USB_HAS_IN2
-static uint8_t	ao_usb_in_tx2_which;
-static uint8_t	ao_usb_tx2_count;
-static uint8_t	ao_usb_in2_buf[2][AO_USB_IN_SIZE]  SAMD21_USB_ALIGN;
-#endif
-
-#if AO_USB_HAS_IN3
-static uint8_t	ao_usb_in_tx3_which;
-static uint8_t	ao_usb_tx3_count;
-static uint8_t	ao_usb_in3_buf[2][AO_USB_IN_SIZE]  SAMD21_USB_ALIGN;
-#endif
 
 /* Marks when we don't need to send an IN packet.
  * This happens only when the last IN packet is not full,
@@ -109,26 +90,6 @@ static uint8_t	ao_usb_in_flushed;
  * to wait for it to be delivered.
  */
 static uint8_t	ao_usb_in_pending;
-
-#if AO_USB_HAS_IN2
-/* Marks when we have delivered an IN packet to the hardware
- * and it has not been received yet. ao_sleep on this address
- * to wait for it to be delivered.
- */
-static uint8_t	ao_usb_in2_pending;
-static uint16_t	in2_count;
-static uint8_t	ao_usb_in2_flushed;
-#endif
-
-#if AO_USB_HAS_IN3
-/* Marks when we have delivered an IN packet to the hardware
- * and it has not been received yet. ao_sleep on this address
- * to wait for it to be delivered.
- */
-static uint8_t	ao_usb_in3_pending;
-static uint16_t	in3_count;
-static uint8_t	ao_usb_in3_flushed;
-#endif
 
 /* Marks when an OUT packet has been received by the hardware
  * but not pulled to the shadow buffer.
@@ -241,10 +202,10 @@ ao_usb_set_configuration(void)
 {
 #if AO_USB_HAS_INT
 	ao_usb_init_ep(AO_USB_INT_EP,
-		       SAMD21_USB_EP_EPCFG_EP_TYPE_OUT_INTERRUPT,
-		       ao_usb_int_buf, AO_USB_INT_SIZE,
-		       SAMD21_USB_EP_EPCFG_EP_TYPE_IN_DISABLED,
-		       NULL, 0);
+		       SAMD21_USB_EP_EPCFG_EP_TYPE_OUT_DISABLED,
+		       NULL, 0,
+		       SAMD21_USB_EP_EPCFG_EP_TYPE_IN_INTERRUPT,
+		       ao_usb_int_buf, AO_USB_INT_SIZE);
 #endif
 
 #if AO_USB_HAS_OUT
@@ -270,32 +231,9 @@ ao_usb_set_configuration(void)
 	ao_usb_in_tx_which = 0;
 #endif
 
-#if AO_USB_HAS_IN2
-	foo
-	/* First transmit data goes to buffer 0 */
-	ao_usb_in_tx2_which = 0;
-#endif
-
-#if AO_USB_HAS_IN3
-	foo
-	/* First transmit data goes to buffer 0 */
-	ao_usb_in_tx3_which = 0;
-#endif
-
-	ao_usb_in_flushed = 0;
+	ao_usb_in_flushed = 1;
 	ao_usb_in_pending = 0;
 	ao_wakeup(&ao_usb_in_pending);
-#if AO_USB_HAS_IN2
-	ao_usb_in2_flushed = 0;
-	ao_usb_in2_pending = 0;
-	ao_wakeup(&ao_usb_in2_pending);
-#endif
-
-#if AO_USB_HAS_IN3
-	ao_usb_in3_flushed = 0;
-	ao_usb_in3_pending = 0;
-	ao_wakeup(&ao_usb_in3_pending);
-#endif
 
 	ao_usb_out_avail = 0;
 	ao_usb_configuration = 0;
@@ -303,9 +241,6 @@ ao_usb_set_configuration(void)
 	ao_wakeup(AO_USB_OUT_SLEEP_ADDR);
 
 	ao_usb_running = 1;
-#if AO_USB_DIRECTIO
-	ao_wakeup(&ao_usb_running);
-#endif
 }
 
 /* Send an IN data packet */
@@ -810,9 +745,8 @@ _ao_usb_pollchar(void)
 }
 
 int
-ao_usb_getc(FILE *file)
+ao_usb_getc(void)
 {
-	(void) file;
 	int	c;
 
 	ao_arch_block_interrupts();
@@ -821,6 +755,18 @@ ao_usb_getc(FILE *file)
 	ao_arch_release_interrupts();
 	return c;
 }
+
+bool
+ao_usb_waiting(void)
+{
+	bool waiting;
+
+	ao_arch_block_interrupts();
+	waiting = !ao_fifo_empty(&ao_usb_rx_fifo);
+	ao_arch_release_interrupts();
+	return waiting;
+}
+
 #endif
 
 void

@@ -21,6 +21,9 @@
 #ifndef SNEK_IO_PUTC
 #define SNEK_IO_PUTC(c) putchar(c)
 #endif
+#ifndef SNEK_IO_WAITING
+#define SNEK_IO_WAITING(s) false
+#endif
 #ifndef SNEK_IO_LINEBUF
 #define SNEK_IO_LINEBUF	132
 #endif
@@ -59,7 +62,8 @@ snek_io_getc(FILE *stream)
 	restart_raw:
 		used = avail = 0;
 		for (;;) {
-			fflush(stdout);
+			if (!SNEK_IO_WAITING(stream))
+				fflush(stdout);
 			uint8_t c = SNEK_IO_GETC(stream);
 
 			switch (c)

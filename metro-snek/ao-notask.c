@@ -23,19 +23,8 @@ static volatile void *ao_wchan;
 uint8_t
 ao_sleep(void *wchan)
 {
-#if 1
 	ao_wchan = wchan;
 	ao_arch_wait_interrupt();
-#else
-	uint8_t	sreg;
-
-	ao_wchan = wchan;
-	asm("in %0,__SREG__" : "=&r" (sreg));
-	sei();
-	while (ao_wchan)
-		ao_arch_cpu_idle();
-	asm("out __SREG__,%0" : : "r" (sreg));
-#endif
 	return 0;
 }
 

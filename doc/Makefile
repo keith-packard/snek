@@ -30,7 +30,7 @@ install: $(DOCFILES)
 	install -d $(DESTDIR)$(DOCDIR)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR); done
 
-upload:
+upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) fonts $(SNEKDOC)
 
 clean::

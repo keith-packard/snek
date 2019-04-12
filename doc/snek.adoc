@@ -52,7 +52,7 @@ http://keithp.com
 
 Teaching computer programming to students in the 10-14 age range
 offers some interesting challenges. Introductory, “blocks”, languages
-can become frustratingly slow to create code, and don't provide any
+can become frustratingly slow to create code, and don't develop
 concrete skills to bring to more advanced languages. Sophisticated
 languages like C, Java and even Python are so large as to overwhelm
 the student with rich semantics like objects and higher level
@@ -63,17 +63,17 @@ microcomputers running very small languages, like BASIC, Forth or
 Logo. These languages were restricted not to help the student, but
 because the hosts they ran on were very small.
 
-Because computing is so ubiquitous these days, introductory
-programming is taught today in a huge range of environments, from
-embedded systems through cloud-based systems. Many of these are
-technological dead-ends; closed systems that offer no way to even
-extract source code and re-use it in another environment.
+Introductory programming is taught today in a huge range of
+environments, from embedded systems through cloud-based systems. Many
+of these are technological dead-ends—closed systems that offer no way
+to even extract source code and re-use it in another environment.
 
-Some systems, such as Raspberry PI and Arduino are open and allow
-developers to share code. However, while the smallest of these are
-similar in memory and CPU size to those early machines, they are
-programmed as embedded computers using a full C++ compiler running on
-a desktop or laptop system.
+Some systems, such as Raspberry PI and Arduino are open—they use
+standard languages so that skills learned with them are useful
+elsewhere.. However, while the smallest of these are similar in memory
+and CPU size to those early machines, they are programmed as embedded
+computers using a full C++ compiler running on a desktop or laptop
+system.
 
 === Arduino in the Lego Program
 
@@ -131,7 +131,7 @@ isn't a huge deal, but it's still a fairly large language which we
 couldn't cover in any detail in our class time.
 
 I finally decided to just try and write a small Python-inspired
-language that could fit on the Arduino. An Arduino Duemilanova has:
+language that could fit on the Arduino. An Arduino Duemilanove has:
 
  * 32kB of Flash
  * 2kb of RAM
@@ -163,7 +163,7 @@ The goals of the Snek language are:
 
 Snek is Python-inspired, but it is not Python. It is possible to write
 Snek programs that run under a full Python (version 3) system, but few
-Python3 programs will run under Snek.
+Python programs will run under Snek.
 
 == A Gentle Snek Tutorial
 
@@ -221,7 +221,7 @@ the print function displays exactly what it was given, without
 decoration, while the command processor prints values in the same
 format as they would appear in a program.
 
-Finally, let's write a function which prints the value and call it:
+Now let's write a function which prints the value and call it:
 
 	> def hello():
 	+     print('hello, world')
@@ -514,6 +514,80 @@ lower case and digits are in a string:
 
 This example also introduces the less-than-or-equal comparison
 operator, ``\<=``, and demonstrates that ``for v in a`` also works on strings.
+
+=== Controlling GPIOs
+
+General-purpose IO pins, or “GPIOs”, are pins on an embedded processor
+which can be controlled by a program running on that processor.
+
+When snek runs on embedded devices like the Duemilanove or the Metro
+M0 Express, it provides functions to directly manipulate these GPIO
+pins. You can use either of these, or any other device which uses the
+standard Arduino pin numbers, for these examples.
+
+==== Turning on the built-in LED
+
+Let's start by turning on the LED which is usually available on
+Digital pin 13:
+
+	> talkto(13)
+	> on()
+
+Let's get a bit fancier and blink it
+
+	> talkto(13)
+	> while True:
+	+     onfor(.5)
+	+     time.sleep(.5)
+
+==== Hooking up a digital input
+
+Find a bit of wire to connect from Digital pin 1 to GND and let's
+control the LED with this primitive switch:
+
+	> listento(1)
+	> talkto(13)
+	> while True:
+	+     if read():
+	+         on()
+	+     else:
+	+         off()
+
+When the wire is connected, the LED turns *off*, and when the wire is
+not, the LED turns *on*. That's how simple switches work on Arduino.
+
+==== Using an analog input
+
+If you've got a light sensor or potentiometer, you can hook that up to
+Analog pin 0 and make the LED track the sensor:
+
+	> listento(14)
+	> talkto(13)
+	> while True:
+	+     onfor(1-read())
+	+     time.sleep(1-read())
+
+Note that the Arduino analog pin A0 is called pin 14 in snek (A1 is
+pin 15, etc).
+
+==== Controlling motors
+
+So far, we've only talked about using one pin at a time. Arduino motor
+controllers take two pins—one for speed and one for direction. Snek
+lets you tell it both pins at the same time and then provides separate
+functions to set the speed and direction. If you have a motor
+controller hooked to your board with pin 3 as speed and pin 2 for
+direction you can run the motor at half power and have it alternate
+directions with:
+
+	> talkto((3,2))
+	> setpower(0.5)
+	> on()
+	> while True:
+	+     setleft()
+	+     time.sleep(1)
+	+     setright()
+	+     time.sleep(1)
 
 == Lexical Structure
 
@@ -1350,7 +1424,7 @@ Compute the square root of its numeric argument.
 	> math.sqrt(2)
 	1.414214
 
-== Common System Builtin Functions
+== Common System Functions
 
 These functions are system-dependent, but are generally available. If
 they are available, they will work as described below.
@@ -1422,14 +1496,14 @@ Return the floor of x, the largest integer less than or equal to x.
 math.fmod(x,y)::
 Return the modulus of x and y: x - trunc(x/y) * y
 math.frexp(x)::
-Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 <= abs(frac) < 1, and x = frac * pow(2,exp).
+Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 ≤ abs(frac) < 1, and x = frac * pow(2,exp).
 math.fsum(l)::
 Returns the sum of the numbers in l, which must be a list or tuple.
 math.gcd(x,y)::
 Return the greatest common divisor of x and y.
 math.isclose(x,y,rel_val=1e-6,abs_val=0.0)::
 Returns a boolean indicating whether x and y are 'close' together. This is defined as
-abs(x-y) <= max(rel_tol * max(abs(a), abs(b)), abs_tol).
+abs(x-y) ≤ max(rel_tol * max(abs(a), abs(b)), abs_tol).
 math.isfinite(x)::
 Returns True if x is finite else False
 math.isinf::
@@ -1469,13 +1543,13 @@ Returns x raised to the y^th^ power.
 === Trigonometric functions
 
 math.acos(x)::
-Returns the arc cosine of x in the range of 0 \<= acos(x) \<= π.
+Returns the arc cosine of x in the range of 0 ≤ acos(x) ≤ π.
 math.asin(x)::
-Returns the arc sine of x in the range of -π/2 \<= asin(x) \<= π/2.
+Returns the arc sine of x in the range of -π/2 ≤ asin(x) ≤ π/2.
 math.atan(x)::
-Returns the arc tangent of x in the range of -π/2 \<= atan(x) \<= π/2.
+Returns the arc tangent of x in the range of -π/2 ≤ atan(x) ≤ π/2.
 math.atan2(y,x)::
-Returns the arc tangent of y/x in the range of -π \<= atan2(y,x) \<= π.
+Returns the arc tangent of y/x in the range of -π ≤ atan2(y,x) ≤ π.
 math.cos(x)::
 Returns the cosine of x.
 math.hypot(x,y)::
@@ -1545,7 +1619,7 @@ to 1.
 Output pins are either *on* or *off*. A pin which is *on* has its
 value set to the current power for that pin; changes to the current
 power for the pin are effective immediately. A pin which is *off* has
-its output set to zero, but Snek remembers the setpower level and will
+its output set to zero, but Snek remembers the `setpower` level and will
 restore the pin to that level when it is turned *on*.
 
 === `talkto(` _pin_ `)`
@@ -1686,18 +1760,108 @@ the character read, which can be converted to a string using
 with _nodelay_ `= True`, then `stdscr.getch()` will immediately
 return -1 if no characters are pending.
 
+== Snek Development Environment
+
+The Snek Development Environment, snekde, is a Python program which runs
+on Linux, Mac OS X and Windows to work with small devices running
+Snek, such as the Duemilanove and Metro M0 Express boards.
+
+=== Starting Snekde
+
+On Windows and Linux, launch snekde from your application menu. On Mac OS
+X, snekde is installed along with the other snek files in the Snek
+folder inside your personal Applications folder, which is
+inside your Home folder. Double click on the Snekde icon to launch.
+
+Snekde runs inside a console or terminal window and doesn't use the
+mouse at all, instead it is controlled entirely using keyboard
+commands.
+
+Snekde splits the window into two panes. The upper pane is the
+”editor pane” that holds your snek program. The lower pane is the
+“console pane” and handles communications with the snek device.
+
+=== Basic Navigation
+
+Across the top of the window you'll see a list of commands which are
+bound to function keys. Those are there to remind you how to control
+snekde.
+
+If your function keys don't work, you can use the Esc key
+along with a number key instead. Press and release the Esc key, then
+press and release a number key. For instance, to invoke the F1
+command, press and release Esc, then press and release '1'.
+
+Between the two panes is a separator line. At the end of that line is
+the name of the currently connected snek device, such as /dev/ttyUSB0
+on Linux or COM12 on Windows. If there isn't a device connected, it
+will say "<no device>".
+
+The cursor shows which pane you are currently working with. To switch
+between the editor and console panes, use the Page Up or Page Down
+keys. If you don't have either of those, or if they don't work, you
+can also use Ctrl-o (press and hold the control key, press the 'o' key
+and then release both).
+
+You can move around the current pane with the arrow, home and end
+keys. Cut/paste/copy use Ctrl-x, Ctrl-v and Ctrl-c or Esc-x, Esc-v and
+Esc-c respectively. To mark a section of text for a Cut or Paste
+command, press Ctrl-space then use regular movement commands. The
+selected region of text will be highlighted.
+
+=== Connecting to a Device
+
+To connect to a device running snek, press the F1 key (usually right
+next to the ESC key on your keyboard). That will display a dialog box
+in the middle of the screen listing all of the devices which might be
+running snek (if you've got a serial modem or other similar device,
+that will also be listed here). Select the target device and press the
+ENTER key.
+
+Don't expect anything to happen in the lower pane just yet; you'll
+have to get the attention of the device first.
+
+Switch to the Console pane and press Ctrl-c to interrupt any currently
+running snek program. You should see the Snek prompt (“> ”) appear in
+the pane.
+
+=== Getting and Putting Programs to a Device
+
+The Snek device holds one program in non-volatile memory. When it
+starts up, it will run that program automatically. This lets you set
+up the device so that it will perform some action when it is turned on
+without needing to communicate with it first.
+
+The Get command fetches the current program from the connected device
+and puts it into the Editor pane. The Put command writes the Editor
+pane contents into non-volatile memory in the target device and then
+restarts the target device to have it re-load the program. Both of
+these commands will interrupt any running Snek program before doing
+any work.
+
+=== Loading and Saving Programs to the Host
+
+You can also save and load programs to the host file system. Both of
+these commands prompt for a filename, which you can enter with the
+keyboard.
+
 [appendix]
-== Installing Snek on Arduino Duemilanova
+== Snek on Arduino Duemilanove
 
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
-Snek includes a Linux shell script to install the binary using
-'avrdude'.
+On Linux, the snek installation includes a shell script,
+snek-duino-install, to install the binary using 'avrdude'. Read the
+snek-duino-install manual (also included in the installation) for more
+information.
+
+Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
+functions. It does not include the Math functions.
 
 [appendix]
-== Installing Snek on Metro M0 Express
+== Snek on Metro M0 Express
 
 The Adafruit Metro M0 Express board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
@@ -1705,5 +1869,10 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-At this point, find the metro-snek-{version}.uf2 file and copy it to
-the CURRENT.UF2 file on the Metro M0 file system.
+Then, find the metro-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Metro M0 file system.
+
+Snek for the Metro M0 Express includes the Common System,
+Math, GPIO, and EEPROM functions. Snek for the Metro M0 Express also
+runs on the Feather M0 boards

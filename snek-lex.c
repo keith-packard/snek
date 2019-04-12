@@ -269,6 +269,9 @@ string(char q)
 			case 'n':
 				c = '\n';
 				break;
+			case 'r':
+				c = '\r';
+				break;
 			case 't':
 				c = '\t';
 				break;
@@ -280,7 +283,6 @@ string(char q)
 				c = t;
 				break;
 			default:
-				c = lexchar();
 				break;
 			}
 		}

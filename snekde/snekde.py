@@ -647,13 +647,13 @@ class EditWin:
         return self.text[start:end]
 
     def dispatch(self, ch):
-        if ch == 0:
+        if ch == 0 or ch == ord(' ') + 0x80:
             self.toggle_mark()
-        elif ch == ord('c') & 0x1f:
+        elif ch == ord('c') & 0x1f or ch == ord('c') + 0x80:
             self.copy(delete=False)
-        elif ch == ord('x') & 0x1f:
+        elif ch == ord('x') & 0x1f or ch == ord('x') + 0x80:
             self.copy(delete=True)
-        elif ch == ord('v') & 0x1f:
+        elif ch == ord('v') & 0x1f or ch == ord('v') + 0x80:
             self.paste()
         elif ch == ord('k') & 0x1f:
             self.delete_to_eol()

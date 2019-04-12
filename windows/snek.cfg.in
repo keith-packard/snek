@@ -22,6 +22,9 @@ files =../COPYING
 	../snek-duino/snek-duino-@SNEK_VERSION@.hex
 	../metro-snek/metro-snek-@SNEK_VERSION@.uf2
 	../examples
+	altusmetrum.inf
+	altusmetrum.cat
 
 [Build]
 installer_name=snek-windows-@SNEK_VERSION_DASH@.exe
+nsi_template=pyapp_snek.nsi

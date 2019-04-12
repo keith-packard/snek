@@ -69,5 +69,5 @@ clean:
 	rm -rf serial
 	rm -f $(MACOSX_ICON) $(MACOSX_ICON_PNGS)
 	rm -f Info.plist
-	rm -rf macosx $(MACOSX_DIST)
+	rm -rf macosx *.dmg
 
