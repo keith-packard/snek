@@ -43,9 +43,10 @@ Here's some places that have seen recent work
 
  * Packaging. Debian, General Linux and Windows packages are
    available. These packages include menu entries and icons to run the
-   host snek implementation and snekde in a terminal window. The Linux
+   host snek implementation and snekde in a terminal window along with
+   binaries for Duemilanove and Metro M0 Express. The Linux
    packages also include a shell script to install snek-duino onto an
-   Arduino Duemilanova.
+   Duemilanove.
 
  * Dictionaries. Implemented using the list code, these can be indexed
    with any immutable type (everything other than lists and
@@ -53,6 +54,8 @@ Here's some places that have seen recent work
    significant changes in lola to pack the parse tables even smaller.
 
 ## Build and Run!
+
+If you want to build Snek yourself, 
 
 ### Dependencies
 To build Snek you need these dependencies:
@@ -80,40 +83,53 @@ In the source of the project run:
 	$ make
 	$ make install
 
-### Running on Linux
+## Running on Duemilanove
 
-	$ snek
+On the Duemilanove board, Snek takes over the entire device, without
+leaving room for the serial boot loader. Because of this, you will
+need an AVR programming device, such as a [USBtiny from
+Adafruit](https://www.adafruit.com/product/46).
 
-Then, just enjoy!
+The snek installation for Linux includes a script, snek-duino-install,
+which uses avrdude to adjust the fuse values and flash the snek
+image. On that platform, all you need to do is run it:
 
-### Running on Arduino
+	$ snek-duino-install
 
-Snek takes over the entire Arduino device, without leaving room for
-the serial boot loader. Because of this, you will need an AVR programming device, such as a
-[USBtiny from Adafruit](https://www.adafruit.com/product/46).
+## Running on the Metro M0 Express (or compatible)
 
-Once snek has been compiled, first reset the fuses on the device to
-make the Arduino run Snek instead of attempting to run the
-non-existent boot loader. You will only need to set the fuses once per device.
+On the Adafruit Metro M0 Express board, Snek uses only a small part of
+the available flash space and so it can be installed using the regular
+boot loader. Connect the board over USB to the target machine (Linux,
+Mac OSX and Windows all work fine). Now press the reset button
+twice. The boot loader should present a file system on your host. Copy
+the binary included with the snek distribution, which is named
+“metro-snek-<version>.uf2” to the CURRENT.UF2 file on that file
+system. This will magically flash the application to the device and
+then it will reboot running Snek.
 
-	$ (cd snek-duino && make set-fuse)
+## Running on Linux or Windows
 
-Next, flash the Snek interpreter:
+Snek is also built to run natively on Linux and Windows. When
+installed, you'll find it available in the regular system menu. Snek
+should be easy to get running on Mac OS X, but I don't have a
+cross-compilation environment available on Linux to provide a
+pre-built version.
 
-	$ (cd snek-duino && make load)
+## The Snek Development Environment
 
-Now, you can run the snek development environment:
-
-	$ snekde
+Snekde is provided on all three platforms; you'll find it in the
+system menu on Linux and Windows and down in your personal
+Applications directory on Mac OS X.
 
 The snekde window is split into two parts. The upper 2/3 is a text
 editor for source code. The bottom 1/3 lets you interact with the
-Arduino over the serial port. The very top line lists functions that
+Snek device over the USB port. The very top line lists functions that
 you can invoke by pressing the associated function key:
 
  * F1 — Device. Connect to a serial port.
- * F2 — Get. Get source code saved to the Arduino eeprom into the editor pane.
- * F3 — Put. Put code from the editor pane into the Arduino eeprom.
+ * F2 — Get. Get source code saved to the Snek device eeprom into the editor pane.
+ * F3 — Put. Put code from the editor pane into the Snek device eeprom.
  * F4 — Quit. Exit snekde.
  * F5 — Load. Read source code from the file system into the editor pane.
  * F6 — Save. Write source code from the editor pane to the file system.
@@ -129,7 +145,7 @@ There are a couple more keybindings which you'll want to know:
 Tab auto-indents the current line. Backspace backs up over a tabstop
 when appropriate.
 
-### Examples
+## Examples
 
 There are examples provided which work with both Python and Snek.
 
