@@ -6,7 +6,7 @@ icon=snek.ico
 console=true
 
 [Shortcut Snek]
-target=snek.exe
+target=$INSTDIR\snek.exe
 console=true
 icon=snek.ico
 
@@ -22,6 +22,7 @@ files =../COPYING
 	../snek-duino/snek-duino-@SNEK_VERSION@.hex
 	../metro-snek/metro-snek-@SNEK_VERSION@.uf2
 	../examples
+	snek.exe
 	altusmetrum.inf
 	altusmetrum.cat
 
