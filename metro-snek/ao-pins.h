@@ -46,12 +46,6 @@
 #define AO_USB_OUT_HOOK		1
 #define USE_USB_FIFO		1
 #define HAS_BEEP		0
-#define PACKET_HAS_SLAVE	0
-#define IS_FLASH_LOADER		0
-
-#define AO_BOOT_CHAIN		0
-
-#define LOW_LEVEL_DEBUG		0
 
 #define AO_SNEK_TIMER_FUNC_E	0
 #define AO_SNEK_TIMER_FUNC_F	0x80
