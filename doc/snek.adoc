@@ -1760,18 +1760,108 @@ the character read, which can be converted to a string using
 with _nodelay_ `= True`, then `stdscr.getch()` will immediately
 return -1 if no characters are pending.
 
+== Snek Development Environment
+
+The Snek Development Environment, snekde, is a Python program which runs
+on Linux, Mac OS X and Windows to work with small devices running
+Snek, such as the Duemilanove and Metro M0 Express boards.
+
+=== Starting Snekde
+
+On Windows and Linux, launch snekde from your application menu. On Mac OS
+X, snekde is installed along with the other snek files in the Snek
+folder inside your personal Applications folder, which is
+inside your Home folder. Double click on the Snekde icon to launch.
+
+Snekde runs inside a console or terminal window and doesn't use the
+mouse at all, instead it is controlled entirely using keyboard
+commands.
+
+Snekde splits the window into two panes. The upper pane is the
+”editor pane” that holds your snek program. The lower pane is the
+“console pane” and handles communications with the snek device.
+
+=== Basic Navigation
+
+Across the top of the window you'll see a list of commands which are
+bound to function keys. Those are there to remind you how to control
+snekde.
+
+If your function keys don't work, you can use the Esc key
+along with a number key instead. Press and release the Esc key, then
+press and release a number key. For instance, to invoke the F1
+command, press and release Esc, then press and release '1'.
+
+Between the two panes is a separator line. At the end of that line is
+the name of the currently connected snek device, such as /dev/ttyUSB0
+on Linux or COM12 on Windows. If there isn't a device connected, it
+will say "<no device>".
+
+The cursor shows which pane you are currently working with. To switch
+between the editor and console panes, use the Page Up or Page Down
+keys. If you don't have either of those, or if they don't work, you
+can also use Ctrl-o (press and hold the control key, press the 'o' key
+and then release both).
+
+You can move around the current pane with the arrow, home and end
+keys. Cut/paste/copy use Ctrl-x, Ctrl-v and Ctrl-c or Esc-x, Esc-v and
+Esc-c respectively. To mark a section of text for a Cut or Paste
+command, press Ctrl-space then use regular movement commands. The
+selected region of text will be highlighted.
+
+=== Connecting to a Device
+
+To connect to a device running snek, press the F1 key (usually right
+next to the ESC key on your keyboard). That will display a dialog box
+in the middle of the screen listing all of the devices which might be
+running snek (if you've got a serial modem or other similar device,
+that will also be listed here). Select the target device and press the
+ENTER key.
+
+Don't expect anything to happen in the lower pane just yet; you'll
+have to get the attention of the device first.
+
+Switch to the Console pane and press Ctrl-c to interrupt any currently
+running snek program. You should see the Snek prompt (“> ”) appear in
+the pane.
+
+=== Getting and Putting Programs to a Device
+
+The Snek device holds one program in non-volatile memory. When it
+starts up, it will run that program automatically. This lets you set
+up the device so that it will perform some action when it is turned on
+without needing to communicate with it first.
+
+The Get command fetches the current program from the connected device
+and puts it into the Editor pane. The Put command writes the Editor
+pane contents into non-volatile memory in the target device and then
+restarts the target device to have it re-load the program. Both of
+these commands will interrupt any running Snek program before doing
+any work.
+
+=== Loading and Saving Programs to the Host
+
+You can also save and load programs to the host file system. Both of
+these commands prompt for a filename, which you can enter with the
+keyboard.
+
 [appendix]
-== Installing Snek on Arduino Duemilanova
+== Snek on Arduino Duemilanove
 
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
-Snek includes a Linux shell script to install the binary using
-'avrdude'.
+On Linux, the snek installation includes a shell script,
+snek-duino-install, to install the binary using 'avrdude'. Read the
+snek-duino-install manual (also included in the installation) for more
+information.
+
+Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
+functions. It does not include the Math functions.
 
 [appendix]
-== Installing Snek on Metro M0 Express
+== Snek on Metro M0 Express
 
 The Adafruit Metro M0 Express board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
@@ -1779,5 +1869,10 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-At this point, find the metro-snek-{version}.uf2 file and copy it to
-the CURRENT.UF2 file on the Metro M0 file system.
+Then, find the metro-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Metro M0 file system.
+
+Snek for the Metro M0 Express includes the Common System,
+Math, GPIO, and EEPROM functions. Snek for the Metro M0 Express also
+runs on the Feather M0 boards
