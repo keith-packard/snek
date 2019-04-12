@@ -515,6 +515,80 @@ lower case and digits are in a string:
 This example also introduces the less-than-or-equal comparison
 operator, ``\<=``, and demonstrates that ``for v in a`` also works on strings.
 
+=== Controlling GPIOs
+
+General-purpose IO pins, or “GPIOs”, are pins on an embedded processor
+which can be controlled by a program running on that processor.
+
+When snek runs on embedded devices like the Duemilanove or the Metro
+M0 Express, it provides functions to directly manipulate these GPIO
+pins. You can use either of these, or any other device which uses the
+standard Arduino pin numbers, for these examples.
+
+==== Turning on the built-in LED
+
+Let's start by turning on the LED which is usually available on
+Digital pin 13:
+
+	> talkto(13)
+	> on()
+
+Let's get a bit fancier and blink it
+
+	> talkto(13)
+	> while True:
+	+     onfor(.5)
+	+     time.sleep(.5)
+
+==== Hooking up a digital input
+
+Find a bit of wire to connect from Digital pin 1 to GND and let's
+control the LED with this primitive switch:
+
+	> listento(1)
+	> talkto(13)
+	> while True:
+	+     if read():
+	+         on()
+	+     else:
+	+         off()
+
+When the wire is connected, the LED turns *off*, and when the wire is
+not, the LED turns *on*. That's how simple switches work on Arduino.
+
+==== Using an analog input
+
+If you've got a light sensor or potentiometer, you can hook that up to
+Analog pin 0 and make the LED track the sensor:
+
+	> listento(14)
+	> talkto(13)
+	> while True:
+	+     onfor(1-read())
+	+     time.sleep(1-read())
+
+Note that the Arduino analog pin A0 is called pin 14 in snek (A1 is
+pin 15, etc).
+
+==== Controlling motors
+
+So far, we've only talked about using one pin at a time. Arduino motor
+controllers take two pins—one for speed and one for direction. Snek
+lets you tell it both pins at the same time and then provides separate
+functions to set the speed and direction. If you have a motor
+controller hooked to your board with pin 3 as speed and pin 2 for
+direction you can run the motor at half power and have it alternate
+directions with:
+
+	> talkto((3,2))
+	> setpower(0.5)
+	> on()
+	> while True:
+	+     setleft()
+	+     time.sleep(1)
+	+     setright()
+	+     time.sleep(1)
+
 == Lexical Structure
 
 Snek programs are broken into a sequence of tokens by the compiler,
