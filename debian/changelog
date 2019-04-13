@@ -1,3 +1,12 @@
+snek (0.95-1) unstable; urgency=medium
+
+  * 0.95-1
+  * Ensure dictionary keys are completely immutable
+  * Generate error for int operations on floats which aren't exactly int
+  * Update docs after review by Mike Ward  
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 12 Apr 2019 20:23:06 -0700
+
 snek (0.94-1) unstable; urgency=medium
 
   * 0.94-1
