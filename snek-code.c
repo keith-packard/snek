@@ -662,6 +662,15 @@ snek_in_step(snek_offset_t ip)
 	return true;
 }
 
+static int32_t __attribute__((noinline))
+snek_float_to_int(float f)
+{
+	int32_t i = (int32_t) f;
+	if (i != f)
+		snek_error_value(snek_float_to_poly(f));
+	return i;
+}
+
 static snek_poly_t
 snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 {
@@ -732,28 +741,28 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			af = af / bf;
 			break;
 		case snek_op_div:
-			af = (float) ((int32_t) af / (int32_t) bf);
+			af = (float) (snek_float_to_int(af) / snek_float_to_int(bf));
 			break;
 		case snek_op_mod:
-			af = (float) ((int32_t) af % (int32_t) bf);
+			af = (float) (snek_float_to_int(af) % snek_float_to_int(bf));
 			break;
 		case snek_op_pow:
 			af = powf(af, bf);
 			break;
 		case snek_op_land:
-			af = (float) ((int32_t) af & (int32_t) bf);
+			af = (float) (snek_float_to_int(af) & snek_float_to_int(bf));
 			break;
 		case snek_op_lor:
-			af = (float) ((int32_t) af | (int32_t) bf);
+			af = (float) (snek_float_to_int(af) | snek_float_to_int(bf));
 			break;
 		case snek_op_lxor:
-			af = (float) ((int32_t) af ^ (int32_t) bf);
+			af = (float) (snek_float_to_int(af) ^ snek_float_to_int(bf));
 			break;
 		case snek_op_lshift:
-			af = (float) ((int32_t) af << (int32_t) bf);
+			af = (float) (snek_float_to_int(af) << snek_float_to_int(bf));
 			break;
 		case snek_op_rshift:
-			af = (float) ((int32_t) af >> (int32_t) bf);
+			af = (float) (snek_float_to_int(af) >> snek_float_to_int(bf));
 			break;
 		default:
 			break;
@@ -1103,7 +1112,7 @@ snek_code_run(snek_code_t *code_in)
 				snek_a = snek_float_to_poly(-snek_poly_get_float(snek_a));
 				break;
 			case snek_op_lnot:
-				snek_a = snek_float_to_poly(~(uint32_t) snek_poly_get_float(snek_a));
+				snek_a = snek_float_to_poly(~(uint32_t) snek_float_to_int(snek_poly_get_float(snek_a)));
 				break;
 			case snek_op_call:
 				memcpy(&o, &snek_code->code[ip], sizeof (snek_offset_t));
