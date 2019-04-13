@@ -15,6 +15,8 @@ Keith Packard <keithp@keithp.com
 :pdf-stylesdir: .
 :pdf-style: snek
 :pdf-fontsdir: fonts
+:source-highlighter: coderay
+:source-language: python
 
 ifndef::backend-pdf[]
 [#logo]
@@ -32,7 +34,7 @@ This document is released under the terms of the link:http://creativecommons.org
 [dedication]
 == Acknowledgments
 
-Thanks to Jane Kenny-Norberg for building a science and technology
+Thanks to Jane Kenney-Norberg for building a science and technology
 education program using Lego. Jane taught my kids science in
 elementary school and Lego after school, and let me come and play
 too. I'm still there helping teach, even though my kids are nearly
@@ -187,34 +189,48 @@ The first way is to simply evaluate an expression. Start up Snek on
 your computer (perhaps by finding Snek in your system menu or by
 typing `snek` at the usual command prompt):
 
-[source,python,subs="attributes+"]
+[subs="attributes+"]
+----
 Welcome to Snek version {revnumber}
 >
+----
 
 At this prompt, the result of any expression typed in will be printed:
 
-	> 'hello, world'
-	'hello, world'
+[source]
+----
+> 'hello, world'
+'hello, world'
+----
 
 Here we see that Snek strings can be enclosed in single quotes. They
 can also be enclosed in double quotes, which can be useful if you want
 to include single quote marks in them.
 
-	> "hello, world"
-	'hello, world'
+[source]
+----
+> "hello, world"
+'hello, world'
+----
 
 Stepping up a notch, instead of simply inputting the string directly,
 we can write an expression which computes the result:
 
-	> 'hello,' + ' world'
-	'hello, world'
+[source]
+----
+> 'hello,' + ' world'
+'hello, world'
+----
 
 At this point, we're using the feature of the interactive environment
 which prints out the value of expressions entered. Let's try printing
 the value directly:
 
-	> print('hello, world')
-	hello, world
+[source]
+----
+> print('hello, world')
+hello, world
+----
 
 This time, Snek printed the string without quote marks. That's because
 the print function displays exactly what it was given, without
@@ -223,19 +239,22 @@ format as they would appear in a program.
 
 Now let's write a function which prints the value and call it:
 
-	> def hello():
-	+     print('hello, world')
-	+ 
-	> hello()
-	hello, world
+[source]
+----
+> def hello():
++     print('hello, world')
++ 
+> hello()
+hello, world
+----
 
 There's lots of stuff going on here. First, we see how to declare a
 function by using the 'def' keyword, followed by the name of the
 function, followed by a list of arguments. After that list there's a
 colon.
 
-Colons appear in several places in Snek and they are always used in
-the same way. After a colon, Snek expects to see a list of
+Colons appear in several places in Snek and (outside of dictionaries)
+are used in the same way. After a colon, Snek expects to see a list of
 statements. The usual way of including a list of statements is to type
 them, one per line, indented from the line containing the colon by a
 few spaces. The number of spaces doesn't matter, but each line has to
@@ -256,12 +275,15 @@ the next line. That's because the print function has a named parameter
 called `end` which is set to a newline by default. You can change it
 to whatever you like, as in:
 
-	> def hello():
-	+     print('hello', end=',')
-	+     print(' world', end='\n')
-	+ 
-	> hello()
-	hello, world
+[source]
+----
+> def hello():
++     print('hello', end=',')
++     print(' world', end='\n')
++ 
+> hello()
+hello, world
+----
 
 The first call appends a `,` to the output, while the second call
 explicitly appends a newline character, causing the output to move to
@@ -273,17 +295,23 @@ notation, those are described in the section on Strings.
 Let's write a function to convert from Fahrenheit temperatures to
 Celsius. If you recall, that's:
 
-	°C = (5/9)(°F - 32)
+[source]
+----
+°C = (5/9)(°F - 32)
+----
 
 Snek can't use the ° sign in variable names, so we'll just use C and
 F:
 
-	> # Convert from Fahrenheit to Celsius
-	> def f_to_c(F):
-	+     return (5/9) * (F - 32)
-	+ 
-	> f_to_c(38)
-	3.333333
+[source]
+----
+> # Convert from Fahrenheit to Celsius
+> def f_to_c(F):
++     return (5/9) * (F - 32)
++ 
+> f_to_c(38)
+3.333333
+----
 
 The `#` character introduces a comment, which extends to the end of
 the line. Anything within a comment is ignored by the compiler. Snek
@@ -298,28 +326,31 @@ rather than just printing it directly.
 Now that we have a function to do this conversion, we can print a
 handy reference table for offline use:
 
-	> # Print a handy conversion table
-	> def f_to_c_table():
-	+     for F in range(0, 100, 10):
-	+         print('%f F = %f C' % (F, f_to_c(F)))
-	+ 
-	> f_to_c_table()
-	0.000000 F = -17.777779 C
-	10.000000 F = -12.222223 C
-	20.000000 F = -6.666667 C
-	30.000000 F = -1.111111 C
-	40.000000 F = 4.444445 C
-	50.000000 F = 10.000000 C
-	60.000000 F = 15.555556 C
-	70.000000 F = 21.111113 C
-	80.000000 F = 26.666668 C
-	90.000000 F = 32.222225 C
+[source]
+----
+> # Print a handy conversion table
+> def f_to_c_table():
++     for F in range(0, 100, 10):
++         print('%f F = %f C' % (F, f_to_c(F)))
++ 
+> f_to_c_table()
+0.000000 F = -17.777779 C
+10.000000 F = -12.222223 C
+20.000000 F = -6.666667 C
+30.000000 F = -1.111111 C
+40.000000 F = 4.444445 C
+50.000000 F = 10.000000 C
+60.000000 F = 15.555556 C
+70.000000 F = 21.111113 C
+80.000000 F = 26.666668 C
+90.000000 F = 32.222225 C
+----
 
 First off, we've got a new statement, the `for` statement. This walks
-over a range of values, assigning the control variable (F, in this
+over a range of values, assigning the control variable (`F`, in this
 case) all of the values in the range and then evaluating the
 statements within it. The range operator creates this set of values
-for F by starting at the first value and stepping to just before the
+for `F` by starting at the first value and stepping to just before the
 second value. Each time, it steps by the third value. You can elide
 the first value and Snek will use 0 as the starting point. You can
 elide the third value and Snek will step by 1.
@@ -347,32 +378,44 @@ can be modified after creation while Tuples cannot. We call Lists
 by commas and enclosed in square brackets, Tuples are input as objects
 separated by commas and enclosed in parentheses:
 
-	> [ 'hello,', ' world' ]
-	['hello,', ' world']
-	> ( 'hello,', ' world' )
-	('hello,', ' world')
+[source]
+----
+> [ 'hello,', ' world' ]
+['hello,', ' world']
+> ( 'hello,', ' world' )
+('hello,', ' world')
+----
 
 Let's assign these to variables so we can explore them in more detail:
 
-	> l = [ 'hello,', ' world' ]
-	> t = ( 'hello,', ' world' )
-	
+[source]
+----
+> l = [ 'hello,', ' world' ]
+> t = ( 'hello,', ' world' )
+----
+
 As mentioned above, Lists and Tuples are ordered. That means that each
 element in a List or Tuple can be referenced by number. This number is
 called the index of the element, in Snek, indices start at 0:
 
-	> l[0]
-	'hello,'
-	> t[1]
-	' world'
+[source]
+----
+> l[0]
+'hello,'
+> t[1]
+' world'
+----
 
 Lists can be modified, Tuples cannot:
 
-	> l[0] = 'goodbye,'
-	> l
-	['goodbye,', ' world']
-	> t[0] = 'beautiful'
-	<stdin>:5 invalid type: ('hello,', ' world')
+[source]
+----
+> l[0] = 'goodbye,'
+> l
+['goodbye,', ' world']
+> t[0] = 'beautiful'
+<stdin>:5 invalid type: ('hello,', ' world')
+----
 
 That last output is the Snek machine telling us that the value
 ('hello', ' world') cannot be modified.
@@ -380,16 +423,19 @@ That last output is the Snek machine telling us that the value
 We can use another form of the `for` statement to iterate over the
 values in a List or Tuple:
 
-	> def print_list(list):
-	+     for e in list:
-	+         print(e)
-	+ 
-	> print_list(l)
-	goodbye,
-	 world
-	> print_list(t)
-	hello,
-	 world
+[source]
+----
+> def print_list(list):
++     for e in list:
++         print(e)
++ 
+> print_list(l)
+goodbye,
+ world
+> print_list(t)
+hello,
+ world
+----
 
 Similar to the range form above, this for statement assigns the
 control variable (e in this case) to each of the elements of the list
@@ -397,16 +443,22 @@ in turn and evaluates the statements within it.
 
 Lists and Tuples can be concatenated with the + operator:
 
-	> ['hello,'] + [' world']
-	['hello,', ' world']
+[source]
+----
+> ['hello,'] + [' world']
+['hello,', ' world']
+----
 
 Finally, Tuples of one element have a slightly odd syntax. To
 distinguish them from expressions enclosed in parenthesis, the value
 within the Tuple is followed by a comma:
 
-	> ( 'hello' , ) + ( 'world' , )
-	('hello', 'world')
-	
+[source]
+----
+> ( 'hello' , ) + ( 'world' , )
+('hello', 'world')
+
+----
 === Dictionaries
 
 Dictionaries are the fanciest data structure in Snek. Like Lists and
@@ -421,9 +473,12 @@ The indexing value in a Dictionary is called the 'key', the indexing
 value is called the 'value'. Dictionaries are input by enclosing
 key/value pairs, separated by commas, inside curly braces:
 
-	> { 1:2, 'hello,' : ' world' }
-	{ 'hello,':' world', 1:2 }
-	
+[source]
+----
+> { 1:2, 'hello,' : ' world' }
+{ 'hello,':' world', 1:2 }
+
+----
 Note that Snek re-ordered our dictionary. That's because Dictionaries
 are always stored in sorted order, and that sorting includes the type
 of the keys. Dictionaries can contain only one element with the same
@@ -432,28 +487,55 @@ the first value will occur in the resulting Dictionary.
 
 Let's assign our Dictionary to a variable and play with it a bit:
 
-	> d = { 1:2, 'hello,' : ' world' }
-	> d[1]
-	2
-	> d['hello,']
-	' world'
-	> d[1] = 3
-	> d['goodnight'] = 'moon'
-	> d
-	{ 'goodnight':'moon', 'hello,':' world', 1:3 }
+[source]
+----
+> d = { 1:2, 'hello,' : ' world' }
+> d[1]
+2
+> d['hello,']
+' world'
+> d[1] = 3
+> d['goodnight'] = 'moon'
+> d
+{ 'goodnight':'moon', 'hello,':' world', 1:3 }
+> d[56]
+<stdin>:7 invalid value: 56
+----
 
 This example shows creating the Dictionary and assigning it to d, then
 fetching elements of the dictionary and assigning to them. You can add
 elements to a dictionary by using a index which is not already
-present.
+present. When you ask for an element which isn't present, you get an
+error message.
 
 You can also iterate over the keys in a Dictionary using the same ``for
 v in a`` syntax above. Let's try our print_list function on d:
 
-	> print_list(d)
-	goodnight
-	hello,
-	1
+[source]
+----
+> print_list(d)
+goodnight
+hello,
+1
+----
+
+Finally, you can test to see if an element is in a Dictionary using the `in` operator:
+
+[source]
+----
+> if 1 in d:
++     print('yup')
++ else:
++     print('nope')
++ 
+yup
+> if 56 in d:
++     print('yup')
++ else:
++     print('nope')
++ 
+nope
+----
 
 === While
 
@@ -462,23 +544,26 @@ values. Sometimes we want to use more general control flow. We can
 re-write our temperature conversion chart program using a while loop
 as follows:
 
-	> def f_to_c_table():
-	+     F = 0
-	+     while F < 100:
-	+         print('%f F = %f C' % (F, f_to_c(F)))
-	+         F = F + 10
-	+ 
-	> f_to_c_table()
-	0.000000 F = -17.777779 C
-	10.000000 F = -12.222223 C
-	20.000000 F = -6.666667 C
-	30.000000 F = -1.111111 C
-	40.000000 F = 4.444445 C
-	50.000000 F = 10.000000 C
-	60.000000 F = 15.555556 C
-	70.000000 F = 21.111113 C
-	80.000000 F = 26.666668 C
-	90.000000 F = 32.222225 C
+[source]
+----
+> def f_to_c_table():
++     F = 0
++     while F < 100:
++         print('%f F = %f C' % (F, f_to_c(F)))
++         F = F + 10
++ 
+> f_to_c_table()
+0.000000 F = -17.777779 C
+10.000000 F = -12.222223 C
+20.000000 F = -6.666667 C
+30.000000 F = -1.111111 C
+40.000000 F = 4.444445 C
+50.000000 F = 10.000000 C
+60.000000 F = 15.555556 C
+70.000000 F = 21.111113 C
+80.000000 F = 26.666668 C
+90.000000 F = 32.222225 C
+----
 
 This does exactly what the for loop did above; it first assigns F to
 0, then iterates over the statements until F is no longer less than
@@ -493,24 +578,27 @@ executed. Otherwise, the next test is tried until the end of the
 If is reached. Here's a function which measures how many upper case,
 lower case and digits are in a string:
 
-	> def count_chars(s):
-	+     d = 0
-	+     l = 0
-	+     u = 0
-	+     o = 0
-	+     for c in s:
-	+         if '0' <= c and c <= '9':
-	+             d += 1
-	+         elif 'a' <= c and c <= 'z':
-	+             l += 1
-	+         elif 'A' <= c and c <= 'Z':
-	+             u += 1
-	+         else:
-	+             o += 1
-	+     print('digits %d lower %d upper %d other %d' % (d, l, u, o))
-	+ 
-	> count_chars('4 Score and 7 Years Ago')
-	digits 2 lower 13 upper 3 other 5
+[source]
+----
+> def count_chars(s):
++     d = 0
++     l = 0
++     u = 0
++     o = 0
++     for c in s:
++         if '0' <= c and c <= '9':
++             d += 1
++         elif 'a' <= c and c <= 'z':
++             l += 1
++         elif 'A' <= c and c <= 'Z':
++             u += 1
++         else:
++             o += 1
++     print('digits %d lower %d upper %d other %d' % (d, l, u, o))
++ 
+> count_chars('4 Score and 7 Years Ago')
+digits 2 lower 13 upper 3 other 5
+----
 
 This example also introduces the less-than-or-equal comparison
 operator, ``\<=``, and demonstrates that ``for v in a`` also works on strings.
@@ -530,28 +618,37 @@ standard Arduino pin numbers, for these examples.
 Let's start by turning on the LED which is usually available on
 Digital pin 13:
 
-	> talkto(13)
-	> on()
+[source]
+----
+> talkto(13)
+> on()
+----
 
 Let's get a bit fancier and blink it
 
-	> talkto(13)
-	> while True:
-	+     onfor(.5)
-	+     time.sleep(.5)
+[source]
+----
+> talkto(13)
+> while True:
++     onfor(.5)
++     time.sleep(.5)
+----
 
 ==== Hooking up a digital input
 
 Find a bit of wire to connect from Digital pin 1 to GND and let's
 control the LED with this primitive switch:
 
-	> listento(1)
-	> talkto(13)
-	> while True:
-	+     if read():
-	+         on()
-	+     else:
-	+         off()
+[source]
+----
+> listento(1)
+> talkto(13)
+> while True:
++     if read():
++         on()
++     else:
++         off()
+----
 
 When the wire is connected, the LED turns *off*, and when the wire is
 not, the LED turns *on*. That's how simple switches work on Arduino.
@@ -561,11 +658,14 @@ not, the LED turns *on*. That's how simple switches work on Arduino.
 If you've got a light sensor or potentiometer, you can hook that up to
 Analog pin 0 and make the LED track the sensor:
 
-	> listento(14)
-	> talkto(13)
-	> while True:
-	+     onfor(1-read())
-	+     time.sleep(1-read())
+[source]
+----
+> listento(14)
+> talkto(13)
+> while True:
++     onfor(1-read())
++     time.sleep(1-read())
+----
 
 Note that the Arduino analog pin A0 is called pin 14 in snek (A1 is
 pin 15, etc).
@@ -580,14 +680,17 @@ controller hooked to your board with pin 3 as speed and pin 2 for
 direction you can run the motor at half power and have it alternate
 directions with:
 
-	> talkto((3,2))
-	> setpower(0.5)
-	> on()
-	> while True:
-	+     setleft()
-	+     time.sleep(1)
-	+     setright()
-	+     time.sleep(1)
+[source]
+----
+> talkto((3,2))
+> setpower(0.5)
+> on()
+> while True:
++     setleft()
++     time.sleep(1)
++     setright()
++     time.sleep(1)
+----
 
 == Lexical Structure
 
@@ -599,8 +702,11 @@ then the sequence of tokens is recognized by a parser.
 Snek supports 32-bit floating point numbers and understands the usual
 floating point number format:
 
-	<integer><fraction><exponent>
-	123.456e+12
+[source]
+----
+<integer><fraction><exponent>
+123.456e+12
+----
 
 integer::
 A non-empty sequence of decimal digits
@@ -621,13 +727,10 @@ have at least one digit.
 -1.70141e+38 to 1.70141e+38. There is 1 sign bit, 8 bits of exponent
 and 23 stored/24 effective bits of significand (often referred to as
 the mantissa). There are two values of infinity (plus and minus) and
-one value of NaN. Because Snek does not have an explicit integer type,
-computations on integer values will convert floats to integers,
-perform the operation and convert back to floats. Operations on values
-more than 24 bits wide will lose precision in this process.
-
-Only positive numbers are part of a Snek program; use the unary minus
-operator to construct negative values.
+one value of NaN. Computations using integer values will generate an
+error for values which cannot be represented as a 32-bit integer. That
+includes values that are too large and values with fractional
+components.
 
 === Names
 
@@ -636,27 +739,35 @@ a particular function. Names consist of an initial letter or
 underscore followed by a sequence of letters, digits, underscore and
 period. Here are some valid names:
 
-	hello
-	_hello
-	_h4
-	math.sqrt
+[source]
+----
+hello
+_hello
+_h4
+math.sqrt
+----
 
 And here are some invalid names:
 
-	.hello
-	4square
-	
+[source]
+----
+.hello
+4square
+
+----
 === Keywords
 
 Keywords look like regular Snek names, but they are handled specially
 by the parser and thus cannot be used as names. Here is the list of
 Snek keywords:
 
-        and       break     continue  def
-        del       elif      else      for
-        global    if        import    in
-        is        not       or        pass
-        range     return    while
+----
+and       break     continue  def
+del       elif      else      for
+global    if        import    in
+is        not       or        pass
+range     return    while
+----
 
 === Punctuation
 
@@ -703,6 +814,9 @@ merged into a single string constant in the program.
 \n::
 Newline. Advance to the first column of the next line.
 
+\r::
+Carriage Return. Move to the first column on the current line.
+
 \t::
 Tab. Advance to the next 'tab stop' in the output. This is usually the
 next multiple-of-8.
@@ -724,15 +838,21 @@ Tuples).
 
 Here are some valid Lists:
 
-	[1, 2, 3]
-	['hello', 'world']
-	[12]
+[source]
+----
+[1, 2, 3]
+['hello', 'world']
+[12]
+----
 
 Here are some valid Tuples:
 
-	(1, 2, 3)
-	('hello', 'world')
-	(12,)
+[source]
+----
+(1, 2, 3)
+('hello', 'world')
+(12,)
+----
 
 Note the last case — to distinguish between a value in parentheses and
 Tuple with one value, the Tuple needs to have a trailing comma. Only
@@ -745,16 +865,22 @@ enclosed in curly braces. Keys are separated from values with a colon.
 
 Here are some valid Dictionaries:
 
-	{ 1:2, 3:4 }
-	{ 'pi' : 3.14, 'e' : 2.72 }
-	{ 1: 'one' }
+[source]
+----
+{ 1:2, 3:4 }
+{ 'pi' : 3.14, 'e' : 2.72 }
+{ 1: 'one' }
+----
 
 You can include entries with duplicate keys, the resulting Dictionary
 will contain only the last entry. The order of the entries does not
 matter; the resulting dictionary will always be the same:
 
-	> { 1:2, 3:4 } == { 3:4, 1:2 }
-	1
+[source]
+----
+> { 1:2, 3:4 } == { 3:4, 1:2 }
+1
+----
 
 When Snek prints dictionaries, they are always printed in the same
 order, so two equal dictionaries will have the same string
@@ -783,7 +909,7 @@ indexing to return Unicode code points.
 Lists::
 Lists are an ordered set of values. You can change the contents of a
 list, add or remove elements. In other languages, these are often
-called arrays or vectors. Lists are 'mutable' values.
+called arrays or vectors. Lists are “mutable” values.
 
 Tuples::
 Tuples are immutable lists of values. That is, you can't change the
@@ -792,7 +918,7 @@ the list *is* mutable, you can modify that and see the changed results
 in the tuple.
 
 Dictionaries::
-A dictionary is a mapping between 'keys' and 'values. They work
+A dictionary is a mapping between *keys* and *values*. They work
 somewhat like Lists in that you can store and retrieve values in
 them. However, unlike Lists, the index into a Dictionary may be any
 immutable value, which is any value other than a List or Dictionary or
@@ -818,24 +944,30 @@ The ``+=`` operator works a bit different on Lists than any other
 type — it appends to the existing list rather than creating a new
 list. This can be seen in the following example:
 
-	> a = [1,2]
-	> b = a
-	> a += [3]
-	> b
-	[1, 2, 3]
+[source]
+----
+> a = [1,2]
+> b = a
+> a += [3]
+> b
+[1, 2, 3]
+----
 
 Compare this with Tuples, which (as they are immutable) cannot be
 appended to. In this example, ``b`` retains the original Tuple value.
 ``a`` gets a new Tuple consisting of ``(3,)`` appended to the original
 value.
 
-	> a = (1,2)
-	> b = a
-	> a += (3,)
-	> b
-	(1, 2)
-	> a
-	(1, 2, 3)
+[source]
+----
+> a = (1,2)
+> b = a
+> a += (3,)
+> b
+(1, 2)
+> a
+(1, 2, 3)
+----
 
 == Operators
 
@@ -963,20 +1095,23 @@ negative, the default value for _base_ is the index of the last
 element in _value_ (which is ``len(``_value_``) – 1``) and the default
 value for _bound_ is ``–1``. Here are some examples:
 
-	> # initialize a to a Tuple of characters
-	> a = ('a', 'b', 'c', 'd', 'e', 'f', 'g')
-	> # With all default values, a[:] looks the same as a	
-	> a[:]
-	('a', 'b', 'c', 'd', 'e', 'f', 'g')
-	> # Reverse the Tuple
-	> a[::-1]
-	('g', 'f', 'e', 'd', 'c', 'b', 'a')
-	> # Select the end of the Tuple starting at index 3
-	> a[3:]
-	('d', 'e', 'f', 'g')
-	> # Select the begining of the Tuple, ending before index 3
-	> a[:3]
-	('a', 'b', 'c')
+[source]
+----
+> # initialize a to a Tuple of characters
+> a = ('a', 'b', 'c', 'd', 'e', 'f', 'g')
+> # With all default values, a[:] looks the same as a	
+> a[:]
+('a', 'b', 'c', 'd', 'e', 'f', 'g')
+> # Reverse the Tuple
+> a[::-1]
+('g', 'f', 'e', 'd', 'c', 'b', 'a')
+> # Select the end of the Tuple starting at index 3
+> a[3:]
+('d', 'e', 'f', 'g')
+> # Select the begining of the Tuple, ending before index 3
+> a[:3]
+('a', 'b', 'c')
+----
 
 === String Interpolation
 
@@ -1036,31 +1171,37 @@ then ``%r`` will be used instead.
 
 Here are some examples of String interpolation:
 
-	> print('hello %s' % 'world')
-	hello world
-	> print('hello %r' % 'world')
-	hello 'world'
-	> print('pi = %d' % 3.1415)
-	pi = 3
-	> print('pi = %f' % 3.1415)
-	pi = 3.141500
-	> print('pi = %e' % 3.1415)
-	pi = 3.141500e+00
-	> print('pi = %g' % 3.1415)
-	pi = 3.1415
-	> print('star is %c' % 42)
-	star is *
-	> print('%d %d %d' % (1, 2, 3))
-	1 2 3
+[source]
+----
+> print('hello %s' % 'world')
+hello world
+> print('hello %r' % 'world')
+hello 'world'
+> print('pi = %d' % 3.1415)
+pi = 3
+> print('pi = %f' % 3.1415)
+pi = 3.141500
+> print('pi = %e' % 3.1415)
+pi = 3.141500e+00
+> print('pi = %g' % 3.1415)
+pi = 3.1415
+> print('star is %c' % 42)
+star is *
+> print('%d %d %d' % (1, 2, 3))
+1 2 3
+----
 
 And here are a couple of examples showing why a single value may need
 to be enclosed in a Tuple:
 
-	> a = (1,2,3)
-	> print('a is %r' % a)
-	a is 1
-	> print('a is %r' % (a,))
-	a is (1, 2, 3)
+[source]
+----
+> a = (1,2,3)
+> print('a is %r' % a)
+a is 1
+> print('a is %r' % (a,))
+a is (1, 2, 3)
+----
 
 In the first case, String interpolatiton is using the first element of
 ``a`` as the value instead of using all of ``a``.
@@ -1095,13 +1236,16 @@ An If statement contains an initial 'if' block, any number of 'elif'
 blocks and then (optionally) an 'else' block in the following
 structure:
 
-	if if_value :
-		if statements
-	elif elif_value :
-		elif_statements
-	…
-	else:
-		else_statements
+[source]
+----
+if if_value :
+	if statements
+elif elif_value :
+	elif_statements
+…
+else:
+	else_statements
+----
 
 If _if_value_ is True, then _if_statements_ are executed. Otherwise,
 if _elif_value_ is True, then _elif_statements_ are executed. If none
@@ -1114,9 +1258,15 @@ A While statements consists of a `while` block followed by an optional
 
 [source,python,subs="normal"]
 while _while_value_ :
-	block
+[source]
+----
+block
+----
 else:
-	block
+[source]
+----
+block
+----
 
 _While_value_ is evaluated and if it evaluates as `True`, the
 while block is executed. Then the system evaluates _while_value_
@@ -1135,14 +1285,20 @@ _while_value_. The `else:` portion (with else statements) is optional.
 
 The `for` statement assigns _name_ to each of the list of _values_ and
 then executes a block of statements. _Value_ can be specified in two
-different ways, either as a List, Tuple Dictionary or String value, or
+different ways, either as a List, Tuple, Dictionary or String value, or
 as a range expression involving numbers:
 
 [source,python,subs="normal"]
 for _name_ in _value_:
-	for statements
+[source]
+----
+for statements
+----
 else:
-	else statements
+[source]
+----
+else statements
+----
 
 In this case, the _value_ must be a List,
 Tuple, Dictionary or String. For Lists and Tuples, the values are the
@@ -1152,9 +1308,15 @@ keys in the dictionary.
 
 [source,python,subs="normal"]
 for name in range ( _[_ start , _]_ stop _[_ , step _]_ ):
-	for statements
+[source]
+----
+for statements
+----
 else:
-	else statements
+[source]
+----
+else statements
+----
 
 In this form, the `for` statement assigns a range of numeric values
 to _name_. Starting with _start_, and going while not beyond _stop_,
@@ -1162,36 +1324,39 @@ _name_ gets _step_ added at each iteration. _Start_ is optional; if
 not present, 0 will be used. _Step_ is also optional; if not present,
 1 will be used.
 
-	> for x in (1,2,3):
-	+     print(x)
-	+ 
-	1
-	2
-	3
-	> for c in 'hi':
-	+     print(c)
-	+ 
-	h
-	i
-	> a = { 1:2, 3:4 }
-	> for k in a:
-	+     print('key is %r value is %r' % (k, a[k]))
-	+ 
-	key is 1 value is 2
-	key is 3 value is 4
-	> for i in range(3):
-	+     print(i)
-	+ 
-	0
-	1
-	2
-	> for i in range(2, 10, 2):
-	+     print(i)
-	+ 
-	2
-	4
-	6
-	8
+[source]
+----
+> for x in (1,2,3):
++     print(x)
++ 
+1
+2
+3
+> for c in 'hi':
++     print(c)
++ 
+h
+i
+> a = { 1:2, 3:4 }
+> for k in a:
++     print('key is %r value is %r' % (k, a[k]))
++ 
+key is 1 value is 2
+key is 3 value is 4
+> for i in range(3):
++     print(i)
++ 
+0
+1
+2
+> for i in range(2, 10, 2):
++     print(i)
++ 
+2
+4
+6
+8
+----
 
 If a `break` statement is executed as a part of the `for`
 statements, then the program immediately jumps past the else
@@ -1204,12 +1369,15 @@ statements) is optional.
 The Return statement causes the currently executing function 
 immediately evaluate to _value_ in the enclosing context.
 
-	> def r():
-	+     return 1
-	+     print('hello')
-	+ 
-	> r()
-	1
+[source]
+----
+> def r():
++     return 1
++     print('hello')
++ 
+> r()
+1
+----
 
 In this case, the `print` statement did not execute because the
 `return` happened before it.
@@ -1219,26 +1387,32 @@ The Break statement causes the closest enclosing `while` or `for` statement to
 terminate. Any optional `else:` clause associated with the `while` or `for`
 statement is skipped when the `break` is executed.
 
-	> for x in (1,2):
-	+     if x == 2:
-	+         break
-	+     print(x)
-	+ else:
-	+     print('else')
-	+ 
-	1
+[source]
+----
+> for x in (1,2):
++     if x == 2:
++         break
++     print(x)
++ else:
++     print('else')
++ 
+1
+----
 
 
-	> for x in (1,2):
-	+     if x == 3:
-	+         break
-	+     print(x)
-	+ else:
-	+     print('else')
-	+ 
-	1
-	2
-	else
+[source]
+----
+> for x in (1,2):
++     if x == 3:
++         break
++     print(x)
++ else:
++     print('else')
++ 
+1
+2
+else
+----
 
 In this case, the first example does not print `else` due to the
 `break` statement execution rules. The second example prints `else`
@@ -1251,18 +1425,21 @@ termination condition. In `while` statements, that is where the
 _while_value_ is evaluated. In `for` statements, that is where
 the next value in the sequence is computed.
 
-	> vowels = 0
-	> other = 0
-	> for a in 'hello, world':
-	+     if a in 'aeiou':
-	+         vowels += 1
-	+         continue
-	+     other += 1
-	+ 
-	> vowels
-	3
-	> other
-	9
+[source]
+----
+> vowels = 0
+> other = 0
+> for a in 'hello, world':
++     if a in 'aeiou':
++         vowels += 1
++         continue
++     other += 1
++ 
+> vowels
+3
+> other
+9
+----
 
 The `continue` statement skips the execution of `other += 1`,
 otherwise `other` would be `12`.
@@ -1271,11 +1448,14 @@ otherwise `other` would be `12`.
 The `pass` statement is a place-holder that does nothing and can
 be used anyplace a statement is needed when no execution is desired.
 
-	> if 1 != 2:
-	+     pass
-	+ else:
-	+     print('equal')
-	+
+[source]
+----
+> if 1 != 2:
++     pass
++ else:
++     print('equal')
++
+----
 
 This example ends up doing nothing as the condition directs execution
 through the `pass` statement.
@@ -1285,30 +1465,36 @@ through the `pass` statement.
 === `import` _name_
 
 The Import statement is ignored and is part of Snek so that Snek programs can
-be run using Python3.
+be run using Python.
 
-	> import curses
+[source]
+----
+> import curses
+----
 
 === `global` _name_ _[_ `,` _name_ … _]_
 
 The Global statement marks the names as non-local; assignment to them
 will not cause a new variable to be created.
 
-	> g = 0
-	> def set_local(v):
-	+     g = v
-	+ 
-	> def set_global(v):
-	+     global g
-	+     g = v
-	+ 
-	>  set_local(12)
-	> g
-	0
-	> set_global(12)
-	> g
-	12
-	> 
+[source]
+----
+> g = 0
+> def set_local(v):
++     g = v
++ 
+> def set_global(v):
++     global g
++     g = v
++ 
+>  set_local(12)
+> g
+0
+> set_global(12)
+> g
+12
+> 
+----
 
 Because `set_local` does not include `global g`, the assignment to `g`
 creates a new local variable, which is then discarded when the
@@ -1349,26 +1535,32 @@ function is executing.
 
 Here's an example of a function with two parameters:
 
-	> def subtract(a,b):
-	+     return a - b
-	+
-	> subtract(3,2)
-	1
+[source]
+----
+> def subtract(a,b):
++     return a - b
++
+> subtract(3,2)
+1
+----
 
 And here's a function with one positional parameter and two named
 parameters:
 
-	> def step(value, times=1, plus=0):
-	+     return value * times + plus
-	+
-	> step(12)
-	12
-	> step(12, times=2)
-	24
-	> step(12, plus=1)
-	13
-	> step(12, times=2, plus=1)
-	25
+[source]
+----
+> def step(value, times=1, plus=0):
++     return value * times + plus
++
+> step(12)
+12
+> step(12, times=2)
+24
+> step(12, plus=1)
+13
+> step(12, times=2, plus=1)
+25
+----
 
 == Standard Built-in Functions
 
@@ -1383,22 +1575,28 @@ implementations.
 Len returns the number of characters for a String or the number of
 elements in a Tuple, List or Dictionary
 
-	> len('hello, world')
-	12
-	> len((1,2,3))
-	3
-	> len([1,2,3])
-	3
-	> len({ 1:2, 3:4, 5:6, 7:8 })
-	4
+[source]
+----
+> len('hello, world')
+12
+> len((1,2,3))
+3
+> len([1,2,3])
+3
+> len({ 1:2, 3:4, 5:6, 7:8 })
+4
+----
 
 === `print(` _string_ `, end='\n')`
 
 Print writes a string to the console followed by the end value
 (default: `'\n'`).
 
-	> print('hello world', end='.')
-	hello world.> 
+[source]
+----
+> print('hello world', end='.')
+hello world.> 
+----
 
 === `sys.stdout.flush()`
 
@@ -1408,21 +1606,30 @@ Flush output to the console, in case there is buffering somewhere.
 
 Converts the first character in a string to its ASCII value
 
-	>ord('A')
-	65
+[source]
+----
+>ord('A')
+65
+----
 
 === `chr(` _number_ `)`
 
 Converts an ASCII value to a one character string.
 
-	> chr(65)
-	'A'
+[source]
+----
+> chr(65)
+'A'
+----
 
 === `math.sqrt(` _number_ `)`
 Compute the square root of its numeric argument.
 
-	> math.sqrt(2)
-	1.414214
+[source]
+----
+> math.sqrt(2)
+1.414214
+----
 
 == Common System Functions
 
@@ -1442,8 +1649,11 @@ non-zero indicating Failure.
 Pause for the specified amount of time (which can include a fractional
 part).
 
-	> time.sleep(1)
-	> 
+[source]
+----
+> time.sleep(1)
+> 
+----
 
 === `time.monotonic()`
 
@@ -1454,8 +1664,11 @@ floating point values for all numbers, the reference point will be
 close to the starting time of the Snek system, so values may be quite
 small.
 
-	> time.monotonic()
-	6.859814
+[source]
+----
+> time.monotonic()
+6.859814
+----
 
 === `random.seed(` _seed_ `)`
 
@@ -1463,20 +1676,26 @@ Re-seeds the random number generator with `seed`. The random number
 generator will always generate the same sequence of numbers if started
 with the same `seed`.
 
-	> random.seed(time.monotonic())
-	> 
+[source]
+----
+> random.seed(time.monotonic())
+> 
+----
 
 === `random.randrange(` _max_ `)`
 
 Generates a random integer between 0 and max-1 inclusive.
 
-	> random.randrange(10)
-	3
+[source]
+----
+> random.randrange(10)
+3
+----
 
 [appendix]
 == Math Functions
 
-The Snek math functions offer the same functions as the Python3 math
+The Snek math functions offer the same functions as the Python math
 package, although at single precision instead of double
 precision. These functions are optional, but if any are provided, all
 are provided and follow the definitions here.
@@ -1636,7 +1855,8 @@ Sets the current input pin to _pin_.
 Sets the power level on the current Power pin to _power_. If the Power
 pin is currently *on*, then this is effective
 immediately. Otherwise, Snek remembers the desired power level and
-will use it when the pin is turned *on*.
+will use it when the pin is turned *on*. Values less than zero set the
+power to zero, values greater than one set the power to one.
 
 === `setleft()`
 
@@ -1708,7 +1928,7 @@ restart process, Snek will re-read any source code stored in eeprom.
 
 Curses provides a simple mechanism for displaying text on the
 console. The API is designed to be reasonably compatible with the
-Python3 curses module, although it is much less flexible. Snek only
+Python curses module, although it is much less flexible. Snek only
 supports ANSI terminals, and doesn't have any idea what the dimensions
 of the console are. Not all Snek implementations provide the curses
 functions.
@@ -1726,7 +1946,7 @@ Resets the console back to “normal” mode. Enables echo. Makes
 === `curses.noecho()`, `curses.echo()`, `curses.cbreak()`, `curses.nocbreak()`
 
 All four of these functions are no-ops and are part of the API solely
-to make it more compatible with Python3 curses.
+to make it more compatible with Python curses.
 
 === `stdscr.nodelay(` _nodelay_ `)`
 
