@@ -105,7 +105,7 @@ FILE snek_duino_file = FDEV_SETUP_STREAM(snek_uart_putchar, snek_eeprom_getchar,
 
 #include <avr/wdt.h>
 
-int
+int __attribute__((OS_main))
 main (void)
 {
 	MCUSR = 0;
@@ -225,7 +225,10 @@ set_dir(uint8_t pin, uint8_t d)
 		*r |= b;
 	} else {
 		*r &= ~b;
-		*p |= b;
+		if (pin < 14)
+			*p |= b;
+		else
+			*p &= ~b;
 	}
 }
 

@@ -139,6 +139,22 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 	return n;
 }
 
+static bool
+snek_mutable(snek_poly_t p)
+{
+	if (snek_poly_type(p) != snek_list)
+		return false;
+	snek_list_t *l = snek_poly_to_list(p);
+	if (!snek_list_readonly(l))
+		return true;
+	snek_offset_t o;
+	snek_poly_t *ldata = snek_list_data(l);
+	for (o = 0; o < l->size; o++)
+		if (snek_mutable(ldata[o]))
+			return true;
+	return false;
+}
+
 static snek_poly_t *
 _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 {
@@ -159,7 +175,7 @@ _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 		if (o >= list->size || snek_poly_cmp(p, data[o], false) != 0) {
 			if (!add)
 				goto fail;
-			if (snek_poly_type(p) == snek_list && !snek_list_readonly(snek_poly_to_list(p)))
+			if (snek_mutable(p))
 				goto fail;
 			snek_stack_push(p);
 			list = snek_list_resize(list, list->size + 2);

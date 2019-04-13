@@ -9,7 +9,7 @@ ADOC_FILES=snek.adoc
 
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
-CSS_FILES=snek.css
+CSS_FILES=snek.css coderay-asciidoctor.css
 IMAGE_FILES=../snek.svg
 
 all: $(HTML_FILES) $(PDF_FILES)
