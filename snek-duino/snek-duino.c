@@ -225,7 +225,10 @@ set_dir(uint8_t pin, uint8_t d)
 		*r |= b;
 	} else {
 		*r &= ~b;
-		*p |= b;
+		if (pin < 14)
+			*p |= b;
+		else
+			*p &= ~b;
 	}
 }
 
