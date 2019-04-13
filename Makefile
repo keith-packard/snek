@@ -22,13 +22,17 @@ ifeq ($(SNEK_OTHEROS),1)
 SNEK_OTHEROS_DIR=linux windows macosx
 endif
 
-SUBDIRS = posix snek-duino metro-snek snekde doc examples $(SNEK_OTHEROS_DIR)
+SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
 
-all:
+SNEKS = posix/snek snek-duino/snek-duino-$(SNEK_VERSION).hex metro-snek/metro-snek-$(SNEK_VERSION).uf2
+
+all: $(SNEKS)
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done
 
-%:
-	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
+$(SNEKS): FORCE
+	+cd `dirname $@` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)
+
+FORCE:
 
 check: all
 	+cd test && make $@
@@ -57,7 +61,8 @@ install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 	for i in $(PKGFILES); do install --mode=644 "$$i" $(DESTDIR)$(PKGCONFIG); done
 	install -d $(DESTDIR)$(DOCDIR)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR); done
-	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) install); done
+	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
+	+for snek in $(SNEKS); do (cd `dirname $$snek` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
 
 upload:
 	+cd doc && make upload
@@ -71,3 +76,4 @@ snek.pc: snek.pc.in
 clean:
 	rm -f snek.pc
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
+	+for snek in $(SNEKS); do (cd `dirname $$snek` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
