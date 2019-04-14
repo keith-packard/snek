@@ -224,7 +224,7 @@ we can write an expression which computes the result:
 
 At this point, we're using the feature of the interactive environment
 which prints out the value of expressions entered. Let's try printing
-the value directly:
+the value directly:(((print)))
 
 [source]
 ----
@@ -237,7 +237,7 @@ the print function displays exactly what it was given, without
 decoration, while the command processor prints values in the same
 format as they would appear in a program.
 
-Now let's write a function which prints the value and call it:
+Now let's write a function which prints the value and call it:(((def)))
 
 [source]
 ----
@@ -301,7 +301,7 @@ Celsius. If you recall, that's:
 ----
 
 Snek can't use the ° sign in variable names, so we'll just use C and
-F:
+F:(((return)))
 
 [source]
 ----
@@ -324,7 +324,7 @@ rather than just printing it directly.
 === Loops, Ranges and Printing Two Values
 
 Now that we have a function to do this conversion, we can print a
-handy reference table for offline use:
+handy reference table for offline use:(((for)))(((in)))(((range)))
 
 [source]
 ----
@@ -376,7 +376,7 @@ represent an ordered set of objects. The only difference is that Lists
 can be modified after creation while Tuples cannot. We call Lists
 'mutable' and Tuples 'immutable'. Lists are input as objects separated
 by commas and enclosed in square brackets, Tuples are input as objects
-separated by commas and enclosed in parentheses:
+separated by commas and enclosed in parentheses:(((List)))(((Tuple)))
 
 [source]
 ----
@@ -421,7 +421,7 @@ That last output is the Snek machine telling us that the value
 ('hello', ' world') cannot be modified.
 
 We can use another form of the `for` statement to iterate over the
-values in a List or Tuple:
+values in a List or Tuple:(((for)))(((in)))(((print)))
 
 [source]
 ----
@@ -467,7 +467,7 @@ are not indexed by numbers. Instead, Dictionaries are index by
 another Snek value. The only requirement is that the value be
 unchanging, which means Dictionaries can only be indexed by immutable
 values. Lists and Dictionaries are the only mutable data structures in
-Snek, so there are lots of options for Dictionary indices.
+Snek, so there are lots of options for Dictionary indices.(((Dictionary)))
 
 The indexing value in a Dictionary is called the 'key', the indexing
 value is called the 'value'. Dictionaries are input by enclosing
@@ -542,7 +542,7 @@ nope
 The For statement is useful when iterating over a range of
 values. Sometimes we want to use more general control flow. We can
 re-write our temperature conversion chart program using a while loop
-as follows:
+as follows:(((while)))
 
 [source]
 ----
@@ -576,7 +576,7 @@ execution. Each block of statements is preceded by an expression, if
 that expression is True, then the following statements are
 executed. Otherwise, the next test is tried until the end of the
 If is reached. Here's a function which measures how many upper case,
-lower case and digits are in a string:
+lower case and digits are in a string:(((if)))
 
 [source]
 ----
@@ -611,12 +611,12 @@ which can be controlled by a program running on that processor.
 When snek runs on embedded devices like the Duemilanove or the Metro
 M0 Express, it provides functions to directly manipulate these GPIO
 pins. You can use either of these, or any other device which uses the
-standard Arduino pin numbers, for these examples.
+standard Arduino pin numbers, for these examples.(((GPIO)))
 
 ==== Turning on the built-in LED
 
 Let's start by turning on the LED which is usually available on
-Digital pin 13:
+Digital pin 13:(((talkto)))(((on)))
 
 [source]
 ----
@@ -624,7 +624,7 @@ Digital pin 13:
 > on()
 ----
 
-Let's get a bit fancier and blink it
+Let's get a bit fancier and blink it:(((time.sleep)))
 
 [source]
 ----
@@ -637,7 +637,7 @@ Let's get a bit fancier and blink it
 ==== Hooking up a digital input
 
 Find a bit of wire to connect from Digital pin 1 to GND and let's
-control the LED with this primitive switch:
+control the LED with this primitive switch:(((listento)))(((off)))
 
 [source]
 ----
@@ -656,7 +656,7 @@ not, the LED turns *on*. That's how simple switches work on Arduino.
 ==== Using an analog input
 
 If you've got a light sensor or potentiometer, you can hook that up to
-Analog pin 0 and make the LED track the sensor:
+Analog pin 0 and make the LED track the sensor:(((read)))(((onfor)))
 
 [source]
 ----
@@ -678,7 +678,7 @@ lets you tell it both pins at the same time and then provides separate
 functions to set the speed and direction. If you have a motor
 controller hooked to your board with pin 3 as speed and pin 2 for
 direction you can run the motor at half power and have it alternate
-directions with:
+directions with:(((setpower)))(((setleft)))(((setright)))
 
 [source]
 ----
@@ -700,7 +700,7 @@ then the sequence of tokens is recognized by a parser.
 === Numbers
 
 Snek supports 32-bit floating point numbers and understands the usual
-floating point number format:
+floating point number format:(((Number)))
 
 [source]
 ----
@@ -737,7 +737,7 @@ components.
 Names in Snek are used to refer to variables, both global and local to
 a particular function. Names consist of an initial letter or
 underscore followed by a sequence of letters, digits, underscore and
-period. Here are some valid names:
+period. Here are some valid names:(((Name)))
 
 [source]
 ----
@@ -759,7 +759,7 @@ And here are some invalid names:
 
 Keywords look like regular Snek names, but they are handled specially
 by the parser and thus cannot be used as names. Here is the list of
-Snek keywords:
+Snek keywords:(((Keyword)))
 
 ----
 and       break     continue  def
@@ -809,7 +809,7 @@ String constants in Snek are enclosed by either single or double
 quotes. Use single quotes to easily include double quotes in the
 string, and vice-versa. Strings cannot span multiple lines, but you
 can input multiple strings adjacent to one another and they will be
-merged into a single string constant in the program.
+merged into a single string constant in the program.(((String)))
 
 \n::
 Newline. Advance to the first column of the next line.
@@ -861,7 +861,7 @@ single-valued Tuples are represented with a trailing comma.
 === Dictionary Constants
 
 Dictionaries in Snek are key/value pairs separated by commas and all
-enclosed in curly braces. Keys are separated from values with a colon.
+enclosed in curly braces. Keys are separated from values with a colon.(((Dictionary)))
 
 Here are some valid Dictionaries:
 
@@ -898,24 +898,24 @@ Instead of having integers and floating point values, Snek
 dispenses with integers and provides only 32-bit IEEE floats. Integer
 values of less than 24 bits can be represented exactly in these
 floating point values, so programs requiring precise integer behavior
-can still work, as long as the values can be held in 24-bits.
+can still work, as long as the values can be held in 24-bits.(((Number)))
 
 Strings::
 Strings are just lists of bytes. Snek does not have any intrinsic
 support for encodings. However, because they are just lists of bytes,
 you can store UTF-8 values in them comfortably. Just don't expect
-indexing to return Unicode code points.
+indexing to return Unicode code points.(((String)))
 
 Lists::
 Lists are an ordered set of values. You can change the contents of a
 list, add or remove elements. In other languages, these are often
-called arrays or vectors. Lists are “mutable” values.
+called arrays or vectors. Lists are “mutable” values.(((List)))
 
 Tuples::
 Tuples are immutable lists of values. That is, you can't change the
 contents of a list once created, although if one of the elements of
 the list *is* mutable, you can modify that and see the changed results
-in the tuple.
+in the tuple.(((Tuple)))
 
 Dictionaries::
 A dictionary is a mapping between *keys* and *values*. They work
@@ -923,11 +923,11 @@ somewhat like Lists in that you can store and retrieve values in
 them. However, unlike Lists, the index into a Dictionary may be any
 immutable value, which is any value other than a List or Dictionary or
 Tuple containing a List or Dictionary. Dictionaries are 'mutable'
-values.
+values.(((Dictionary)))
 
 Functions::
 Functions are values in Snek. You can store them in variables or
-lists, and then fetch them later.
+lists, and then fetch them later.(((Function)))
 
 Boolean::
 Like Python, Snek doesn't have an explicit Boolean type. Instead, a
@@ -936,13 +936,13 @@ values. All non-zero Numbers, non-empty
 Strings/Lists/Tuples/Dictionaries and all Functions are True. Zero, empty
 Strings/Lists/Tuples/Dictionaries are False. The name True is just
 another way of typing the number one. Similarly, the name False is
-just another way of typing the number zero.
+just another way of typing the number zero.(((Boolean)))
 
 === Lists and Tuples
 
 The ``+=`` operator works a bit different on Lists than any other
 type — it appends to the existing list rather than creating a new
-list. This can be seen in the following example:
+list. This can be seen in the following example:(((+=)))
 
 [source]
 ----
@@ -983,80 +983,80 @@ integer result and convert back to a floating point value.
 
 _value_ ``+`` _value_::
 The Plus operator performs addition on numbers or concatenation on
-strings, lists and tuples.
+strings, lists and tuples.(((+)))
 
 _value_ ``–`` _value_::
-The Minus operator performs subtraction on numbers.
+The Minus operator performs subtraction on numbers.(((-)))
 
 _value_ *&#42;* _value_::
 The Multiplication operator performs multiplication on numbers. If you
 multiply a string, 's', by a number, 'n', you get 'n' copies of 's'
-concatenated together.
+concatenated together.(((*)))
 
 _value_ ``/`` _value_::
-The Divide operator performs division on numbers.
+The Divide operator performs division on numbers.(((/)))
 
 _value_ ``//`` _value_::
 The Div operator performs division on integer values, producing an
-integer result.
+integer result.(((//)))
 
 _value_ ``%`` _value_::
 The Modulus operator computes an integer remainder on integer
 values. If the left operand is a string, it performs “interpolation”
 with either a single value or a list/tuple of values and is used to
 generate formatted output. See the String Interpolation section below
-for details.
+for details.(((%)))
 
 _value_ *&#42;&#42;* _value_::
-The Power operator performs exponentiation on numbers.
+The Power operator performs exponentiation on numbers.(((**)))
 
 _value_ ``&`` _value_::
-The Logical And operator performs bit-wise AND on integers.
+The Logical And operator performs bit-wise AND on integers.(((&)))
 
 _value_ ``|`` _value_::
-The Logical Or operator performs bit-wise OR on integers.
+The Logical Or operator performs bit-wise OR on integers.(((|)))
 
 _value_ ``^`` _value_::
-The Logical Xor operator performs bit-wise XOR on integers.
+The Logical Xor operator performs bit-wise XOR on integers.(((^)))
 
 _value_ ``<<`` _value_::
-The Left Shift operator does bit-wise left shift on integers.
+The Left Shift operator does bit-wise left shift on integers.(((<<)))
 
 _value_ ``>>`` _value_::
-The Right Shift operator does bit-wise left shift on integers.
+The Right Shift operator does bit-wise left shift on integers.(((>>)))
 
 ``!`` _value_::
 The Not operator performs a Boolean Not operation on its one right
 operand. That is, if the operand is one of the True values, then Not returns
 False (which is 0), and if the operand is a False value, then Not
-returns True (which is 1).
+returns True (which is 1).(((!)))
 
 ``~`` _value_::
 The Logical Not operator performs a bit-wise NOT operation on its
-integer operand.
+integer operand.(((~)))
 
 ``–`` _value_::
 When used as a unary prefix operator, the Unary Minus operator
-performs negation on numbers.
+performs negation on numbers.(((–)))
 
 ``+`` _value_::
 When used as a unary prefix operator, the Unary Plus operator
-does nothing at all.
+does nothing at all.(((+)))
 
 _value_ ``[`` _index_ ``]``::
 The Index operator selects the _index_ member of strings, lists,
-tuples and dictionaries.
+tuples and dictionaries.((([ ])))
 
 ``[`` _value_ _[_ ``,`` _value_ … _]_ ``]``::
 The List operator creates a new List with the provided members. Note
 that a List of one value does not have any comma after the value and
 is distinguished from the Index operator solely by how it appears in
-the input.
+the input.((("[value, …]")))
 
 ``(`` _value_ ``)``::
 Parenthesis serve to control the evaluation order within
 expressions. Values inside the parenthesis are computed before they
-are used as values for other operators.
+are used as values for other operators.((("( )")))
 
 ``(`` _value_ ``,`` ``)`` or ``(`` _value_ _[_ ``,`` _value_ … _]_ ``)``::
 The Tuple operator creates a new Tuple with the provided members. A
@@ -1065,14 +1065,14 @@ distinguished from an expression inside of parenthesis.
 
 ``{`` _key_ ``:`` _value_ _[_ ``,`` _key_ ``:`` _value_ … _]_ ``}``::
 The Dictionary operator creates a new Dictionary with the provided
-key/value pairs. All of the _keys_ must be immutable.
+key/value pairs. All of the _keys_ must be immutable.((("(value, …)")))
 
 === Slices
 
 The Slice operator, _value_ ``[`` _base_ ``:`` _bound_ ``:`` _stride_
 ``]``, extracts a sequence of values from Strings, Lists and Tuples. It
 creates a new object with the specified subset of values from the
-original. The new object matches the type of the original.
+original. The new object matches the type of the original.(((slice)))
 
 _base_::
 The first element of _value_ selected for the slice. If _base_ is
@@ -1118,7 +1118,7 @@ value for _bound_ is ``–1``. Here are some examples:
 String interpolation in Snek can be confused with formatted printing
 in other languages. In Snek, the ``print`` function takes a single
 S. String interpolation is how this String is generated from a format
-specification String and a List or Tuple of parameters.
+specification String and a List or Tuple of parameters.(((%)))(((string interpolation)))
 
 If only a single value is needed, it need not be enclosed in a List or
 Tuple. Beware that if this single value is itself a Tuple or List,
@@ -1217,7 +1217,7 @@ discarded.
 _location_ ``=`` _value_::
 The Assignment statement takes the value on the right operand and stores it in
 the location indicated by the left operand. The left operand may be a
-variable, a list location or a dictionary location.
+variable, a list location or a dictionary location.(((assignment)))(((=)))
 
 _location_ ``+=``, ``–=``, ``*=``, ``/=``, ``//=``, ``%=``, ``**=``, ``&=``, ``|=``, ``^=``, ``<\<=``, ``>>=`` _value_::
 The Operation Assignment statements take the value of the left operand and
@@ -1225,6 +1225,7 @@ the value of the left operand and performs the operation indicated by
 the operator. Then it stores the result back in the location indicated
 by the left operand. There are some subtleties about this which are
 discussed in the Lists and Tuples section of the Datatypes chapter.
+(((+=)))(((–=)))(((*=)))(((/=)))(((//=)))(((%=)))(((**=)))(((&=)))(((|=)))(((^=)))(((<\<=)))(((>>=))) 
 
 == Control Flow
 
@@ -1234,7 +1235,7 @@ trailing ``else:`` blocks for loops.
 === ``if`` _value_ ``:`` block _[_ ``elif`` _value_ ``:`` … _] [_  ``else:`` block _]_
 An If statement contains an initial 'if' block, any number of 'elif'
 blocks and then (optionally) an 'else' block in the following
-structure:
+structure:(((if)))(((elif)))(((else)))
 
 [source]
 ----
@@ -1254,7 +1255,7 @@ executed.
 
 === ``while`` _value_ ``:`` block _[_ `else:` block _]_
 A While statements consists of a `while` block followed by an optional
-`else` block:
+`else` block:(((while)))(((else)))
 
 [source,python,subs="normal"]
 while _while_value_ :
@@ -1279,14 +1280,14 @@ is executed. If a ``break`` statement is executed as a part of the
 while statements, then the program immediately jumps past the else
 statements. If a `continue` statement is executed as a part of the
 `while` statements, execution jumps back to the evaluation of
-_while_value_. The `else:` portion (with else statements) is optional.
+_while_value_. The `else:` portion (with else statements) is optional.(((break)))
 
 === `for` _name_ `in` _value_ `:` block _[_ `else:` block _]_
 
 The `for` statement assigns _name_ to each of the list of _values_ and
 then executes a block of statements. _Value_ can be specified in two
 different ways, either as a List, Tuple, Dictionary or String value, or
-as a range expression involving numbers:
+as a range expression involving numbers:(((for)))(((else)))
 
 [source,python,subs="normal"]
 for _name_ in _value_:
@@ -1363,11 +1364,11 @@ statements, then the program immediately jumps past the else
 statements. If a `continue` statement is executed as a part of the
 `for` statements, execution jumps back to the assignment of the next
 value to _name_. In both forms, the `else:` portion (with else
-statements) is optional.
+statements) is optional.(((break)))
 
 === `return` _value_
 The Return statement causes the currently executing function 
-immediately evaluate to _value_ in the enclosing context.
+immediately evaluate to _value_ in the enclosing context.(((return)))
 
 [source]
 ----
@@ -1385,7 +1386,7 @@ In this case, the `print` statement did not execute because the
 === `break`
 The Break statement causes the closest enclosing `while` or `for` statement to
 terminate. Any optional `else:` clause associated with the `while` or `for`
-statement is skipped when the `break` is executed.
+statement is skipped when the `break` is executed.(((break)))
 
 [source]
 ----
@@ -1423,7 +1424,7 @@ The `continue` statement causes the closest enclosing `while` or `for`
 statement to jump back to the portion of the loop which evaluates the
 termination condition. In `while` statements, that is where the
 _while_value_ is evaluated. In `for` statements, that is where
-the next value in the sequence is computed.
+the next value in the sequence is computed.(((continue)))
 
 [source]
 ----
@@ -1446,7 +1447,7 @@ otherwise `other` would be `12`.
 
 === `pass`
 The `pass` statement is a place-holder that does nothing and can
-be used anyplace a statement is needed when no execution is desired.
+be used anyplace a statement is needed when no execution is desired.(((pass)))
 
 [source]
 ----
@@ -1465,7 +1466,7 @@ through the `pass` statement.
 === `import` _name_
 
 The Import statement is ignored and is part of Snek so that Snek programs can
-be run using Python.
+be run using Python.(((import)))
 
 [source]
 ----
@@ -1475,7 +1476,7 @@ be run using Python.
 === `global` _name_ _[_ `,` _name_ … _]_
 
 The Global statement marks the names as non-local; assignment to them
-will not cause a new variable to be created.
+will not cause a new variable to be created.(((global)))
 
 [source]
 ----
@@ -1505,7 +1506,7 @@ is visible after that function finishes.
 === `del`  _location_
 
 The Del statement deletes either variables or elements within a List
-or Dictionary.
+or Dictionary.(((del)))
 
 == Functions
 
@@ -1525,7 +1526,7 @@ variables and variables from other functions with the same name. When
 the function returns, all variables in this new scope are discarded.
 
 Additional variables in this new scope are created when they are
-assigned to, unless they are included in a `global` statement.
+assigned to, unless they are included in a `global` statement.(((def)))
 
 === `def` _fname_ `(` _pos1 [_ `,` _posn … ] [_ `,` _namen_ `=` _defaultn … ]_ `) :` block
 
@@ -1573,7 +1574,7 @@ implementations.
 === `len(value)`
 
 Len returns the number of characters for a String or the number of
-elements in a Tuple, List or Dictionary
+elements in a Tuple, List or Dictionary(((len)))
 
 [source]
 ----
@@ -1590,7 +1591,7 @@ elements in a Tuple, List or Dictionary
 === `print(` _string_ `, end='\n')`
 
 Print writes a string to the console followed by the end value
-(default: `'\n'`).
+(default: `'\n'`).(((print)))
 
 [source]
 ----
@@ -1601,10 +1602,11 @@ hello world.>
 === `sys.stdout.flush()`
 
 Flush output to the console, in case there is buffering somewhere.
+(((sys.stdout.flush))
 
 === `ord(` _string_ `)`
 
-Converts the first character in a string to its ASCII value
+Converts the first character in a string to its ASCII value.(((ord)))
 
 [source]
 ----
@@ -1614,7 +1616,7 @@ Converts the first character in a string to its ASCII value
 
 === `chr(` _number_ `)`
 
-Converts an ASCII value to a one character string.
+Converts an ASCII value to a one character string.(((chr)))
 
 [source]
 ----
@@ -1623,7 +1625,7 @@ Converts an ASCII value to a one character string.
 ----
 
 === `math.sqrt(` _number_ `)`
-Compute the square root of its numeric argument.
+Compute the square root of its numeric argument.(((math.sqrt)))
 
 [source]
 ----
@@ -1642,12 +1644,12 @@ Terminate snek and return _value_ to the operating system. How that
 value is intepreted depends on the operating system. On
 Posix-compatible systems, _value_ should be a number which forms the
 exit code for the Snek process with zero indicating Success and
-non-zero indicating Failure.
+non-zero indicating Failure.(((exit)))
 
 === `time.sleep(` _seconds_ `)`
 
 Pause for the specified amount of time (which can include a fractional
-part).
+part).(((time.sleep)))
 
 [source]
 ----
@@ -1662,7 +1664,7 @@ the system history. This time always increases, even if the system
 clock is adjusted (hence the name). Because Snek uses single-precision
 floating point values for all numbers, the reference point will be
 close to the starting time of the Snek system, so values may be quite
-small.
+small.(((time.monotonic)))
 
 [source]
 ----
@@ -1674,7 +1676,7 @@ small.
 
 Re-seeds the random number generator with `seed`. The random number
 generator will always generate the same sequence of numbers if started
-with the same `seed`.
+with the same `seed`.(((random.seed)))
 
 [source]
 ----
@@ -1684,7 +1686,7 @@ with the same `seed`.
 
 === `random.randrange(` _max_ `)`
 
-Generates a random integer between 0 and max-1 inclusive.
+Generates a random integer between 0 and max-1 inclusive.(((random.randrange)))
 
 [source]
 ----
@@ -1703,126 +1705,126 @@ are provided and follow the definitions here.
 === Number-theoretic and representation functions
 
 math.ceil(x)::
-Return the ceiling of x, the smallest integer greater than or equal to x.
+Return the ceiling of x, the smallest integer greater than or equal to x.(((math.ceil)))
 math.copysign(x,y)::
-Return a number with the magnitude (absolute value) of x but the sign of y.
+Return a number with the magnitude (absolute value) of x but the sign of y.(((math.copysign)))
 math.fabs(x)::
-Return the absolute value of x
+Return the absolute value of x.(((math.fabs)))
 math.factorial(x)::
-Return the factorial of x.
+Return the factorial of x.(((math.factorial)))
 math.floor(x)::
-Return the floor of x, the largest integer less than or equal to x.
+Return the floor of x, the largest integer less than or equal to x.(((math.floor)))
 math.fmod(x,y)::
-Return the modulus of x and y: x - trunc(x/y) * y
+Return the modulus of x and y: x - trunc(x/y) * y.(((math.fmod)))
 math.frexp(x)::
-Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 ≤ abs(frac) < 1, and x = frac * pow(2,exp).
+Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 ≤ abs(frac) < 1, and x = frac * pow(2,exp).(((math.frexp)))
 math.fsum(l)::
-Returns the sum of the numbers in l, which must be a list or tuple.
+Returns the sum of the numbers in l, which must be a list or tuple.(((math.fsum)))
 math.gcd(x,y)::
-Return the greatest common divisor of x and y.
+Return the greatest common divisor of x and y.(((math.gcd)))
 math.isclose(x,y,rel_val=1e-6,abs_val=0.0)::
 Returns a boolean indicating whether x and y are 'close' together. This is defined as
-abs(x-y) ≤ max(rel_tol * max(abs(a), abs(b)), abs_tol).
+abs(x-y) ≤ max(rel_tol * max(abs(a), abs(b)), abs_tol).(((math.isclose)))
 math.isfinite(x)::
-Returns True if x is finite else False
+Returns True if x is finite else False.(((math.isfinite)))
 math.isinf::
-Returns True if x is infinite else False
+Returns True if x is infinite else False.(((math.isinf)))
 math.isnan::
-Returns True if x is not a number else False
+Returns True if x is not a number else False.(((math.isnan)))
 math.ldexp(x,y)::
-Returns x * pow(2,y)
+Returns x * pow(2,y).(((math.ldexp)))
 math.modf(x)::
-Returns (x - trunc(x), trunc(x))
+Returns (x - trunc(x), trunc(x)).(((math.modf)))
 math.remainder(x,y)::
-Returns the remainder of x and y: x - round(x/y) * y
+Returns the remainder of x and y: x - round(x/y) * y.(((math.remainder)))
 math.trunc::
-Returns the truncation of x, the integer closest to x which is no further from zero than x.
+Returns the truncation of x, the integer closest to x which is no further from zero than x.(((math.trunc)))
 round(x)::
-Returns the integer nearest x, with values midway between two integers rounding away from zero.
+Returns the integer nearest x, with values midway between two integers rounding away from zero.(((round)))
 
 === Power and logarithmic functions
 
 math.exp(x)::
-Returns pow(e,x)
+Returns pow(e,x).(((math.exp)))
 math.expm1(x)::
-Returns exp(x)-1
+Returns exp(x)-1.(((math.expm1)))
 math.exp2(x)::
-Returns pow(2,x)
+Returns pow(2,x).(((math.exp2)))
 math.log(x)::
-Returns the natural logarithm of x.
+Returns the natural logarithm of x.(((math.log)))
 math.log1p(x)::
-Returns log(x+1)
+Returns log(x+1).(((math.log1p)))
 math.log2(x)::
-Returns the log base 2 of x.
+Returns the log base 2 of x.(((math.log2)))
 math.log10(x)::
-Returns the log base 10 of x.
+Returns the log base 10 of x.(((math.log10)))
 math.pow(x,y)::
-Returns x raised to the y^th^ power.
+Returns x raised to the y^th^ power.(((math.pow)))
 
 === Trigonometric functions
 
 math.acos(x)::
-Returns the arc cosine of x in the range of 0 ≤ acos(x) ≤ π.
+Returns the arc cosine of x in the range of 0 ≤ acos(x) ≤ π.(((math.acos)))
 math.asin(x)::
-Returns the arc sine of x in the range of -π/2 ≤ asin(x) ≤ π/2.
+Returns the arc sine of x in the range of -π/2 ≤ asin(x) ≤ π/2.(((math.asin)))
 math.atan(x)::
-Returns the arc tangent of x in the range of -π/2 ≤ atan(x) ≤ π/2.
+Returns the arc tangent of x in the range of -π/2 ≤ atan(x) ≤ π/2.(((math.atan)))
 math.atan2(y,x)::
-Returns the arc tangent of y/x in the range of -π ≤ atan2(y,x) ≤ π.
+Returns the arc tangent of y/x in the range of -π ≤ atan2(y,x) ≤ π.(((math.atan2)))
 math.cos(x)::
-Returns the cosine of x.
+Returns the cosine of x.(((math.cos)))
 math.hypot(x,y)::
-Returns sqrt(x*x + y*y).
+Returns sqrt(x*x + y*y).(((math.hypot)))
 math.sin(x)::
-Returns the sine of x.
+Returns the sine of x.(((math.sin)))
 math.tan(x)::
-Returns the tangent of x.
+Returns the tangent of x.(((math.tan)))
 
 === Angular conversion
 
-math.degrees(x)::
+math.degrees(x)::(((math.degrees)))
 Returns x * 180/π.
-math.radians(x)::
+math.radians(x)::(((math.radians)))
 Returns x * π/180.
 
 === Hyperbolic functions
 
 math.acosh(x)::
-Returns the inverse hyperbolic cosine of x.
+Returns the inverse hyperbolic cosine of x.(((math.acosh)))
 math.asinh(x)::
-Returns the inverse hyperbolic sine of x.
+Returns the inverse hyperbolic sine of x.(((math.asinh)))
 math.atanh(x)::
-Returns the inverse hyperbolic tangent of x.
+Returns the inverse hyperbolic tangent of x.(((math.atanh)))
 math.cosh(x)::
-Returns the hyperbolic cosine of x: (exp(x) + exp(-x)) / 2
+Returns the hyperbolic cosine of x: (exp(x) + exp(-x)) / 2.(((math.cosh)))
 math.sinh(x)::
-Returns the hyperbolic sine of x: (exp(x) - exp(-x)) / 2
+Returns the hyperbolic sine of x: (exp(x) - exp(-x)) / 2.(((math.sinh)))
 math.tanh(x)::
-Returns the hyperbolic tangent of x: sinh(x) / cosh(x)
+Returns the hyperbolic tangent of x: sinh(x) / cosh(x).(((math.tanh)))
 
 === Special functions
 
 math.erf(x)::
-Returns the error function at x.
+Returns the error function at x.(((math.erf)))
 math.erfc(x)::
-Returns the complement of the error function at x. This is 1 - erf(x).
+Returns the complement of the error function at x. This is 1 - erf(x).(((math.erfc)))
 math.gamma(x)::
-Returns the gamma function at x.
+Returns the gamma function at x.(((math.gamma)))
 math.lgamma(x)::
-Returns log(gamma(x)).
+Returns log(gamma(x)).(((math.lgamma)))
 
 === Mathematical constants
 
 math.pi::
-The mathematical constant π, to available precision.
+The mathematical constant π, to available precision.(((math.pi)))(((π)))
 math.e::
-The mathematical constant e, to available precision.
+The mathematical constant e, to available precision.(((math.e)))(((e)))
 math.tau::
-The mathematical constant τ, which is 2π, to available precision.
+The mathematical constant τ, which is 2π, to available precision.(((math.tau)))(((τ)))
 math.inf::
-The floating point value which represents infinity.
+The floating point value which represents ∞.(((math.inf)))(((∞)))
 math.nan::
-The floating point value which represents Not a Number.
+The floating point value which represents Not a Number.(((math.nan)))(((NaN)))
 
 [appendix]
 == GPIO Functions
@@ -1833,7 +1835,7 @@ for output and one pin for input. The two output pins are called Power
 and Direction. Each output function specifies which pins it operates
 on. All input and output values range between 0 and 1. Digital pins
 use only 0 or 1, analog pins support the full range of values from 0
-to 1.
+to 1.(((GPIO)))
 
 Output pins are either *on* or *off*. A pin which is *on* has its
 value set to the current power for that pin; changes to the current
@@ -1845,10 +1847,10 @@ restore the pin to that level when it is turned *on*.
 
 Set the current output pins. If _pin_ is a number, this sets both the
 Power and Direction pins. If _pin_ is a List or Tuple, then the first
-element sets the Power pin and the second sets the Direction pin.
+element sets the Power pin and the second sets the Direction pin.(((talkto)))
 
 === `listento(` _pin_ `)`
-Sets the current input pin to _pin_.
+Sets the current input pin to _pin_.(((listento)))
 
 === `setpower(` _power_ `)`
 
@@ -1856,38 +1858,38 @@ Sets the power level on the current Power pin to _power_. If the Power
 pin is currently *on*, then this is effective
 immediately. Otherwise, Snek remembers the desired power level and
 will use it when the pin is turned *on*. Values less than zero set the
-power to zero, values greater than one set the power to one.
+power to zero, values greater than one set the power to one.(((setpower)))
 
 === `setleft()`
 
-Turns the current Direction pin *on*.
+Turns the current Direction pin *on*.(((setleft)))
 
 === `setright()`
 
-Turns the current Direction pin *off*.
+Turns the current Direction pin *off*.(((setright)))
 
 === `on()`
 
-Turns the current Power pin *on*.
+Turns the current Power pin *on*.(((on)))
 
 === `off()`
 
-Turns the current Power pin *off*.
+Turns the current Power pin *off*.(((off)))
 
 === `onfor(` _seconds_ `)`
 
 Turns the current Power pin *on*, delays for _seconds_ and then
-turns the current Power pin *off*.
+turns the current Power pin *off*.(((onfor)))
 
 === `read()`
 
 Returns the value of the current Input pin. If this is an analog pin,
 then `read()` returns a value from `0 to 1` (inclusive). If this a digital pin, then
-`read()` returns either `0` or `1`.
+`read()` returns either `0` or `1`.(((read)))
 
 === `stopall()`
 
-Turns all pins off.
+Turns all pins off.(((stopall)))
 
 [appendix]
 == EEPROM built-in functions
@@ -1895,12 +1897,12 @@ Turns all pins off.
 Snek on embedded devices may include persistent storage for source
 code. This code is read at boot time, allowing boards with Snek loaded
 to run stand-alone. These functions are used by Snekde to get and put
-programs to the device.
+programs to the device.(((eeprom)))
 
 === `eeprom.write()`
 
 Reads characters from the console and writes them to eeprom until a ^D
-character is read.
+character is read.(((eeprom.write)))
 
 === `eeprom.show()` / `eeprom.show(1)`
 
@@ -1908,20 +1910,20 @@ Dumps the current contents of eeprom out to the console. If a
 parameter is passed to this function then a ^B character is sent
 before the text, anda ^C is sent afterwards. `Snekde` uses this feature
 to accurately capture the program text when the Get command is
-invoked.
+invoked.(((eeprom.show)))
 
 === `eeprom.load()`
 
-Re-parses the current eeprom contents, just as Snek does at boot time.
+Re-parses the current eeprom contents, just as Snek does at boot time.(((eeprom.load)))
 
 === `eeprom.erase()`
 
-Erase the eeprom.
+Erase the eeprom.(((eeprom.erase)))
 
 === `reset()`
 
 Restart the Snek system, erasing all RAM contents. As part of the
-restart process, Snek will re-read any source code stored in eeprom.
+restart process, Snek will re-read any source code stored in eeprom.(((reset)))
 
 [appendix]
 == Curses built-in functions
@@ -1931,46 +1933,46 @@ console. The API is designed to be reasonably compatible with the
 Python curses module, although it is much less flexible. Snek only
 supports ANSI terminals, and doesn't have any idea what the dimensions
 of the console are. Not all Snek implementations provide the curses
-functions.
+functions.(((curses)))
 
 === `curses.initscr()`
 
 Puts the console into “visual” mode. Disables echo. Makes `stdscr.getch()` stop
-waiting for newline.
+waiting for newline.(((curses.initscr)))
 
 === `curses.endwin()`
 
 Resets the console back to “normal” mode. Enables echo. Makes
-`stdscr.getch()` wait for newlines.
+`stdscr.getch()` wait for newlines.(((curses.endwin)))
 
 === `curses.noecho()`, `curses.echo()`, `curses.cbreak()`, `curses.nocbreak()`
 
 All four of these functions are no-ops and are part of the API solely
-to make it more compatible with Python curses.
+to make it more compatible with Python curses.(((curses.noecho)))(((curses.echo)))(((curses.cbreak)))(((curses.nocbreak)))
 
 === `stdscr.nodelay(` _nodelay_ `)`
 
 If _nodelay_ is True, then `stdscr.getch()` will return -1 if there
 is no character waiting. If _nodelay_ is False, the `stdscr.getch()`
-will block waiting for a character to return.
+will block waiting for a character to return.(((stdscr.nodelay)))
 
 === `stdscr.erase()`
 
-Erase the screen.
+Erase the screen.(((stdscr.erase)))
 
 === `stdscr.addstr(` _row_ `,` _column_ `,` _string_ `)`
 
 Displays _string_ at _row_, _column_. _Row_ `0` is the top row of the
 screen. _Column_ `0` is the left column. The cursor is left at the end
-of the string.
+of the string.(((stdscr.addstr)))
 
 === `stdscr.move(` _row_ `,` _column_ `)`
 
-Moves the cursor to _row_, _column_ without displaying anything there.
+Moves the cursor to _row_, _column_ without displaying anything there.(((stdscr.move)))
 
 === `stdscr.refresh()`
 
-Flushes any pending screen updates.
+Flushes any pending screen updates.(((stdscr.refresh)))
 
 === `stdscr.getch()`
 
@@ -1978,13 +1980,13 @@ Reads a character from the console input. Returns a number indicating
 the character read, which can be converted to a string using
 `chr(c)`. If `stdscr.nodelay(nodelay)` was most recently called
 with _nodelay_ `= True`, then `stdscr.getch()` will immediately
-return -1 if no characters are pending.
+return -1 if no characters are pending.(((stdscr.getch)))
 
 == Snek Development Environment
 
 The Snek Development Environment, snekde, is a Python program which runs
 on Linux, Mac OS X and Windows to work with small devices running
-Snek, such as the Duemilanove and Metro M0 Express boards.
+Snek, such as the Duemilanove and Metro M0 Express boards.(((snekde)))
 
 === Starting Snekde
 
@@ -2070,7 +2072,7 @@ keyboard.
 
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
-puck, such as the USBTiny device.
+puck, such as the USBTiny device.(((Duemilanove)))(((Arduino)))
 
 On Linux, the snek installation includes a shell script,
 snek-duino-install, to install the binary using 'avrdude'. Read the
@@ -2087,7 +2089,7 @@ The Adafruit Metro M0 Express board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
 get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
-succession.
+succession.(((Metro M0 Express)))(((Arduino)))
 
 Then, find the metro-snek-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
@@ -2096,3 +2098,8 @@ Metro M0 file system.
 Snek for the Metro M0 Express includes the Common System,
 Math, GPIO, and EEPROM functions. Snek for the Metro M0 Express also
 runs on the Feather M0 boards
+
+ifdef::backend-pdf[]
+[index]
+== Index
+endif::[]
