@@ -833,7 +833,7 @@ Anything else following the backslash is just that character.
 === List and Tuple Constants
 
 List and Tuple constants in Snek are values separated by commas
-enclosed in either square brackes (for Lists) or parentheses (for
+enclosed in either square brackets (for Lists) or parentheses (for
 Tuples).
 
 Here are some valid Lists:
@@ -1077,7 +1077,7 @@ original. The new object matches the type of the original.(((slice)))
 _base_::
 The first element of _value_ selected for the slice. If _base_ is
 negative, then it counts from the end of _value_ instead the
-begining.
+beginning.
 
 _bound_::
 The first element of _value_ beyond the range selected for the slice.
@@ -1085,7 +1085,7 @@ The first element of _value_ beyond the range selected for the slice.
 _stride_::
 The spacing between selected elements. _Stride_ may be negative, in
 which case elements are selected in reverse order, starting towards
-the end of _value_ and working towards the begining. It is an error
+the end of _value_ and working towards the beginning. It is an error
 for _stride_ to be zero.
 
 All three values are optional. The default value for _stride_ is
@@ -1108,7 +1108,7 @@ value for _bound_ is ``–1``. Here are some examples:
 > # Select the end of the Tuple starting at index 3
 > a[3:]
 ('d', 'e', 'f', 'g')
-> # Select the begining of the Tuple, ending before index 3
+> # Select the beginning of the Tuple, ending before index 3
 > a[:3]
 ('a', 'b', 'c')
 ----
@@ -1139,7 +1139,7 @@ etc. The format indicator characters are:
 Format a number as a whole number, discarding any fractional part and
 without any exponent. ``%d`` and ``%i`` present the value in base 10.
 ``%o`` uses base 8 (octal) and ``%x`` and ``%X`` use base 16
-(hexidecimal), with ``%x`` using lower case letters (a-f) and ``%X``
+(hexadecimal), with ``%x`` using lower case letters (a-f) and ``%X``
 using upper case letters (A-F).
 
 ``%e``::
@@ -1203,7 +1203,7 @@ a is 1
 a is (1, 2, 3)
 ----
 
-In the first case, String interpolatiton is using the first element of
+In the first case, String interpolation is using the first element of
 ``a`` as the value instead of using all of ``a``.
 
 == Expression and Assignment Statements
@@ -1518,7 +1518,7 @@ assigned to, unless they are included in a `global` statement.(((def)))
 
 === `def` _fname_ `(` _pos1 [_ `,` _posn … ] [_ `,` _namen_ `=` _defaultn … ]_ `) :` block
 
-A `def` statement declares (or redeclares) a function. The positional
+A `def` statement declares (or re-declares) a function. The positional
 and named parameters are all visible as local variables while the
 function is executing.
 
@@ -1629,7 +1629,7 @@ they are available, they will work as described below.
 === `exit(` _value_ `)`
 
 Terminate snek and return _value_ to the operating system. How that
-value is intepreted depends on the operating system. On
+value is interpreted depends on the operating system. On
 Posix-compatible systems, _value_ should be a number which forms the
 exit code for the Snek process with zero indicating Success and
 non-zero indicating Failure.(((exit)))
@@ -1896,10 +1896,9 @@ character is read.(((eeprom.write)))
 
 Dumps the current contents of eeprom out to the console. If a
 parameter is passed to this function then a ^B character is sent
-before the text, anda ^C is sent afterwards. `Snekde` uses this feature
+before the text, and a ^C is sent afterwards. `Snekde` uses this feature
 to accurately capture the program text when the Get command is
 invoked.(((eeprom.show)))
-
 === `eeprom.load()`
 
 Re-parses the current eeprom contents, just as Snek does at boot time.(((eeprom.load)))
