@@ -252,7 +252,7 @@ hello, world
 ----
 
 There's lots of stuff going on here. First, we see how to declare a
-function by using the 'def' keyword, followed by the name of the
+function by using the `def` keyword, followed by the name of the
 function, followed by a list of arguments. After that list there's a
 colon.
 
@@ -267,7 +267,7 @@ statements, you enter a line with the old indentation level.
 While entering a long compound statement like this, the command
 processor will prompt with `+` instead of `>` to let you know that
 it's still waiting for more input before it does anything. It's the
-'line with the old indentation level' that displays the second
+“line with the old indentation level” that displays the second
 `+`. Hitting enter on that line ends the list of statements for the
 `hello` function and gets you back to the regular command prompt.
 
@@ -361,7 +361,7 @@ elide the third value and Snek will step by 1.
 Second, we need to insert the numeric values into the string shown by
 print. In many languages, that's done with a special formatted
 printing function. In Snek, there's a more general purpose mechanism
-called 'String Interpolation'. Using the % operator, Snek walks over
+called “String Interpolation”. Using the % operator, Snek walks over
 the string on the left and inserts values from the set of values
 enclosed in parenthesis on the right wherever there is a % followed by
 a character. The result of string interpolation is another string
@@ -377,7 +377,7 @@ the next section on Lists and Tuples.
 Lists and Tuples in Snek are closely related data types. Both
 represent an ordered set of objects. The only difference is that Lists
 can be modified after creation while Tuples cannot. We call Lists
-'mutable' and Tuples 'immutable'. Lists are input as objects separated
+“mutable” and Tuples “immutable”. Lists are input as objects separated
 by commas and enclosed in square brackets, Tuples are input as objects
 separated by commas and enclosed in parentheses:(((List)))(((Tuple)))
 
@@ -472,8 +472,8 @@ unchanging, which means Dictionaries can only be indexed by immutable
 values. Lists and Dictionaries are the only mutable data structures in
 Snek, so there are lots of options for Dictionary indices.(((Dictionary)))
 
-The indexing value in a Dictionary is called the 'key', the indexing
-value is called the 'value'. Dictionaries are input by enclosing
+The indexing value in a Dictionary is called the “key”, the indexing
+value is called the “value”. Dictionaries are input by enclosing
 key/value pairs, separated by commas, inside curly braces:
 
 [source]
@@ -930,7 +930,7 @@ A dictionary is a mapping between *keys* and *values*. They work
 somewhat like Lists in that you can store and retrieve values in
 them. However, unlike Lists, the index into a Dictionary may be any
 immutable value, which is any value other than a List or Dictionary or
-Tuple containing a List or Dictionary. Dictionaries are 'mutable'
+Tuple containing a List or Dictionary. Dictionaries are “mutable”
 values.(((Dictionary)))
 
 Functions::
@@ -1241,8 +1241,8 @@ Snek has a subset of the Python control flow operations, including
 trailing ``else:`` blocks for loops.
 
 === ``if`` _value_ ``:`` block _[_ ``elif`` _value_ ``:`` … _] [_  ``else:`` block _]_
-An If statement contains an initial 'if' block, any number of 'elif'
-blocks and then (optionally) an 'else' block in the following
+An If statement contains an initial `if` block, any number of `elif`
+blocks and then (optionally) an `else` block in the following
 structure:(((if)))(((elif)))(((else)))
 
 [source]
