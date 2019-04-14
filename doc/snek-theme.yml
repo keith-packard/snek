@@ -49,13 +49,13 @@ footer:
   border_color: #7ab306
   recto:
     left:
-      content: '{page-number}'
-    right:
       content: '© 2019 Keith Packard. Creative Commons ShareAlike 3.0 License'
+    right:
+      content: '{page-number}'
   verso:
     left:
       content: $footer_recto_right_content
     right:
-      content: '{page-number}'
+      content: $footer_recto_left_content
 literal:
   font_family: DejaVu Sans Mono
