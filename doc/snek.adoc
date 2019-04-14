@@ -1240,12 +1240,12 @@ structure:(((if)))(((elif)))(((else)))
 [source]
 ----
 if if_value :
-	if statements
+    if statements
 elif elif_value :
-	elif_statements
+    elif_statements
 …
 else:
-	else_statements
+    else_statements
 ----
 
 If _if_value_ is True, then _if_statements_ are executed. Otherwise,
@@ -1258,15 +1258,11 @@ A While statements consists of a `while` block followed by an optional
 `else` block:(((while)))(((else)))
 
 [source,python,subs="normal"]
+----
 while _while_value_ :
-[source]
-----
-block
-----
+    block
 else:
-[source]
-----
-block
+    block
 ----
 
 _While_value_ is evaluated and if it evaluates as `True`, the
@@ -1290,15 +1286,11 @@ different ways, either as a List, Tuple, Dictionary or String value, or
 as a range expression involving numbers:(((for)))(((else)))
 
 [source,python,subs="normal"]
+----
 for _name_ in _value_:
-[source]
-----
-for statements
-----
+    for statements
 else:
-[source]
-----
-else statements
+    else statements
 ----
 
 In this case, the _value_ must be a List,
@@ -1308,15 +1300,11 @@ separate character in the string. For Dictionaries, the values are the
 keys in the dictionary.
 
 [source,python,subs="normal"]
+----
 for name in range ( _[_ start , _]_ stop _[_ , step _]_ ):
-[source]
-----
-for statements
-----
+    for statements
 else:
-[source]
-----
-else statements
+    else statements
 ----
 
 In this form, the `for` statement assigns a range of numeric values
