@@ -148,7 +148,7 @@ having to erase and re-write the Flash constantly, I decided to
 restrict applications and data to RAM, and to store source code in
 EEPROM.
 
-== Introducing Snek
+=== Introducing Snek
 
 The goals of the Snek language are:
 
@@ -691,6 +691,11 @@ directions with:(((setpower)))(((setleft)))(((setright)))
 +     setright()
 +     time.sleep(1)
 ----
+
+= Snek Reference Manual
+
+The remainder of this book forms a reference manual for the Snek
+language, including commonly available builtin functions and the Snek development environment.
 
 == Lexical Structure
 
@@ -1682,7 +1687,6 @@ Generates a random integer between 0 and max-1 inclusive.(((random.randrange)))
 3
 ----
 
-[appendix]
 == Math Functions
 
 The Snek math functions offer the same functions as the Python math
@@ -1814,7 +1818,6 @@ The floating point value which represents ∞.(((math.inf)))(((∞)))
 math.nan::
 The floating point value which represents Not a Number.(((math.nan)))(((NaN)))
 
-[appendix]
 == GPIO Functions
 
 On embedded devices, Snek has a range of functions designed to make
@@ -1879,7 +1882,6 @@ then `read()` returns a value from `0 to 1` (inclusive). If this a digital pin, 
 
 Turns all pins off.(((stopall)))
 
-[appendix]
 == EEPROM built-in functions
 
 Snek on embedded devices may include persistent storage for source
@@ -1912,7 +1914,6 @@ Erase the eeprom.(((eeprom.erase)))
 Restart the Snek system, erasing all RAM contents. As part of the
 restart process, Snek will re-read any source code stored in eeprom.(((reset)))
 
-[appendix]
 == Curses built-in functions
 
 Curses provides a simple mechanism for displaying text on the
@@ -2055,7 +2056,7 @@ these commands prompt for a filename, which you can enter with the
 keyboard.
 
 [appendix]
-== Snek on Arduino Duemilanove
+= Snek on Arduino Duemilanove
 
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
@@ -2070,7 +2071,7 @@ Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
 functions. It does not include the Math functions.
 
 [appendix]
-== Snek on Metro M0 Express
+= Snek on Metro M0 Express
 
 The Adafruit Metro M0 Express board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
@@ -2088,5 +2089,5 @@ runs on the Feather M0 boards
 
 ifdef::backend-pdf[]
 [index]
-== Index
+= Index
 endif::[]
