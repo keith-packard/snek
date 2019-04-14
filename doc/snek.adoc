@@ -1,5 +1,5 @@
 = The Snek Programming Language: A Python-inspired Embedded Computing Language
-Keith Packard <keithp@keithp.com
+Keith Packard <keithp@keithp.com>
 :title-logo-image: image:snek.svg[Snek]
 :version: 0.0
 :revnumber: v{version}
@@ -17,6 +17,7 @@ Keith Packard <keithp@keithp.com
 :pdf-fontsdir: fonts
 :source-highlighter: coderay
 :source-language: python
+:media: prepress
 
 ifndef::backend-pdf[]
 [#logo]
@@ -24,14 +25,16 @@ ifndef::backend-pdf[]
 image::snek.svg[Snek]
 endif::[]
 
-[license]
-== License
+[colophon]
+[%nonfacing]
+= License
 
-Copyright © 2019 Keith Packard
+Copyright © 2019 {author}
 
 This document is released under the terms of the link:http://creativecommons.org/licenses/by-sa/3.0/[Creative Commons ShareAlike 3.0 License]
 
 [dedication]
+[%nonfacing]
 == Acknowledgments
 
 Thanks to Jane Kenney-Norberg for building a science and technology
@@ -46,9 +49,9 @@ Arduino programming using Lego robots. Christopher has also been
 helping design and test Snek.
 
 [verse]
-Keith Packard
-keithp@keithp.com
-http://keithp.com
+{author}
+{email}
+https://keithp.com
 
 == History and Motivations
 
@@ -2055,6 +2058,7 @@ You can also save and load programs to the host file system. Both of
 these commands prompt for a filename, which you can enter with the
 keyboard.
 
+[%nonfacing]
 [appendix]
 = Snek on Arduino Duemilanove
 
@@ -2070,6 +2074,7 @@ information.
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
 functions. It does not include the Math functions.
 
+[%nonfacing]
 [appendix]
 = Snek on Metro M0 Express
 

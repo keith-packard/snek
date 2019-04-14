@@ -6,8 +6,8 @@ heading:
 font:
   catalog:
     Open Sans Light:
-      normal: OpenSans-Light.ttf
-      italic: OpenSans-LightItalic.ttf
+      normal: OpenSans-Regular.ttf
+      italic: OpenSans-Italic.ttf
       bold: OpenSans-Semibold.ttf
       bold_italic: OpenSans-SemiboldItalic.ttf
     DejaVu Sans Mono:
@@ -20,14 +20,14 @@ title_page:
   logo:
     top: 10%
   title:
-    top: 75%
-    font_size: $heading_h1_font_size
+    top: 70%
+    font_size: 24
     font_color: #000000
     font_style: bold
-    line_height: 0.9
+    line_height: 2
   subtitle:
-    font_size: $heading_h3_font_size
-    font_style: bold_italic
+    font_size: 12
+    font_style: italic
     line_height: 1
   authors:
     margin_top: $base_font_size * 1.25
@@ -42,20 +42,35 @@ admonition_label:
 page:
   background_color: ffffff
   layout: portrait
-  margin: [0.5in, 0.67in, 0.75in, 0.67in]
+#  margin: [0.75in, 0.75in, 0.75in, 0.75in]
+  margin: [1in, 1in, 1in, 1in]
+  margin_inner: 1in
+  margin_outer: 0.75in
+#  size: [5.5in, 8.5in]
   size: letter
-footer:
-  height: 0.5in
+header:
+  height: 0.75in
   border_color: #7ab306
+  line_height: 2.0
+  vertical_align: bottom
   recto:
     left:
-      content: '© 2019 Keith Packard. Creative Commons ShareAlike 3.0 License'
+      content: '{chapter-refsig}    {chapter-number}'
     right:
-      content: '{page-number}'
+      content: '{chapter-title}    {page-number}'
   verso:
     left:
-      content: $footer_recto_right_content
+      content: '{page-number}    {document-title}'
     right:
-      content: $footer_recto_left_content
+      content: $header_recto_left_content
+footer:
+  height: 0.75in
+  font_size: 8
+  recto:
+    center:
+      content: 'CC SA 3.0 License'
+  verso:
+    center:
+      content: '© 2019 Keith Packard'
 literal:
   font_family: DejaVu Sans Mono
