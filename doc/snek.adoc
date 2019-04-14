@@ -1777,10 +1777,10 @@ Returns the tangent of x.(((math.tan)))
 
 === Angular conversion
 
-math.degrees(x)::(((math.degrees)))
-Returns x * 180/π.
-math.radians(x)::(((math.radians)))
-Returns x * π/180.
+math.degrees(x)::
+Returns x * 180/π.(((math.degrees)))
+math.radians(x)::
+Returns x * π/180.(((math.radians)))
 
 === Hyperbolic functions
 
@@ -1897,13 +1897,14 @@ programs to the device.(((eeprom)))
 Reads characters from the console and writes them to eeprom until a ^D
 character is read.(((eeprom.write)))
 
-=== `eeprom.show()` / `eeprom.show(1)`
+=== `eeprom.show()`
 
 Dumps the current contents of eeprom out to the console. If a
 parameter is passed to this function then a ^B character is sent
 before the text, and a ^C is sent afterwards. `Snekde` uses this feature
 to accurately capture the program text when the Get command is
 invoked.(((eeprom.show)))
+
 === `eeprom.load()`
 
 Re-parses the current eeprom contents, just as Snek does at boot time.(((eeprom.load)))
