@@ -21,7 +21,7 @@ title_page:
     top: 10%
   title:
     top: 70%
-    font_size: 24
+    font_size: 16
     font_color: #000000
     font_style: bold
     line_height: 2
@@ -42,12 +42,12 @@ admonition_label:
 page:
   background_color: ffffff
   layout: portrait
-  margin: [1in, 1in, 1in, 1in]
+  margin: [0.75in, 0.75in, 0.75in, 0.75in]
   margin_inner: 1in
   margin_outer: 0.75in
-  size: letter
+  size: [5.5in, 8.5in]
 header:
-  height: 0.75in
+  height: 0.6in
   border_color: #7ab306
   line_height: 2.0
   vertical_align: bottom
@@ -62,7 +62,7 @@ header:
     right:
       content: $header_recto_left_content
 footer:
-  height: 0.75in
+  height: 0.5in
   font_size: 8
   recto:
     center:
