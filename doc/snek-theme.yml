@@ -1,11 +1,13 @@
 base:
-  font_family: Open Sans Light
+  font_family: Open Sans Regular
+snek:
+  green: 7ab306
 heading:
-  font_color: #7ab306
+  font_color: $snek_green
   font_size: 17
 font:
   catalog:
-    Open Sans Light:
+    Open Sans Regular:
       normal: OpenSans-Regular.ttf
       italic: OpenSans-Italic.ttf
       bold: OpenSans-Semibold.ttf
@@ -26,7 +28,7 @@ title_page:
     font_style: bold
     line_height: 2
   subtitle:
-    font_size: 12
+    font_size: 14
     font_style: italic
     line_height: 1
   authors:
@@ -36,7 +38,7 @@ title_page:
   revision:
     margin_top: $base_font_size * 1.25
 admonition_label:
-  font_color: #7ab306
+  font_color: $snek_green
   font_style: bold
   font_size: $heading_h2_font_size
 page:
@@ -48,7 +50,7 @@ page:
   size: letter
 header:
   height: 0.75in
-  border_color: #7ab306
+  border_color: $snek_green
   line_height: 2.0
   vertical_align: bottom
   recto:
@@ -72,3 +74,6 @@ footer:
       content: '© 2019 Keith Packard'
 literal:
   font_family: DejaVu Sans Mono
+code:
+  font_family: DejaVu Sans Mono
+  font_size: 11
