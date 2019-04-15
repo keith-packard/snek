@@ -13,7 +13,6 @@ Keith Packard <keithp@keithp.com>
 :linkcss:
 :toc:
 :pdf-stylesdir: .
-:pdf-style: snek
 :pdf-fontsdir: fonts
 :source-highlighter: coderay
 :source-language: python
@@ -1240,7 +1239,12 @@ discussed in the Lists and Tuples section of the Datatypes chapter.
 Snek has a subset of the Python control flow operations, including
 trailing ``else:`` blocks for loops.
 
-=== ``if`` _value_ ``:`` block _[_ ``elif`` _value_ ``:`` … _] [_  ``else:`` block _]_
+=== `if`
+
+____
+`if` _value_ `:` block _[_ `elif` _value_ `:` … _] [_  `else:` block _]_
+____
+
 An If statement contains an initial `if` block, any number of `elif`
 blocks and then (optionally) an `else` block in the following
 structure:(((if)))(((elif)))(((else)))
@@ -1261,7 +1265,11 @@ if _elif_value_ is True, then _elif_statements_ are executed. If none
 of the if or elif values are True, then the _else_statements_ are
 executed.
 
-=== ``while`` _value_ ``:`` block _[_ `else:` block _]_
+=== `while`
+____
+`while` _value_ `:` block _[_ `else:` block _]_
+____
+
 A While statements consists of a `while` block followed by an optional
 `else` block:(((while)))(((else)))
 
@@ -1280,13 +1288,16 @@ again executed. This continues until the _while_value_ evaluates as
 `False`.
 
 When the _while_value_ evaluates as `False`, then the `else:` block
-is executed. If a ``break`` statement is executed as a part of the
+is executed. If a `break` statement is executed as a part of the
 while statements, then the program immediately jumps past the else
 statements. If a `continue` statement is executed as a part of the
 `while` statements, execution jumps back to the evaluation of
 _while_value_. The `else:` portion (with else statements) is optional.(((break)))
 
-=== `for` _name_ `in` _value_ `:` block _[_ `else:` block _]_
+=== `for`
+____
+`for` _name_ `in` _value_ `:` block _[_ `else:` block _]_
+____
 
 The `for` statement assigns _name_ to each of the list of _values_ and
 then executes a block of statements. _Value_ can be specified in two
@@ -1524,7 +1535,9 @@ the function returns, all variables in this new scope are discarded.
 Additional variables in this new scope are created when they are
 assigned to, unless they are included in a `global` statement.(((def)))
 
-=== `def` _fname_ `(` _pos1 [_ `,` _posn … ] [_ `,` _namen_ `=` _defaultn … ]_ `) :` block
+=== `def`
+
+`def` _fname_ `(` _pos1 [_ `,` _posn … ] [_ `,` _namen_ `=` _defaultn … ]_ `) :` block
 
 A `def` statement declares (or re-declares) a function. The positional
 and named parameters are all visible as local variables while the
