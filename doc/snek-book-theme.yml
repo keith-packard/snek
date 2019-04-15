@@ -23,7 +23,7 @@ title_page:
     top: 10%
   title:
     top: 70%
-    font_size: 16
+    font_size: 17
     font_color: #000000
     font_style: bold
     line_height: 2
@@ -32,11 +32,12 @@ title_page:
     font_style: italic
     line_height: 1
   authors:
-    margin_top: $base_font_size * 1.25
-    font_size: $base_font_size * 1.5
+    margin_top: 19
+    font_size: 17
     font_color: #000000
   revision:
-    margin_top: $base_font_size * 1.25
+    margin_top: 17
+    font_size: 10
 admonition_label:
   font_color: $snek_green
   font_style: bold
