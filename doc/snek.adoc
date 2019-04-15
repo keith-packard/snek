@@ -54,12 +54,13 @@ https://keithp.com
 == History and Motivations
 
 Teaching computer programming to students in the 10-14 age range
-offers some interesting challenges. Introductory, “blocks”, languages
-can become frustratingly slow to create code, and don't develop
-concrete skills to bring to more advanced languages. Sophisticated
-languages like C, Java and even Python are so large as to overwhelm
-the student with rich semantics like objects and higher level
-programming constructs.
+offers some interesting challenges. Graphical languages which
+construct programs from elements manipulated with a pointing device
+can become frustratingly slow to create code. These languages don't
+develop portable skills to bring to more advanced languages.
+Sophisticated languages like C, Java and even Python are so large as
+to overwhelm the novice with rich semantics like “objects” and other
+higher level programming constructs.
 
 In days long past, beginning programmers were usually presented with
 microcomputers running very small languages, like BASIC, Forth or
@@ -71,32 +72,30 @@ environments, from embedded systems through cloud-based systems. Many
 of these are technological dead-ends—closed systems that offer no way
 to even extract source code and re-use it in another environment.
 
-Some systems, such as Raspberry PI and Arduino are open—they use
+Some systems, such as Raspberry PI and Arduino, are open—they use
 standard languages so that skills learned with them are useful
-elsewhere.. However, while the smallest of these are similar in memory
-and CPU size to those early machines, they are programmed as embedded
-computers using a full C++ compiler running on a desktop or laptop
-system.
+elsewhere. However, while the smallest of these machines are similar
+in memory and CPU size to those early microcomputers, these smaller
+machines are programmed as embedded computers using a full C++
+compiler running on a separate desktop or laptop system.
 
 === Arduino in the Lego Program
 
 I brought Arduino systems into the classroom about five years ago. The
-hardware was fabulous and we built a number of fun robots. However,
-students struggled with the complex syntax, especially typing the
-obscure punctuation marks and remembering to insert semicolons. The
-lack of any interactive mode made experimenting a bit slower than
-other systems.
+hardware was fabulous and we built a number of fun robots. After a
+couple of years, I built some custom Arduino hardware for our needs --
+I used screw terminals for all of the inputs and outputs, stuck a
+battery pack on the back and included four high-current H-bridge motor
+controllers to help animate the robots. They're still Arduino's though,
+there's an ATmega 328P processor and a FTDI USB to serial converter,
+so we were able to use the stock Arduino development tools.
 
-After a couple of years, I built some custom Arduino hardware for our
-needs -- I used screw terminals for all of the inputs and outputs,
-stuck a battery pack on the back and included four high-current
-H-bridge motor controllers to help animate the robots. They're still
-Arduinos though, there's an ATmega 328P processor and a FTDI USB to
-serial converter, so we were able to use the stock Arduino development
-tools.
-
-There have been students who got past the obstacles and figured out
-how to use them:
+However, students struggled with the complex syntax, especially typing
+the obscure punctuation marks and remembering to insert semicolons. I
+often heard comments like “this takes too much typing” and “why is it
+so picky about semicolons”. The lack of an interactive mode made
+experimenting a bit slower than other systems. There have been
+students who got past the obstacles and figured out how to use them:
 
  * Chris Reekie an 11th-grade student-teacher in the program, took the
    line follower robot design and re-wrote the Arduino firmware to
@@ -109,53 +108,53 @@ how to use them:
    and communication with an attached 7-segment display. We've shown
    this device at numerous local Lego shows.
 
-However, other students dreaded having to use the Arduino systems with
-complaints about “too much typing” and “why is it so picky about
-semicolons”.
+ * Mark Fernandez, now a Mechanical Engineering student at Washington
+   University in St Louis, built a solar energy system that
+   automatically tracked the sun while he was in eighth grade.
 
-The hardware was just what we wanted, but the software was not aimed
-at young students just starting to write code.
+The hardware was just what we wanted, a few students were using the
+skills learned in the program later on, but the software was not aimed
+at young students just starting to write code. Instead of throwing out
+our existing systems and starting over, I wondered if we couldn't keep
+using the same (hand-made) hardware and just change the programming
+environment.
 
 === A New Language
 
-Instead of throwing out our existing systems and starting over, I
-wondered if we couldn't keep using the same (hand-made) hardware and
-just change the programming environment.
-
-So I searched for a tiny programming language that could run on
-Arduino and offer an experience more like Lego Logo. I wanted
-something that students could use as a foundation for further computer
-education and exploration, something very much like Python.
+I searched for a tiny programming language that could run on Arduino
+and offer an experience more like Lego Logo. I wanted something that
+students could use as a foundation for further computer education and
+exploration, something very much like Python.
 
 There is a smaller version of Python, called MicroPython, but that is
-still a large language which takes a few hundred kB of ROM and a
-significant amount of RAM. This would require new hardware, which
-isn't a huge deal, but it's still a fairly large language which we
-couldn't cover in any detail in our class time.
+still a fairly large language which takes a few hundred kB of ROM and a
+significant amount of RAM. It's also large enough that we
+couldn't cover it in any detail in our class time.
 
 I finally decided to just try and write a small Python-inspired
-language that could fit on the Arduino. An Arduino Duemilanove has:
+language that could fit on our existing hardware, which is compatible
+with the Arduino Duemilanove. These machines have:
 
  * 32kB of Flash
- * 2kb of RAM
+ * 2kB of RAM
  * 1kB of EEPROM
- * 1 UART hooked to a USB/serial converter
+ * 1 serial port hooked to a USB/serial converter
  * 1 SPI port
  * 6 Analog inputs
  * 14 Digital input/output pins
 
-In modern terms, that's a really tiny machine. In particular, to avoid
-having to erase and re-write the Flash constantly, I decided to
-restrict applications and data to RAM, and to store source code in
-EEPROM.
+Shrinking the language to a small Python subset should let the
+language run on this hardware while also being simple enough to expose
+students to the whole language in a small amount of class time.
 
 === Introducing Snek
 
 The goals of the Snek language are:
 
- * Text-based. Instead of building software using icons and a mouse, a
-   text-based language offers a richer environment for people comfortable
-   with using a keyboard.
+ * Text-based. A text-based language offers a richer environment for
+   people comfortable with using a keyboard. It is more representative
+   of real-world programming than building software using icons and a
+   mouse.
 
  * Forward-looking. Skills developed while learning Snek should be
    transferable to other development environments.
@@ -165,21 +164,20 @@ The goals of the Snek language are:
    exposure to software.
 
 Snek is Python-inspired, but it is not Python. It is possible to write
-Snek programs that run under a full Python (version 3) system, but few
-Python programs will run under Snek.
+Snek programs that run under a full Python system, but most Python
+programs will not run under Snek.
 
 == A Gentle Snek Tutorial
 
 Before we get into the details of the language, let's pause and just
 explore the language a bit to get a flavor of how it works. We won't
 be covering anything in detail, nor will all the subtleties be
-explored. The hope is to just provide some a framework within which
-those details can be filled in later on.
+explored. The hope is to provide a framework for those details.
 
-This tutorial shows what appears on the screen, which merges what Snek
-displays along with user input. User input is shown *`in a bold face, like
-this`* on the lines which start with `>` or `+`, Snek output is shown
-`in a normal face, like this` on other lines.
+This tutorial shows what appears on the screen, both what the user
+types and what Snek displays. User input is shown *`in bold face,
+like this`* on the lines which start with `>` or `+`. Snek output is
+shown `in a lighter face, like this` on other lines.
 
 === Hello World
 
@@ -187,9 +185,11 @@ A traditional exercise in any new language is to get it to print the
 words `hello, world` to the console. Because snek offers an
 interactive command line, we can actually do this in several ways.
 
-The first way is to simply evaluate an expression. Start up Snek on
-your computer (perhaps by finding Snek in your system menu or by
-typing `snek` at the usual command prompt):
+The first way is to use Snek to echo back what you type at it. Start
+up Snek on your computer (perhaps by finding Snek in your system menu
+or by typing `snek` at the usual command prompt). When it first
+starts, Snek will introduce itself and then wait for you to type
+something.
 
 [subs="attributes+"]
 ----
@@ -197,7 +197,7 @@ Welcome to Snek version {revnumber}
 >
 ----
 
-At this prompt, the result of any expression typed in will be printed:
+At this `> ` prompt, Snek will print anything you type to it:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -205,10 +205,11 @@ At this prompt, the result of any expression typed in will be printed:
 'hello, world'
 ----
 
-Here we see that Snek strings can be enclosed in single quotes. They
-can also be enclosed in double quotes, which can be useful if you want
-to include single quote marks in them. Snek always prints strings
-using single quotes, so the output here is the same as before.
+Here we see that Snek strings can be enclosed in single
+quotes. Strings can also be enclosed in double quotes, which can be
+useful if you want to include single quote marks in them. Snek always
+prints strings using single quotes, so the output here is the same as
+before.
 
 [source,subs="verbatim,quotes"]
 ----
@@ -216,8 +217,15 @@ using single quotes, so the output here is the same as before.
 'hello, world'
 ----
 
-Stepping up a notch, instead of simply inputting the string directly,
-we can write an expression which computes the result:
+Snek is actually doing something a bit more complicated than echoing
+what you type. What you are typing is called an “expression”, and Snek
+takes the expression, computes the value that it represents and prints
+that out. In this case, the value of either *```'hello, world'```* or
+*```"hello, world"```* is `'hello, world'`.
+
+Stepping up a notch, instead of inputting *```'hello, world'```*
+directly, we can write a more complicated expression which computes
+it:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -226,8 +234,8 @@ we can write an expression which computes the result:
 ----
 
 At this point, we're using the feature of the interactive environment
-which prints out the value of expressions entered. Let's try printing
-the value directly:(((print)))
+which prints out the value of expressions entered. Let's try using the
+print function instead:(((print)))
 
 [source,subs="verbatim,quotes"]
 ----
@@ -236,11 +244,42 @@ hello, world
 ----
 
 This time, Snek printed the string without quote marks. That's because
-the print function displays exactly what it was given, without
-decoration, while the command processor prints values in the same
-format as they would appear in a program.
+the print function displays exactly what it was given without quote
+marks while the command processor prints values in the same format as
+they would appear in a program (where you'd need the quote
+marks).
 
-Now let's write a function which prints the value and call it:(((def)))
+****
+You might wonder where the value from evaluating the expression
+*```print('hello, world')```* is printed. After all, Snek printed the
+value of other expressions. The answer is that the `print` function
+evaluates to “no value”, and when Snek sees “no value”, it doesn't
+print anything. We'll see this happen several more times during the
+tutorial.
+****
+
+=== Variables
+
+Variables are Snek's way of remembering things. Each variable has a
+name, like `moss` or `tree`, and each variable can hold one. You set
+(or “assign”) the value of a variable using the `=` operator, and you
+get the value by using the name elsewhere:
+
+[source,subs="verbatim,quotes"]
+----
+> *moss = 'hello, world'*
+> *moss*
+'hello, world'
+----
+
+Snek creates variables whenever you assign a value to an unknown
+variable.
+
+=== Functions
+
+Now let's define a function which uses `print` to print `hello world`
+and call it. To define a new function in Snek, we use the `def`
+keyword like this:(((def)))
 
 [source,subs="verbatim,quotes"]
 ----
@@ -253,8 +292,9 @@ hello, world
 
 There's lots of stuff going on here. First, we see how to declare a
 function by using the `def` keyword, followed by the name of the
-function, followed by a list of arguments. After that list there's a
-colon.
+function, followed by the “arguments” in parentheses (we'll talk about
+arguments in the next section, for now just type `()`). After the arguments
+there's a colon.
 
 Colons appear in several places in Snek and (outside of dictionaries)
 are used in the same way. After a colon, Snek expects to see a list of
@@ -298,10 +338,9 @@ notation, those are described in the section on Strings.
 Let's write a function to convert from Fahrenheit temperatures to
 Celsius. If you recall, that's:
 
-[source]
-----
+____
 °C = (5/9)(°F - 32)
-----
+____
 
 Snek can't use the ° sign in variable names, so we'll just use C and
 F:(((return)))
@@ -317,12 +356,27 @@ F:(((return)))
 ----
 
 The `#` character introduces a comment, which extends to the end of
-the line. Anything within a comment is ignored by the compiler. Snek
-requires an explicit multiplication operator, `*`, as it doesn't understand
-the mathematical convention that adjacent values should be
+the line. Anything within a comment is ignored by Snek.
+
+The `f_to_c` function takes one “argument” called `F`. Inside the
+function, `F` is a variable which is set to the value you place inside the
+parentheses when you call `f_to_c`. In this example, we're
+calling `f_to_c` with the value 38. Snek gets the value 38 from `F`
+whenever Snek finds it in the function:
+
+[source,subs="verbatim,quotes"]
+----
++     *return (5/9) * (F - 32)*
+⇒
+      return (5/9) * (38 - 32)
+⇒
+      return 3.333333
+----
+
+Snek requires an explicit multiplication operator, `*`, as it doesn't
+understand the mathematical convention that adjacent values should be
 multiplied. The return statement is how we tell Snek that this
-function computes a value that should be given back to the caller,
-rather than just printing it directly.
+function computes a value that should be given back to the caller.
 
 === Loops, Ranges and Printing Two Values
 
@@ -353,7 +407,7 @@ handy reference table for offline use:(((for)))(((in)))(((range)))
 First off, we've got a new statement, the `for` statement. This walks
 over a range of values, assigning the control variable (`F`, in this
 case) all of the values in the range and then evaluating the
-statements within it. The range operator creates this set of values
+statements within it. The range function creates this set of values
 for `F` by starting at the first value and stepping to just before the
 second value. Each time, it steps by the third value. You can elide
 the first value and Snek will use 0 as the starting point. You can
@@ -710,7 +764,7 @@ language, including commonly available builtin functions and the Snek developmen
 
 == Lexical Structure
 
-Snek programs are broken into a sequence of tokens by the compiler,
+Snek programs are broken into a sequence of tokens by the lexer,
 then the sequence of tokens is recognized by a parser.
 
 === Numbers
