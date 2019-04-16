@@ -74,7 +74,7 @@ to even extract source code and re-use it in another environment.
 
 Some systems, such as Raspberry PI and Arduino, are open—they use
 standard languages so that skills learned with them are useful
-elsewhere. However, while the smallest of these machines are similar
+elsewhere. While the smallest of these machines are similar
 in memory and CPU size to those early microcomputers, these smaller
 machines are programmed as embedded computers using a full C++
 compiler running on a separate desktop or laptop system.
@@ -90,8 +90,8 @@ controllers to help animate the robots. They're still Arduino's though,
 there's an ATmega 328P processor and a FTDI USB to serial converter,
 so we were able to use the stock Arduino development tools.
 
-However, students struggled with the complex syntax, especially typing
-the obscure punctuation marks and remembering to insert semicolons. I
+Students struggled with the complex syntax, especially typing the
+obscure punctuation marks and remembering to insert semicolons. I
 often heard comments like “this takes too much typing” and “why is it
 so picky about semicolons”. The lack of an interactive mode made
 experimenting a bit slower than other systems. There have been
@@ -971,7 +971,7 @@ can still work, as long as the values can be held in 24-bits.(((Number)))
 
 Strings::
 Strings are just lists of bytes. Snek does not have any intrinsic
-support for encodings. However, because they are just lists of bytes,
+support for encodings. Because they are just lists of bytes,
 you can store UTF-8 values in them comfortably. Just don't expect
 indexing to return Unicode code points.(((String)))
 
@@ -989,10 +989,9 @@ in the tuple.(((Tuple)))
 Dictionaries::
 A dictionary is a mapping between *keys* and *values*. They work
 somewhat like Lists in that you can store and retrieve values in
-them. However, unlike Lists, the index into a Dictionary may be any
-immutable value, which is any value other than a List or Dictionary or
-Tuple containing a List or Dictionary. Dictionaries are “mutable”
-values.(((Dictionary)))
+them. The index into a Dictionary may be any immutable value, which is
+any value other than a List or Dictionary or Tuple containing a List
+or Dictionary. Dictionaries are “mutable” values.(((Dictionary)))
 
 Functions::
 Functions are values in Snek. You can store them in variables or
