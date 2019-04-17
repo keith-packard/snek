@@ -41,8 +41,8 @@ all: $(WINDOWS_INSTALL)
 $(WINDOWS_INSTALL): $(WINDOWS_FILES) snek.cfg
 	pynsist snek.cfg
 
-snek.cfg: snek.cfg.in
-	$(SNEK_SED) $^ > $@
+snek.cfg: snek.cfg.in ../snek-install.defs ../snek.defs
+	$(SNEK_SED) snek.cfg.in > $@
 
 snek.exe: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
