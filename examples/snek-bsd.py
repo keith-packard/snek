@@ -114,7 +114,7 @@ def error(s):
 
 def main():
     global penalty, loot, finish, you, money, snake, chunk
-    random.seed()
+    random.seed(time.monotonic())
     penalty = 0
     loot = 0
     initscr()
