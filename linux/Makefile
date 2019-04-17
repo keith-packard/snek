@@ -21,7 +21,6 @@ include ../snek-install.defs
 LINUX_DIST=snek-linux-$(SNEK_VERSION).tar.bz2
 LINUX_SH=snek-linux-$(SNEK_VERSION).sh
 DESKTOP_FILES=../posix/snek.desktop.in ../snekde/snekde.desktop.in
-FIRMWARE=../snek-duino/snek-duino-$(SNEK_VERSION).hex ../metro-snek/metro-snek-$(SNEK_VERSION).uf2
 PROGS=../posix/snek ../snekde/snekde ../snek-duino/snek-duino-install.in
 EXAMPLES=../examples
 ICONS=../snek.svg
