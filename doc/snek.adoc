@@ -2150,6 +2150,21 @@ snek-duino-install, to install the binary using 'avrdude'. Read the
 snek-duino-install manual (also included in the installation) for more
 information.
 
+On other hosts, you'll need to install avrdude. Once you've done that, there
+are two steps to getting snek installed on the device.
+
+ 1. Set the 'fuses' on the target device. This sets the start address back to the begining of
+    memory instead of the boot loader, and then has the device leave the eeprom contents alone when
+    reflashing. That means you won't lose your snek program when updating the firmware.
++
+[source]
+$ avrdude -F -V -c usbtiny -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
++
+ 2. Install the snek binary.
++
+[source,subs="attributes+"]
+$ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
+
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
 functions. It does not include the Math functions.
 
