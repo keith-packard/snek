@@ -1,3 +1,12 @@
+snek (0.96-1) unstable; urgency=medium
+
+  * 0.96
+  * Lots of doc updates
+  * Ship snek binary and firwmare for mac os x
+  * Include math functions on Windows binary
+
+ -- Keith Packard <keithp@keithp.com>  Wed, 17 Apr 2019 15:03:28 -0700
+
 snek (0.95-1) unstable; urgency=medium
 
   * 0.95-1
