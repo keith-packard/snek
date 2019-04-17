@@ -186,7 +186,7 @@ snek_parse(void)
 					token = snek_lex();
 					switch(token) {
 					case END:
-						return END;
+						return snek_parse_success;
 					case NL:
 						if (snek_current_indent == 0)
 							break;
