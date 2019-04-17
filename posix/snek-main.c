@@ -22,7 +22,7 @@ FILE	*snek_posix_input;
 static const struct option options[] = {
 	{ .name = "version", .has_arg = 0, .val = 'v' },
 	{ .name = "help", .has_arg = 0, .val = '?' },
-	{ 0 },
+	{ .name = NULL, .has_arg = 0, .val = 0 },
 };
 
 static void
