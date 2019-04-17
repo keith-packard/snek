@@ -1,6 +1,7 @@
-Info.plist
+*-Info.plist
 macosx
 serial
 snek-*.png
+snek
 *.dmg
 *.icns

@@ -15,12 +15,13 @@
 SNEK_ROOT=..
 
 SNEK_LOCAL_SRC = \
-	snek-windows.c
+	snek-windows.c \
+	../snek-math.c
 
 SNEK_LOCAL_INC = snek-windows.h
-SNEK_LOCAL_BUILTINS = snek-windows.builtin
+SNEK_LOCAL_BUILTINS = snek-windows.builtin ../snek-math.builtin
 
-WINDOWS_FILES=snek.exe snek.ico snekde.py ../doc/snek.pdf ../examples ../COPYING
+WINDOWS_FILES=snek.exe snek.ico snekde.py ../doc/snek.pdf ../examples ../COPYING $(FIRMWARE)
 
 include $(SNEK_ROOT)/snek-install.defs
 

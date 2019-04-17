@@ -22,15 +22,21 @@ MACOSX_ICON_PNGS = $(shell for i in $(MACOSX_RES); do echo snek-$$i.png; done)
 MACOSX_ICON = snek.icns
 MACOSX_DIST = snek-mac-$(SNEK_VERSION).dmg
 
-MACOSX_SCRIPTS = runsnekde snekde
+SNEKDE = ../snekde/snekde.py
+SNEKDE_SCRIPTS = runsnekde snekde-script
+SNEKDE_FILES = $(SNEKDE_SCRIPTS) snekde-Info.plist $(SNEKDE)
+
+SNEK = snek
+SNEK_SCRIPTS =  runsnek snek-script
+SNEK_FILES = $(SNEK_SCRIPTS) snek-Info.plist $(SNEK)
 
 MACOSX_INSTALL = install-macosx
 
 MACOSX_DOCS = ../doc/snek.pdf ../COPYING ReadMe-Mac.rtf
 
-MACOSX_FILES=../snekde/snekde.py serial Info.plist $(MACOSX_ICON) $(MACOSX_SCRIPTS) $(MACOSX_INSTALL) $(MACOSX_DOCS) ../examples/*.py
+MACOSX_FILES=$(SNEKDE_FILES) $(SNEK_FILES) serial $(MACOSX_ICON) $(MACOSX_SCRIPTS) $(MACOSX_INSTALL) $(MACOSX_DOCS) ../examples/*.py
 
-all: $(MACOSX_ICON) serial $(MACOSX_DIST)
+all: $(MACOSX_DIST)
 
 $(MACOSX_ICON): ../snek.svg
 	for i in $(MACOSX_RES); do rsvg-convert -w $$i -h $$i -o snek-$$i.png $^; done
@@ -39,16 +45,33 @@ $(MACOSX_ICON): ../snek.svg
 $(MACOSX_DIST): $(MACOSX_FILES)
 	rm -f $@
 	rm -rf macosx
-	mkdir -p macosx/snekde.app/Contents/Resources macosx/snekde.app/Contents/MacOS macosx/examples
-	echo 'APPLSN.O' > macosx/snekde.app/Contents/PkgInfo
+	mkdir -p  macosx/examples
 	cp -a $(MACOSX_DOCS) macosx
 	cp -a $(MACOSX_INSTALL) macosx
+	cp -a $(FIRMWARE) macosx
 	cp -a ../examples/* macosx/examples
-	cp -p Info.plist macosx/snekde.app/Contents
+	#
+	# snekde
+	#
+	mkdir -p macosx/snekde.app/Contents/Resources macosx/snekde.app/Contents/MacOS
+	echo 'APPLSN.O' > macosx/snekde.app/Contents/PkgInfo
+	cp -p snekde-Info.plist macosx/snekde.app/Contents/Info.plist
 	cp -p $(MACOSX_ICON) macosx/snekde.app/Contents/Resources
-	cp -a ../snekde/snekde.py macosx/snekde.app/Contents/Resources
+	cp -a $(SNEKDE) macosx/snekde.app/Contents/Resources
 	cp -a serial macosx/snekde.app/Contents/Resources
-	cp -p $(MACOSX_SCRIPTS) macosx/snekde.app/Contents/MacOS/
+	cp -p $(SNEKDE_SCRIPTS) macosx/snekde.app/Contents/MacOS/
+	#
+	# snek
+	#
+	mkdir -p macosx/snek.app/Contents/Resources macosx/snek.app/Contents/MacOS
+	echo 'APPLSN.O' > macosx/snek.app/Contents/PkgInfo
+	cp -p snek-Info.plist macosx/snek.app/Contents/Info.plist
+	cp -p $(MACOSX_ICON) macosx/snek.app/Contents/Resources
+	cp -a $(SNEK) macosx/snek.app/Contents/Resources
+	cp -p $(SNEK_SCRIPTS) macosx/snek.app/Contents/MacOS/
+	#
+	# generate iso image
+	#
 	genisoimage -D -V Snek-$(SNEK_VERSION) -no-pad -r -apple -o $@ macosx
 
 serial: always
@@ -56,8 +79,16 @@ serial: always
 
 always:
 
-Info.plist: Info.plist.in
+snekde-Info.plist: snekde-Info.plist.in
 	$(SNEK_SED) $^ > $@
+
+snek-Info.plist: snek-Info.plist.in
+	$(SNEK_SED) $^ > $@
+
+$(SNEK): FORCE
+	./build-mac $(SNEKMAC) $@
+
+FORCE:
 
 install:
 	echo install done
@@ -67,7 +98,8 @@ upload: $(MACOSX_DIST)
 
 clean:
 	rm -rf serial
+	rm -rf $(SNEK)
 	rm -f $(MACOSX_ICON) $(MACOSX_ICON_PNGS)
-	rm -f Info.plist
+	rm -f snekde-Info.plist snek-Info.plist
 	rm -rf macosx *.dmg
 

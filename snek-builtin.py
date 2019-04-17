@@ -155,7 +155,7 @@ def dump_builtins(fp):
         if name.keyword or name.nformal == -2:
             continue
 
-        fprint("\t[%s - 1] {" % name.cpp_name(), file=fp)
+        fprint("\t[%s - 1] = {" % name.cpp_name(), file=fp)
         fprint("\t\t.nformal=%d," % name.nformal, file=fp)
         fprint("\t\t%s = %s," % (name.func_field(), name.func_name()), file=fp)
         fprint("\t},", file=fp)

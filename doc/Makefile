@@ -14,13 +14,17 @@ IMAGE_FILES=../snek.svg
 
 all: $(HTML_FILES) $(PDF_FILES)
 
-ATTRIBUTES= --attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
+book: snek-book.pdf snek-cover.pdf
+
+LETTER_ATTRIBUTES=--attribute='pdf-style=snek' 
+BOOK_ATTRIBUTES=--attribute='pdf-style=snek-book' 
+ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
 
 .adoc.html:
 	asciidoctor -B$(SNEK_ROOT) $(ATTRIBUTES) -b html5 $*.adoc
 
 .adoc.pdf:
-	asciidoctor-pdf -B$(SNEK_ROOT) $(ATTRIBUTES) $*.adoc
+	asciidoctor-pdf -B$(SNEK_ROOT) $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
 
 $(PDF_FILES): snek-theme.yml $(IMAGE_FILES)
 
@@ -29,6 +33,12 @@ DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES)
 install: $(DOCFILES)
 	install -d $(DESTDIR)$(DOCDIR)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR); done
+
+snek-book.pdf: snek.adoc snek-book-theme.yml
+	asciidoctor-pdf -o `pwd`/$@ -B$(SNEK_ROOT) $(ATTRIBUTES) $(BOOK_ATTRIBUTES) snek.adoc
+
+snek-cover.pdf: snek-cover.svg
+	rsvg-convert -d 72 -p 72 -f pdf -o $@ $^
 
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) fonts $(SNEKDOC)

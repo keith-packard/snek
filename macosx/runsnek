@@ -1,0 +1,6 @@
+#!/bin/bash
+echo -n -e "\033]0;Snek\007"
+ME=`dirname $0`
+"$ME"/../Resources/snek
+osascript -e 'tell application "Terminal" to close front window' &
+exit 0
