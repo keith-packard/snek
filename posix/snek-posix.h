@@ -19,6 +19,10 @@ extern FILE	*snek_posix_input;
 
 int snek_getc(FILE *input);
 
+#ifdef __APPLE__
+#define isnanf isnan
+#endif
+
 #define SNEK_GETC()	snek_getc(snek_posix_input)
 
 #define SNEK_DEBUG	1

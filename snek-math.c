@@ -205,7 +205,7 @@ snek_builtin_math_isclose(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 }
 
 m1(math_isfinite, isfinite)
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
 m1(math_isinf, isinf)
 #else
 m1(math_isinf, isinff)
@@ -256,7 +256,7 @@ m1(math_erf, erff);
 m1(math_erfc, erfcf);
 m1(math_gamma, tgammaf);
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__APPLE__)
 m1(math_lgamma, lgammaf);
 #else
 static float
