@@ -114,6 +114,7 @@ ao_clock_init(void)
 	samd21_pm.apbamask |= ((1 << SAMD21_PM_APBAMASK_GCLK) |
 			       (1 << SAMD21_PM_APBAMASK_SYSCTRL));
 
+#ifdef AO_XOSC32K
 	/* Enable xosc32k (external 32.768kHz oscillator) */
 	samd21_sysctrl.xosc32k = ((6 << SAMD21_SYSCTRL_XOSC32K_STARTUP) |
 				  (1 << SAMD21_SYSCTRL_XOSC32K_XTALEN) |
@@ -125,6 +126,7 @@ ao_clock_init(void)
 	/* Wait for osc */
 	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSC32KRDY)) == 0)
 		;
+#endif
 
 	/* Reset gclk */
 	samd21_gclk.ctrl = (1 << SAMD21_GCLK_CTRL_SWRST)
@@ -135,8 +137,10 @@ ao_clock_init(void)
 	       (samd21_gclk.status & (1 << SAMD21_GCLK_STATUS_SYNCBUSY)))
 		;
 
-#define AO_GCLK_XOSC32K	1
 #define AO_GCLK_SYSCLK	0
+
+#ifdef AO_XOSC32K
+#define AO_GCLK_XOSC32K	1
 
 	/*
 	 * Use xosc32k as source of gclk generator AO_GCLK_XOSC32K
@@ -150,6 +154,7 @@ ao_clock_init(void)
 	 */
 
 	samd21_gclk_clkctrl(AO_GCLK_XOSC32K, SAMD21_GCLK_CLKCTRL_ID_DFLL48M_REF);
+#endif
 
 	/*
 	 * Enable DFLL48M clock
@@ -158,6 +163,7 @@ ao_clock_init(void)
 	samd21_sysctrl.dfllctrl = (1 << SAMD21_SYSCTRL_DFLLCTRL_ENABLE);
 	samd21_dfll_wait_sync();
 
+#ifdef AO_XOSC32K
 	/* Set multiplier to get as close to 48MHz as we can without going over */
 	samd21_sysctrl.dfllmul = (((31/4) << SAMD21_SYSCTRL_DFLLMUL_CSTEP) |
 				  ((255/4) << SAMD21_SYSCTRL_DFLLMUL_FSTEP) |
@@ -183,6 +189,29 @@ ao_clock_init(void)
 	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_DFLLLCKC)) == 0 ||
 	       (samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_DFLLLCKF)) == 0)
 		;
+#else
+	samd21_sysctrl.dfllmul = (((31/4) << SAMD21_SYSCTRL_DFLLMUL_CSTEP) |
+				  ((255/4) << SAMD21_SYSCTRL_DFLLMUL_FSTEP) |
+				  ((AO_DFLL48M / 1000) << SAMD21_SYSCTRL_DFLLMUL_MUL));
+
+	/* pull out coarse calibration value from rom */
+	uint32_t coarse = ((samd21_aux1.calibration >> SAMD21_AUX1_CALIBRATION_DFLL48M_COARSE_CAL) &
+			   SAMD21_AUX1_CALIBRATION_DFLL48M_COARSE_CAL_MASK);
+
+	samd21_sysctrl.dfllval = ((coarse << SAMD21_SYSCTRL_DFLLVAL_COARSE) |
+				  (512 << SAMD21_SYSCTRL_DFLLVAL_FINE));
+
+	samd21_sysctrl.dfllctrl = 0;
+	samd21_dfll_wait_sync();
+
+	samd21_sysctrl.dfllctrl = ((1 << SAMD21_SYSCTRL_DFLLCTRL_MODE) |
+				   (1 << SAMD21_SYSCTRL_DFLLCTRL_CCDIS) |
+				   (1 << SAMD21_SYSCTRL_DFLLCTRL_USBCRM) |
+				   (1 << SAMD21_SYSCTRL_DFLLCTRL_ENABLE));
+
+	samd21_dfll_wait_sync();
+	samd21_gclk_wait_sync();
+#endif
 
 	/*
 	 * Switch generator 0 (CPU clock) to DFLL48M

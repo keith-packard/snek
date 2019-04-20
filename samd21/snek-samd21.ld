@@ -19,11 +19,9 @@
 MEMORY {
 	rom (rx) :   ORIGIN = 0x00002000, LENGTH = 128K - 8K
 	flash (rw) : ORIGIN = 0x00020000, LENGTH = 64K
-	ram (!w) :   ORIGIN = 0x20000000, LENGTH = 32K - 2K - 8
-	stack (!w) : ORIGIN = 0x20000000 + 32k - 2K - 8, LENGTH = 2K
+	ram (!w) :   ORIGIN = 0x20000000, LENGTH = 32K - 2K
+	stack (!w) : ORIGIN = 0x20000000 + 32k - 2K, LENGTH = 2K
 }
-
-INCLUDE registers.ld
 
 SECTIONS {
 	/*
@@ -36,19 +34,6 @@ SECTIONS {
 		KEEP(*(.interrupt))	/* interrupt vectors */
 
 		. = ORIGIN(rom) + 0x100;
-
-		/* Ick. What I want is to specify the
-		 * addresses of some global constants so
-		 * that I can find them across versions
-		 * of the application. I can't figure out
-		 * how to make gnu ld do that, so instead
-		 * we just load the two files that include
-		 * these defines in the right order here and
-		 * expect things to 'just work'. Don't change
-		 * the contents of those files, ok?
-		 */
-		ao_romconfig.o(.romconfig*)
-		ao_product.o(.romconfig*)
 
 		*(.text*)	/* Executable code */
 	} > rom
@@ -85,6 +70,9 @@ SECTIONS {
 	/* Data -- relocated to RAM, but written to ROM
 	 */
 	.data : {
+		__snek_data_start__ = .;
+		snek*(.data)
+		__snek_data_end__ = .;
 		*(.data)	/* initialized data */
 		. = ALIGN(8);
 		__data_end__ = .;
@@ -92,6 +80,10 @@ SECTIONS {
 
 	.bss : {
 		__bss_start__ = .;
+		__snek_bss_start__ = .;
+		snek*(.bss)
+		snek*(COMMON)
+		__snek_bss_end__ = .;
 		*(.bss)
 		*(COMMON)
 		. = ALIGN(8);

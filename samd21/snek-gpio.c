@@ -31,27 +31,38 @@ struct ao_snek_pin {
 };
 
 static const struct ao_snek_pin ao_snek_pin[AO_SNEK_NUM_PIN] = {
-	{ .gpio = AO_SNEK_GPIO_0, .pin = AO_SNEK_PIN_0, .timer = AO_SNEK_TIMER_0, .channel = AO_SNEK_CHANNEL_0, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_1, .pin = AO_SNEK_PIN_1, .timer = AO_SNEK_TIMER_1, .channel = AO_SNEK_CHANNEL_1, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_2, .pin = AO_SNEK_PIN_2, .timer = AO_SNEK_TIMER_2, .channel = AO_SNEK_CHANNEL_2, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_3, .pin = AO_SNEK_PIN_3, .timer = AO_SNEK_TIMER_3, .channel = AO_SNEK_CHANNEL_3, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_4, .pin = AO_SNEK_PIN_4, .timer = AO_SNEK_TIMER_4, .channel = AO_SNEK_CHANNEL_4, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_5, .pin = AO_SNEK_PIN_5, .timer = AO_SNEK_TIMER_5, .channel = AO_SNEK_CHANNEL_5, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_6, .pin = AO_SNEK_PIN_6, .timer = AO_SNEK_TIMER_6, .channel = AO_SNEK_CHANNEL_6, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_7, .pin = AO_SNEK_PIN_7, .timer = AO_SNEK_TIMER_7, .channel = AO_SNEK_CHANNEL_7, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_8, .pin = AO_SNEK_PIN_8, .timer = AO_SNEK_TIMER_8, .channel = AO_SNEK_CHANNEL_8, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_9, .pin = AO_SNEK_PIN_9, .timer = AO_SNEK_TIMER_9, .channel = AO_SNEK_CHANNEL_9, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_10, .pin = AO_SNEK_PIN_10, .timer = AO_SNEK_TIMER_10, .channel = AO_SNEK_CHANNEL_10, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_11, .pin = AO_SNEK_PIN_11, .timer = AO_SNEK_TIMER_11, .channel = AO_SNEK_CHANNEL_11, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_12, .pin = AO_SNEK_PIN_12, .timer = AO_SNEK_TIMER_12, .channel = AO_SNEK_CHANNEL_12, .adc = 0xff },
-	{ .gpio = AO_SNEK_GPIO_13, .pin = AO_SNEK_PIN_13, .timer = AO_SNEK_TIMER_13, .channel = AO_SNEK_CHANNEL_13, .adc = 0xff },
-
+	{ .gpio = AO_SNEK_GPIO_0, .pin = AO_SNEK_PIN_0, .timer = AO_SNEK_TIMER_0, .channel = AO_SNEK_CHANNEL_0, .adc = AO_SNEK_ADC_0 },
+	{ .gpio = AO_SNEK_GPIO_1, .pin = AO_SNEK_PIN_1, .timer = AO_SNEK_TIMER_1, .channel = AO_SNEK_CHANNEL_1, .adc = AO_SNEK_ADC_1 },
+	{ .gpio = AO_SNEK_GPIO_2, .pin = AO_SNEK_PIN_2, .timer = AO_SNEK_TIMER_2, .channel = AO_SNEK_CHANNEL_2, .adc = AO_SNEK_ADC_2 },
+	{ .gpio = AO_SNEK_GPIO_3, .pin = AO_SNEK_PIN_3, .timer = AO_SNEK_TIMER_3, .channel = AO_SNEK_CHANNEL_3, .adc = AO_SNEK_ADC_3 },
+	{ .gpio = AO_SNEK_GPIO_4, .pin = AO_SNEK_PIN_4, .timer = AO_SNEK_TIMER_4, .channel = AO_SNEK_CHANNEL_4, .adc = AO_SNEK_ADC_4 },
+	{ .gpio = AO_SNEK_GPIO_5, .pin = AO_SNEK_PIN_5, .timer = AO_SNEK_TIMER_5, .channel = AO_SNEK_CHANNEL_5, .adc = AO_SNEK_ADC_5 },
+	{ .gpio = AO_SNEK_GPIO_6, .pin = AO_SNEK_PIN_6, .timer = AO_SNEK_TIMER_6, .channel = AO_SNEK_CHANNEL_6, .adc = AO_SNEK_ADC_6 },
+	{ .gpio = AO_SNEK_GPIO_7, .pin = AO_SNEK_PIN_7, .timer = AO_SNEK_TIMER_7, .channel = AO_SNEK_CHANNEL_7, .adc = AO_SNEK_ADC_7 },
+	{ .gpio = AO_SNEK_GPIO_8, .pin = AO_SNEK_PIN_8, .timer = AO_SNEK_TIMER_8, .channel = AO_SNEK_CHANNEL_8, .adc = AO_SNEK_ADC_8 },
+	{ .gpio = AO_SNEK_GPIO_9, .pin = AO_SNEK_PIN_9, .timer = AO_SNEK_TIMER_9, .channel = AO_SNEK_CHANNEL_9, .adc = AO_SNEK_ADC_9 },
+	{ .gpio = AO_SNEK_GPIO_10, .pin = AO_SNEK_PIN_10, .timer = AO_SNEK_TIMER_10, .channel = AO_SNEK_CHANNEL_10, .adc = AO_SNEK_ADC_10 },
+	{ .gpio = AO_SNEK_GPIO_11, .pin = AO_SNEK_PIN_11, .timer = AO_SNEK_TIMER_11, .channel = AO_SNEK_CHANNEL_11, .adc = AO_SNEK_ADC_11 },
+	{ .gpio = AO_SNEK_GPIO_12, .pin = AO_SNEK_PIN_12, .timer = AO_SNEK_TIMER_12, .channel = AO_SNEK_CHANNEL_12, .adc = AO_SNEK_ADC_12 },
+	{ .gpio = AO_SNEK_GPIO_13, .pin = AO_SNEK_PIN_13, .timer = AO_SNEK_TIMER_13, .channel = AO_SNEK_CHANNEL_13, .adc = AO_SNEK_ADC_13 },
 	{ .gpio = AO_SNEK_GPIO_14, .pin = AO_SNEK_PIN_14, .timer = AO_SNEK_TIMER_14, .channel = AO_SNEK_CHANNEL_14, .adc = AO_SNEK_ADC_14 },
 	{ .gpio = AO_SNEK_GPIO_15, .pin = AO_SNEK_PIN_15, .timer = AO_SNEK_TIMER_15, .channel = AO_SNEK_CHANNEL_15, .adc = AO_SNEK_ADC_15 },
 	{ .gpio = AO_SNEK_GPIO_16, .pin = AO_SNEK_PIN_16, .timer = AO_SNEK_TIMER_16, .channel = AO_SNEK_CHANNEL_16, .adc = AO_SNEK_ADC_16 },
 	{ .gpio = AO_SNEK_GPIO_17, .pin = AO_SNEK_PIN_17, .timer = AO_SNEK_TIMER_17, .channel = AO_SNEK_CHANNEL_17, .adc = AO_SNEK_ADC_17 },
 	{ .gpio = AO_SNEK_GPIO_18, .pin = AO_SNEK_PIN_18, .timer = AO_SNEK_TIMER_18, .channel = AO_SNEK_CHANNEL_18, .adc = AO_SNEK_ADC_18 },
 	{ .gpio = AO_SNEK_GPIO_19, .pin = AO_SNEK_PIN_19, .timer = AO_SNEK_TIMER_19, .channel = AO_SNEK_CHANNEL_19, .adc = AO_SNEK_ADC_19 },
+#if AO_SNEK_NUM_PIN > 20
+	{ .gpio = AO_SNEK_GPIO_20, .pin = AO_SNEK_PIN_20, .timer = AO_SNEK_TIMER_20, .channel = AO_SNEK_CHANNEL_20, .adc = AO_SNEK_ADC_20 },
+#endif
+#if AO_SNEK_NUM_PIN > 21
+	{ .gpio = AO_SNEK_GPIO_21, .pin = AO_SNEK_PIN_21, .timer = AO_SNEK_TIMER_21, .channel = AO_SNEK_CHANNEL_21, .adc = AO_SNEK_ADC_21 },
+#endif
+#if AO_SNEK_NUM_PIN > 22
+	{ .gpio = AO_SNEK_GPIO_22, .pin = AO_SNEK_PIN_22, .timer = AO_SNEK_TIMER_22, .channel = AO_SNEK_CHANNEL_22, .adc = AO_SNEK_ADC_22 },
+#endif
+#if AO_SNEK_NUM_PIN > 23
+	{ .gpio = AO_SNEK_GPIO_23, .pin = AO_SNEK_PIN_23, .timer = AO_SNEK_TIMER_23, .channel = AO_SNEK_CHANNEL_23, .adc = AO_SNEK_ADC_23 },
+#endif
 };
 
 

@@ -4,6 +4,7 @@ vpath %.c $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.h $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
+vpath %.builtin $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
 SNEK_VERSION = 0.96
 SNEK_DATE = 2019-04-17

@@ -12,12 +12,14 @@
  * General Public License for more details.
  */
 
+
 #include <ao.h>
 #include <snek.h>
 #include <ao-snek.h>
 #include <ao-tcc-samd21.h>
 #include <ao-tc-samd21.h>
 #include <ao-adc-samd21.h>
+#include <setjmp.h>
 
 void
 ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t config, uint16_t value)
@@ -110,6 +112,30 @@ int *__errno(void)
 	return &_errno;
 }
 
+static jmp_buf	snek_reset_buf;
+
+extern char __snek_data_start__, __snek_data_end__;
+extern char __snek_bss_start__, __snek_bss_end__;
+extern char __text_start__, __text_end__;
+extern char __data_start__, __data_end__;
+extern char __bss_start__, __bss_end__;
+
+snek_poly_t
+snek_builtin_reset(void)
+{
+	/* reset data */
+	memcpy(&__snek_data_start__,
+	       &__text_end__ + (&__snek_data_start__ - &__data_start__),
+	       &__snek_data_end__ - &__snek_data_start__);
+
+	/* reset bss */
+	memset(&__snek_bss_start__, '\0', &__snek_bss_end__ - &__snek_bss_start__);
+
+	/* and off we go! */
+	longjmp(snek_reset_buf, 1);
+	return SNEK_NULL;
+}
+
 int
 main(void)
 {
@@ -123,7 +149,14 @@ main(void)
 	ao_adc_init();
 	ao_usb_init();
 
-	ao_snek();
-
-	return 0;
+	setjmp(snek_reset_buf);
+	ao_snek_port_init();
+	snek_builtin_eeprom_load();
+	printf("Welcome to snek " SNEK_VERSION "\n");
+	fflush(stdout);
+	ao_snek_running(false);
+	for (;;) {
+		snek_interactive = true;
+		snek_parse();
+	}
 }

@@ -99,6 +99,21 @@
  *
  */
 
+#define AO_SNEK_ADC_0	0xff
+#define AO_SNEK_ADC_1	0xff
+#define AO_SNEK_ADC_2	0xff
+#define AO_SNEK_ADC_3	0xff
+#define AO_SNEK_ADC_4	0xff
+#define AO_SNEK_ADC_5	0xff
+#define AO_SNEK_ADC_6	0xff
+#define AO_SNEK_ADC_7	0xff
+#define AO_SNEK_ADC_8	0xff
+#define AO_SNEK_ADC_9	0xff
+#define AO_SNEK_ADC_10	0xff
+#define AO_SNEK_ADC_11	0xff
+#define AO_SNEK_ADC_12	0xff
+#define AO_SNEK_ADC_13	0xff
+
 #define AO_SNEK_GPIO_0		(&samd21_port_a)
 #define AO_SNEK_PIN_0		11
 #define AO_SNEK_TIMER_0		NULL
