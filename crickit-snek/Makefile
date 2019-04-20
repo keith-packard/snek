@@ -18,6 +18,7 @@ SNEK_SAMD21 = $(SNEK_ROOT)/samd21
 
 include $(SNEK_SAMD21)/snek-samd21.defs
 
+
 SNEK_LOCAL_SRC = \
 	$(SNEK_SAMD21_SRC)
 
@@ -26,17 +27,17 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_SAMD21_BUILTINS) \
-	metro-snek.builtin
+	crickit-snek.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
-PROGNAME=metro-snek
+PROGNAME=crickit-snek
 PROG=$(PROGNAME)-$(SNEK_VERSION).elf
 BIN=$(PROGNAME)-$(SNEK_VERSION).bin
 UF2=$(PROGNAME)-$(SNEK_VERSION).uf2
 MAP=$(PROGNAME)-$(SNEK_VERSION).map
 
-PRODUCT=MetroSnek-v0.0
+PRODUCT=CrickitSnek-v0.0
 IDPRODUCT=0x000a
 
 SRC=$(SNEK_SRC)
@@ -64,4 +65,4 @@ install:
 uninstall:
 
 ao-product.h: ../snek.defs Makefile
-	python3 $(SNEK_SAMD21)/make-product.py -v $(SNEK_VERSION) -p MetroSnek > $@
+	python3 $(SNEK_SAMD21)/make-product.py -v $(SNEK_VERSION) -p CrickitSnek > $@

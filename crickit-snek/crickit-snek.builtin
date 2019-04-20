@@ -1,0 +1,41 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+DRIVE1, -2,	0
+DRIVE2, -2,	1
+DRIVE3, -2,	2
+DRIVE4, -2,	3
+#
+MOTOR1A, -2,	4
+MOTOR1B, -2,	5
+MOTOR2A, -2,	6
+MOTOR2B, -2,	7
+#
+SERVO1, -2,	8
+SERVO2, -2,	9
+SERVO3, -2,	10
+SERVO4, -2,	11
+#
+CAP1,	-2,	12
+CAP2,	-2,	13
+CAP3,	-2,	14
+CAP4,	-2,	15
+#
+SIGNAL1,-2,	16
+SIGNAL2,-2,	17
+SIGNAL3,-2,	18
+SIGNAL4,-2,	19
+SIGNAL5,-2,	20
+SIGNAL6,-2,	21
+SIGNAL7,-2,	22
+SIGNAL8,-2,	23

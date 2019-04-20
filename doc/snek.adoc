@@ -2186,6 +2186,41 @@ Snek for the Metro M0 Express includes the Common System,
 Math, GPIO, and EEPROM functions. Snek for the Metro M0 Express also
 runs on the Feather M0 boards
 
+[appendix]
+= Snek on Adafruit Crickit
+
+The Adafruit Crickit board includes a boot loader which
+presents as a USB mass storage device with a FAT file system. You can
+get the board into this mode by connecting the board to your computer
+over USB and then pressing the reset button twice in quick
+succession.(((Crickit)))
+
+Then, find the crickit-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Metro M0 file system.
+
+Snek for the Crickit includes the Common System, Math, GPIO, and
+EEPROM functions. Crickit-snek provides names for all of the I/O ports:
+
+DRIVE1 - DRIVE4:
+High current “Darlington” 500mA drive outputs.
+
+MOTOR1A, MOTOR1B, MOTOR2A, MOTOR2B:
+Bi-directional DC motor control, 1A max current. MOTOR1A and MOTOR2A
+are the speed controls, MOTOR1B and MOTOR2B are the direction
+controls. Note that there's a bit of firmware behind these pins as the
+TI DRV8833 chip has a slightly funky control mechanism.
+
+SERVO1 - SERVO4:
+Digital I/O pins with PWM output
+
+CAP1 - CAP4:
+Digital I/O pins labeled “Capacitive Touch” on the Crickit board.
+
+SIGNAL1 - SIGNAL8::
+The Signal I/O pins. These provide digital output and analog
+input. SIGNAL5 - SIGNAL8 also provide PWM output
+
 ifdef::backend-pdf[]
 [index]
 = Index

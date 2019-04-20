@@ -96,17 +96,18 @@ image. On that platform, all you need to do is run it:
 
 	$ snek-duino-install
 
-## Running on the Metro M0 Express (or compatible)
+## Running on the Metro M0 Express or Crickit (or compatible)
 
-On the Adafruit Metro M0 Express board, Snek uses only a small part of
-the available flash space and so it can be installed using the regular
-boot loader. Connect the board over USB to the target machine (Linux,
-Mac OSX and Windows all work fine). Now press the reset button
-twice. The boot loader should present a file system on your host. Copy
-the binary included with the snek distribution, which is named
-“metro-snek-<version>.uf2” to the CURRENT.UF2 file on that file
-system. This will magically flash the application to the device and
-then it will reboot running Snek.
+On the Adafruit Metro M0 Express and Adafruit Crickit boards, Snek
+uses only a small part of the available flash space and so it can be
+installed using the regular boot loader. Connect the board over USB to
+the target machine (Linux, Mac OSX and Windows all work fine). Now
+press the reset button twice. The boot loader should present a file
+system on your host. Copy the binary included with the snek
+distribution, which is named “metro-snek-<version>.uf2” (for the Metro
+M0) or “crickit-snek-<version>.uf2” to the CURRENT.UF2 file on that
+file system. This will magically flash the application to the device
+and then it will reboot running Snek.
 
 ## Running on Linux or Windows
 

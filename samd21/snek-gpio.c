@@ -139,13 +139,8 @@ set_off(uint8_t pin)
 }
 
 static snek_poly_t
-set_out(uint8_t pin)
+_set_out(uint8_t pin, uint16_t p)
 {
-	uint16_t	p = 0;
-
-	if (is_on(pin))
-		p = power[pin];
-
 	if (has_pwm(pin)) {
 		if (0 < p && p < SNEK_PWM_MAX) {
 			ao_snek_port_set_pwm(pin, p);
@@ -156,6 +151,50 @@ set_out(uint8_t pin)
 	ao_snek_port_set(pin, p);
 	return SNEK_NULL;
 }
+
+#ifdef SNEK_DRV8833
+static snek_poly_t
+set_out(uint8_t pin)
+{
+	uint16_t	p = 0;
+
+	if (IS_DRV8833_DIR(pin) || IS_DRV8833_PWM(pin)) {
+		uint8_t	dir, pwm;
+
+		if (IS_DRV8833_DIR(pin)) {
+			dir = pin;
+			pwm = DRV8833_FIND_PWM(pin);
+		} else {
+			pwm = pin;
+			dir = DRV8833_FIND_DIR(pin);
+		}
+		if (is_on(pwm))
+			p = power[pwm];
+		if (is_on(dir)) {
+			_set_out(pwm, 0);
+			return _set_out(dir, p);
+		} else {
+			_set_out(dir, 0);
+			return _set_out(pwm, p);
+		}
+	} else {
+		if (is_on(pin))
+			p = power[pin];
+
+		return _set_out(pin, p);
+	}
+}
+#else
+static snek_poly_t set_out(uint8_t pin)
+{
+	uint16_t	p = 0;
+
+	if (is_on(pin))
+		p = power[pin];
+
+	return _set_out(pin, p);
+}
+#endif
 
 static void
 set_dir(uint8_t pin, uint8_t d)

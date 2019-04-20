@@ -95,6 +95,3 @@ CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS) -I. -I$(SNEK_SAMD21)
 LDSCRIPT=$(SNEK_SAMD21)/snek-samd21.ld
 LDFLAGS=$(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -Wl,-T$(LDSCRIPT)  -n
 NEWLIB_PRINTF_CFLAGS =
-
-ao-product.h: ../snek.defs Makefile
-	python3 $(SNEK_SAMD21)/make-product.py -v $(SNEK_VERSION) -p MetroSnek > $@
