@@ -81,8 +81,8 @@ math.lgamma, 1
 #
 # constants
 #
-math.pi, -2
-math.e, -2
-math.tau, -2
-math.inf, -2
-math.nan, -2
+math.pi, -2, 3.141592653589793
+math.e, -2, 2.718281828459045
+math.tau, -2, 6.283185307179586
+math.inf, -2, INFINITY
+math.nan, -2, NAN

@@ -15,8 +15,8 @@ len, 1
 print, -1
 sys.stdout.flush, 0
 end, -2
-False, -2
-True, -2
+False, -2, 0
+True, -2, 1
 ord, 1
 chr, 1
 math.sqrt, 1

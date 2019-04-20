@@ -62,16 +62,17 @@
 
 #define SNEK_BUILTIN_DECLARE(n)	PROGMEM n
 #define SNEK_BUILTIN_NFORMAL(b) ((int8_t) pgm_read_byte(&(b)->nformal))
-#define SNEK_BUILTIN_FUNCV(b)	((snek_poly_t(*)(uint8_t, uint8_t, snek_poly_t *)) pgm_read_word(&(b)->funcv))
-#define SNEK_BUILTIN_FUNC0(b) 	((snek_poly_t(*)(void)) pgm_read_word(&(b)->func0))
-#define SNEK_BUILTIN_FUNC1(b) 	((snek_poly_t(*)(snek_poly_t)) pgm_read_word(&(b)->func1))
-#define SNEK_BUILTIN_FUNC2(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t)) pgm_read_word(&(b)->func2))
-#define SNEK_BUILTIN_FUNC3(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_word(&(b)->func3))
-#define SNEK_BUILTIN_FUNC4(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_word(&(b)->func4))
+#define SNEK_BUILTIN_FUNCV(b)	((snek_poly_t(*)(uint8_t, uint8_t, snek_poly_t *)) pgm_read_ptr(&(b)->funcv))
+#define SNEK_BUILTIN_FUNC0(b) 	((snek_poly_t(*)(void)) pgm_read_ptr(&(b)->func0))
+#define SNEK_BUILTIN_FUNC1(b) 	((snek_poly_t(*)(snek_poly_t)) pgm_read_ptr(&(b)->func1))
+#define SNEK_BUILTIN_FUNC2(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func2))
+#define SNEK_BUILTIN_FUNC3(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func3))
+#define SNEK_BUILTIN_FUNC4(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func4))
+#define SNEK_BUILTIN_VALUE(b)	(pgm_read_float(&(b)->value))
 
 #define SNEK_ROOT_DECLARE(n)	PROGMEM n
-#define SNEK_ROOT_TYPE(n) 	((const snek_mem_t *) pgm_read_word(&(n)->type))
-#define SNEK_ROOT_ADDR(n) 	((void **) pgm_read_word(&(n)->addr))
+#define SNEK_ROOT_TYPE(n) 	((const snek_mem_t *) pgm_read_ptr(&(n)->type))
+#define SNEK_ROOT_ADDR(n) 	((void **) pgm_read_ptr(&(n)->addr))
 
 static inline const char *
 avr_snek_builtin_names_return(const uint8_t *bits)
@@ -99,8 +100,8 @@ avr_snek_builtin_names_len(const char *a)
 
 #define SNEK_MEM_DECLARE(n) 	PROGMEM n
 #define SNEK_MEM_SIZE(m)	((snek_offset_t (*)(void *addr)) pgm_read_word(&(m)->size))
-#define SNEK_MEM_MARK(m)	((void (*)(void *addr)) pgm_read_word(&(m)->mark))
-#define SNEK_MEM_MOVE(m)	((void (*)(void *addr)) pgm_read_word(&(m)->move))
+#define SNEK_MEM_MARK(m)	((void (*)(void *addr)) pgm_read_ptr(&(m)->mark))
+#define SNEK_MEM_MOVE(m)	((void (*)(void *addr)) pgm_read_ptr(&(m)->move))
 
 #define SNEK_MEMS_DECLARE(n)	PROGMEM n
 
