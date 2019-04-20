@@ -81,13 +81,13 @@ ao_snek_port_init(void)
 static void
 ao_snek_port_set_pwm(uint8_t p, uint16_t pwm)
 {
-	ao_snek_set_pwm(ao_snek_pin[0].gpio, ao_snek_pin[p].pin, ao_snek_pin[p].timer, ao_snek_pin[p].channel, pwm);
+	ao_snek_set_pwm(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, ao_snek_pin[p].timer, ao_snek_pin[p].channel, pwm);
 }
 
 static void
 ao_snek_port_clr_pwm(uint8_t p)
 {
-	ao_snek_clr_pwm(ao_snek_pin[0].gpio, ao_snek_pin[p].pin);
+	ao_snek_clr_pwm(ao_snek_pin[p].gpio, ao_snek_pin[p].pin);
 }
 
 static void
