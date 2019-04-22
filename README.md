@@ -37,21 +37,21 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
+ * [Crickit FeatherWing](https://www.adafruit.com/product/3343) port.
+   This device has built-in drivers for motors and other devices,
+   along with convenient plugs for other devices. If you want to get
+   started building Snek robots, this is a great board to buy.
+
  * Documentation. A reference manual for the Snek language is getting
    more usable. This manual includes a tutorial section for learning
    the language.
 
- * Packaging. Debian, General Linux and Windows packages are
+ * Packaging. Debian, General Linux, Windows and Mac OS X packages are
    available. These packages include menu entries and icons to run the
    host snek implementation and snekde in a terminal window along with
-   binaries for Duemilanove and Metro M0 Express. The Linux
-   packages also include a shell script to install snek-duino onto an
-   Duemilanove.
-
- * Dictionaries. Implemented using the list code, these can be indexed
-   with any immutable type (everything other than lists and
-   dictionaries). Making ROM space on Arduino for these required
-   significant changes in lola to pack the parse tables even smaller.
+   binaries for Duemilanove, Metro M0 Express and Crickit
+   FeatherWing. The Linux packages also include a shell script to
+   install snek-duino onto an Duemilanove.
 
 ## Build and Run!
 
