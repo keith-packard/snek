@@ -12,8 +12,8 @@
 # General Public License for more details.
 #
 
-led = 3
-dial = 14
+led = D3
+dial = A0
 
 def track():
     talkto(led)
