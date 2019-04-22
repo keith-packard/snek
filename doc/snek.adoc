@@ -2141,6 +2141,12 @@ keyboard.
 [appendix]
 = Snek on Arduino Duemilanove
 
+Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
+functions. It does not include the Math functions. Snek provides
+pre-defined variables for all of the GPIO pins. The digital I/O pins
+are named D0 through D13. The analog I/O pins are named A0 through
+A5. You can use these in place of numbers for the GPIO functions.
+
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.(((Duemilanove)))(((Arduino)))
@@ -2165,12 +2171,16 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U 
 [source,subs="attributes+"]
 $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
 
-Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
-functions. It does not include the Math functions.
-
 [%nonfacing]
 [appendix]
 = Snek on Metro M0 Express
+
+Snek for the Metro M0 Express includes the Common System, Math, GPIO,
+and EEPROM functions. Snek for the Metro M0 Express also runs on the
+Feather M0 boards. Snek provides pre-defined variables for all of the
+GPIO pins. The digital I/O pins are named D0 through D13. The analog
+I/O pins are named A0 through A5. You can use these in place of
+numbers for the GPIO functions.
 
 The Adafruit Metro M0 Express board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
@@ -2182,22 +2192,8 @@ Then, find the metro-snek-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Metro M0 file system.
 
-Snek for the Metro M0 Express includes the Common System,
-Math, GPIO, and EEPROM functions. Snek for the Metro M0 Express also
-runs on the Feather M0 boards
-
 [appendix]
 = Snek on Adafruit Crickit
-
-The Adafruit Crickit board includes a boot loader which
-presents as a USB mass storage device with a FAT file system. You can
-get the board into this mode by connecting the board to your computer
-over USB and then pressing the reset button twice in quick
-succession.(((Crickit)))
-
-Then, find the crickit-snek-{version}.uf2 file included in the snek
-package for your machine and copy it to the CURRENT.UF2 file on the
-Metro M0 file system.
 
 Snek for the Crickit includes the Common System, Math, GPIO, and
 EEPROM functions. Crickit-snek provides names for all of the I/O ports:
@@ -2220,6 +2216,16 @@ Digital I/O pins labeled “Capacitive Touch” on the Crickit board.
 SIGNAL1 - SIGNAL8::
 The Signal I/O pins. These provide digital output and analog
 input. SIGNAL5 - SIGNAL8 also provide PWM output
+
+The Adafruit Crickit board includes a boot loader which
+presents as a USB mass storage device with a FAT file system. You can
+get the board into this mode by connecting the board to your computer
+over USB and then pressing the reset button twice in quick
+succession.(((Crickit)))
+
+Then, find the crickit-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Metro M0 file system.
 
 ifdef::backend-pdf[]
 [index]
