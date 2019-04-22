@@ -1,6 +1,14 @@
+snek (0.97-1) unstable; urgency=medium
+
+  * 0.97 upstream release
+  * Crickit FeatherWing port
+  * Port names
+
+ -- Keith Packard <keithp@keithp.com>  Mon, 22 Apr 2019 12:43:16 -0700
+
 snek (0.96-1) unstable; urgency=medium
 
-  * 0.96
+  * 0.96 upstream release
   * Lots of doc updates
   * Ship snek binary and firwmare for mac os x
   * Include math functions on Windows binary
@@ -9,10 +17,10 @@ snek (0.96-1) unstable; urgency=medium
 
 snek (0.95-1) unstable; urgency=medium
 
-  * 0.95-1
+  * 0.95 upstream release
   * Ensure dictionary keys are completely immutable
   * Generate error for int operations on floats which aren't exactly int
-  * Update docs after review by Mike Ward  
+  * Update docs after review by Mike Ward
 
  -- Keith Packard <keithp@keithp.com>  Fri, 12 Apr 2019 20:23:06 -0700
 
