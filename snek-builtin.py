@@ -5,7 +5,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful, but
@@ -24,14 +24,14 @@ def fprint(msg='', end='\n', file=sys.stdout):
 builtin_id = 1
 
 class SnekBuiltin:
-    name = ""
-    id = -1
-    nformal = 0
-    keyword = False
-    def __init__(self, name, param):
+
+    def __init__(self, name, param, value):
         self.name = name
+        self.value = value
+        self.id = -1
         if param[0].isalpha():
             self.keyword = param
+            self.nformal = -3
         else:
             self.keyword = False
             self.nformal = int(param)
@@ -39,12 +39,31 @@ class SnekBuiltin:
     def __eq__(self,other):
         return self.name == other.name
 
+    def is_name(self):
+        return self.nformal == -2 and self.value is None
+
+    def is_value(self):
+        return self.nformal == -2 and self.value is not None
+
+    def is_func(self):
+        return self.nformal >= -1
+
+    def value_order(self,other):
+        if self.value is None and other.value is not None:
+            return 1
+        if other.value is None and self.value is not None:
+            return -1
+        return 0
+
     def __lt__(self,other):
         if self.nformal != other.nformal:
-            if self.nformal == -2:
-                return False
-            if other.nformal == -2:
+            if self.is_func():
                 return True
+            if other.is_func():
+                return False
+        o = self.value_order(other)
+        if o != 0:
+            return o < 0
         return self.name < other.name
 
     def snek_name(self):
@@ -54,10 +73,14 @@ class SnekBuiltin:
         return "SNEK_BUILTIN_%s" % (self.name.replace(".", "_"))
 
     def func_name(self):
+        if self.is_value():
+            return self.value
         return "snek_builtin_%s" % (self.name.replace(".", "_"))
 
     def func_field(self):
-        if self.nformal == -1:
+        if self.is_value():
+            return ".value"
+        elif self.nformal == -1:
             return ".funcv"
         return ".func%d" % self.nformal
 
@@ -70,9 +93,9 @@ class SnekBuiltin:
 headers=[]
 builtins = []
 
-def add_builtin(name, id):
+def add_builtin(name, id, value):
     global builtins
-    builtins += [SnekBuiltin(name, id)]
+    builtins += [SnekBuiltin(name, id, value)]
 
 def load_builtins(filename):
     global headers
@@ -86,7 +109,10 @@ def load_builtins(filename):
                 headers += [line]
         else:
             bits = line.split(",")
-            add_builtin(bits[0].strip(), bits[1].strip())
+            value = None
+            if len(bits) > 2:
+                value = bits[2].strip()
+            add_builtin(bits[0].strip(), bits[1].strip(), value)
 
 def dump_headers(fp):
     for line in headers:
@@ -124,7 +150,7 @@ def dump_names(fp):
 def max_args():
     max = 0
     for name in sorted(builtins):
-        if name.keyword or name.nformal == -2:
+        if name.keyword or not name.is_func():
             continue
         if name.nformal > max:
             max = name.nformal
@@ -132,7 +158,7 @@ def max_args():
 
 def dump_decls(fp):
     for name in sorted(builtins):
-        if name.keyword or name.nformal == -2:
+        if not name.is_func():
             continue
         fprint("extern snek_poly_t", file=fp)
         fprint("%s(" % name.func_name(), file=fp, end='')
@@ -152,23 +178,31 @@ def dump_builtins(fp):
     fprint("const snek_builtin_t SNEK_BUILTIN_DECLARE(snek_builtins)[] = {", file=fp)
 
     for name in sorted(builtins):
-        if name.keyword or name.nformal == -2:
+        if name.keyword:
+            continue
+
+        if name.is_name():
             continue
 
         fprint("\t[%s - 1] = {" % name.cpp_name(), file=fp)
-        fprint("\t\t.nformal=%d," % name.nformal, file=fp)
+        if name.is_func():
+            fprint("\t\t.nformal=%d," % name.nformal, file=fp)
         fprint("\t\t%s = %s," % (name.func_field(), name.func_name()), file=fp)
         fprint("\t},", file=fp)
     fprint("};", file=fp)
 
 def dump_cpp(fp):
     marked_funcs = False
+    marked_values = False
     for name in sorted(builtins):
         if name.keyword:
             continue
-        if name.nformal == -2 and not marked_funcs:
+        if name.is_value() and not marked_funcs:
             fprint("#define SNEK_BUILTIN_MAX_FUNC %d" % name.id, file=fp)
             marked_funcs = True
+        if name.is_name() and not marked_values:
+            fprint("#define SNEK_BUILTIN_MAX_BUILTIN %d" % name.id, file=fp)
+            marked_values = True
         fprint("#define %s %d" % (name.cpp_name(), name.id), file=fp)
 
     fprint("#define SNEK_BUILTIN_END %d" % (builtin_id), file=fp)
@@ -229,6 +263,7 @@ def builtin_main():
     fprint("#define SNEK_BUILTIN_FUNCV(b) ((b)->funcv)", file=fp)
     for f in range(max_formals+1):
         fprint("#define SNEK_BUILTIN_FUNC%d(b) ((b)->func%d)" % (f, f), file=fp)
+    fprint("#define SNEK_BUILTIN_VALUE(b) ((b)->value)", file=fp)
     fprint("#endif", file=fp)
 
     dump_cpp(fp)

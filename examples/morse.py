@@ -22,10 +22,9 @@ def l(c):
     for e in es:
         if e == '.':
             onfor(T)
-            time.sleep(T)
         else:
             onfor(3*T)
-            time.sleep(T)
+        time.sleep(T)
     time.sleep(3*T)
 
 def m(t):
@@ -36,7 +35,7 @@ def m(t):
             l(c)
 
 def cq():
-    talkto(13)
+    talkto(D13)
     while True:
         m("cq cq de kd7sqg  ")
 

@@ -21,6 +21,7 @@ files =../COPYING
 	../doc/snek.pdf
 	../snek-duino/snek-duino-@SNEK_VERSION@.hex
 	../metro-snek/metro-snek-@SNEK_VERSION@.uf2
+	../crickit-snek/crickit-snek-@SNEK_VERSION@.uf2
 	../examples
 	snek.exe
 	altusmetrum.inf

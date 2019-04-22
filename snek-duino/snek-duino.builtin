@@ -3,7 +3,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful, but
@@ -30,4 +30,24 @@ eeprom.erase, 0
 reset, 0
 random.seed, 1
 random.randrange, 1
+D0, -2, 0
+D1, -2, 1
+D2, -2, 2
+D3, -2, 3
+D4, -2, 4
+D5, -2, 5
+D6, -2, 6
+D7, -2, 7
+D8, -2, 8
+D9, -2, 9
+D10, -2, 10
+D11, -2, 11
+D12, -2, 12
+D13, -2, 13
+A0, -2, 14
+A1, -2, 15
+A2, -2, 16
+A3, -2, 17
+A4, -2, 18
+A5, -2, 19
 #include <snek-duino.h>

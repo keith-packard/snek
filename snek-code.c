@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -1099,7 +1099,7 @@ snek_code_run(snek_code_t *code_in)
 					snek_a = *ref;
 					break;
 				}
-				if (id < SNEK_BUILTIN_MAX_FUNC) {
+				if (id < SNEK_BUILTIN_MAX_BUILTIN) {
 					snek_a = snek_builtin_id_to_poly(id);
 					break;
 				}

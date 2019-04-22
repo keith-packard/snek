@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation; either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -98,6 +98,21 @@
  *	1	pin 7	E
  *
  */
+
+#define AO_SNEK_ADC_0	0xff
+#define AO_SNEK_ADC_1	0xff
+#define AO_SNEK_ADC_2	0xff
+#define AO_SNEK_ADC_3	0xff
+#define AO_SNEK_ADC_4	0xff
+#define AO_SNEK_ADC_5	0xff
+#define AO_SNEK_ADC_6	0xff
+#define AO_SNEK_ADC_7	0xff
+#define AO_SNEK_ADC_8	0xff
+#define AO_SNEK_ADC_9	0xff
+#define AO_SNEK_ADC_10	0xff
+#define AO_SNEK_ADC_11	0xff
+#define AO_SNEK_ADC_12	0xff
+#define AO_SNEK_ADC_13	0xff
 
 #define AO_SNEK_GPIO_0		(&samd21_port_a)
 #define AO_SNEK_PIN_0		11

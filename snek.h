@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -274,15 +274,20 @@ typedef struct snek_slice {
 #define SNEK_SLICE_DEFAULT	SNEK_SOFFSET_NONE		/* empty value provided [1:] */
 
 typedef struct snek_builtin {
-	int8_t nformal;
 	union {
-		snek_poly_t	(*funcv)(uint8_t nposition, uint8_t nnamed,
-					 snek_poly_t *args);
-		snek_poly_t	(*func0)(void);
-		snek_poly_t	(*func1)(snek_poly_t a0);
-		snek_poly_t	(*func2)(snek_poly_t a0, snek_poly_t a1);
-		snek_poly_t	(*func3)(snek_poly_t a0, snek_poly_t a1, snek_poly_t a2);
-		snek_poly_t	(*func4)(snek_poly_t a0, snek_poly_t a1, snek_poly_t a2, snek_poly_t a3);
+		struct {
+			int8_t nformal;
+			union {
+				snek_poly_t	(*funcv)(uint8_t nposition, uint8_t nnamed,
+							 snek_poly_t *args);
+				snek_poly_t	(*func0)(void);
+				snek_poly_t	(*func1)(snek_poly_t a0);
+				snek_poly_t	(*func2)(snek_poly_t a0, snek_poly_t a1);
+				snek_poly_t	(*func3)(snek_poly_t a0, snek_poly_t a1, snek_poly_t a2);
+				snek_poly_t	(*func4)(snek_poly_t a0, snek_poly_t a1, snek_poly_t a2, snek_poly_t a3);
+			};
+		};
+		float		value;
 	};
 } snek_builtin_t;
 
@@ -294,6 +299,7 @@ typedef struct snek_buf {
 
 extern const snek_builtin_t snek_builtins[];
 
+#define SNEK_BUILTIN_FLOAT	-2
 #define SNEK_BUILTIN_VARARGS	-1
 
 #define SNEK_NAN_U	0x7fffffffu
@@ -857,7 +863,9 @@ snek_func_to_poly(snek_func_t *func)
 static inline snek_poly_t
 snek_builtin_id_to_poly(snek_id_t id)
 {
-	return snek_offset_to_poly(id << SNEK_ALLOC_SHIFT, snek_builtin);
+	if (id < SNEK_BUILTIN_MAX_FUNC)
+		return snek_offset_to_poly(id << SNEK_ALLOC_SHIFT, snek_builtin);
+	return snek_float_to_poly(SNEK_BUILTIN_VALUE(&snek_builtins[id-1]));
 }
 
 static inline snek_id_t

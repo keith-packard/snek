@@ -3,7 +3,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful, but
@@ -41,8 +41,8 @@ all: $(WINDOWS_INSTALL)
 $(WINDOWS_INSTALL): $(WINDOWS_FILES) snek.cfg
 	pynsist snek.cfg
 
-snek.cfg: snek.cfg.in
-	$(SNEK_SED) $^ > $@
+snek.cfg: snek.cfg.in ../snek-install.defs ../snek.defs
+	$(SNEK_SED) snek.cfg.in > $@
 
 snek.exe: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)

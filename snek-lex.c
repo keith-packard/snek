@@ -3,7 +3,7 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -529,40 +529,6 @@ snek_lex(void)
 				break;
 			}
 			return id;
-		}
-
-		switch (id) {
-		case SNEK_BUILTIN_False:
-			snek_token_val.number = 0.0f;
-			RETURN(NUMBER);
-		case SNEK_BUILTIN_True:
-			snek_token_val.number = 1.0f;
-			RETURN(NUMBER);
-#ifdef SNEK_BUILTIN_math_pi
-		case SNEK_BUILTIN_math_pi:
-			snek_token_val.number = M_PI;
-			RETURN(NUMBER);
-#endif
-#ifdef SNEK_BUILTIN_math_e
-		case SNEK_BUILTIN_math_e:
-			snek_token_val.number = M_E;
-			RETURN(NUMBER);
-#endif
-#ifdef SNEK_BUILTIN_math_tau
-		case SNEK_BUILTIN_math_tau:
-			snek_token_val.number = 2 * M_PI;
-			RETURN(NUMBER);
-#endif
-#ifdef SNEK_BUILTIN_math_inf
-		case SNEK_BUILTIN_math_inf:
-			snek_token_val.number = INFINITY;
-			RETURN(NUMBER);
-#endif
-#ifdef SNEK_BUILTIN_math_nan
-		case SNEK_BUILTIN_math_nan:
-			snek_token_val.number = NAN;
-			RETURN(NUMBER);
-#endif
 		}
 
 		snek_token_val.id = id;
