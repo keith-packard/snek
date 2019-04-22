@@ -42,9 +42,9 @@ Here's some places that have seen recent work
    along with convenient plugs for other devices. If you want to get
    started building Snek robots, this is a great board to buy.
 
- * Documentation. A reference manual for the Snek language is getting
-   more usable. This manual includes a tutorial section for learning
-   the language.
+ * Documentation. [The Snek Programming Language](https://keithp.com/snek/snek.html)
+   manual is getting more usable. This document includes a tutorial
+   section for learning the language.
 
  * Packaging. Debian, General Linux, Windows and Mac OS X packages are
    available. These packages include menu entries and icons to run the
