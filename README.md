@@ -24,9 +24,8 @@ too small to run [MicroPython](https://micropython.org/).
    [here](http://keithp.com/archive/README).  This archive also
    includes _lola_, the LL parser generator used in building Snek.
 
- * [Windows package](http://keithp.com/snek/dist)
-
- * [General Linux package](http://keithp.com/snek/dist)
+ * Packages for Linux, Mac OS X and Windows are available in the
+   [Snek Dist directory](http://keithp.com/snek/dist)
 
 ## To Do list
 
@@ -42,6 +41,12 @@ Here's some places that have seen recent work
    along with convenient plugs for other devices. If you want to get
    started building Snek robots, this is a great board to buy.
 
+ * Port names. I've added names for all of the GPIO pins on the
+   embedded devices. This was motivated by the new Crickit port. That
+   device has six groups of I/O pins, which made using simple numbers
+   pretty challenging. There are names for all GPIO pins on all
+   devices now.
+ 
  * Documentation. [The Snek Programming Language](https://keithp.com/snek/snek.html)
    manual is getting more usable. This document includes a tutorial
    section for learning the language.
