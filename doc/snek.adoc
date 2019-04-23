@@ -1169,7 +1169,7 @@ value for _bound_ is ``–1``. Here are some examples:
 > *# Tuple of characters*
 > *a = ('a', 'b', 'c', 'd', 'e', 'f')*
 > *# With all default values, a[:] looks*
-> *# the same as a	*
+> *# the same as a*
 > *a[:]*
 ('a', 'b', 'c', 'd', 'e', 'f')
 > *# Reverse the Tuple*
@@ -1293,7 +1293,7 @@ variable, a list location or a dictionary location.(((assignment)))(((=)))
 
 _location_ ``+=``, ``–=``, ``*=``, ``/=``, ``//=``, ``%=``, ``**=``, ``&=``, ``|=``, ``^=``, ``<\<=``, ``>>=`` _value_::
 The Operation Assignment statements take the value of the left operand and
-the value of the left operand and performs the operation indicated by
+the value of the right operand and performs the operation indicated by
 the operator. Then it stores the result back in the location indicated
 by the left operand. There are some subtleties about this which are
 discussed in the Lists and Tuples section of the Datatypes chapter.
@@ -2198,19 +2198,19 @@ Metro M0 file system.
 Snek for the Crickit includes the Common System, Math, GPIO, and
 EEPROM functions. Crickit-snek provides names for all of the I/O ports:
 
-DRIVE1 - DRIVE4:
+DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
 
-MOTOR1A, MOTOR1B, MOTOR2A, MOTOR2B:
+MOTOR1A, MOTOR1B, MOTOR2A, MOTOR2B::
 Bi-directional DC motor control, 1A max current. MOTOR1A and MOTOR2A
 are the speed controls, MOTOR1B and MOTOR2B are the direction
 controls. Note that there's a bit of firmware behind these pins as the
 TI DRV8833 chip has a slightly funky control mechanism.
 
-SERVO1 - SERVO4:
+SERVO1 - SERVO4::
 Digital I/O pins with PWM output
 
-CAP1 - CAP4:
+CAP1 - CAP4::
 Digital I/O pins labeled “Capacitive Touch” on the Crickit board.
 
 SIGNAL1 - SIGNAL8::
