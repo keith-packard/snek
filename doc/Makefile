@@ -14,7 +14,9 @@ IMAGE_FILES=../snek.svg
 
 all: $(HTML_FILES) $(PDF_FILES)
 
-book: snek-book.pdf snek-cover.pdf
+BOOK_FILES=snek-book.pdf snek-cover.pdf snek-book-book.pdf snek-cover-book.pdf
+
+book: $(BOOK_FILES)
 
 LETTER_ATTRIBUTES=--attribute='pdf-style=snek' 
 BOOK_ATTRIBUTES=--attribute='pdf-style=snek-book' 
@@ -37,11 +39,17 @@ install: $(DOCFILES)
 snek-book.pdf: snek.adoc snek-book-theme.yml
 	asciidoctor-pdf -o `pwd`/$@ -B$(SNEK_ROOT) $(ATTRIBUTES) $(BOOK_ATTRIBUTES) snek.adoc
 
+snek-book-book.pdf: snek-book.pdf
+	pdfbook2 -n --paper=letter snek-book.pdf
+
 snek-cover.pdf: snek-cover.svg
 	rsvg-convert -d 72 -p 72 -f pdf -o $@ $^
+
+snek-cover-book.pdf: snek-cover.svg
+	rsvg-convert -d 69.05 -p 69.94 -f pdf -o $@ $^
 
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) fonts $(SNEKDOC)
 
 clean::
-	rm -f $(PDF_FILES) $(HTML_FILES)
+	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES)
