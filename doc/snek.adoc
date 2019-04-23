@@ -38,11 +38,11 @@ This document is released under the terms of the link:http://creativecommons.org
 Thanks to Jane Kenney-Norberg for building a science and technology
 education program using Lego. Jane taught my kids science in
 elementary school and Lego after school, and let me come and play
-too. I'm still there helping teach, even though my kids are nearly
-done with their undergraduate degrees.
+too. I'm still there helping and teaching, even though my kids are
+nearly done with their undergraduate degrees.
 
 Thanks to Christopher Reekie and Henry Gillespie who are both students
-and student-teacher in Jane's program and who have both helped teach
+and student-teacher in Jane's program and who have helped teach
 Arduino programming using Lego robots. Christopher has also been
 helping design and test Snek.
 
@@ -55,12 +55,12 @@ https://keithp.com
 
 Teaching computer programming to students in the 10-14 age range
 offers some interesting challenges. Graphical languages which
-construct programs from elements manipulated with a pointing device
-can become frustratingly slow to create code. These languages don't
-develop portable skills to bring to more advanced languages.
-Sophisticated languages like C, Java and even Python are so large as
-to overwhelm the novice with rich semantics like “objects” and other
-higher level programming constructs.
+construct programs from elements dragged with a mouse or touchpad can
+be frustratingly slow. These languages don't develop portable skills
+usable with more advanced languages. Sophisticated languages like C,
+Java and even Python are so large as to overwhelm the novice with rich
+semantics like “objects” and other higher level programming
+constructs.
 
 In days long past, beginning programmers were usually presented with
 microcomputers running very small languages, like BASIC, Forth or
@@ -83,19 +83,20 @@ compiler running on a separate desktop or laptop system.
 
 I brought Arduino systems into the classroom about five years ago. The
 hardware was fabulous and we built a number of fun robots. After a
-couple of years, I built some custom Arduino hardware for our needs --
-I used screw terminals for all of the inputs and outputs, stuck a
-battery pack on the back and included four high-current H-bridge motor
-controllers to help animate the robots. They're still Arduino's though,
-there's an ATmega 328P processor and a FTDI USB to serial converter,
-so we were able to use the stock Arduino development tools.
+couple of years, I built some custom Arduino hardware for our needs—
+with screw terminals for the inputs and outputs, a battery pack on the
+back and high-current motor controllers to animate the robots. They're
+still Arduino's though (with an ATmega 328P processor and a FTDI
+USB to serial converter) so we can use the stock Arduino
+development tools.
 
 Students struggled with the complex syntax, especially typing the
 obscure punctuation marks and remembering to insert semicolons. I
 often heard comments like “this takes too much typing” and “why is it
 so picky about semicolons”. The lack of an interactive mode made
-experimenting a bit slower than other systems. There have been
-students who got past the obstacles and figured out how to use them:
+experimenting a bit slower than our Logo systems. In spite of the
+difficulties, there have been students who have done interesting
+projects with them:
 
  * Chris Reekie an 11th-grade student-teacher in the program, took the
    line follower robot design and re-wrote the Arduino firmware to
@@ -108,11 +109,11 @@ students who got past the obstacles and figured out how to use them:
    and communication with an attached 7-segment display. We've shown
    this device at numerous local Lego shows.
 
- * Mark Fernandez, now a Mechanical Engineering student at Washington
+ * Mark Fernandez, now a mechanical engineering student at Washington
    University in St Louis, built a solar energy system that
    automatically tracked the sun while he was in eighth grade.
 
-The hardware was just what we wanted, a few students were using the
+The hardware was just what we wanted, and a few students have used
 skills learned in the program later on, but the software was not aimed
 at young students just starting to write code. Instead of throwing out
 our existing systems and starting over, I wondered if we couldn't keep
