@@ -620,6 +620,11 @@ snek_list_mark(void *addr);
 void
 snek_list_move(void *addr);
 
+#ifdef SNEK_LIST_BUILD
+snek_poly_t
+snek_list_build(snek_list_type_t type, snek_offset_t size, ...);
+#endif
+
 /* snek-lex.c */
 
 extern uint8_t snek_lex_indent;
