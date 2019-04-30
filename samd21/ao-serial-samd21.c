@@ -24,10 +24,10 @@ _ao_usart_tx_start(struct ao_samd21_usart *usart)
 			return 0;
 		}
 #endif
-		if (usart->reg->intflag & (1 << SAMD21_USART_INTFLAG_DRE))
+		if (usart->reg->intflag & (1 << SAMD21_SERCOM_INTFLAG_DRE))
 		{
 			usart->tx_running = 1;
-			usart->reg->intenset = (1 << SAMD21_USART_INTFLAG_DRE) | (1 << SAMD21_USART_INTFLAG_TXC);
+			usart->reg->intenset = (1 << SAMD21_SERCOM_INTFLAG_DRE) | (1 << SAMD21_SERCOM_INTFLAG_TXC);
 			usart->reg->data = ao_fifo_remove(&usart->tx_fifo);
 			ao_wakeup(&usart->tx_fifo);
 			return 1;
@@ -39,7 +39,7 @@ _ao_usart_tx_start(struct ao_samd21_usart *usart)
 static void
 _ao_usart_rx(struct ao_samd21_usart *usart, int is_stdin)
 {
-	if (usart->reg->intflag & (1 << SAMD21_USART_INTFLAG_RXC)) {
+	if (usart->reg->intflag & (1 << SAMD21_SERCOM_INTFLAG_RXC)) {
 		if (!ao_fifo_full(&usart->rx_fifo)) {
 			ao_fifo_insert(&usart->rx_fifo, usart->reg->data);
 			ao_wakeup(&usart->rx_fifo);
@@ -55,7 +55,7 @@ _ao_usart_rx(struct ao_samd21_usart *usart, int is_stdin)
 			}
 #endif
 		} else {
-			usart->reg->intenclr = (1 << SAMD21_USART_INTFLAG_RXC);
+			usart->reg->intenclr = (1 << SAMD21_SERCOM_INTFLAG_RXC);
 		}
 	}
 }
@@ -66,11 +66,11 @@ ao_usart_isr(struct ao_samd21_usart *usart, int is_stdin)
 	_ao_usart_rx(usart, is_stdin);
 
 	if (!_ao_usart_tx_start(usart))
-		usart->reg->intenclr = (1 << SAMD21_USART_INTFLAG_DRE);
+		usart->reg->intenclr = (1 << SAMD21_SERCOM_INTFLAG_DRE);
 
-	if (usart->reg->intflag & (1 << SAMD21_USART_INTFLAG_TXC)) {
+	if (usart->reg->intflag & (1 << SAMD21_SERCOM_INTFLAG_TXC)) {
 		usart->tx_running = 0;
-		usart->reg->intenclr = (1 << SAMD21_USART_INTFLAG_TXC);
+		usart->reg->intenclr = (1 << SAMD21_SERCOM_INTFLAG_TXC);
 		if (usart->draining) {
 			usart->draining = 0;
 			ao_wakeup(&usart->tx_fifo);
@@ -98,7 +98,7 @@ ao_usart_set_speed(struct ao_samd21_usart *usart, uint8_t speed)
 static void
 ao_usart_init(struct ao_samd21_usart *usart, int hw_flow, int id)
 {
-	struct samd21_usart *reg = usart->reg;
+	struct samd21_sercom *reg = usart->reg;
 
 	(void) hw_flow;
 
@@ -112,41 +112,41 @@ ao_usart_init(struct ao_samd21_usart *usart, int hw_flow, int id)
 	samd21_pm.apbcmask |= (1 << (SAMD21_PM_APBCMASK_SERCOM0 + id));
 
 	/* Reset */
-	reg->ctrla = (1 << SAMD21_USART_CTRLA_SWRST);
+	reg->ctrla = (1 << SAMD21_SERCOM_CTRLA_SWRST);
 
-	while ((reg->ctrla & (1 << SAMD21_USART_CTRLA_SWRST)) ||
-	       (reg->syncbusy & (1 << SAMD21_USART_SYNCBUSY_SWRST)))
+	while ((reg->ctrla & (1 << SAMD21_SERCOM_CTRLA_SWRST)) ||
+	       (reg->syncbusy & (1 << SAMD21_SERCOM_SYNCBUSY_SWRST)))
 		;
 
-	reg->ctrlb = ((0 << SAMD21_USART_CTRLB_CHSIZE) |
-		      (0 << SAMD21_USART_CTRLB_SBMODE) |
-		      (0 << SAMD21_USART_CTRLB_COLDEN) |
-		      (0 << SAMD21_USART_CTRLB_SFDE) |
-		      (0 << SAMD21_USART_CTRLB_ENC) |
-		      (0 << SAMD21_USART_CTRLB_PMODE) |
-		      (1 << SAMD21_USART_CTRLB_TXEN) |
-		      (1 << SAMD21_USART_CTRLB_RXEN) |
-		      (3 << SAMD21_USART_CTRLB_FIFOCLR));
+	reg->ctrlb = ((0 << SAMD21_SERCOM_CTRLB_CHSIZE) |
+		      (0 << SAMD21_SERCOM_CTRLB_SBMODE) |
+		      (0 << SAMD21_SERCOM_CTRLB_COLDEN) |
+		      (0 << SAMD21_SERCOM_CTRLB_SFDE) |
+		      (0 << SAMD21_SERCOM_CTRLB_ENC) |
+		      (0 << SAMD21_SERCOM_CTRLB_PMODE) |
+		      (1 << SAMD21_SERCOM_CTRLB_TXEN) |
+		      (1 << SAMD21_SERCOM_CTRLB_RXEN) |
+		      (3 << SAMD21_SERCOM_CTRLB_FIFOCLR));
 
 	ao_usart_set_speed(usart, AO_SERIAL_SPEED_9600);
 
 	/* finish setup and enable the hardware */
-	reg->ctrla = ((0 << SAMD21_USART_CTRLA_SWRST) |
-		      (1 << SAMD21_USART_CTRLA_ENABLE) |
-		      (1 << SAMD21_USART_CTRLA_MODE) |
-		      (1 << SAMD21_USART_CTRLA_RUNSTDBY) |
-		      (0 << SAMD21_USART_CTRLA_IBON) |
-		      (0 << SAMD21_USART_CTRLA_SAMPR) |
-		      (1 << SAMD21_USART_CTRLA_TXPO) |	/* pad[2] */
-		      (3 << SAMD21_USART_CTRLA_RXPO) |	/* pad[3] */
-		      (0 << SAMD21_USART_CTRLA_SAMPA) |
-		      (0 << SAMD21_USART_CTRLA_FORM) |	/* no parity */
-		      (0 << SAMD21_USART_CTRLA_CMODE) | /* async */
-		      (0 << SAMD21_USART_CTRLA_CPOL) |
-		      (1 << SAMD21_USART_CTRLA_DORD));	/* LSB first */
+	reg->ctrla = ((0 << SAMD21_SERCOM_CTRLA_SWRST) |
+		      (1 << SAMD21_SERCOM_CTRLA_ENABLE) |
+		      (1 << SAMD21_SERCOM_CTRLA_MODE) |
+		      (1 << SAMD21_SERCOM_CTRLA_RUNSTDBY) |
+		      (0 << SAMD21_SERCOM_CTRLA_IBON) |
+		      (0 << SAMD21_SERCOM_CTRLA_SAMPR) |
+		      (1 << SAMD21_SERCOM_CTRLA_TXPO) |	/* pad[2] */
+		      (3 << SAMD21_SERCOM_CTRLA_RXPO) |	/* pad[3] */
+		      (0 << SAMD21_SERCOM_CTRLA_SAMPA) |
+		      (0 << SAMD21_SERCOM_CTRLA_FORM) |	/* no parity */
+		      (0 << SAMD21_SERCOM_CTRLA_CMODE) | /* async */
+		      (0 << SAMD21_SERCOM_CTRLA_CPOL) |
+		      (1 << SAMD21_SERCOM_CTRLA_DORD));	/* LSB first */
 
 	/* Enable receive interrupt */
-	reg->intenset = (1 << SAMD21_USART_INTFLAG_RXC);
+	reg->intenset = (1 << SAMD21_SERCOM_INTFLAG_RXC);
 }
 
 static int
@@ -159,9 +159,9 @@ _ao_usart_pollchar(struct ao_samd21_usart *usart)
 	else {
 		uint8_t	u;
 		u = ao_fifo_remove(&usart->rx_fifo);
-		if ((usart->reg->intenset & (1 << SAMD21_USART_INTFLAG_RXC)) == 0) {
+		if ((usart->reg->intenset & (1 << SAMD21_SERCOM_INTFLAG_RXC)) == 0) {
 			if (ao_fifo_barely(&usart->rx_fifo))
-				usart->reg->intenset = (1 << SAMD21_USART_INTFLAG_RXC);
+				usart->reg->intenset = (1 << SAMD21_SERCOM_INTFLAG_RXC);
 		}
 #if HAS_SERIAL_SW_FLOW
 		/* If we've cleared RTS, check if there's space now and turn it back on */

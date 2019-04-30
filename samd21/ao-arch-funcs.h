@@ -166,7 +166,7 @@ ao_arch_memory_barrier(void) {
 struct ao_samd21_usart {
 	struct ao_fifo		rx_fifo;
 	struct ao_fifo		tx_fifo;
-	struct samd21_usart	*reg;
+	struct samd21_sercom	*reg;
 	uint8_t			tx_running;
 	uint8_t			draining;
 #if HAS_SERIAL_SW_FLOW
