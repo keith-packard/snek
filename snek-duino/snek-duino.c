@@ -113,6 +113,7 @@ main (void)
 	stderr = stdout = stdin = &snek_duino_file;
 	snek_uart_init();
 	port_init();
+	snek_init();
 	for (;;)
 		snek_parse();
 }

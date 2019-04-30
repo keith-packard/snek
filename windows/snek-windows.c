@@ -95,6 +95,8 @@ main (int argc, char **argv)
 		printf("Welcome to Snek version %s\n", SNEK_VERSION);
 	}
 
+	snek_init();
+
 	bool ret = snek_parse() == snek_parse_success;
 
 	if (snek_windows_input == stdin)
