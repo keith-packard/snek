@@ -50,4 +50,4 @@ A2, -2, 16
 A3, -2, 17
 A4, -2, 18
 A5, -2, 19
-#include <snek-duino.h>
+#include <snek-atmega.h>
