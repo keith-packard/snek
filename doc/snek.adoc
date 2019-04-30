@@ -2202,11 +2202,12 @@ EEPROM functions. Crickit-snek provides names for all of the I/O ports:
 DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
 
-MOTOR1A, MOTOR1B, MOTOR2A, MOTOR2B::
-Bi-directional DC motor control, 1A max current. MOTOR1A and MOTOR2A
-are the speed controls, MOTOR1B and MOTOR2B are the direction
-controls. Note that there's a bit of firmware behind these pins as the
-TI DRV8833 chip has a slightly funky control mechanism.
+MOTOR1, MOTOR2::
+Bi-directional DC motor control, 1A max current. These are tuples with
+two values each. MOTOR1[0] and MOTOR2[0] are the power pins. MOTOR1[1]
+and MOTOR2[1] are the direction pins. Note that there's a bit of
+firmware behind these pins as the TI DRV8833 chip has a slightly funky
+control mechanism.
 
 SERVO1 - SERVO4::
 Digital I/O pins with PWM output

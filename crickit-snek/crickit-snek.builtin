@@ -16,10 +16,8 @@ DRIVE2, -2,	1
 DRIVE3, -2,	2
 DRIVE4, -2,	3
 #
-MOTOR1A, -2,	4
-MOTOR1B, -2,	5
-MOTOR2A, -2,	6
-MOTOR2B, -2,	7
+MOTOR1, -2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(4), snek_float_to_poly(5))
+MOTOR2, -2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(6), snek_float_to_poly(7))
 #
 SERVO1, -2,	8
 SERVO2, -2,	9
