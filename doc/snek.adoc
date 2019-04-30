@@ -739,10 +739,10 @@ pin 15, etc).
 ==== Controlling motors
 
 So far, we've only talked about using one pin at a time. Arduino motor
-controllers take two pins—one for speed and one for direction. Snek
+controllers take two pins—one for power and one for direction. Snek
 lets you tell it both pins at the same time and then provides separate
-functions to set the speed and direction. If you have a motor
-controller hooked to your board with pin 3 as speed and pin 2 for
+functions to set the power and direction. If you have a motor
+controller hooked to your board with pin 3 as power and pin 2 for
 direction you can run the motor at half power and have it alternate
 directions with:(((setpower)))(((setleft)))(((setright)))
 
