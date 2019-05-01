@@ -124,14 +124,22 @@ _snek_uart_xoff(void)
 		_snek_uart_flow_do();
 }
 
-ISR(USART_UDRE_vect)
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+#define UDRE_vect USART0_UDRE_vect
+#define RX_vect USART0_RX_vect
+#else
+#define UDRE_vect USART_UDRE_vect
+#define RX_vect USART_RX_vect
+#endif
+
+ISR(UDRE_vect)
 {
 	UCSR0B &= ~(1 << UDRIE0);
 	_snek_uart_xon();
 	_snek_uart_tx_start();
 }
 
-ISR(USART_RX_vect)
+ISR(RX_vect)
 {
 	uint8_t	c = UDR0;
 
