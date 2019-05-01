@@ -18,7 +18,6 @@
 
 static uint8_t	power_pin;
 static uint8_t	dir_pin;
-static uint8_t	input_pin;
 static uint16_t	power[AO_SNEK_NUM_PIN];
 static uint32_t	on_pins;
 
@@ -246,18 +245,6 @@ snek_builtin_talkto(snek_poly_t a)
 }
 
 snek_poly_t
-snek_builtin_listento(snek_poly_t a)
-{
-	uint8_t p = snek_poly_get_pin(a);
-	if (!snek_abort) {
-		set_dir(p, 0);
-		input_pin = p;
-	}
-	return SNEK_NULL;
-}
-
-
-snek_poly_t
 snek_builtin_setpower(snek_poly_t a)
 {
 	float p = snek_poly_get_float(a);
@@ -307,13 +294,18 @@ snek_builtin_onfor(snek_poly_t a)
 #define analog_reference 1
 
 snek_poly_t
-snek_builtin_read(void)
+snek_builtin_read(snek_poly_t a)
 {
-	if (has_adc(input_pin)) {
-		float value = ao_snek_port_get_analog(input_pin) / (float) AO_ADC_MAX;
+	uint8_t p = snek_poly_get_pin(a);
+	if (snek_abort)
+		return SNEK_NULL;
+	set_dir(p, 0);
+
+	if (has_adc(p)) {
+		float value = ao_snek_port_get_analog(p) / (float) AO_ADC_MAX;
 		return snek_float_to_poly(value);
 	} else {
-		return snek_bool_to_poly(ao_snek_port_get(input_pin));
+		return snek_bool_to_poly(ao_snek_port_get(p));
 	}
 }
 

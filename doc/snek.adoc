@@ -686,7 +686,7 @@ Digital pin 13:(((talkto)))(((on)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *talkto(13)*
+> *talkto(D13)*
 > *on()*
 ----
 
@@ -694,7 +694,7 @@ Let's get a bit fancier and blink it:(((time.sleep)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *talkto(13)*
+> *talkto(D13)*
 > *while True:*
 +     *onfor(.5)*
 +     *time.sleep(.5)*
@@ -703,14 +703,13 @@ Let's get a bit fancier and blink it:(((time.sleep)))
 ==== Hooking up a digital input
 
 Find a bit of wire to connect from Digital pin 1 to GND and let's
-control the LED with this primitive switch:(((listento)))(((off)))
+control the LED with this primitive switch:(((read)))(((off)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *listento(1)*
-> *talkto(13)*
+> *talkto(D13)*
 > *while True:*
-+     *if read():*
++     *if read(D1):*
 +         *on()*
 +     *else:*
 +         *off()*
@@ -726,15 +725,11 @@ Analog pin 0 and make the LED track the sensor:(((read)))(((onfor)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *listento(14)*
-> *talkto(13)*
+> *talkto(D13)*
 > *while True:*
-+     *onfor(1-read())*
-+     *time.sleep(1-read())*
++     *onfor(1-read(A0))*
++     *time.sleep(1-read(A0))*
 ----
-
-Note that the Arduino analog pin A0 is called pin 14 in snek (A1 is
-pin 15, etc).
 
 ==== Controlling motors
 
@@ -1922,9 +1917,6 @@ Set the current output pins. If _pin_ is a number, this sets both the
 Power and Direction pins. If _pin_ is a List or Tuple, then the first
 element sets the Power pin and the second sets the Direction pin.(((talkto)))
 
-=== `listento(` _pin_ `)`
-Sets the current input pin to _pin_.(((listento)))
-
 === `setpower(` _power_ `)`
 
 Sets the power level on the current Power pin to _power_. If the Power
@@ -1954,11 +1946,11 @@ Turns the current Power pin *off*.(((off)))
 Turns the current Power pin *on*, delays for _seconds_ and then
 turns the current Power pin *off*.(((onfor)))
 
-=== `read()`
+=== `read(` _pin_ `)`
 
-Returns the value of the current Input pin. If this is an analog pin,
-then `read()` returns a value from `0 to 1` (inclusive). If this a digital pin, then
-`read()` returns either `0` or `1`.(((read)))
+Returns the value of _pin_. If this is an analog pin, then `read`
+returns a value from `0 to 1` (inclusive). If this a digital pin, then
+`read` returns either `0` or `1`.(((read)))
 
 === `stopall()`
 
