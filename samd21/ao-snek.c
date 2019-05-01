@@ -19,6 +19,9 @@
 #include <ao-tcc-samd21.h>
 #include <ao-tc-samd21.h>
 #include <ao-adc-samd21.h>
+#if HAS_I2C
+#include <ao-i2c.h>
+#endif
 #include <setjmp.h>
 
 void
@@ -148,6 +151,9 @@ main(void)
 	ao_tc_samd21_init();
 	ao_adc_init();
 	ao_usb_init();
+#if HAS_I2C
+	ao_i2c_init();
+#endif
 
 	setjmp(snek_reset_buf);
 	ao_snek_port_init();

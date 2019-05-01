@@ -19,6 +19,7 @@ SNEK_SAMD21 = $(SNEK_ROOT)/samd21
 include $(SNEK_SAMD21)/snek-samd21.defs
 
 SNEK_LOCAL_SRC = \
+	ao-i2c.c \
 	$(SNEK_SAMD21_SRC)
 
 SNEK_LOCAL_INC = \

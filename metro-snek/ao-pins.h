@@ -32,6 +32,9 @@
 #define USE_SERIAL_0_STDIN	0
 #define SERIAL_0_PA10_PA11	1
 
+#define HAS_I2C			1
+#define HAS_I2C_3		1
+
 #define HAS_USB			1
 #define AO_USB_OUT_HOOK		1
 #define USE_USB_FIFO		1
