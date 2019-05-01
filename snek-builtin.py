@@ -56,6 +56,14 @@ class SnekBuiltin:
     def is_func(self):
         return self.nformal >= -1
 
+    def kind_order(self):
+        if self.is_func():
+            return 0
+        elif self.keyword:
+            return 2
+        else:
+            return 1
+
     def value_order(self,other):
         if self.value is None and other.value is not None:
             return 1
@@ -64,11 +72,11 @@ class SnekBuiltin:
         return 0
 
     def __lt__(self,other):
-        if self.nformal != other.nformal:
-            if self.is_func():
-                return True
-            if other.is_func():
-                return False
+        o = self.kind_order() - other.kind_order()
+        if o < 0:
+            return True
+        elif o > 0:
+            return False
         o = self.value_order(other)
         if o != 0:
             return o < 0
@@ -158,10 +166,10 @@ def dump_names(fp):
     total = 0
     for name in sorted(builtins):
         if name.keyword:
-            fprint("\t%s | 0x80, " % name.keyword, end='', file=fp)
+            fprint("\t%s, " % name.keyword, end='', file=fp)
+            total += 1
         else:
-            fprint("\t%d, " % name.id, end='', file=fp)
-        total += 1
+            fprint("\t", end='', file=fp)
         for c in name.name:
             fprint("'%c', " % c, end='', file=fp)
             total += 1
