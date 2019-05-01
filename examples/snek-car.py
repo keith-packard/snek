@@ -92,16 +92,14 @@ def stop():
 # Move forward until we approach something
 def go_forw():
     forw()
-    listento(pf)
-    while read() < .25:
+    while read(pf) < .25:
         pass
     stop()
 
 # Move backwards until we approach something
 def go_back():
     back()
-    listento(pr)
-    while read() < .25:
+    while read(pr) < .25:
         pass
     stop()
 

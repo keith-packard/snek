@@ -264,17 +264,6 @@ snek_builtin_talkto(snek_poly_t a)
 	return SNEK_NULL;
 }
 
-snek_poly_t
-snek_builtin_listento(snek_poly_t a)
-{
-	uint8_t p = snek_poly_get_pin(a);
-	if (!snek_abort) {
-		set_dir(p, 0);
-		input_pin = p;
-	}
-	return SNEK_NULL;
-}
-
 static bool
 is_on(uint8_t pin)
 {
@@ -366,11 +355,16 @@ snek_builtin_onfor(snek_poly_t a)
 #define analog_reference 1
 
 snek_poly_t
-snek_builtin_read(void)
+snek_builtin_read(snek_poly_t a)
 {
-	if (input_pin >= 14) {
-		uint8_t pin = input_pin - 14;
-		ADMUX = (analog_reference << 6) | (pin & 7);
+	uint8_t p = snek_poly_get_pin(a);
+	if (snek_abort)
+		return SNEK_NULL;
+	set_dir(p, 0);
+
+	if (p >= 14) {
+		uint8_t pin = p - 14;
+		ADMUX = (analog_reference << REFS0) | (pin & 7);
 		ADCSRA |= (1 << ADSC);
 		while (ADCSRA & (1 << ADSC))
 			;
@@ -380,7 +374,7 @@ snek_builtin_read(void)
 
 		return snek_float_to_poly(value);
 	} else {
-		return snek_bool_to_poly(*pin_reg(input_pin) & bit(input_pin));
+		return snek_bool_to_poly(*pin_reg(p) & bit(p));
 	}
 }
 

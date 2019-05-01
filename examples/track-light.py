@@ -17,11 +17,10 @@ dial = A0
 
 def track():
     talkto(led)
-    listento(dial)
     setpower(0)
     on()
     while True:
-        p = read()
+        p = read(dial)
         if p == 1:
             break
         setpower(p)
