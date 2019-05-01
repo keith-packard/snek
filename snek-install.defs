@@ -13,6 +13,10 @@ SNEKLIB ?= $(PREFIX)/share/snek
 SNEKDIST ?= keithp.com:/var/www/snek/dist
 SNEKDOC ?= keithp.com:/var/www/snek
 SNEKMAC ?= imac-remote:build/snek
-FIRMWARE ?= $(SNEK_ROOT)/snek-duino/snek-duino-$(SNEK_VERSION).hex $(SNEK_ROOT)/metro-snek/metro-snek-$(SNEK_VERSION).uf2
+FIRMWARE ?= \
+	$(SNEK_ROOT)/snek-duino/snek-duino-$(SNEK_VERSION).hex \
+	$(SNEK_ROOT)/snek-mega/snek-mega-$(SNEK_VERSION).hex \
+	$(SNEK_ROOT)/metro-snek/metro-snek-$(SNEK_VERSION).uf2 \
+	$(SNEK_ROOT)/crickit-snek/crickit-snek-$(SNEK_VERSION).uf2
 
 include $(SNEK_ROOT)/snek.defs

@@ -1,0 +1,32 @@
+.\"
+.\" Copyright © 2019 Keith Packard <keithp@keithp.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.TH SNEK-MEGA-INSTALL 1 "snek-mega-install" ""
+.SH NAME
+snek-mega-instal \- Install Snek to Arduino Mega
+.SH SYNOPSIS
+.B "snek-mega-install" [OPTION]... [COMMAND]
+.SH DESCRIPTION
+.I snek-mega-install
+installs the Snek programming language on an ATmega2560 Arduino Mega
+board.
+.SH OPTIONS
+.TP
+\-port <port>
+Specifies the serial port to use, the default is '/dev/ttyACM0'.
+.TP
+\-hex <snek.hex>
+Specifies the hex file to load to the board. The default is the
+currently installed version of Snek.
+.SH AUTHOR
+Keith Packard

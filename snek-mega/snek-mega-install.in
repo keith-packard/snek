@@ -1,0 +1,38 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+SNEKMEGA="$SHAREDIR/snek-mega-@SNEK_VERSION@.hex"
+
+PORT=/dev/ttyACM0
+
+mode=arg
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		-port|--port)
+		    mode=port
+		    ;;
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		*)
+		      echo "Usage: $0 {-port /dev/ttyACM0} {-hex snek-mega.hex}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	port)
+	    PORT="$i"
+	    mode=arg
+	    ;;
+	hex)
+	    SNEKMEGA="$i"
+	    mode=arg
+	    ;;
+    esac
+done
+
+avrdude -patmega2560 -cwiring -P$PORT -b115200 -D -U flash:w:"${SNEKMEGA}":i
