@@ -2166,6 +2166,34 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
 
 [%nonfacing]
 [appendix]
+= Snek on Arduino Mega
+
+Snek for the Mega includes the Common System, EEPROM, GPIO and math
+functions. Snek provides pre-defined variables for all of the GPIO
+pins. The digital I/O pins are named D0 through D53. The analog I/O
+pins are named A0 through A15. You can use these in place of numbers
+for the GPIO functions.
+
+Snek fits comfortably in the ATmega2560 flash flash, leaving plenty of space for the
+serial boot loader, so installing Snek can be done over USB and doesn't require a programming
+puck.(((Mega)))(((Arduino)))
+
+On Linux, the snek installation includes a shell script,
+snek-mega-install, to install the binary using 'avrdude'. Read the
+snek-mega-install manual (also included in the installation) for more
+information.
+
+On other hosts, you'll need to install avrdude. Once you've done that,
+you can use it to get snek installed on the device. Because the EEPROM
+fuse bit can't be set this way, when you do this, any snek program
+stored on the device will be erased. Find out what port the Mega is
+connected to, use that as the value for `<port>` and then run avrdude as follows:
+
+[source,subs="attributes+"]
+$ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{version}.hex:i
+
+[%nonfacing]
+[appendix]
 = Snek on Metro M0 Express
 
 Snek for the Metro M0 Express includes the Common System, Math, GPIO,
