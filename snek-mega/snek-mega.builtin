@@ -101,3 +101,4 @@ A14, -2, 68
 A15, -2, 69
 #include <snek-atmega.h>
 #include <snek-mega-math.h>
+#define SNEK_POOL 6144

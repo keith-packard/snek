@@ -20,7 +20,6 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
-#define SNEK_POOL	1024
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
 #define VALUE_STACK_SIZE	16
