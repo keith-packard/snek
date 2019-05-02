@@ -15,8 +15,10 @@
 #include "snek.h"
 
 /* UART baud rate */
-#define UART_BAUD  38400
-#define UART_BAUD_SCALE	(((F_CPU / (UART_BAUD * 16UL))) - 1)
+#define UART_BAUD  		38400
+#define UART_BAUD_U2X(div)	((F_CPU / (div) / UART_BAUD - 1) / 2)
+#define UART_U2X		(UART_BAUD_U2X(4) <= 4095)
+#define UART_BAUD_SCALE		(UART_U2X ? UART_BAUD_U2X(4) : UART_BAUD_U2X(8))
 
 #define RINGSIZE	16
 
@@ -215,7 +217,7 @@ snek_uart_init(void)
 	UBRR0H = (uint8_t) (UART_BAUD_SCALE >> 8);
 	UBRR0L = (uint8_t) (UART_BAUD_SCALE);
 	UCSR0A = ((1 << TXC0) |
-		  (0 << U2X0) |
+		  (UART_U2X << U2X0) |
 		  (0 << MPCM0));
 	UCSR0C = ((0 << UMSEL01) |
 		  (0 << UMSEL00) |
