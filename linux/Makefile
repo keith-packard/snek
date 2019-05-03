@@ -25,7 +25,7 @@ PROGS=../posix/snek ../snekde/snekde ../snek-duino/snek-duino-install.in
 EXAMPLES=../examples
 ICONS=../snek.svg
 DOC=../doc/snek.pdf ../snek-duino/snek-duino-install.1 ../snekde/snekde.1 ../COPYING
-LINUX_FILES=$(PROGS) $(DESKTOP_FILES) $(FIRMWARE) $(ICONS) $(DOC) $(EXAMPLES)
+LINUX_FILES=$(PROGS) $(DESKTOP_FILES) $(FIRMWARE) $(USBFIRMWARE) $(ICONS) $(DOC) $(EXAMPLES)
 
 all: $(LINUX_SH)
 

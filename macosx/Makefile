@@ -49,6 +49,7 @@ $(MACOSX_DIST): $(MACOSX_FILES)
 	cp -a $(MACOSX_DOCS) macosx
 	cp -a $(MACOSX_INSTALL) macosx
 	cp -a $(FIRMWARE) macosx
+	cp -a $(USBFIRMWARE) macosx
 	cp -a ../examples/* macosx/examples
 	#
 	# snekde

@@ -42,6 +42,8 @@ SNEK_LOCAL_BUILTINS = \
 
 include ../snek-install.defs
 
+USBSERIAL_HEX=Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex
+
 BASE=snek-mega-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
@@ -77,11 +79,12 @@ install: snek-mega-install $(HEX) snek-mega-install.1
 	install snek-mega-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(USBSERIAL_HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-mega-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f *.elf *.hex *.map snek-mega-install
+	rm -f *.elf snek*.hex *.map snek-mega-install
 
 load-direct: $(HEX)
 	avrdude -patmega2560 -cwiring -P/dev/ttyACM0 -b115200 -D -Uflash:w:$(HEX):i 
