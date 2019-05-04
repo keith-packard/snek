@@ -2172,11 +2172,14 @@ Snek for the Mega includes the Common System, EEPROM, GPIO and math
 functions. Snek provides pre-defined variables for all of the GPIO
 pins. The digital I/O pins are named D0 through D53. The analog I/O
 pins are named A0 through A15. You can use these in place of numbers
-for the GPIO functions.
+for the GPIO functions.(((Arduino Mega)))
 
-Snek fits comfortably in the ATmega2560 flash flash, leaving plenty of space for the
-serial boot loader, so installing Snek can be done over USB and doesn't require a programming
-puck.(((Mega)))(((Arduino)))
+Snek fits comfortably in the ATmega2560 flash flash, leaving plenty of
+space for the serial boot loader, so re-installing Snek can be done
+over USB. However, the default firmware loaded on the ATMega16u2 that
+acts as USB to serial converter doesn't do any XON/XOFF flow control
+and so that should be replaced before installing Snek as Snekde will
+not get or put source code successfully without it.
 
 On Linux, the snek installation includes a shell script,
 snek-mega-install, to install the binary using 'avrdude'. Read the
