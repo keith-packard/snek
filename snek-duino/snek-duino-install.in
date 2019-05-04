@@ -42,12 +42,12 @@ done
 
 case "$action" in
     fuse)
-	avrdude -F -V -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
+	avrdude -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
 	;;
     fuseload)
-	avrdude -F -V -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m -U flash:w:"${SNEKDUINO}"
+	avrdude -c $ISP -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m -U flash:w:"${SNEKDUINO}"
 	;;
     load)
-	avrdude -F -V -c $ISP -p ATMEGA328P -U flash:w:"${SNEKDUINO}"
+	avrdude -c $ISP -p ATMEGA328P -U flash:w:"${SNEKDUINO}"
 	;;
 esac
