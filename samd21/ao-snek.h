@@ -17,6 +17,8 @@
 
 #include <ao.h>
 
+#define SNEK_PIN_PULL_DOWN	0x01
+
 int
 snek_eeprom_getchar(FILE *stream);
 
