@@ -24,6 +24,7 @@ SNEK_SAMD21_SRC = \
 	ao-interrupt.c \
 	ao-led.c \
 	ao-timer.c \
+	ao-neopixel.c \
 	ao-usb-samd21.c \
 	ao-tcc-samd21.c \
 	ao-tc-samd21.c \

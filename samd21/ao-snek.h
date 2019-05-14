@@ -44,4 +44,16 @@ ao_snek_running(bool running);
 #define SNEK_CODE_HOOK_START	ao_snek_running(true);
 #define SNEK_CODE_HOOK_STOP	ao_snek_running(false);
 
+struct snek_neopixel {
+	union {
+		struct {
+			uint8_t	_extra, b, r, g;
+		};
+		uint32_t	p;
+	};
+};
+
+void
+ao_snek_neopixel_write(void *port, uint8_t pin, int npixel, struct snek_neopixel *pixels);
+
 #endif /* _AO_SNEK_H_ */

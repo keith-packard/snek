@@ -29,4 +29,5 @@ eeprom.erase, 0
 reset, 0
 random.seed, 1
 random.randrange, 1
+neopixel, 1
 #include <ao-snek.h>
