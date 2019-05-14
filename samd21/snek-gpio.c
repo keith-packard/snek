@@ -355,6 +355,9 @@ snek_poly_to_inten(snek_poly_t a)
 	return (uint8_t) (f * 255.0f + 0.5f);
 }
 
+struct snek_neopixel *snek_neopixels;
+static snek_offset_t	snek_neopixel_count;
+
 snek_poly_t
 snek_builtin_neopixel(snek_poly_t pixels)
 {
@@ -364,9 +367,12 @@ snek_builtin_neopixel(snek_poly_t pixels)
 	if (snek_list_type(pixels_list) == snek_list_dict)
 		return snek_error_type_1(pixels);
 
-	struct snek_neopixel *neos = snek_alloc(pixels_list->size * sizeof (struct snek_neopixel));
-	if (!neos)
-		return SNEK_NULL;
+	if (snek_neopixels == NULL || snek_neopixel_count < pixels_list->size) {
+		snek_neopixels = snek_alloc(pixels_list->size * sizeof (struct snek_neopixel));
+		if (!snek_neopixels)
+			return SNEK_NULL;
+		snek_neopixel_count = pixels_list->size;
+	}
 
 	snek_poly_t *pixels_data = snek_list_data(pixels_list);
 	for (int p = 0; p < pixels_list->size; p++) {
@@ -378,12 +384,12 @@ snek_builtin_neopixel(snek_poly_t pixels)
 		if (snek_list_type(pixel_list) == snek_list_dict || pixel_list->size != 3)
 			return snek_error_type_1(pixel);
 		snek_poly_t *pixel_data = snek_list_data(pixel_list);
-		neos[p].r = snek_poly_to_inten(pixel_data[0]);
-		neos[p].g = snek_poly_to_inten(pixel_data[1]);
-		neos[p].b = snek_poly_to_inten(pixel_data[2]);
+		snek_neopixels[p].r = snek_poly_to_inten(pixel_data[0]);
+		snek_neopixels[p].g = snek_poly_to_inten(pixel_data[1]);
+		snek_neopixels[p].b = snek_poly_to_inten(pixel_data[2]);
 		if (snek_abort)
 			return SNEK_NULL;
 	}
-	ao_snek_neopixel_write(ao_snek_pin[power_pin].gpio, ao_snek_pin[power_pin].pin, pixels_list->size, neos);
+	ao_snek_neopixel_write(ao_snek_pin[power_pin].gpio, ao_snek_pin[power_pin].pin, pixels_list->size, snek_neopixels);
 	return SNEK_NULL;
 }
