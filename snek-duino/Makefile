@@ -25,6 +25,8 @@ SNEK_LOCAL_BUILTINS = snek-duino.builtin
 
 include ../snek-install.defs
 
+SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
+
 BASE=snek-duino-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
