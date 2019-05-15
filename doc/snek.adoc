@@ -1956,6 +1956,24 @@ returns a value from `0 to 1` (inclusive). If this a digital pin, then
 
 Turns all pins off.(((stopall)))
 
+=== `neopixel(` _pixels_ `)`
+
+Programs a set of neopixel devices connected to the current Power
+pin. _pixels_ is a list or tuple, each element of which is a list
+or tuple of three numbers ranging from 0 to 1 for the desired red, green
+and blue intensity of the target neopixel.(((neopixel)))
+
+	> *talkto(NEOPIXEL)*
+	> *pixels = [(0.33, 0, 0), (0, 0.66, 0), (0, 0, 1)]*
+	> *neopixel(pixels)*
+
+This example programs three NeoPixel devices, the first one is set to
+one third intensity red, the second to two thirds intensity green and
+the last to full intensity blue. If there are additional neopixel
+devices connected, they will not be modified. If there are fewer
+devices connected than the data provided, the extra values will be
+ignored.
+
 == EEPROM built-in functions
 
 Snek on embedded devices may include persistent storage for source
@@ -1988,6 +2006,16 @@ Erase the eeprom.(((eeprom.erase)))
 
 Restart the Snek system, erasing all RAM contents. As part of the
 restart process, Snek will re-read any source code stored in eeprom.(((reset)))
+
+== Temperature Conversion Function
+
+This function is included in devices that have a built-in temperature
+sensor.
+
+=== `temperature(` _sensorvalue_ `)`
+
+The conversion function is pre-set with the parameters needed
+to convert from the temperature sensor value to degrees Celsius.
 
 == Curses built-in functions
 
@@ -2136,13 +2164,20 @@ keyboard.
 
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
 functions. It does not include the Math functions. Snek provides
-pre-defined variables for all of the GPIO pins. The digital I/O pins
-are named D0 through D13. The analog I/O pins are named A0 through
-A5. You can use these in place of numbers for the GPIO functions.
+pre-defined variables for all of the GPIO pins:(((Duemilanove)))(((Arduino)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
 
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
-puck, such as the USBTiny device.(((Duemilanove)))(((Arduino)))
+puck, such as the USBTiny device.
 
 On Linux, the snek installation includes a shell script,
 snek-duino-install, to install the binary using 'avrdude'. Read the
@@ -2170,9 +2205,16 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
 
 Snek for the Mega includes the Common System, EEPROM, GPIO and math
 functions. Snek provides pre-defined variables for all of the GPIO
-pins. The digital I/O pins are named D0 through D53. The analog I/O
-pins are named A0 through A15. You can use these in place of numbers
-for the GPIO functions.(((Arduino Mega)))
+pins:(((Arduino Mega)))
+
+D0-D53::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0-A15::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
 
 Snek fits comfortably in the ATmega2560 flash flash, leaving plenty of
 space for the serial boot loader, so re-installing Snek can be done
@@ -2199,28 +2241,44 @@ $ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{versi
 [appendix]
 = Snek on Metro M0 Express
 
-Snek for the Metro M0 Express includes the Common System, Math, GPIO,
-and EEPROM functions. Snek for the Metro M0 Express also runs on the
-Feather M0 boards. Snek provides pre-defined variables for all of the
-GPIO pins. The digital I/O pins are named D0 through D13. The analog
-I/O pins are named A0 through A5. You can use these in place of
-numbers for the GPIO functions.
+Snek for the Metro M0 Express includes the Common System, Math, GPIO
+(including the `neopixel` function), and EEPROM functions. Snek for
+the Metro M0 Express also runs on the Feather M0 boards. Snek provides
+pre-defined variables for all of the GPIO pins:(((Metro M0
+Express)))(((Arduino)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
+
+SDA, SCL::
+Additional Digital input and output pins. These work just like D0-D13.
+
+NEOPIXEL::
+The NeoPixel device installed on the board.
 
 The Adafruit Metro M0 Express board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
 get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
-succession.(((Metro M0 Express)))(((Arduino)))
+succession.
 
 Then, find the metro-snek-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Metro M0 file system.
 
+[%nonfacing]
 [appendix]
 = Snek on Adafruit Crickit
 
-Snek for the Crickit includes the Common System, Math, GPIO, and
-EEPROM functions. Crickit-snek provides names for all of the I/O ports:
+Snek for the Crickit includes the Common System, Math, GPIO (including
+the `neopixel` function), and
+EEPROM functions. Crickit-snek provides names for all of the I/O pins:(((Crickit)))
 
 DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
@@ -2242,15 +2300,70 @@ SIGNAL1 - SIGNAL8::
 The Signal I/O pins. These provide digital output and analog
 input. SIGNAL5 - SIGNAL8 also provide PWM output
 
+NEOPIXEL::
+The single NeoPixel device installed on the board.
+
+NEOPIXEL1::
+The external NeoPixel connector.
+
 The Adafruit Crickit board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
 get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
-succession.(((Crickit)))
+succession.
 
 Then, find the crickit-snek-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
-Metro M0 file system.
+Crickit file system.
+
+[%nonfacing]
+[appendix]
+= Snek on Adafruit Circuit Playground Express
+
+Snek for the Circuit Playground Express includes the Common System,
+Math, GPIO (including the `neopixel` function), Temperature and EEPROM
+functions. Playground-snek provides names for all of the external
+connections as well as the built-in devices:
+
+A0 - A7::
+External GPIO connections, labeled around the perimeter of the board.
+
+A8 or LIGHT::
+Internal ambient light sensor. Returns a value indicating how
+much light is shining on the sensor.
+
+A9 or TEMP::
+Internal temperature sensor. Use the builtin `temperature` function to
+convert values read from this pin to degrees Celsius.
+
+D4 or BUTTONA::
+Connected to the momentary button labeled 'A'. 0 if not pressed,
+1 if pressed.
+
+D5 or BUTTONB::
+Connected to the momentary button labeled 'B'. 0 if not pressed,
+1 if pressed.
+
+D7 or SWITCH::
+Connected to the slide switch. 0 if slid right (towards the
+microphone), 1 if slid left (towards the speaker).
+
+D13 or LED::
+The red LED near the USB connector.
+
+D8 or NEOPIXEL::
+The string of 10 NeoPixel devices on the board.
+
+The Adafruit Circuit Playground Express board includes a boot loader
+which presents as a USB mass storage device with a FAT file
+system. You can get the board into this mode by connecting the board
+to your computer over USB, sliding the switch to the right (towards
+the microphone) and then pressing the reset button twice in quick
+succession.(((Playground)))
+
+Then, find the playground-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Circuit Playground Express file system.
 
 ifdef::backend-pdf[]
 [index]
