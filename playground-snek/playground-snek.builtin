@@ -1,0 +1,44 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+A0,		-2,	0
+A1,		-2,	1
+A2,		-2,	2
+A3,		-2,	3
+A4,		-2,	4
+A5,		-2,	5
+A6,		-2,	6
+A7,		-2,	7
+A8,		-2,	8
+A9,		-2,	9
+BUTTONA, 	-2,	10
+D4,		-2,	10
+BUTTONB, 	-2,	11
+D5,		-2,	11
+SWITCH,		-2,	12
+D7,		-2,	12		
+LED,		-2,	13
+D13,		-2,	13
+REMOTEOUT,	-2,	14
+REMOTEIN,	-2,	15
+NEOPIXEL, 	-2,	16
+D8,		-2,	16
+LISIRQ,		-2,	17
+FLASHMISO,	-2,	18
+FLASHSCK,	-2,	19
+FLASHMOSI,	-2,	20
+FLASHCS,	-2,	21
+I2SCK,		-2,	22
+I2SDO,		-2,	23
+LISSDA,		-2,	24
+LISSCL,		-2,	25
