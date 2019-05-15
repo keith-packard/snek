@@ -2278,7 +2278,7 @@ Metro M0 file system.
 
 Snek for the Crickit includes the Common System, Math, GPIO (including
 the `neopixel` function), and
-EEPROM functions. Crickit-snek provides names for all of the I/O pins:(((Crickit)))
+EEPROM functions. Crickit-snek provides names for all of the GPIO pins:(((Crickit)))
 
 DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
@@ -2291,13 +2291,13 @@ firmware behind these pins as the TI DRV8833 chip has a slightly funky
 control mechanism.
 
 SERVO1 - SERVO4::
-Digital I/O pins with PWM output
+Digital pins with PWM output
 
 CAP1 - CAP4::
-Digital I/O pins labeled “Capacitive Touch” on the Crickit board.
+Digital pins labeled “Capacitive Touch” on the Crickit board.
 
 SIGNAL1 - SIGNAL8::
-The Signal I/O pins. These provide digital output and analog
+The Signal pins. These provide digital output and analog
 input. SIGNAL5 - SIGNAL8 also provide PWM output
 
 NEOPIXEL::
