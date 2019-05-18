@@ -16,8 +16,10 @@ SNEK_ROOT = ..
 
 SNEK_SAMD21 = $(SNEK_ROOT)/samd21
 
-include $(SNEK_SAMD21)/snek-samd21.defs
+PROGNAME=crickit-snek
+PRODUCT_NAME=CrickitSnek
 
+include $(SNEK_SAMD21)/snek-samd21.defs
 
 SNEK_LOCAL_SRC = \
 	$(SNEK_SAMD21_SRC)
@@ -31,20 +33,8 @@ SNEK_LOCAL_BUILTINS = \
 
 include $(SNEK_ROOT)/snek-install.defs
 
-PROGNAME=crickit-snek
-PROG=$(PROGNAME)-$(SNEK_VERSION).elf
-BIN=$(PROGNAME)-$(SNEK_VERSION).bin
-UF2=$(PROGNAME)-$(SNEK_VERSION).uf2
-MAP=$(PROGNAME)-$(SNEK_VERSION).map
-
-PRODUCT=CrickitSnek-v0.0
-IDPRODUCT=0x000a
-
 SRC=$(SNEK_SRC)
 OBJ=$(SRC:.c=.o)
-
-show:
-	echo AO_VPATH $(AO_VPATH)
 
 all: $(ELF) $(BIN) $(UF2)
 
@@ -63,6 +53,3 @@ install:
 	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 
 uninstall:
-
-ao-product.h: ../snek.defs Makefile
-	python3 $(SNEK_SAMD21)/make-product.py -v $(SNEK_VERSION) -p CrickitSnek > $@

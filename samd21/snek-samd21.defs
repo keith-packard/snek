@@ -12,7 +12,10 @@
 # General Public License for more details.
 #
 
-SNEK_LOCAL_VPATH = $(SNEK_ROOT)/samd21
+SNEK_AO = $(SNEK_ROOT)/ao
+SNEK_SAMD21 = $(SNEK_ROOT)/samd21
+
+SNEK_LOCAL_VPATH = $(SNEK_SAMD21):$(SNEK_AO)
 
 SNEK_SAMD21_SRC = \
 	ao-snek.c \
@@ -56,10 +59,14 @@ SNEK_SAMD21_BUILTINS = \
 	snek-altos.builtin \
 	$(SNEK_ROOT)/snek-math.builtin
 
-SAMD21_CFLAGS=-mlittle-endian -mcpu=cortex-m0 -mthumb\
-	-I$(TOPDIR)/samd21 $(AO_CFLAGS) $(NEWLIB_CFLAGS)
+NEWLIB_PRINTF_CFLAGS =
 
-LIBS=-L$(NEWLIB_NANO)/arm-none-eabi/lib/thumb/v6-m -lc -lm -lgcc
+NEWLIB_CFLAGS= \
+	-ffreestanding -nostdlib \
+	-isystem $(NEWLIB_NANO)/arm-none-eabi/include \
+	$(NEWLIB_PRINTF_CFLAGS)
+
+OPT=-Os
 
 WARN_FLAGS=-Wall -Wextra -Werror -Wcast-align \
 	-Wpointer-arith \
@@ -70,19 +77,31 @@ WARN_FLAGS=-Wall -Wextra -Werror -Wcast-align \
 	-Wshadow \
 	-Warray-bounds=2
 
-OPT=-Os
+AO_CFLAGS=\
+	-std=gnu99 $(WARN_FLAGS) $(OPT) -g
+
+SAMD21_CFLAGS=-mlittle-endian -mcpu=cortex-m0 -mthumb\
+	-I$(SNEK_SAMD21) -I$(SNEK_AO) -I$(SNEK_ROOT) -I. $(AO_CFLAGS) $(NEWLIB_CFLAGS)
+
+CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS)
+
+LDSCRIPT=$(SNEK_SAMD21)/snek-samd21.ld
+
+LDFLAGS=$(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -Wl,-T$(LDSCRIPT)  -n
+
+LIBS=-L$(NEWLIB_NANO)/arm-none-eabi/lib/thumb/v6-m -lc -lm -lgcc
 
 CC=arm-none-eabi-gcc
 OBJCOPY=arm-none-eabi-objcopy
-
 NEWLIB_NANO=/usr/lib/newlib-nano
 
-NEWLIB_CFLAGS= \
-	-ffreestanding -nostdlib \
-	-isystem $(NEWLIB_NANO)/arm-none-eabi/include
+PROG=$(PROGNAME)-$(SNEK_VERSION).elf
+BIN=$(PROGNAME)-$(SNEK_VERSION).bin
+UF2=$(PROGNAME)-$(SNEK_VERSION).uf2
+MAP=$(PROGNAME)-$(SNEK_VERSION).map
 
-AO_CFLAGS=\
-	-std=gnu99 $(WARN_FLAGS) $(OPT) -g
+PRODUCT=$(PRODUCT_NAME)-v$(SNEK_VERSION)
+IDPRODUCT=0x000a
 
 .SUFFIXES: .elf .bin .uf2
 
@@ -92,7 +111,5 @@ AO_CFLAGS=\
 .bin.uf2:
 	python3 $(SNEK_SAMD21)/uf2conv.py -b 0x2000 -c -o $@ $^
 
-CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS) -I. -I$(SNEK_SAMD21)
-LDSCRIPT=$(SNEK_SAMD21)/snek-samd21.ld
-LDFLAGS=$(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -Wl,-T$(LDSCRIPT)  -n
-NEWLIB_PRINTF_CFLAGS =
+ao-product.h: $(SNEK_ROOT)/snek.defs Makefile
+	python3 $(SNEK_AO)/make-product.py -v $(SNEK_VERSION) -p $(PRODUCT_NAME) > $@
