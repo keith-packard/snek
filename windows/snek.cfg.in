@@ -14,8 +14,8 @@ icon=snek.ico
 version=3.7.0
 
 [Include]
-pypi_wheels=pyserial==3.4
-	windows-curses==1.0
+pypi_wheels=windows-curses==1.0
+packages=serial
 
 files =../COPYING
 	../doc/snek.pdf
