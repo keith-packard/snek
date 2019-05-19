@@ -29,19 +29,6 @@ ao_sleep(void *wchan)
 }
 
 void
-ao_delay(uint16_t ticks)
-{
-	AO_TICK_TYPE	target;
-
-	if (!ticks)
-		ticks = 1;
-	target = ao_tick_count + ticks;
-	do {
-		ao_sleep(&ao_time);
-	} while ((int16_t) (target - ao_tick_count) > 0);
-}
-
-void
 ao_wakeup(void *wchan)
 {
 	(void) wchan;
