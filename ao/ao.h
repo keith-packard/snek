@@ -27,7 +27,6 @@
 #include <ao-pins.h>
 #include <ao-arch.h>
 #include <ao-notask.h>
-#include <ao-serial.h>
 
 #define AO_MAX_VERSION		8
 
