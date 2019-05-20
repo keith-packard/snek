@@ -501,8 +501,7 @@ snek_builtin_time_monotonic(void)
 	return snek_float_to_poly(snek_millis() / 1000.0f);
 }
 
-#if 0
-static uint32_t random_next;
+static uint16_t random_next;
 
 snek_poly_t
 snek_builtin_random_seed(snek_poly_t a)
@@ -514,10 +513,9 @@ snek_builtin_random_seed(snek_poly_t a)
 snek_poly_t
 snek_builtin_random_randrange(snek_poly_t a)
 {
-	random_next = random_next * 1103515245L + 12345L;
+	random_next = random_next * 31421 + 6927;
 	return snek_float_to_poly(random_next % snek_poly_get_soffset(a));
 }
-#endif
 
 extern char __snek_data_start__, __snek_data_end__;
 extern char __snek_bss_start__, __snek_bss_end__;
