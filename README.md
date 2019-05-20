@@ -43,16 +43,20 @@ Here's some places that have seen recent work
    the ROM took some squeezing, and I had to remove some functionality
    (random numbers and pre-defined port names) to make it fit.
 
+ * [NeoPixel](https://learn.adafruit.com/adafruit-neopixel-uberguide)
+   driver.  NeoPixel is Adafruit's name for the WS2812 (and similar)
+   scalable full-color light source. The current driver is
+   samd21g-specific, but could be ported to other SoCs.
+   
+ * [Circuit Playground Express](https://www.adafruit.com/product/3333)
+   port.  The 10 integrated NeoPixels encourated me to write a
+   NeoPixel driver. This still needs drivers for the accelerometer,
+   speaker and microphone.
+
  * [Crickit FeatherWing](https://www.adafruit.com/product/3343) port.
    This device has built-in drivers for motors and other devices,
    along with convenient plugs for other devices. If you want to get
    started building Snek robots, this is a great board to buy.
-
- * Port names. I've added names for all of the GPIO pins on the
-   embedded devices. This was motivated by the new Crickit port. That
-   device has six groups of I/O pins, which made using simple numbers
-   pretty challenging. There are names for all GPIO pins on all
-   devices now.
 
 ## Build and Run!
 
@@ -64,13 +68,15 @@ To build Snek you need these dependencies:
   * [Lola](https://keithp.com/cgit/lola.git/)
   * [gcc-avr](https://ccrma.stanford.edu/~juanig/articles/wiriavrlib/AVR_GCC.html)
   * [avr-libc](https://www.nongnu.org/avr-libc/)
+  * [gcc-arm-none-eabi](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
+  * [newlib-nano](https://keithp.com/newlib-nano/)
   * [python3](https://www.python.org/)
   * [pyserial](https://github.com/pyserial/)
   * [python curses](https://docs.python.org/3/library/curses.html)
 
 On Debian, you can get everything other than Lola from the main archive:
 
-	# apt install gcc-avr avr-libc python3-serial
+	# apt install gcc-avr avr-libc python3-serial gcc-arm-none-eabi libnewlib-nano-arm-none-eabi
 
 To install Lola, download the source and install it;
 
@@ -84,39 +90,19 @@ In the source of the project run:
 	$ make
 	$ make install
 
-## Running on Duemilanove
+## Running on Embedded Devices
 
-On the Duemilanove board, Snek takes over the entire device, without
-leaving room for the serial boot loader. Because of this, you will
-need an AVR programming device, such as a [USBtiny from
-Adafruit](https://www.adafruit.com/product/46).
+Snek is designed to run on small embedded devices with 32kB or more of
+flash and 2kB or more of RAM. Snek has been ported to a variety of
+embedded devices, providing access to pins as GPIOs as well as some
+built-in peripherals. Documentation about the supported boards can be
+found in the [Snek Manual](https://keithp.com/snek/snek.html).
 
-The snek installation for Linux includes a script, snek-duino-install,
-which uses avrdude to adjust the fuse values and flash the snek
-image. On that platform, all you need to do is run it:
+## Running on Linux, Mac OS X Windows
 
-	$ snek-duino-install
-
-## Running on the Metro M0 Express or Crickit (or compatible)
-
-On the Adafruit Metro M0 Express and Adafruit Crickit boards, Snek
-uses only a small part of the available flash space and so it can be
-installed using the regular boot loader. Connect the board over USB to
-the target machine (Linux, Mac OSX and Windows all work fine). Now
-press the reset button twice. The boot loader should present a file
-system on your host. Copy the binary included with the snek
-distribution, which is named “metro-snek-<version>.uf2” (for the Metro
-M0) or “crickit-snek-<version>.uf2” to the CURRENT.UF2 file on that
-file system. This will magically flash the application to the device
-and then it will reboot running Snek.
-
-## Running on Linux or Windows
-
-Snek is also built to run natively on Linux and Windows. When
-installed, you'll find it available in the regular system menu. Snek
-should be easy to get running on Mac OS X, but I don't have a
-cross-compilation environment available on Linux to provide a
-pre-built version.
+Snek is also built to run natively on Linux, Mac OS X and
+Windows. When installed, you'll find it available in the regular
+system menu.
 
 ## The Snek Development Environment
 
@@ -149,7 +135,9 @@ when appropriate.
 
 ## Examples
 
-There are examples provided which work with both Python and Snek.
+There are examples provided, some of which work with both Python and
+Snek, and some of which show how to use SoC-specific APIs that aren't
+available in Python.
 
 ## Contributions
 
