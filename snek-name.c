@@ -75,20 +75,16 @@ snek_name_id_builtin(char *name, bool *keyword)
 static const char *
 snek_name_string_builtin(snek_id_t id)
 {
+	if (id >= SNEK_BUILTIN_END)
+		return NULL;
+
 	snek_bi_index_t i;
-	snek_bi_index_t k = 0;
-	snek_id_t bid = 1;
 
 	for (i = 0;
-	     i < sizeof (snek_builtin_names);
-	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+k]) + 1 + k)
-	{
-		if (id < SNEK_BUILTIN_END ? (bid == id) : SNEK_BUILTIN_ID(i) == id)
-			return snek_builtin_names_return(&snek_builtin_names[i+k]);
-		if (++bid == SNEK_BUILTIN_END)
-			k = 1;
-	}
-	return NULL;
+	     --id;
+	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i]) + 1)
+		;
+	return snek_builtin_names_return(&snek_builtin_names[i]);
 }
 
 snek_id_t
