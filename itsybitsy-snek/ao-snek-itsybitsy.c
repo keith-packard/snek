@@ -72,7 +72,9 @@ static uint8_t timer0_fract = 0;
  * 22	SCK	PB1			SCK
  */
 
-#define NUM_PIN	23
+#define NUM_PIN		23
+#define NUM_ADC		6
+#define FIRST_ADC	14
 
 static uint8_t	power[NUM_PIN];
 
@@ -208,6 +210,15 @@ static const PROGMEM uint8_t _pin_map[NUM_PIN] = {
 	[22] = MAKE_MAP(PB, 1),
 };
 
+static const PROGMEM uint8_t _adc_map[NUM_ADC] = {
+	[14 - FIRST_ADC] = 7,
+	[15 - FIRST_ADC] = 6,
+	[16 - FIRST_ADC] = 5,
+	[17 - FIRST_ADC] = 4,
+	[18 - FIRST_ADC] = 1,
+	[19 - FIRST_ADC] = 0,
+};
+
 static uint8_t
 pin_map(uint8_t pin)
 {
@@ -251,7 +262,7 @@ static uint8_t const PROGMEM ocr_reg_addrs[NUM_PIN] = {
 static bool
 has_adc(uint8_t p)
 {
-	return 14 <= p && p < 20;
+	return FIRST_ADC <= p && p < (FIRST_ADC + NUM_ADC);
 }
 
 static volatile uint8_t *
@@ -444,7 +455,7 @@ snek_builtin_read(snek_poly_t a)
 	set_dir(p, 0);
 
 	if (has_adc(p)) {
-		uint8_t pin = p - 14;
+		uint8_t pin = pgm_read_byte(&_adc_map[p - FIRST_ADC]);
 		ADMUX = (analog_reference << REFS0) | (pin & 7);
 		ADCSRA |= (1 << ADSC);
 		while (ADCSRA & (1 << ADSC))
