@@ -134,6 +134,13 @@ ISP=avrisp2
 load: $(HEX) snek-itsybitsy-install
 	./snek-itsybitsy-install -isp $(ISP) -hex $(HEX) load
 
+install: snek-itsybitsy-install $(HEX) snek-itsybitsy-install.1
+	install -d $(DESTDIR)$(BINDIR)
+	install snek-itsybitsy-install $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
+	install -d $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-itsybitsy-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
 	rm -f snek-itsybitsy-install
