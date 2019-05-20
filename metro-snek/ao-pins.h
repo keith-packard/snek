@@ -37,9 +37,6 @@
 #define USE_USB_FIFO		1
 #define HAS_BEEP		0
 
-#define AO_NEOPIXEL_PIN		30
-#define AO_NEOPIXEL_PORT	(&samd21_port_a)
-
 #define AO_SNEK_TIMER_FUNC_E	0
 #define AO_SNEK_TIMER_FUNC_F	0x80
 #define AO_SNEK_TIMER_FUNC_MASK	0x80
