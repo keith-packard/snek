@@ -85,7 +85,7 @@ avr_snek_builtin_names_return(const uint8_t *bits)
 }
 
 #define snek_builtin_names_return(a) avr_snek_builtin_names_return(a)
-#define snek_builtin_names_len(a) strlen_P(a)
+#define snek_builtin_names_len(a) strnlen_P(a, SNEK_BUILTIN_NAMES_MAX_LEN+1)
 
 #define SNEK_MEM_DECLARE(n) 	PROGMEM n
 #define SNEK_MEM_SIZE(m)	((snek_offset_t (*)(void *addr)) pgm_read_word(&(m)->size))
