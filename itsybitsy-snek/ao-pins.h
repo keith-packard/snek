@@ -20,21 +20,11 @@
 #define _AO_PINS_H_
 
 #define HAS_USB			1
-#define HAS_LOG			0
-#define TEENSY			0
-#define HAS_SERIAL_1		1
-#define USE_SERIAL_1_STDIN	1
-#define HAS_ADC			0
-#define PACKET_HAS_SLAVE	0
 #define HAS_BEEP		0
-#define HAS_EEPROM		0
-#define HAS_STORAGE_DEBUG	0
-#define SNEK_POOL		1024
 #define AO_FIFO_SIZE		64
 
 #define AVR_VCC_5V	       	1
 #define AVR_VCC_3V3		0
-#define IS_COMPANION		0
 
 #define SNEK_IO_GETC(file)	ao_usb_getc()
 #define SNEK_GETC()		getc(stdin)

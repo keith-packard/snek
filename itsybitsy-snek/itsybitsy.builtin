@@ -29,3 +29,4 @@ eeprom.show, -1
 eeprom.erase, 0
 #include <ao.h>
 #include <snek-avr.h>
+#define SNEK_POOL 1024
