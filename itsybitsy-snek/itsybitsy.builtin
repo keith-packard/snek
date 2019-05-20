@@ -1,0 +1,31 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+reset, 0
+time.sleep, 1
+time.monotonic, 0
+talkto, 1
+setpower, 1
+setleft, 0
+setright, 0
+on, 0
+off, 0
+read, 1
+stopall, 0
+# random.seed, 1
+# random.randrange, 1
+eeprom.write, 0
+eeprom.show, -1
+eeprom.erase, 0
+#include <ao.h>
+#include <snek-avr.h>

@@ -1,0 +1,53 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+SNEKITSYBITSY="$SHAREDIR/snek-itsybitsy-@SNEK_VERSION@.hex"
+
+action="fuseload"
+
+ISP=avrisp2
+
+mode=arg
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		fuse|load|fuseload)
+		    action="$i"
+		    ;;
+		-isp|--isp)
+		    mode=isp
+		    ;;
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		*)
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-itsybitsy.hex} {fuseload|load|fuse}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	isp)
+	    ISP="$i"
+	    mode=arg
+	    ;;
+	hex)
+	    SNEKITSYBITSY="$i"
+	    mode=arg
+	    ;;
+    esac
+done
+
+case "$action" in
+    fuse)
+	avrdude -c $ISP -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
+	;;
+    fuseload)
+	avrdude -c $ISP -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m -U flash:w:"${SNEKITSYBITSY}"
+	;;
+    load)
+	avrdude -V -c $ISP -p m32u4 -U flash:w:"${SNEKITSYBITSY}"
+	;;
+esac

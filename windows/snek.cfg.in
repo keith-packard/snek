@@ -24,6 +24,7 @@ files =../COPYING
 	../snek-mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex
 	../metro-snek/metro-snek-@SNEK_VERSION@.uf2
 	../crickit-snek/crickit-snek-@SNEK_VERSION@.uf2
+	../itsybitsy-snek/itsybitsy-snek-@SNEK_VERSION@.hex
 	../examples
 	snek.exe
 	altusmetrum.inf

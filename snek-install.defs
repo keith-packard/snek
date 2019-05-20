@@ -18,7 +18,8 @@ FIRMWARE ?= \
 	$(SNEK_ROOT)/snek-mega/snek-mega-$(SNEK_VERSION).hex \
 	$(SNEK_ROOT)/metro-snek/metro-snek-$(SNEK_VERSION).uf2 \
 	$(SNEK_ROOT)/crickit-snek/crickit-snek-$(SNEK_VERSION).uf2 \
-	$(SNEK_ROOT)/playground-snek/playground-snek-$(SNEK_VERSION).uf2
+	$(SNEK_ROOT)/playground-snek/playground-snek-$(SNEK_VERSION).uf2 \
+	$(SNEK_ROOT)/itsybitsy-snek/itsybitsy-snek-$(SNEK_VERSION).hex
 USBFIRMWARE ?= \
 	$(SNEK_ROOT)/snek-mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex
 
