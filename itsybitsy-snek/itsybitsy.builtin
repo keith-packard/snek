@@ -18,6 +18,7 @@ talkto, 1
 setpower, 1
 setleft, 0
 setright, 0
+onfor, 1
 on, 0
 off, 0
 read, 1

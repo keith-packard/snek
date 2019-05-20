@@ -424,7 +424,6 @@ snek_builtin_off(void)
 	return set_out(power_pin);
 }
 
-/*
 snek_poly_t
 snek_builtin_onfor(snek_poly_t a)
 {
@@ -433,7 +432,6 @@ snek_builtin_onfor(snek_poly_t a)
 	snek_builtin_off();
 	return a;
 }
-*/
 
 #define analog_reference 1
 
