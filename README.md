@@ -36,6 +36,13 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
+ * [Adafruit ItsyBitsy 5V](https://www.adafruit.com/product/3677)
+   port.  This device uses the Atmel ATmega 32u4 SoC which is similar
+   to the 328P, but has integrate USB support so it doesn't need an
+   external USB to serial converter. Getting a USB stack tucked into
+   the ROM took some squeezing, and I had to remove some functionality
+   (random numbers and pre-defined port names) to make it fit.
+
  * [Crickit FeatherWing](https://www.adafruit.com/product/3343) port.
    This device has built-in drivers for motors and other devices,
    along with convenient plugs for other devices. If you want to get
@@ -46,17 +53,6 @@ Here's some places that have seen recent work
    device has six groups of I/O pins, which made using simple numbers
    pretty challenging. There are names for all GPIO pins on all
    devices now.
- 
- * Documentation. [The Snek Programming Language](https://keithp.com/snek/snek.html)
-   manual is getting more usable. This document includes a tutorial
-   section for learning the language.
-
- * Packaging. Debian, General Linux, Windows and Mac OS X packages are
-   available. These packages include menu entries and icons to run the
-   host snek implementation and snekde in a terminal window along with
-   binaries for Duemilanove, Metro M0 Express and Crickit
-   FeatherWing. The Linux packages also include a shell script to
-   install snek-duino onto an Duemilanove.
 
 ## Build and Run!
 
