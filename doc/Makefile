@@ -52,4 +52,4 @@ upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) fonts $(SNEKDOC)
 
 clean::
-	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES)
+	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES) coderay-asciidoctor.css
