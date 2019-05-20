@@ -38,6 +38,12 @@ snek_float_to_poly(float f)
 	return (snek_poly_t) { .f = f };
 }
 
+snek_poly_t
+snek_soffset_to_poly(snek_soffset_t s)
+{
+	return snek_float_to_poly(s);
+}
+
 static bool
 snek_is_float(snek_poly_t v)
 {

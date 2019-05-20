@@ -757,6 +757,9 @@ snek_poly(const void *addr, snek_type_t type);
 snek_poly_t
 snek_float_to_poly(float f);
 
+snek_poly_t
+snek_soffset_to_poly(snek_soffset_t s);
+
 snek_type_t
 snek_poly_type(snek_poly_t v);
 

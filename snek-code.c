@@ -621,7 +621,7 @@ snek_in_step(snek_offset_t ip)
 	/* Get current index, save next index */
 	snek_poly_t *i_ref = snek_id_ref(snek_for_tmp(for_depth, 1), false);
 	snek_soffset_t i = snek_poly_get_soffset(*i_ref);
-	*i_ref = snek_float_to_poly(i + 1);
+	*i_ref = snek_soffset_to_poly(i + 1);
 
 	/* Fetch iterable */
 	snek_poly_t array = *snek_id_ref(snek_for_tmp(for_depth, 0), false);
@@ -640,7 +640,7 @@ snek_in_step(snek_offset_t ip)
 			value = snek_list_data(list)[(snek_offset_t) i];
 		break;
 	case snek_string:
-		value = snek_string_get(snek_poly_to_string(array), snek_float_to_poly(i), false);
+		value = snek_string_get(snek_poly_to_string(array), snek_soffset_to_poly(i), false);
 		break;
 	default:
 		snek_error_type_1(array);
