@@ -132,7 +132,7 @@ snek-itsybitsy-install: snek-itsybitsy-install.in
 ISP=avrisp2
 
 load: $(HEX) snek-itsybitsy-install
-	./snek-itsybitsy-install -isp $(ISP) -hex $(HEX) load
+	./snek-itsybitsy-install -quick -isp $(ISP) -hex $(HEX) load
 
 install: snek-itsybitsy-install $(HEX) snek-itsybitsy-install.1
 	install -d $(DESTDIR)$(BINDIR)

@@ -10,6 +10,8 @@ ISP=usbtiny
 
 mode=arg
 
+verify=""
+
 for i in "$@"; do
     case "$mode" in
 	arg)
@@ -22,6 +24,9 @@ for i in "$@"; do
 		    ;;
 		-hex|--hex)
 		    mode=hex
+		    ;;
+		-quick)
+		    verify="-V"
 		    ;;
 		*)
 		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex itsybitsy-snek.hex} {fuseload|load|fuse}" 1>&2
@@ -44,12 +49,12 @@ FUSES="-U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m"
 
 case "$action" in
     fuse)
-	avrdude -c $ISP -p m32u4 $FUSES
+	avrdude $verify -c $ISP -p m32u4 $FUSES
 	;;
     fuseload)
-	avrdude -c $ISP -p m32u4 $FUSES -U flash:w:"${SNEKITSYBITSY}"
+	avrdude $verify -c $ISP -p m32u4 $FUSES -U flash:w:"${SNEKITSYBITSY}"
 	;;
     load)
-	avrdude -c $ISP -p m32u4 -U flash:w:"${SNEKITSYBITSY}"
+	avrdude $verify -c $ISP -p m32u4 -U flash:w:"${SNEKITSYBITSY}"
 	;;
 esac
