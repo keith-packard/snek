@@ -326,20 +326,10 @@ snek_code_add_forward(snek_forward_t forward)
 	snek_code_add_op_offset(snek_op_forward, (snek_offset_t) forward);
 }
 
-static inline uint8_t
-bit(bool val, uint8_t pos)
-{
-	return val ? pos : 0;
-}
-
 void
-snek_code_add_slice(bool has_start, bool has_end, bool has_stride)
+snek_code_add_slice(uint8_t param)
 {
 	snek_code_add_op(snek_op_slice);
-	uint8_t param;
-	param = (bit(has_start, SNEK_OP_SLICE_START) |
-		   bit(has_end,   SNEK_OP_SLICE_END) |
-		   bit(has_stride, SNEK_OP_SLICE_STRIDE));
 	compile_extend(1, &param);
 }
 

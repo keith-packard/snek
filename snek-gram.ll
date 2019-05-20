@@ -431,10 +431,10 @@ expr-array-p	: OS
 				bool slice = value_pop().bools;
 				if (slice) {
 					snek_code_set_push(snek_code_prev_insn());
-					bool stride = value_pop().bools;
-					bool end = value_pop().bools;
-					bool start = value_pop().bools;
-					snek_code_add_slice(start, end, stride);
+					uint8_t stride = value_pop().bools * SNEK_OP_SLICE_STRIDE;
+					uint8_t end = value_pop().bools * SNEK_OP_SLICE_END;
+					uint8_t start = value_pop().bools * SNEK_OP_SLICE_START;
+					snek_code_add_slice(start | end | stride);
 				} else {
 					snek_code_add_op(snek_op_array);
 				}
