@@ -178,10 +178,9 @@ m2(math_gcd, gcdf)
 snek_poly_t
 snek_builtin_math_isclose(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 {
-	if (nposition != 2) {
-		snek_error("wrong number of args: wanted 2, got %d", nposition);
-		return SNEK_NULL;
-	}
+	if (nposition != 2)
+		return snek_error_args(2, nposition);
+
 	float	af = snek_poly_to_float(*args++);
 	float	bf = snek_poly_to_float(*args++);
 	float	rel_tol = 1e-6f;

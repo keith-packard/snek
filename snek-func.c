@@ -44,7 +44,7 @@ snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip)
 
 	if (nposition != func->nformal)
 	{
-		snek_error("wrong number of args: wanted %d, got %d", func->nformal, nposition);
+		snek_error_args(func->nformal, nposition);
 		return false;
 	}
 

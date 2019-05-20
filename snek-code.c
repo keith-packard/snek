@@ -556,8 +556,8 @@ snek_range_start(snek_offset_t ip)
 		}
 		break;
 	default:
-		snek_error("invalid range: %d", nactual);
 		snek_stack_drop(nactual);
+		snek_error_args(3, nactual);
 		return;
 	}
 
@@ -976,7 +976,7 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 	if (nformal < 0) {
 		snek_a = SNEK_BUILTIN_FUNCV(builtin)(nposition, nnamed, actuals);
 	} else if (nposition != nformal || nnamed) {
-		snek_error("wrong number of args: wanted %d, got %d", nformal, nposition);
+		snek_error_args(nformal, nposition);
 	} else {
 		switch (nformal) {
 		case 0:

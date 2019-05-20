@@ -107,6 +107,12 @@ snek_error_step(void)
 	return snek_error("zero step");
 }
 
+snek_poly_t
+snek_error_args(snek_soffset_t want, snek_soffset_t got)
+{
+	return snek_error("wrong number of args. wanted %d got %d", want, got);
+}
+
 #if SNEK_DEBUG
 void
 snek_panic(const char *message)
