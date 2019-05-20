@@ -505,6 +505,9 @@ snek_error_type_1(snek_poly_t a);
 snek_poly_t
 snek_error_args(snek_soffset_t want, snek_soffset_t got);
 
+snek_poly_t
+snek_error_syntax(char *where);
+
 #if SNEK_DEBUG
 void
 snek_panic(const char *message);
