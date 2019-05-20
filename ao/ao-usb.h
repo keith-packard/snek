@@ -27,6 +27,10 @@
 int
 ao_usb_putc(char c, FILE *file);
 
+/* Try to read one char from USB */
+int
+ao_usb_pollchar(void);
+
 /* Get one character from the USB input queue */
 int
 ao_usb_getc(void);
