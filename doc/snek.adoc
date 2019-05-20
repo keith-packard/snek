@@ -2201,6 +2201,55 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
 
 [%nonfacing]
 [appendix]
+= Snek on Adafruit ItsyBitsy
+
+Snek for the Adafruit ItsyBitsy includes the Common System, GPIO
+(without the `neopixel` function), and EEPROM
+functions. Snek doesn't provide names for the GPIO pins, so you'll
+have to use the numbers directly:(((ItsyBitsy)))
+
+0-13::
+Digital input and output pins, labeled D0-D13 on the board. When used
+as input pins, Snek applies a pull-up resistor to the pin so that a
+disconnected pin will read as 1.
+
+14-19::
+Analog input and Digital output pins, labeled A0-A5 on the board. When
+used as input pins, Snek will return a value from 0-1 indicating the
+ratio of the pin voltage to 5V.
+
+20, 21, 22::
+Additional digital input and output pins, labeled MISO, MOSI and SCK
+on the board. These work just like pins 0-13.
+
+Snek fills the ATMega 32u4 flash completely leaving no space for the
+usual serial boot loader, so installing Snek requires a programming
+puck, such as the USBTiny device.
+
+On Linux, the snek installation includes a shell script,
+snek-itsybitsy-install, to install the binary using 'avrdude'. Read the
+snek-itsybitsy-install manual (also included in the installation) for more
+information.
+
+On other hosts, you'll need to install avrdude. Once you've done that, there
+are two steps to getting snek installed on the device.
+
+ 1. Set the 'fuses' on the target device. This sets the start address
+    back to the begining of memory instead of the boot loader, and
+    then has the device leave the eeprom contents alone when
+    reflashing. That means you won't lose your snek program when
+    updating the firmware.
++
+[source]
+$ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
++
+ 2. Install the snek binary.
++
+[source,subs="attributes+"]
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy-snek-{version}.hex
+
+[%nonfacing]
+[appendix]
 = Snek on Arduino Mega
 
 Snek for the Mega includes the Common System, EEPROM, GPIO and math
