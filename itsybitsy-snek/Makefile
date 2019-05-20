@@ -114,7 +114,7 @@ SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 SRC=$(SNEK_SRC)
 OBJ=$(SRC:.c=.o)
 
-all: $(HEX)
+all: $(HEX) snek-itsybitsy-install
 
 $(HEX): $(ELF)
 
