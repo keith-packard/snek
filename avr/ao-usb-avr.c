@@ -66,9 +66,7 @@ _ao_usb_set_ep0(void)
 		  (0 << TXINE));				/* Disable IN interrupt */
 
 	ao_usb_address = 0;
-	ao_usb_ep0_in_len = 0;
 	ao_usb_ep0_in_pending = false;
-	ao_usb_ep0_out_len = 0;
 }
 
 static void
@@ -98,7 +96,7 @@ _ao_usb_set_configuration(void)
 
 	/* Set the OUT max packet size, double buffered */
 	UENUM = AO_USB_OUT_EP;
-	UECONX |= (1 << EPEN);					/* Enable */
+	UECONX = (1 << EPEN);					/* Enable */
 
 	UECFG0X = ((2 << EPTYPE0) |				/* Bulk */
 		   (0 << EPDIR));				/* Out */
@@ -107,9 +105,9 @@ _ao_usb_set_configuration(void)
 		   (1 << EPBK0) |				/* Double bank */
 		   (1 << ALLOC));				/* Allocate */
 
-	UEIENX |= (1 << RXOUTE);				/* Enable OUT interrupt */
+	UEIENX = (1 << RXOUTE);				/* Enable OUT interrupt */
 
-	ao_usb_running = 1;
+	ao_usb_running = true;
 }
 
 ISR(USB_GEN_vect)
@@ -192,27 +190,18 @@ _ao_usb_ep0_fill(uint8_t len)
 }
 
 static void
-ao_usb_ep0_queue_byte(uint8_t a)
-{
-	ao_usb_ep0_in_buf[ao_usb_ep0_in_len++] = a;
-}
-
-static void
 _ao_usb_ep0_setup(void)
 {
 	/* Pull the setup packet out of the fifo */
 	ao_usb_ep0_out_data = (uint8_t *) &ao_usb_setup;
 	ao_usb_ep0_out_len = 8;
 	_ao_usb_ep0_fill(8);
-	if (ao_usb_ep0_out_len != 0)
-		return;
 
 	ao_usb_ep0_in_data = ao_usb_ep0_in_buf;
 	ao_usb_ep0_in_len = 0;
 	switch(ao_usb_setup.request) {
 	case AO_USB_REQ_GET_STATUS:
-		ao_usb_ep0_queue_byte(0);
-		ao_usb_ep0_queue_byte(0);
+		ao_usb_ep0_in_len = 2;
 		break;
 	case AO_USB_REQ_SET_ADDRESS:
 		ao_usb_address = ao_usb_setup.value;
@@ -221,13 +210,13 @@ _ao_usb_ep0_setup(void)
 		ao_usb_get_descriptor(ao_usb_setup.value);
 		break;
 	case AO_USB_REQ_GET_CONFIGURATION:
-		ao_usb_ep0_queue_byte(0);
+		ao_usb_ep0_in_len = 1;
 		break;
 	case AO_USB_REQ_SET_CONFIGURATION:
 		_ao_usb_set_configuration();
 		break;
 	case AO_USB_REQ_GET_INTERFACE:
-		ao_usb_ep0_queue_byte(0);
+		ao_usb_ep0_in_len = 1;
 		break;
 	case AO_USB_REQ_SET_INTERFACE:
 		break;
