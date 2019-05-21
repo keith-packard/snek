@@ -48,7 +48,7 @@ macosx: $(MACOSX_FILES)
 	rm -rf macosx
 	mkdir -p macosx/examples
 
-ifneq ($(strip $(SNEKMAC)),)
+ifeq ($(strip $(SNEKMAC)),)
 snek-bits:
 	echo 'no snek app'
 else
