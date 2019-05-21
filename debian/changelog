@@ -1,3 +1,13 @@
+snek (0.98-1) unstable; urgency=medium
+
+  * 0.98 upstream release
+  * Arduino Mega port
+  * Circuit Playground Express port
+  * ItsyBitsy port
+  * NeoPixel driver
+
+ -- Keith Packard <keithp@keithp.com>  Mon, 20 May 2019 16:56:09 -0700
+
 snek (0.97-1) unstable; urgency=medium
 
   * 0.97 upstream release
