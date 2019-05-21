@@ -401,7 +401,8 @@ class EditWin:
 
     def set_cursor(self):
         p = self.point_to_cursor(self.point)
-        self.window.move(p[1] - self.top_line, p[0])
+        col = min(self.cols - 1, p[0])
+        self.window.move(p[1] - self.top_line, col)
         self.window.refresh()
 
     # Find the indent of the specified line
