@@ -55,7 +55,7 @@ https://keithp.com
 
 Teaching computer programming to students in the 10-14 age range
 offers some interesting challenges. Graphical languages which
-construct programs from elements dragged with a mouse or touchpad can
+construct programs from elements dragged with a mouse or touch-pad can
 be frustratingly slow. These languages don't develop portable skills
 usable with more advanced languages. Sophisticated languages like C,
 Java and even Python are so large as to overwhelm the novice with rich
@@ -2155,8 +2155,21 @@ any work.
 === Loading and Saving Programs to the Host
 
 You can also save and load programs to the host file system. Both of
-these commands prompt for a filename, which you can enter with the
-keyboard.
+these commands prompt for a filename using a file dialog. At the top
+of the dialog is the filename to use. The rest of the dialog contains
+directories and files within the same directory as the
+filename. Directories are enclosed in `[` `]`.
+
+Using the arrow keys replaces the filename with the highlighted
+name. You can also edit the filename using backspace and entering a
+new name.
+
+Select a filename by pressing enter. If the name is a directory,
+then the contents of that directory will replace the list of
+directories and files in the dialog. If the name is a file, then that
+will be used for the load or save operation.
+
+To quit from the dialog and skip loading or saving a file, press Escape.
 
 [%nonfacing]
 [appendix]
@@ -2187,9 +2200,9 @@ information.
 On other hosts, you'll need to install avrdude. Once you've done that, there
 are two steps to getting snek installed on the device.
 
- 1. Set the 'fuses' on the target device. This sets the start address back to the begining of
+ 1. Set the 'fuses' on the target device. This sets the start address back to the beginning of
     memory instead of the boot loader, and then has the device leave the eeprom contents alone when
-    reflashing. That means you won't lose your snek program when updating the firmware.
+    re-flashing. That means you won't lose your snek program when updating the firmware.
 +
 [source]
 $ avrdude -F -V -c usbtiny -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
@@ -2232,9 +2245,9 @@ On other hosts, you'll need to install avrdude. Once you've done that, there
 are two steps to getting snek installed on the device.
 
  1. Set the 'fuses' on the target device. This sets the start address
-    back to the begining of memory instead of the boot loader, and
+    back to the beginning of memory instead of the boot loader, and
     then has the device leave the eeprom contents alone when
-    reflashing. That means you won't lose your snek program when
+    re-flashing. That means you won't lose your snek program when
     updating the firmware.
 +
 [source]

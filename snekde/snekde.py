@@ -21,6 +21,8 @@ import threading
 import serial
 import serial.tools.list_ports
 
+from pathlib import Path, PurePath
+
 from curses import ascii
 
 stdscr = 0
@@ -41,6 +43,8 @@ snek_device = False
 
 snek_dialog_waiting = False
 
+snek_cur_file = None
+
 #snek_debug_file = open('log', 'w')
 
 #def snek_debug(message):
@@ -60,14 +64,6 @@ def my_getch(edit_win):
         c = edit_win.window.getch()
         if c == ord('\r'):
             c = ord('\n')
-        if c == 27:
-            c = edit_win.window.getch()
-            if c == ord('0'):
-                c = curses.KEY_F10
-            elif ord('1') <= c and c <= ord('9'):
-                c = curses.KEY_F1 + c - ord('1')
-            elif ord('a') <= c and c <= ord('z'):
-                c += 128
         snek_lock.acquire()
         if not snek_dialog_waiting:
             break
@@ -294,6 +290,7 @@ class EditWin:
         self.y = y
         self.window = curses.newwin(lines, cols, y, x)
         self.window.keypad(True)
+        self.window.notimeout(False)
 
     # Set contents, resetting state back to start
     
@@ -712,6 +709,7 @@ class ErrorWin:
         self.y = (snek_lines - self.nlines) // 2
         self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
         self.window.keypad(True)
+        self.window.notimeout(False)
         self.run_dialog()
 
     def repaint(self):
@@ -756,6 +754,7 @@ class GetTextWin:
         self.y = (snek_lines - self.nlines) // 2
         self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
         self.window.keypad(True)
+        self.window.notimeout(False)
 
     def repaint(self):
         self.window.border()
@@ -771,6 +770,136 @@ class GetTextWin:
         del self.window
         screen_repaint()
         return str(name, encoding='utf-8', errors='ignore')
+
+class GetFileWin:
+    """Prompt for a filename"""
+    label = ""
+    dir = ""
+    x = 0
+    y = 0
+    nlines = 20
+    ncols = 60
+    new = False
+    window = False
+    cur_ent = 1
+    file = ""
+    full_file = ""
+
+    def __init__(self, label, new=False):
+        global snek_cur_file
+        self.label = label
+        self.new = new
+        self.nlines = snek_lines - 2
+        self.ncols = snek_cols - 10
+        self.cur_ent = 1
+        self.top_ent = 0
+        self.x = (snek_cols - self.ncols) // 2
+        self.y = (snek_lines - self.nlines) // 2
+        self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
+        self.window.keypad(True)
+        self.window.notimeout(False)
+        if snek_cur_file:
+            self.dir = snek_cur_file.parent
+        else:
+            self.dir = Path().resolve()
+        self.get_files()
+        if snek_cur_file:
+            for i in range(len(self.files)):
+                if self.files[i] == snek_cur_file.name:
+                    self.set_ent(i)
+                    break
+
+    def get_files(self):
+        files = []
+        dirs = []
+        for f in self.dir.glob('*'):
+            if f.is_dir():
+                dirs += [f.name]
+            else:
+                files += [f.name]
+        dirs.sort()
+        files.sort()
+        self.files = ['..'] + dirs + files
+        self.file_offset = 0
+        self.cur_ent = 1
+        self.file = self.files[1]
+
+    def set_dir(self, dir):
+        self.dir = self.path.resolve()
+        self.get_files()
+        
+    def ent_line(self, i):
+        return 4 + i
+
+    def ents(self):
+        return self.nlines - 5
+
+    def set_ent(self, ent):
+        if 0 <= ent and ent < len(self.files):
+            self.cur_ent = ent
+            self.file = self.files[self.cur_ent]
+            if ent < self.file_offset:
+                self.file_offset = ent
+            elif ent >= self.file_offset + self.ents():
+                self.file_offset = ent - self.ents() + 1
+
+    def repaint(self):
+        self.window.border()
+        self.window.addstr(1, (self.ncols - len(self.label)) // 2, self.label)
+        self.path = self.dir / PurePath(self.file)
+        if self.file == '':
+            self.full_file = str(self.dir / PurePath('x'))[:-1]
+        else:
+            self.full_file = str(self.path)
+        self.window.addstr(2, 2, ' ' * (self.ncols - 3))
+        left = max(0, len(self.full_file) - 2 - self.ncols)
+        self.window.addstr(2, 2, self.full_file[left:])
+        for i in range(0,self.ents()):
+            f = self.file_offset + i
+            self.window.addstr(self.ent_line(i), 2, ' ' * (self.ncols - 3))
+            if f < len(self.files):
+                text = self.files[f]
+                if (self.dir / PurePath(text)).is_dir():
+                    text = '[' + text + ']'
+                text = text[0:self.ncols-3]
+                if f == self.cur_ent:
+                    self.window.addstr(self.ent_line(i), 2, text, curses.A_REVERSE)
+                else:
+                    self.window.addstr(self.ent_line(i), 2, text)
+
+    def set_cursor(self):
+        self.window.move(2, min(2 + len(self.full_file), self.ncols - 2))
+        self.window.refresh()
+
+    def run_dialog(self):
+        global snek_cur_file
+
+        while True:
+            self.repaint()
+            self.window.refresh()
+            ch = my_getch(self)
+            if ch == ord('\n'):
+                if not self.path.is_dir():
+                    break;
+                self.set_dir(self.path.resolve())
+            elif ch == curses.ascii.ESC or ch == curses.KEY_F4:
+                self.path = None
+                break
+            elif ch == curses.KEY_UP or ch == ord('p') & 0x1f:
+                self.set_ent(self.cur_ent - 1)
+            elif ch == curses.KEY_DOWN or ch == ord('n') & 0x1f:
+                self.set_ent(self.cur_ent + 1)
+            elif ch in (curses.ascii.BS, curses.KEY_BACKSPACE, curses.ascii.DEL):
+                if len(self.file) > 0:
+                    self.file = self.file[0:-1]
+            elif curses.ascii.isprint(ch):
+                self.file = self.file + chr(ch)
+            
+        del self.window
+        screen_repaint()
+        if self.path:
+            snek_cur_file = self.path
+        return self.path
 
 class GetPortWin:
     """Prompt for serial port"""
@@ -810,6 +939,7 @@ class GetPortWin:
         
         self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
         self.window.keypad(True)
+        self.window.notimeout(False)
 
     def paint_port(self, line, port):
         if line == self.curline:
@@ -915,6 +1045,7 @@ def screen_init(text):
     curses.noecho()
     curses.raw()
     stdscr.keypad(True)
+    stdscr.notimeout(False)
     (edit_lines, edit_y, repl_lines, repl_y) = screen_get_sizes()
     snek_edit_win = EditWin(edit_lines, snek_cols, edit_y, 0)
     if text:
@@ -966,8 +1097,10 @@ def snekde_put_text():
 
 def snekde_load_file():
     global snek_edit_win
-    dialog = GetTextWin("Load File", prompt="File:")
+    dialog = GetFileWin("Load File")
     name = dialog.run_dialog()
+    if not name:
+        return
     try:
         with open(name, 'r') as myfile:
             data = myfile.read()
@@ -976,9 +1109,14 @@ def snekde_load_file():
         ErrorWin("%s: %s" % (e.filename, e.strerror))
         
 def snekde_save_file():
-    global snek_edit_win
-    dialog = GetTextWin("Save File", prompt="File:")
+    global snek_edit_win, snek_cur_file
+    dialog = GetFileWin("Save File")
+    cur_file = snek_cur_file
     name = dialog.run_dialog()
+    if not name:
+        return
+    if name != cur_file and name.exists():
+        ErrorWin("%s: already exists" % str(name))
     try:
         with open(name, 'w') as myfile:
             myfile.write(snek_edit_win.text)
