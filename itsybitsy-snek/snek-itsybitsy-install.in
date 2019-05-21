@@ -49,10 +49,10 @@ FUSES="-U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m"
 
 case "$action" in
     fuse)
-	avrdude $verify -c $ISP -p m32u4 $FUSES
+	avrdude -V -c $ISP -p m32u4 -u $FUSES
 	;;
     fuseload)
-	avrdude $verify -c $ISP -p m32u4 $FUSES -U flash:w:"${SNEKITSYBITSY}"
+	avrdude -V -c $ISP -p m32u4 -u $FUSES && avrdude $verify -c $ISP -p m32u4 -U flash:w:"${SNEKITSYBITSY}"
 	;;
     load)
 	avrdude $verify -c $ISP -p m32u4 -U flash:w:"${SNEKITSYBITSY}"
