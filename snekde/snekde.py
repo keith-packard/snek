@@ -461,7 +461,7 @@ class EditWin:
             point = self.cursor_to_point((65536, pos[1]))
         self.point = point
 
-    # Move to begining of line
+    # Move to beginning of line
 
     def bol(self):
         pos = self.point_to_cursor(self.point)
@@ -472,6 +472,22 @@ class EditWin:
     def eol(self):
         pos = self.point_to_cursor(self.point)
         self.point = self.cursor_to_point((65536, pos[1]))
+
+    # Move to beginning of buffer
+
+    def bob(self):
+        self.point = 0
+
+    # Move to end of buffer
+
+    def eob(self):
+        self.point = len(self.text)
+
+    # Check whether in the last line of the buffer
+
+    def in_last_line(self):
+        end = self.point_to_cursor(len(self.text))
+        return self.point >= self.cursor_to_point((0, end[1]))
 
     def push_undo(self, point, operation):
         self.undo.append((point, operation, self.point, self.mark))
@@ -639,12 +655,10 @@ class EditWin:
 
     # Return the contents of the previous line
 
-    def prev_line(self):
+    def cur_line(self):
         pos = self.point_to_cursor(self.point)
-        if pos[1] == 0:
-            return ""
-        start = self.cursor_to_point((0, pos[1]-1))
-        end = self.cursor_to_point((0, pos[1]))
+        start = self.cursor_to_point((0, pos[1]))
+        end = self.cursor_to_point((65536, pos[1]))
         return self.text[start:end]
 
     def dispatch(self, ch):
@@ -1009,12 +1023,15 @@ def run():
         elif ch == curses.KEY_F6:
             snekde_save_file()
         else:
-            snek_current_window.dispatch(ch)
             if ch == ord('\n'):
                 if snek_current_window is snek_edit_win:
+                    snek_current_window.dispatch(ch)
                     snek_current_window.auto_indent()
                 elif snek_device:
-                    data = snek_repl_win.prev_line()
+                    data = snek_repl_win.cur_line()
+                    #
+                    # Trim off snek prompts
+                    #
                     while True:
                         if data[:2] == "> " or data[:2] == "+ ":
                             data = data[2:]
@@ -1022,7 +1039,19 @@ def run():
                             data = data[1:]
                         else:
                             break
+                    #
+                    # If we're not at the end of the buffer, copy
+                    # the line to the end
+                    #
+                    if not snek_repl_win.in_last_line():
+                        snek_repl_win.eob()
+                        snek_repl_win.insert_at_point(data)
+                    snek_repl_win.eob()
+                    snek_current_window.dispatch(ch)
+                    data += '\n'
                     snek_device.command(data,intr='')
+            else:
+                snek_current_window.dispatch(ch)
         prev_exit = False
 
 
