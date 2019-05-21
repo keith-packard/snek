@@ -2301,8 +2301,7 @@ $ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{versi
 = Snek on Metro M0 Express
 
 Snek for the Metro M0 Express includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek for
-the Metro M0 Express also runs on the Feather M0 boards. Snek provides
+(including the `neopixel` function), and EEPROM functions. Snek provides
 pre-defined variables for all of the GPIO pins:(((Metro M0
 Express)))(((Arduino)))
 
@@ -2330,6 +2329,43 @@ succession.
 Then, find the metro-snek-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Metro M0 file system.
+
+[%nonfacing]
+[appendix]
+= Snek on Feather M0 Express
+
+Snek for the Feather M0 Express includes the Common System, Math, GPIO
+(including the `neopixel` function), and EEPROM functions. Snek provides
+pre-defined variables for all of the GPIO pins:(((Feather M0
+Express)))(((Arduino)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
+
+SDA, SCL, SCK, MOSI, MISO::
+Additional Digital input and output pins. These work just like D0-D13.
+
+NEOPIXEL::
+The NeoPixel device installed on the board, which is connected to D8.
+
+RX, TX::
+RX is D0, TX is D1.
+
+The Adafruit Feather M0 Express board includes a boot loader which
+presents as a USB mass storage device with a FAT file system. You can
+get the board into this mode by connecting the board to your computer
+over USB and then pressing the reset button twice in quick
+succession.
+
+Then, find the feather-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Feather M0 file system.
 
 [%nonfacing]
 [appendix]
