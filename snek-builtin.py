@@ -27,7 +27,12 @@ class SnekBuiltin:
 
     def __init__(self, name, param, value):
         self.name = name
-        self.value = value
+        self.value = None
+        self.init = None
+        if value and value[0] == '=':
+            self.init = value[1:]
+        else:
+            self.value = value
         self.id = -1
         if param[0].isalpha():
             self.keyword = param
@@ -45,8 +50,19 @@ class SnekBuiltin:
     def is_value(self):
         return self.nformal == -2 and self.value is not None
 
+    def is_init(self):
+        return self.nformal == -2 and self.init is not None
+
     def is_func(self):
         return self.nformal >= -1
+
+    def kind_order(self):
+        if self.is_func():
+            return 0
+        elif self.keyword:
+            return 2
+        else:
+            return 1
 
     def value_order(self,other):
         if self.value is None and other.value is not None:
@@ -56,11 +72,11 @@ class SnekBuiltin:
         return 0
 
     def __lt__(self,other):
-        if self.nformal != other.nformal:
-            if self.is_func():
-                return True
-            if other.is_func():
-                return False
+        o = self.kind_order() - other.kind_order()
+        if o < 0:
+            return True
+        elif o > 0:
+            return False
         o = self.value_order(other)
         if o != 0:
             return o < 0
@@ -111,12 +127,27 @@ def load_builtins(filename):
             bits = line.split(",")
             value = None
             if len(bits) > 2:
-                value = bits[2].strip()
+                value = ",".join(bits[2:]).strip()
             add_builtin(bits[0].strip(), bits[1].strip(), value)
 
 def dump_headers(fp):
     for line in headers:
         fprint("%s" % line, file=fp)
+
+def dump_init(fp):
+    use_list_build = False
+    fprint("#define snek_init() {\\", file=fp)
+    for name in sorted(builtins):
+        if name.is_init():
+            if 'snek_list_build' in name.init:
+                use_list_build = True
+            fprint("    {\\", file=fp)
+            fprint("        snek_stack_push((%s));\\" % name.init, file=fp)
+            fprint("        *snek_id_ref(%s, true) = snek_stack_pop();\\" % name.cpp_name(), file=fp)
+            fprint("    }\\", file=fp)
+    fprint("}", file=fp)
+    if use_list_build:
+        fprint("#define SNEK_LIST_BUILD", file=fp)
 
 def dump_max_len(fp):
     max_len = 0
@@ -135,10 +166,10 @@ def dump_names(fp):
     total = 0
     for name in sorted(builtins):
         if name.keyword:
-            fprint("\t%s | 0x80, " % name.keyword, end='', file=fp)
+            fprint("\t%s, " % name.keyword, end='', file=fp)
+            total += 1
         else:
-            fprint("\t%d, " % name.id, end='', file=fp)
-        total += 1
+            fprint("\t", end='', file=fp)
         for c in name.name:
             fprint("'%c', " % c, end='', file=fp)
             total += 1
@@ -257,6 +288,8 @@ def builtin_main():
     dump_max_len(fp)
 
     dump_headers(fp)
+
+    dump_init(fp)
 
     fprint("#ifndef SNEK_BUILTIN_NFORMAL", file=fp)
     fprint("#define SNEK_BUILTIN_NFORMAL(b) ((b)->nformal)", file=fp)

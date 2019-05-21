@@ -27,7 +27,6 @@
 #include <ao-pins.h>
 #include <ao-arch.h>
 #include <ao-notask.h>
-#include <ao-serial.h>
 
 #define AO_MAX_VERSION		8
 
@@ -117,7 +116,11 @@ extern uint8_t ao_stdin_ready;
 #define AO_FIFO_SIZE	256
 #endif
 
+#if AO_FIFO_SIZE > 255
 typedef uint16_t fifo_t;
+#else
+typedef uint8_t fifo_t;
+#endif
 
 struct ao_fifo {
 	fifo_t	remove;

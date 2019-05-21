@@ -326,20 +326,10 @@ snek_code_add_forward(snek_forward_t forward)
 	snek_code_add_op_offset(snek_op_forward, (snek_offset_t) forward);
 }
 
-static inline uint8_t
-bit(bool val, uint8_t pos)
-{
-	return val ? pos : 0;
-}
-
 void
-snek_code_add_slice(bool has_start, bool has_end, bool has_stride)
+snek_code_add_slice(uint8_t param)
 {
 	snek_code_add_op(snek_op_slice);
-	uint8_t param;
-	param = (bit(has_start, SNEK_OP_SLICE_START) |
-		   bit(has_end,   SNEK_OP_SLICE_END) |
-		   bit(has_stride, SNEK_OP_SLICE_STRIDE));
 	compile_extend(1, &param);
 }
 
@@ -556,8 +546,8 @@ snek_range_start(snek_offset_t ip)
 		}
 		break;
 	default:
-		snek_error("invalid range: %d", nactual);
 		snek_stack_drop(nactual);
+		snek_error_args(3, nactual);
 		return;
 	}
 
@@ -621,7 +611,7 @@ snek_in_step(snek_offset_t ip)
 	/* Get current index, save next index */
 	snek_poly_t *i_ref = snek_id_ref(snek_for_tmp(for_depth, 1), false);
 	snek_soffset_t i = snek_poly_get_soffset(*i_ref);
-	*i_ref = snek_float_to_poly(i + 1);
+	*i_ref = snek_soffset_to_poly(i + 1);
 
 	/* Fetch iterable */
 	snek_poly_t array = *snek_id_ref(snek_for_tmp(for_depth, 0), false);
@@ -640,7 +630,7 @@ snek_in_step(snek_offset_t ip)
 			value = snek_list_data(list)[(snek_offset_t) i];
 		break;
 	case snek_string:
-		value = snek_string_get(snek_poly_to_string(array), snek_float_to_poly(i), false);
+		value = snek_string_get(snek_poly_to_string(array), snek_soffset_to_poly(i), false);
 		break;
 	default:
 		snek_error_type_1(array);
@@ -976,7 +966,7 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 	if (nformal < 0) {
 		snek_a = SNEK_BUILTIN_FUNCV(builtin)(nposition, nnamed, actuals);
 	} else if (nposition != nformal || nnamed) {
-		snek_error("wrong number of args: wanted %d, got %d", nformal, nposition);
+		snek_error_args(nformal, nposition);
 	} else {
 		switch (nformal) {
 		case 0:

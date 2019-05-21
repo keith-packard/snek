@@ -12,15 +12,14 @@
  * General Public License for more details.
  */
 
-#ifndef _SNECK_DUINO_H_
-#define _SNECK_DUINO_H_
+#ifndef _SNEK_AVR_H_
+#define _SNEK_AVR_H_
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
-#define SNEK_POOL	1024
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
 #define VALUE_STACK_SIZE	16
@@ -85,18 +84,8 @@ avr_snek_builtin_names_return(const uint8_t *bits)
 	return ret;
 }
 
-static inline int
-avr_snek_builtin_names_len(const char *a)
-{
-	int len = 0;
-
-	while (pgm_read_byte(a++))
-		len++;
-	return len;
-}
-
 #define snek_builtin_names_return(a) avr_snek_builtin_names_return(a)
-#define snek_builtin_names_len(a) avr_snek_builtin_names_len(a)
+#define snek_builtin_names_len(a) strnlen_P(a, SNEK_BUILTIN_NAMES_MAX_LEN+1)
 
 #define SNEK_MEM_DECLARE(n) 	PROGMEM n
 #define SNEK_MEM_SIZE(m)	((snek_offset_t (*)(void *addr)) pgm_read_word(&(m)->size))
@@ -105,34 +94,11 @@ avr_snek_builtin_names_len(const char *a)
 
 #define SNEK_MEMS_DECLARE(n)	PROGMEM n
 
-void
-snek_uart_init(void);
-
-int
-snek_uart_putchar(char c, FILE *stream);
-
-int
-snek_uart_getchar(FILE *stream);
-
 int
 snek_eeprom_getchar(FILE *stream);
 
-char
-snek_uart_getch(void);
-
-void
-_snek_uart_puts(const char *PROGMEM string);
-
-void
-snek_uart_putch(char c);
-
-#define snek_uart_puts(string) ({ static const char PROGMEM __string__[] = (string); _snek_uart_puts(__string__); })
-
-#define SNEK_IO_PUTS(s) snek_uart_puts(s)
 #define SNEK_IO_LINEBUF 80
-#define SNEK_IO_PUTC(c) snek_uart_putch(c)
-#define SNEK_IO_GETC(s) snek_uart_getch()
 
-extern FILE snek_duino_file;
+extern FILE snek_avr_file;
 
-#endif /* _SNEK_DUINO_H_ */
+#endif /* _SNEK_AVR_H_ */

@@ -251,7 +251,21 @@
 #define AO_SNEK_CHANNEL_23	AO_SNEK_TIMER_CH(2, AO_SNEK_TIMER_FUNC_F, AO_SNEK_TIMER_DEV_TCC)
 #define AO_SNEK_ADC_23		16
 
-#define AO_SNEK_NUM_PIN		24
+/* on-board neopixel */
+#define AO_SNEK_GPIO_24		(&samd21_port_a)
+#define AO_SNEK_PIN_24		27
+#define AO_SNEK_TIMER_24	NULL
+#define AO_SNEK_CHANNEL_24	0
+#define AO_SNEK_ADC_24		0xff
+
+/* off-board neopixel */
+#define AO_SNEK_GPIO_25		(&samd21_port_a)
+#define AO_SNEK_PIN_25		20
+#define AO_SNEK_TIMER_25	NULL
+#define AO_SNEK_CHANNEL_25	0
+#define AO_SNEK_ADC_25		0xff
+
+#define AO_SNEK_NUM_PIN		26
 
 #define LED_0_PORT		(&samd21_port_b)
 #define LED_0_PIN		22

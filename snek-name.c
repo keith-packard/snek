@@ -44,20 +44,30 @@ tyepdef uint32_t snek_bi_index_t;
 #endif
 #endif
 
+#define SNEK_BUILTIN_ID(i)	SNEK_BUILTIN_NAMES(i)
+
 static snek_id_t
 snek_name_id_builtin(char *name, bool *keyword)
 {
 	snek_bi_index_t i;
+	snek_bi_index_t k = 0;
+	snek_id_t id = 1;
 
 	for (i = 0;
 	     i < sizeof (snek_builtin_names);
-	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+1]) + 2)
+	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+k]) + 1 + k)
 	{
-		if (SNEK_BUILTIN_NAMES_CMP(name, (const char *) &snek_builtin_names[i+1]) == 0) {
-			snek_id_t id = SNEK_BUILTIN_NAMES(i);
-			*keyword = (id & 0x80);
-			return id & ~0x80;
+		if (SNEK_BUILTIN_NAMES_CMP(name, (const char *) &snek_builtin_names[i+k]) == 0) {
+			if (id >= SNEK_BUILTIN_END) {
+				id = SNEK_BUILTIN_ID(i);
+				*keyword = true;
+			} else {
+				*keyword = false;
+			}
+			return id;
 		}
+		if (++id == SNEK_BUILTIN_END)
+			k = 1;
 	}
 	return 0;
 }
@@ -65,16 +75,16 @@ snek_name_id_builtin(char *name, bool *keyword)
 static const char *
 snek_name_string_builtin(snek_id_t id)
 {
+	if (id >= SNEK_BUILTIN_END)
+		return NULL;
+
 	snek_bi_index_t i;
 
 	for (i = 0;
-	     i < sizeof (snek_builtin_names);
-	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+1]) + 2)
-	{
-		if (SNEK_BUILTIN_NAMES(i) == id)
-			return snek_builtin_names_return(&snek_builtin_names[i+1]);
-	}
-	return NULL;
+	     --id;
+	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i]) + 1)
+		;
+	return snek_builtin_names_return(&snek_builtin_names[i]);
 }
 
 snek_id_t

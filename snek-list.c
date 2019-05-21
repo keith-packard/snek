@@ -290,6 +290,19 @@ snek_list_imm(snek_offset_t size, snek_list_type_t type)
 	return snek_list_to_poly(list);
 }
 
+#ifdef SNEK_LIST_BUILD
+snek_poly_t
+snek_list_build(snek_list_type_t type, snek_offset_t size, ...)
+{
+	va_list args;
+	va_start(args, size);
+	snek_offset_t s = size;
+	while (s--)
+		snek_stack_push(va_arg(args, snek_poly_t));
+	return snek_list_imm(size, type);
+}
+#endif
+
 snek_list_t *
 snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 {

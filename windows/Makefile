@@ -21,7 +21,8 @@ SNEK_LOCAL_SRC = \
 SNEK_LOCAL_INC = snek-windows.h
 SNEK_LOCAL_BUILTINS = snek-windows.builtin ../snek-math.builtin
 
-WINDOWS_FILES=snek.exe snek.ico snekde.py ../doc/snek.pdf ../examples ../COPYING $(FIRMWARE)
+INF=altusmetrum.inf
+WINDOWS_FILES=snek.exe snek.ico snekde.py ../doc/snek.pdf ../examples ../COPYING $(FIRMWARE) $(USBFIRMWARE) $(INF)
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -42,7 +43,7 @@ $(WINDOWS_INSTALL): $(WINDOWS_FILES) snek.cfg
 	pynsist snek.cfg
 
 snek.cfg: snek.cfg.in ../snek-install.defs ../snek.defs
-	$(SNEK_SED) snek.cfg.in > $@
+	for i in $(FIRMWARE); do echo "	$$i"; done | sed '/@SNEK_FIRMWARE@/r /dev/stdin' snek.cfg.in | sed '/@SNEK_FIRMWARE/d' | $(SNEK_SED) > $@
 
 snek.exe: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)

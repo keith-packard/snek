@@ -6,8 +6,8 @@ vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.builtin $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
-SNEK_VERSION = 0.97
-SNEK_DATE = 2019-04-22
+SNEK_VERSION = 0.98
+SNEK_DATE = 2019-05-19
 
 SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
@@ -46,7 +46,7 @@ SNEK_BUILTINS = \
 	$(SNEK_ROOT)/snek-base.builtin \
 	$(SNEK_LOCAL_BUILTINS)
 
-SNEK_WARNINGS = \
+SNEK_MOST_WARNINGS =  \
 	-Wall \
 	-Wextra \
 	-Wpointer-arith \
@@ -57,7 +57,13 @@ SNEK_WARNINGS = \
 	-Warray-bounds \
 	-Wshadow
 
-SNEK_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) $(SNEK_WARNINGS) -DSNEK_VERSION='"$(SNEK_VERSION)"'
+SNEK_WARNINGS = \
+	$(SNEK_MOST_WARNINGS) \
+	-Wimplicit-fallthrough
+
+SNEK_BASE_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) -DSNEK_VERSION='"$(SNEK_VERSION)"'
+
+SNEK_CFLAGS = $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)
 
 SNEK_SED = sed \
 	-e 's;@ICONDIR@;$(ICONDIR);g' \

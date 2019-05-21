@@ -171,14 +171,14 @@ snek_parse(void)
 		case parse_return_success:
 			return snek_parse_success;
 		case parse_return_end:
-			snek_error_0("Syntax error at end of file.");
+			snek_error_syntax("EOF");
 			return snek_parse_error;
 		case parse_return_error:
 		case parse_return_oom:
 			break;
 		case parse_return_syntax:
 		default:
-			snek_error("Syntax error at \"%s\".", snek_lex_text);
+			snek_error_syntax(snek_lex_text);
 			{
 				token_t token;
 				for (;;) {

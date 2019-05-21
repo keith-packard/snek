@@ -38,11 +38,11 @@ This document is released under the terms of the link:http://creativecommons.org
 Thanks to Jane Kenney-Norberg for building a science and technology
 education program using Lego. Jane taught my kids science in
 elementary school and Lego after school, and let me come and play
-too. I'm still there helping teach, even though my kids are nearly
-done with their undergraduate degrees.
+too. I'm still there helping and teaching, even though my kids are
+nearly done with their undergraduate degrees.
 
 Thanks to Christopher Reekie and Henry Gillespie who are both students
-and student-teacher in Jane's program and who have both helped teach
+and student-teacher in Jane's program and who have helped teach
 Arduino programming using Lego robots. Christopher has also been
 helping design and test Snek.
 
@@ -55,12 +55,12 @@ https://keithp.com
 
 Teaching computer programming to students in the 10-14 age range
 offers some interesting challenges. Graphical languages which
-construct programs from elements manipulated with a pointing device
-can become frustratingly slow to create code. These languages don't
-develop portable skills to bring to more advanced languages.
-Sophisticated languages like C, Java and even Python are so large as
-to overwhelm the novice with rich semantics like “objects” and other
-higher level programming constructs.
+construct programs from elements dragged with a mouse or touch-pad can
+be frustratingly slow. These languages don't develop portable skills
+usable with more advanced languages. Sophisticated languages like C,
+Java and even Python are so large as to overwhelm the novice with rich
+semantics like “objects” and other higher level programming
+constructs.
 
 In days long past, beginning programmers were usually presented with
 microcomputers running very small languages, like BASIC, Forth or
@@ -83,19 +83,20 @@ compiler running on a separate desktop or laptop system.
 
 I brought Arduino systems into the classroom about five years ago. The
 hardware was fabulous and we built a number of fun robots. After a
-couple of years, I built some custom Arduino hardware for our needs --
-I used screw terminals for all of the inputs and outputs, stuck a
-battery pack on the back and included four high-current H-bridge motor
-controllers to help animate the robots. They're still Arduino's though,
-there's an ATmega 328P processor and a FTDI USB to serial converter,
-so we were able to use the stock Arduino development tools.
+couple of years, I built some custom Arduino hardware for our needs—
+with screw terminals for the inputs and outputs, a battery pack on the
+back and high-current motor controllers to animate the robots. They're
+still Arduino's though (with an ATmega 328P processor and a FTDI
+USB to serial converter) so we can use the stock Arduino
+development tools.
 
 Students struggled with the complex syntax, especially typing the
 obscure punctuation marks and remembering to insert semicolons. I
 often heard comments like “this takes too much typing” and “why is it
 so picky about semicolons”. The lack of an interactive mode made
-experimenting a bit slower than other systems. There have been
-students who got past the obstacles and figured out how to use them:
+experimenting a bit slower than our Logo systems. In spite of the
+difficulties, there have been students who have done interesting
+projects with them:
 
  * Chris Reekie an 11th-grade student-teacher in the program, took the
    line follower robot design and re-wrote the Arduino firmware to
@@ -108,11 +109,11 @@ students who got past the obstacles and figured out how to use them:
    and communication with an attached 7-segment display. We've shown
    this device at numerous local Lego shows.
 
- * Mark Fernandez, now a Mechanical Engineering student at Washington
+ * Mark Fernandez, now a mechanical engineering student at Washington
    University in St Louis, built a solar energy system that
    automatically tracked the sun while he was in eighth grade.
 
-The hardware was just what we wanted, a few students were using the
+The hardware was just what we wanted, and a few students have used
 skills learned in the program later on, but the software was not aimed
 at young students just starting to write code. Instead of throwing out
 our existing systems and starting over, I wondered if we couldn't keep
@@ -685,7 +686,7 @@ Digital pin 13:(((talkto)))(((on)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *talkto(13)*
+> *talkto(D13)*
 > *on()*
 ----
 
@@ -693,7 +694,7 @@ Let's get a bit fancier and blink it:(((time.sleep)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *talkto(13)*
+> *talkto(D13)*
 > *while True:*
 +     *onfor(.5)*
 +     *time.sleep(.5)*
@@ -702,14 +703,13 @@ Let's get a bit fancier and blink it:(((time.sleep)))
 ==== Hooking up a digital input
 
 Find a bit of wire to connect from Digital pin 1 to GND and let's
-control the LED with this primitive switch:(((listento)))(((off)))
+control the LED with this primitive switch:(((read)))(((off)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *listento(1)*
-> *talkto(13)*
+> *talkto(D13)*
 > *while True:*
-+     *if read():*
++     *if read(D1):*
 +         *on()*
 +     *else:*
 +         *off()*
@@ -725,23 +725,19 @@ Analog pin 0 and make the LED track the sensor:(((read)))(((onfor)))
 
 [source,subs="verbatim,quotes"]
 ----
-> *listento(14)*
-> *talkto(13)*
+> *talkto(D13)*
 > *while True:*
-+     *onfor(1-read())*
-+     *time.sleep(1-read())*
++     *onfor(1-read(A0))*
++     *time.sleep(1-read(A0))*
 ----
-
-Note that the Arduino analog pin A0 is called pin 14 in snek (A1 is
-pin 15, etc).
 
 ==== Controlling motors
 
 So far, we've only talked about using one pin at a time. Arduino motor
-controllers take two pins—one for speed and one for direction. Snek
+controllers take two pins—one for power and one for direction. Snek
 lets you tell it both pins at the same time and then provides separate
-functions to set the speed and direction. If you have a motor
-controller hooked to your board with pin 3 as speed and pin 2 for
+functions to set the power and direction. If you have a motor
+controller hooked to your board with pin 3 as power and pin 2 for
 direction you can run the motor at half power and have it alternate
 directions with:(((setpower)))(((setleft)))(((setright)))
 
@@ -1169,7 +1165,7 @@ value for _bound_ is ``–1``. Here are some examples:
 > *# Tuple of characters*
 > *a = ('a', 'b', 'c', 'd', 'e', 'f')*
 > *# With all default values, a[:] looks*
-> *# the same as a	*
+> *# the same as a*
 > *a[:]*
 ('a', 'b', 'c', 'd', 'e', 'f')
 > *# Reverse the Tuple*
@@ -1293,7 +1289,7 @@ variable, a list location or a dictionary location.(((assignment)))(((=)))
 
 _location_ ``+=``, ``–=``, ``*=``, ``/=``, ``//=``, ``%=``, ``**=``, ``&=``, ``|=``, ``^=``, ``<\<=``, ``>>=`` _value_::
 The Operation Assignment statements take the value of the left operand and
-the value of the left operand and performs the operation indicated by
+the value of the right operand and performs the operation indicated by
 the operator. Then it stores the result back in the location indicated
 by the left operand. There are some subtleties about this which are
 discussed in the Lists and Tuples section of the Datatypes chapter.
@@ -1921,9 +1917,6 @@ Set the current output pins. If _pin_ is a number, this sets both the
 Power and Direction pins. If _pin_ is a List or Tuple, then the first
 element sets the Power pin and the second sets the Direction pin.(((talkto)))
 
-=== `listento(` _pin_ `)`
-Sets the current input pin to _pin_.(((listento)))
-
 === `setpower(` _power_ `)`
 
 Sets the power level on the current Power pin to _power_. If the Power
@@ -1953,15 +1946,33 @@ Turns the current Power pin *off*.(((off)))
 Turns the current Power pin *on*, delays for _seconds_ and then
 turns the current Power pin *off*.(((onfor)))
 
-=== `read()`
+=== `read(` _pin_ `)`
 
-Returns the value of the current Input pin. If this is an analog pin,
-then `read()` returns a value from `0 to 1` (inclusive). If this a digital pin, then
-`read()` returns either `0` or `1`.(((read)))
+Returns the value of _pin_. If this is an analog pin, then `read`
+returns a value from `0 to 1` (inclusive). If this a digital pin, then
+`read` returns either `0` or `1`.(((read)))
 
 === `stopall()`
 
 Turns all pins off.(((stopall)))
+
+=== `neopixel(` _pixels_ `)`
+
+Programs a set of neopixel devices connected to the current Power
+pin. _pixels_ is a list or tuple, each element of which is a list
+or tuple of three numbers ranging from 0 to 1 for the desired red, green
+and blue intensity of the target neopixel.(((neopixel)))
+
+	> *talkto(NEOPIXEL)*
+	> *pixels = [(0.33, 0, 0), (0, 0.66, 0), (0, 0, 1)]*
+	> *neopixel(pixels)*
+
+This example programs three NeoPixel devices, the first one is set to
+one third intensity red, the second to two thirds intensity green and
+the last to full intensity blue. If there are additional neopixel
+devices connected, they will not be modified. If there are fewer
+devices connected than the data provided, the extra values will be
+ignored.
 
 == EEPROM built-in functions
 
@@ -1995,6 +2006,16 @@ Erase the eeprom.(((eeprom.erase)))
 
 Restart the Snek system, erasing all RAM contents. As part of the
 restart process, Snek will re-read any source code stored in eeprom.(((reset)))
+
+== Temperature Conversion Function
+
+This function is included in devices that have a built-in temperature
+sensor.
+
+=== `temperature(` _sensorvalue_ `)`
+
+The conversion function is pre-set with the parameters needed
+to convert from the temperature sensor value to degrees Celsius.
 
 == Curses built-in functions
 
@@ -2134,8 +2155,21 @@ any work.
 === Loading and Saving Programs to the Host
 
 You can also save and load programs to the host file system. Both of
-these commands prompt for a filename, which you can enter with the
-keyboard.
+these commands prompt for a filename using a file dialog. At the top
+of the dialog is the filename to use. The rest of the dialog contains
+directories and files within the same directory as the
+filename. Directories are enclosed in `[` `]`.
+
+Using the arrow keys replaces the filename with the highlighted
+name. You can also edit the filename using backspace and entering a
+new name.
+
+Select a filename by pressing enter. If the name is a directory,
+then the contents of that directory will replace the list of
+directories and files in the dialog. If the name is a file, then that
+will be used for the load or save operation.
+
+To quit from the dialog and skip loading or saving a file, press Escape.
 
 [%nonfacing]
 [appendix]
@@ -2143,13 +2177,20 @@ keyboard.
 
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
 functions. It does not include the Math functions. Snek provides
-pre-defined variables for all of the GPIO pins. The digital I/O pins
-are named D0 through D13. The analog I/O pins are named A0 through
-A5. You can use these in place of numbers for the GPIO functions.
+pre-defined variables for all of the GPIO pins:(((Duemilanove)))(((Arduino)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
 
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
-puck, such as the USBTiny device.(((Duemilanove)))(((Arduino)))
+puck, such as the USBTiny device.
 
 On Linux, the snek installation includes a shell script,
 snek-duino-install, to install the binary using 'avrdude'. Read the
@@ -2159,9 +2200,9 @@ information.
 On other hosts, you'll need to install avrdude. Once you've done that, there
 are two steps to getting snek installed on the device.
 
- 1. Set the 'fuses' on the target device. This sets the start address back to the begining of
+ 1. Set the 'fuses' on the target device. This sets the start address back to the beginning of
     memory instead of the boot loader, and then has the device leave the eeprom contents alone when
-    reflashing. That means you won't lose your snek program when updating the firmware.
+    re-flashing. That means you won't lose your snek program when updating the firmware.
 +
 [source]
 $ avrdude -F -V -c usbtiny -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
@@ -2173,59 +2214,251 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
 
 [%nonfacing]
 [appendix]
+= Snek on Adafruit ItsyBitsy
+
+Snek for the Adafruit ItsyBitsy includes the Common System, GPIO
+(without the `neopixel` function), and EEPROM
+functions. Snek provides pre-defined variables for all of the the GPIO pins:(((ItsyBitsy)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
+
+MISO, MOSI, SCK::
+Additional digital input and output pins. These work just like D0-D13.
+
+Snek fills the ATMega 32u4 flash completely leaving no space for the
+usual serial boot loader, so installing Snek requires a programming
+puck, such as the USBTiny device.
+
+On Linux, the snek installation includes a shell script,
+snek-itsybitsy-install, to install the binary using 'avrdude'. Read the
+snek-itsybitsy-install manual (also included in the installation) for more
+information.
+
+On other hosts, you'll need to install avrdude. Once you've done that, there
+are two steps to getting snek installed on the device.
+
+ 1. Set the 'fuses' on the target device. This sets the start address
+    back to the beginning of memory instead of the boot loader, and
+    then has the device leave the eeprom contents alone when
+    re-flashing. That means you won't lose your snek program when
+    updating the firmware.
++
+[source]
+$ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
++
+ 2. Install the snek binary.
++
+[source,subs="attributes+"]
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy-snek-{version}.hex
+
+[%nonfacing]
+[appendix]
+= Snek on Arduino Mega
+
+Snek for the Mega includes the Common System, EEPROM, GPIO and math
+functions. Snek provides pre-defined variables for all of the GPIO
+pins:(((Arduino Mega)))
+
+D0-D53::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0-A15::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
+
+Snek fits comfortably in the ATmega2560 flash flash, leaving plenty of
+space for the serial boot loader, so re-installing Snek can be done
+over USB. However, the default firmware loaded on the ATMega16u2 that
+acts as USB to serial converter doesn't do any XON/XOFF flow control
+and so that should be replaced before installing Snek as Snekde will
+not get or put source code successfully without it.
+
+On Linux, the snek installation includes a shell script,
+snek-mega-install, to install the binary using 'avrdude'. Read the
+snek-mega-install manual (also included in the installation) for more
+information.
+
+On other hosts, you'll need to install avrdude. Once you've done that,
+you can use it to get snek installed on the device. Because the EEPROM
+fuse bit can't be set this way, when you do this, any snek program
+stored on the device will be erased. Find out what port the Mega is
+connected to, use that as the value for `<port>` and then run avrdude as follows:
+
+[source,subs="attributes+"]
+$ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{version}.hex:i
+
+[%nonfacing]
+[appendix]
 = Snek on Metro M0 Express
 
-Snek for the Metro M0 Express includes the Common System, Math, GPIO,
-and EEPROM functions. Snek for the Metro M0 Express also runs on the
-Feather M0 boards. Snek provides pre-defined variables for all of the
-GPIO pins. The digital I/O pins are named D0 through D13. The analog
-I/O pins are named A0 through A5. You can use these in place of
-numbers for the GPIO functions.
+Snek for the Metro M0 Express includes the Common System, Math, GPIO
+(including the `neopixel` function), and EEPROM functions. Snek provides
+pre-defined variables for all of the GPIO pins:(((Metro M0
+Express)))(((Arduino)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
+
+SDA, SCL::
+Additional Digital input and output pins. These work just like D0-D13.
+
+NEOPIXEL::
+The NeoPixel device installed on the board.
 
 The Adafruit Metro M0 Express board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
 get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
-succession.(((Metro M0 Express)))(((Arduino)))
+succession.
 
 Then, find the metro-snek-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Metro M0 file system.
 
+[%nonfacing]
+[appendix]
+= Snek on Feather M0 Express
+
+Snek for the Feather M0 Express includes the Common System, Math, GPIO
+(including the `neopixel` function), and EEPROM functions. Snek provides
+pre-defined variables for all of the GPIO pins:(((Feather M0
+Express)))(((Arduino)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
+
+SDA, SCL, SCK, MOSI, MISO::
+Additional Digital input and output pins. These work just like D0-D13.
+
+NEOPIXEL::
+The NeoPixel device installed on the board, which is connected to D8.
+
+RX, TX::
+RX is D0, TX is D1.
+
+The Adafruit Feather M0 Express board includes a boot loader which
+presents as a USB mass storage device with a FAT file system. You can
+get the board into this mode by connecting the board to your computer
+over USB and then pressing the reset button twice in quick
+succession.
+
+Then, find the feather-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Feather M0 file system.
+
+[%nonfacing]
 [appendix]
 = Snek on Adafruit Crickit
 
-Snek for the Crickit includes the Common System, Math, GPIO, and
-EEPROM functions. Crickit-snek provides names for all of the I/O ports:
+Snek for the Crickit includes the Common System, Math, GPIO (including
+the `neopixel` function), and
+EEPROM functions. Crickit-snek provides names for all of the GPIO pins:(((Crickit)))
 
-DRIVE1 - DRIVE4:
+DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
 
-MOTOR1A, MOTOR1B, MOTOR2A, MOTOR2B:
-Bi-directional DC motor control, 1A max current. MOTOR1A and MOTOR2A
-are the speed controls, MOTOR1B and MOTOR2B are the direction
-controls. Note that there's a bit of firmware behind these pins as the
-TI DRV8833 chip has a slightly funky control mechanism.
+MOTOR1, MOTOR2::
+Bi-directional DC motor control, 1A max current. These are tuples with
+two values each. MOTOR1[0] and MOTOR2[0] are the power pins. MOTOR1[1]
+and MOTOR2[1] are the direction pins. Note that there's a bit of
+firmware behind these pins as the TI DRV8833 chip has a slightly funky
+control mechanism.
 
-SERVO1 - SERVO4:
-Digital I/O pins with PWM output
+SERVO1 - SERVO4::
+Digital pins with PWM output
 
-CAP1 - CAP4:
-Digital I/O pins labeled “Capacitive Touch” on the Crickit board.
+CAP1 - CAP4::
+Digital pins labeled “Capacitive Touch” on the Crickit board.
 
 SIGNAL1 - SIGNAL8::
-The Signal I/O pins. These provide digital output and analog
+The Signal pins. These provide digital output and analog
 input. SIGNAL5 - SIGNAL8 also provide PWM output
+
+NEOPIXEL::
+The single NeoPixel device installed on the board.
+
+NEOPIXEL1::
+The external NeoPixel connector.
 
 The Adafruit Crickit board includes a boot loader which
 presents as a USB mass storage device with a FAT file system. You can
 get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
-succession.(((Crickit)))
+succession.
 
 Then, find the crickit-snek-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
-Metro M0 file system.
+Crickit file system.
+
+[%nonfacing]
+[appendix]
+= Snek on Adafruit Circuit Playground Express
+
+Snek for the Circuit Playground Express includes the Common System,
+Math, GPIO (including the `neopixel` function), Temperature and EEPROM
+functions. Playground-snek provides names for all of the external
+connections as well as the built-in devices:
+
+A0 - A7::
+External GPIO connections, labeled around the perimeter of the board.
+
+A8 or LIGHT::
+Internal ambient light sensor. Returns a value indicating how
+much light is shining on the sensor.
+
+A9 or TEMP::
+Internal temperature sensor. Use the builtin `temperature` function to
+convert values read from this pin to degrees Celsius.
+
+D4 or BUTTONA::
+Connected to the momentary button labeled 'A'. 0 if not pressed,
+1 if pressed.
+
+D5 or BUTTONB::
+Connected to the momentary button labeled 'B'. 0 if not pressed,
+1 if pressed.
+
+D7 or SWITCH::
+Connected to the slide switch. 0 if slid right (towards the
+microphone), 1 if slid left (towards the speaker).
+
+D13 or LED::
+The red LED near the USB connector.
+
+D8 or NEOPIXEL::
+The string of 10 NeoPixel devices on the board.
+
+The Adafruit Circuit Playground Express board includes a boot loader
+which presents as a USB mass storage device with a FAT file
+system. You can get the board into this mode by connecting the board
+to your computer over USB, sliding the switch to the right (towards
+the microphone) and then pressing the reset button twice in quick
+succession.(((Playground)))
+
+Then, find the playground-snek-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+Circuit Playground Express file system.
 
 ifdef::backend-pdf[]
 [index]

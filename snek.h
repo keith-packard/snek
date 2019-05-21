@@ -421,7 +421,7 @@ void
 snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t forward, snek_offset_t target);
 
 void
-snek_code_add_slice(bool has_start, bool has_end, bool has_stride);
+snek_code_add_slice(uint8_t param);
 
 void
 snek_code_add_in_range(snek_id_t id, snek_offset_t nactual, uint8_t for_depth);
@@ -501,6 +501,12 @@ snek_error_type_2(snek_poly_t a, snek_poly_t b);
 
 snek_poly_t
 snek_error_type_1(snek_poly_t a);
+
+snek_poly_t
+snek_error_args(snek_soffset_t want, snek_soffset_t got);
+
+snek_poly_t
+snek_error_syntax(char *where);
 
 #if SNEK_DEBUG
 void
@@ -619,6 +625,11 @@ snek_list_mark(void *addr);
 
 void
 snek_list_move(void *addr);
+
+#ifdef SNEK_LIST_BUILD
+snek_poly_t
+snek_list_build(snek_list_type_t type, snek_offset_t size, ...);
+#endif
 
 /* snek-lex.c */
 
@@ -745,6 +756,9 @@ snek_poly(const void *addr, snek_type_t type);
 
 snek_poly_t
 snek_float_to_poly(float f);
+
+snek_poly_t
+snek_soffset_to_poly(snek_soffset_t s);
 
 snek_type_t
 snek_poly_type(snek_poly_t v);

@@ -15,8 +15,10 @@
 #include "snek.h"
 
 /* UART baud rate */
-#define UART_BAUD  38400
-#define UART_BAUD_SCALE	(((F_CPU / (UART_BAUD * 16UL))) - 1)
+#define UART_BAUD  		38400
+#define UART_BAUD_U2X(div)	((F_CPU / (div) / UART_BAUD - 1) / 2)
+#define UART_U2X		(UART_BAUD_U2X(4) <= 4095)
+#define UART_BAUD_SCALE		(UART_U2X ? UART_BAUD_U2X(4) : UART_BAUD_U2X(8))
 
 #define RINGSIZE	16
 
@@ -124,14 +126,22 @@ _snek_uart_xoff(void)
 		_snek_uart_flow_do();
 }
 
-ISR(USART_UDRE_vect)
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+#define UDRE_vect USART0_UDRE_vect
+#define RX_vect USART0_RX_vect
+#else
+#define UDRE_vect USART_UDRE_vect
+#define RX_vect USART_RX_vect
+#endif
+
+ISR(UDRE_vect)
 {
 	UCSR0B &= ~(1 << UDRIE0);
 	_snek_uart_xon();
 	_snek_uart_tx_start();
 }
 
-ISR(USART_RX_vect)
+ISR(RX_vect)
 {
 	uint8_t	c = UDR0;
 
@@ -207,7 +217,7 @@ snek_uart_init(void)
 	UBRR0H = (uint8_t) (UART_BAUD_SCALE >> 8);
 	UBRR0L = (uint8_t) (UART_BAUD_SCALE);
 	UCSR0A = ((1 << TXC0) |
-		  (0 << U2X0) |
+		  (UART_U2X << U2X0) |
 		  (0 << MPCM0));
 	UCSR0C = ((0 << UMSEL01) |
 		  (0 << UMSEL00) |

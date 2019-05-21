@@ -68,6 +68,17 @@ static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
 	},
 };
 
+#if SNEK_MEM_CACHE_NUM
+static const void ** const snek_mem_cache[] = {
+#if SNEK_MEM_CACHE_NUM > 0
+	(const void **) &SNEK_MEM_CACHE_0,
+#endif
+#if SNEK_MEM_CACHE_NUM > 1
+	(const void **) &SNEK_MEM_CACHE_1,
+#endif
+};
+#endif
+
 #define SNEK_ROOT	(sizeof (snek_root) / sizeof (snek_root[0]))
 
 #define SNEK_BUSY_SIZE		((SNEK_POOL + 31) / 32)
@@ -366,6 +377,10 @@ snek_collect(uint8_t style)
 	if (style == SNEK_COLLECT_FULL)
 		snek_collect_counts = 0;
 
+#if SNEK_MEM_CACHE_NUM
+	for (c = 0; c < SNEK_MEM_CACHE_NUM; c++)
+		*snek_mem_cache[c] = NULL;
+#endif
 	if (style == SNEK_COLLECT_FULL) {
 		chunk_low = top = 0;
 	} else {

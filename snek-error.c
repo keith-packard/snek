@@ -104,7 +104,19 @@ snek_error_type_1(snek_poly_t a)
 snek_poly_t
 snek_error_step(void)
 {
-	return snek_error("zero step");
+	return snek_error_0("zero step");
+}
+
+snek_poly_t
+snek_error_args(snek_soffset_t want, snek_soffset_t got)
+{
+	return snek_error("wrong number of args. wanted %d got %d", want, got);
+}
+
+snek_poly_t
+snek_error_syntax(char *where)
+{
+	return snek_error("Syntax error at \"%s\".", where);
 }
 
 #if SNEK_DEBUG

@@ -1,0 +1,54 @@
+.\"
+.\" Copyright © 2019 Keith Packard <keithp@keithp.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.TH SNEK-MEGA-INSTALL 1 "snek-mega-install" ""
+.SH NAME
+snek-mega-install \- Install Snek to Arduino Mega
+.SH SYNOPSIS
+.B "snek-mega-install" [OPTION]... [COMMAND]
+.SH DESCRIPTION
+.I snek-mega-install
+installs the Snek programming language on an ATmega2560 Arduino Mega
+board, including the ability to re-program the ATmega16u2 chip used as
+a usbserial converter.
+.SH OPTIONS
+.TP
+\-port <port>
+Specifies the serial port to use when programning the ATmega2560 chip,
+the default is '/dev/ttyACM0'.
+.TP
+\-isp <ISP model>
+Specifies the programmer to use when programming the ATmega16u2 chip
+used as a usb to serial converter, common options are 'usbtiny'
+and 'avrisp2'. The default is 'usbtiny'.
+.TP
+\-hex <snek.hex>
+Specifies the hex file to load to the board. The default is the
+currently installed version of Snek when programming the ATmega2560, and the
+currently installed version of the usbserial program when programming
+the ATmega16u2.
+.SH COMMANDS
+.TP
+snek
+Loads  Snek to the target device. This is the default command. Note
+that snekde will not be able to get/put programs to the device without
+also reprogramming the ATmega16u2 device used as a usb to serial
+converter on the Arduino Mega board.
+.TP
+usbserial
+Loads the updated usbserial converter firmware to the ATmega16u2
+device on the Arduino Mega board. This version supports the XON/XOFF
+flow control required for SnekDE to be able to successfully
+communicate with Snek running on the ATmega2560 processor.
+.SH AUTHOR
+Keith Packard

@@ -14,14 +14,12 @@ icon=snek.ico
 version=3.7.0
 
 [Include]
-pypi_wheels=pyserial==3.4
-	windows-curses==1.0
+pypi_wheels=windows-curses==1.0
+packages=serial
 
 files =../COPYING
 	../doc/snek.pdf
-	../snek-duino/snek-duino-@SNEK_VERSION@.hex
-	../metro-snek/metro-snek-@SNEK_VERSION@.uf2
-	../crickit-snek/crickit-snek-@SNEK_VERSION@.uf2
+	@SNEK_FIRMWARE@
 	../examples
 	snek.exe
 	altusmetrum.inf

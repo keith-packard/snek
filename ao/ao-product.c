@@ -21,10 +21,6 @@
 
 /* Defines which mark this particular AltOS product */
 
-const char ao_version[AO_MAX_VERSION] = AO_iVersion_STRING;
-const char ao_manufacturer[] = AO_iManufacturer_STRING;
-const char ao_product[] = AO_iProduct_STRING;
-
 #define LE_WORD(x)    ((x)&0xFF),((uint8_t) (((uint16_t) (x))>>8))
 
 #if HAS_USB

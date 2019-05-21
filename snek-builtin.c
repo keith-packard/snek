@@ -18,7 +18,7 @@
 snek_poly_t
 snek_builtin_len(snek_poly_t a)
 {
-	return snek_float_to_poly(snek_poly_len(a));
+	return snek_soffset_to_poly(snek_poly_len(a));
 }
 
 snek_poly_t
@@ -55,7 +55,7 @@ snek_builtin_ord(snek_poly_t a)
 {
 	if (snek_poly_type(a) != snek_string)
 		return snek_error_type_1(a);
-	return snek_float_to_poly(snek_poly_to_string(a)[0]);
+	return snek_soffset_to_poly(snek_poly_to_string(a)[0]);
 }
 
 snek_poly_t

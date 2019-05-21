@@ -24,7 +24,7 @@ endif
 
 SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
 
-SNEKS = posix/snek snek-duino/snek-duino-$(SNEK_VERSION).hex metro-snek/metro-snek-$(SNEK_VERSION).uf2 crickit-snek/crickit-snek-$(SNEK_VERSION).uf2
+SNEKS = posix/snek $(FIRMWARE)
 
 all: $(SNEKS)
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done

@@ -15,22 +15,24 @@
 SNEK_ROOT = ..
 SNEK_LOCAL_SRC = \
 	snek-duino.c \
-	snek-duino-eeprom.c \
+	snek-atmega-eeprom.c \
 	snek-io.c \
-	snek-duino-serial.c
+	snek-atmega-serial.c
 
-SNEK_LOCAL_INC = snek-duino.h
+SNEK_LOCAL_VPATH = $(SNEK_ROOT)/atmega
+SNEK_LOCAL_INC = $(SNEK_LOCAL_VPATH)/snek-atmega.h
 SNEK_LOCAL_BUILTINS = snek-duino.builtin
 
-
 include ../snek-install.defs
+
+SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
 BASE=snek-duino-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
-CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert
+CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
 	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7a0 \

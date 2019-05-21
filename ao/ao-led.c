@@ -140,31 +140,6 @@ ao_led_off(AO_LED_TYPE colors)
 }
 
 void
-ao_led_set(AO_LED_TYPE colors)
-{
-	AO_LED_TYPE i;
-	for (i = 0; i < N_LED; i++)
-		ao_gpio_set(ao_leds[i].port, ao_leds[i].pin, (colors >> i) & 1);
-}
-
-void
-ao_led_toggle(AO_LED_TYPE colors)
-{
-	AO_LED_TYPE i;
-	for (i = 0; i < N_LED; i++)
-		if (colors & (1 << i))
-			ao_gpio_set(ao_leds[i].port, ao_leds[i].pin, ~ao_gpio_get(ao_leds[i].port, ao_leds[i].pin));
-}
-
-void
-ao_led_for(AO_LED_TYPE colors, AO_TICK_TYPE ticks) 
-{
-	ao_led_on(colors);
-	ao_delay(ticks);
-	ao_led_off(colors);
-}
-
-void
 ao_led_init(void)
 {
 	AO_LED_TYPE	bit;
