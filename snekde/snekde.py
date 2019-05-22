@@ -1180,36 +1180,38 @@ def run():
     prev_exit = False
     while True:
         ch = snek_current_window.getch()
-        if ch == curses.KEY_F7 or ch == ord('o') & 0x1f or ch == curses.ascii.ESC:
-            if snek_current_window is snek_edit_win:
-                snek_current_window = snek_repl_win
-            else:
-                snek_current_window = snek_edit_win
-        elif ch == 3:
+        if ch == curses.ascii.ESC:
+            ch = snek_current_window.getch() | 0x80
+        if ch == 3:
             if snek_device:
                 snek_device.interrupt()
-        elif ch == curses.KEY_F1:
+        elif ch == curses.KEY_F1 or ch == ord('1') | 0x80:
             snekde_open_device()
-        elif ch == curses.KEY_F2:
+        elif ch == curses.KEY_F2 or ch == ord('2') | 0x80:
             if snek_device:
                 snekde_get_text()
             else:
                 ErrorWin("No device")
-        elif ch == curses.KEY_F3:
+        elif ch == curses.KEY_F3 or ch == ord('3') | 0x80:
             if snek_device:
                 snekde_put_text()
             else:
                 ErrorWin("No device")
-        elif ch == curses.KEY_F4:
+        elif ch == curses.KEY_F4 or ch == ord('4') | 0x80:
             if snek_edit_win.changed and not prev_exit:
                 ErrorWin("Unsaved changes, quit again to abandon them")
                 prev_exit = True
                 continue
             sys.exit(0)
-        elif ch == curses.KEY_F5:
+        elif ch == curses.KEY_F5 or ch == ord('5') | 0x80:
             snekde_load_file()
-        elif ch == curses.KEY_F6:
+        elif ch == curses.KEY_F6 or ch == ord('6') | 0x80:
             snekde_save_file()
+        elif ch == curses.KEY_F7 or ch == ord('7') | 0x80 or ch == ord('o') & 0x1f:
+            if snek_current_window is snek_edit_win:
+                snek_current_window = snek_repl_win
+            else:
+                snek_current_window = snek_edit_win
         elif ch == ord('\n'):
             if snek_current_window is snek_edit_win:
                 snek_current_window.dispatch(ch)
