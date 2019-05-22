@@ -2111,16 +2111,16 @@ on Linux or COM12 on Windows. If there isn't a device connected, it
 will say "<no device>".
 
 The cursor shows which pane you are currently working with. To switch
-between the editor and console panes, use the Page Up or Page Down
-keys. If you don't have either of those, or if they don't work, you
-can also use Ctrl-o (press and hold the control key, press the 'o' key
-and then release both).
+between the editor and console panes, use the F7 key. If you don't
+have one of these, or if it doesn't work, you can also use Esc-7 or
+Ctrl-o (press and hold the control key, press the 'o' key and then
+release both).
 
-You can move around the current pane with the arrow, home and end
-keys. Cut/paste/copy use Ctrl-x, Ctrl-v and Ctrl-c or Esc-x, Esc-v and
-Esc-c respectively. To mark a section of text for a Cut or Paste
-command, press Ctrl-space then use regular movement commands. The
-selected region of text will be highlighted.
+You can move around the current pane with the arrow, home, end and
+page-up/page-down keys. Cut/paste/copy use Ctrl-x, Ctrl-v and Ctrl-c
+or Esc-x, Esc-v and Esc-c respectively. To mark a section of text for
+a Cut or Paste command, press Esc-space or Ctrl-space then use regular
+movement commands. The selected region of text will be highlighted.
 
 === Connecting to a Device
 
@@ -2134,9 +2134,9 @@ ENTER key.
 Don't expect anything to happen in the lower pane just yet; you'll
 have to get the attention of the device first.
 
-Switch to the Console pane and press Ctrl-c to interrupt any currently
-running snek program. You should see the Snek prompt (“> ”) appear in
-the pane.
+Switch to the Console pane (F7) and press Ctrl-c to interrupt any
+currently running snek program. You should see the Snek prompt (“> ”)
+appear in the pane.
 
 === Getting and Putting Programs to a Device
 
