@@ -524,7 +524,7 @@ extern bool snek_abort;
 extern snek_frame_t	*snek_globals;
 extern snek_frame_t	*snek_frame;
 
-bool
+void
 snek_frame_mark_global(snek_offset_t name);
 
 bool

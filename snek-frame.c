@@ -123,18 +123,16 @@ snek_frame_lookup(snek_id_t id, bool insert)
 	return v;
 }
 
-bool
+void
 snek_frame_mark_global(snek_id_t id)
 {
 	if (snek_frame) {
 		snek_variable_t *v;
 
 		v = snek_variable_lookup(false, id, true);
-		if (!v)
-			return false;
-		v->value = SNEK_GLOBAL;
+		if (v)
+			v->value = SNEK_GLOBAL;
 	}
-	return true;
 }
 
 bool
