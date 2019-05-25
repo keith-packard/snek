@@ -89,6 +89,9 @@ snek_variable_lookup(bool globals, snek_id_t id, bool insert)
 	snek_frame_t	*frame;
 
 	frame = snek_pick_frame(globals);
+	if (!frame)
+		return NULL;
+
 	for (i = 0; i < frame->nvariables; i++) {
 		if (frame->variables[i].id == id)
 			return &frame->variables[i];
@@ -109,7 +112,7 @@ snek_frame_lookup(snek_id_t id, bool insert)
 {
 	snek_variable_t	*v = NULL;
 
-	if (snek_frame && (v = snek_variable_lookup(false, id, insert))) {
+	if ((v = snek_variable_lookup(false, id, insert))) {
 		if (!snek_is_global(v->value))
 			return v;
 	}
@@ -118,7 +121,7 @@ snek_frame_lookup(snek_id_t id, bool insert)
 		snek_globals->prev = SNEK_OFFSET_NONE;
 		snek_globals->code = SNEK_OFFSET_NONE;
 	}
-	if (snek_globals && (v = snek_variable_lookup(true, id, insert)))
+	if ((v = snek_variable_lookup(true, id, insert)))
 		return v;
 	return v;
 }
