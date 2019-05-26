@@ -919,8 +919,13 @@ snek_assign(snek_id_t id, snek_op_t op)
 		op = snek_op_assign;
 	}
 	for (;;) {
+		bool is_pure_assign = op == snek_op_assign;
+
 		if (id != SNEK_ID_NONE) {
-			ref = snek_id_ref(id, true);
+			if (!is_pure_assign && snek_frame && !snek_id_is_local(id))
+				ref = NULL;
+			else
+				ref = snek_id_ref(id, is_pure_assign);
 			if (!ref) {
 				snek_undefined(id);
 				return;
@@ -943,7 +948,7 @@ snek_assign(snek_id_t id, snek_op_t op)
 				return;
 		}
 
-		if (op == snek_op_assign)
+		if (is_pure_assign)
 			break;
 
 		/* Recover the two values popped from the stack so
