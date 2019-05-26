@@ -170,9 +170,9 @@ main (void)
 {
 	stderr = stdout = stdin = &snek_avr_file;
 	ao_usb_init();
-	port_init();
 
 	setjmp(snek_reset_buf);
+	port_init();
 	snek_init();
 	fprintf(stdout, "Welcome to snek " SNEK_VERSION "\n");
 	fflush(stdout);
