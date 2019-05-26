@@ -19,8 +19,14 @@ snek_frame_t	*snek_frame;
 
 static snek_frame_t *snek_pick_frame(bool globals)
 {
-	if (globals)
+	if (globals) {
+		if (!snek_globals) {
+			snek_globals = snek_alloc(sizeof (snek_frame_t));
+			snek_globals->prev = SNEK_OFFSET_NONE;
+			snek_globals->code = SNEK_OFFSET_NONE;
+		}
 		return snek_globals;
+	}
 	return snek_frame;
 }
 
@@ -116,14 +122,7 @@ snek_frame_lookup(snek_id_t id, bool insert)
 		if (!snek_is_global(v->value))
 			return v;
 	}
-	if (insert && !snek_globals) {
-		snek_globals = snek_alloc(sizeof (snek_frame_t));
-		snek_globals->prev = SNEK_OFFSET_NONE;
-		snek_globals->code = SNEK_OFFSET_NONE;
-	}
-	if ((v = snek_variable_lookup(true, id, insert)))
-		return v;
-	return v;
+	return snek_variable_lookup(true, id, insert);
 }
 
 void
