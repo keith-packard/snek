@@ -174,6 +174,9 @@ snek_parse(void)
 			snek_error_syntax("EOF");
 			return snek_parse_error;
 		case parse_return_error:
+			if (snek_interactive)
+				break;
+			return snek_parse_error;
 		case parse_return_oom:
 			break;
 		case parse_return_syntax:
