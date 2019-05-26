@@ -156,8 +156,6 @@ main(void)
 	printf("Welcome to snek " SNEK_VERSION "\n");
 	fflush(stdout);
 	ao_snek_running(false);
-	for (;;) {
-		snek_interactive = true;
+	for (;;)
 		snek_parse();
-	}
 }
