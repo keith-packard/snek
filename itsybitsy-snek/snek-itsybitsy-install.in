@@ -2,7 +2,10 @@
 
 SHAREDIR="@SHAREDIR@"
 
-SNEKITSYBITSY="$SHAREDIR/itsybitsy-snek-@SNEK_VERSION@.hex"
+SNEKITSYBITSYBASE5V="$SHAREDIR/itsybitsy"
+SNEKITSYBITSYBASE3V="$SHAREDIR/itsybitsy3v"
+SNEKITSYBITSYREST="-snek-@SNEK_VERSION@.hex"
+SNEKITSYBITSY="$SNEKITSYBITSYBASE5V""$SNEKITSYBITSYREST"
 
 action="fuseload"
 
@@ -22,6 +25,12 @@ for i in "$@"; do
 		-isp|--isp)
 		    mode=isp
 		    ;;
+		-3v)
+		    SNEKITSYBITSY="$SNEKITSYBITSYBASE3V""$SNEKITSYBITSYREST"
+		    ;;
+		-5v)
+		    SNEKITSYBITSY="$SNEKITSYBITSYBASE5V""$SNEKITSYBITSYREST"
+		    ;;
 		-hex|--hex)
 		    mode=hex
 		    ;;
@@ -29,7 +38,7 @@ for i in "$@"; do
 		    verify="-V"
 		    ;;
 		*)
-		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex itsybitsy-snek.hex} {fuseload|load|fuse}" 1>&2
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-3v} {-5v} {-hex itsybitsy-snek.hex} {fuseload|load|fuse}" 1>&2
 		      exit 1
 		      ;;
 	    esac

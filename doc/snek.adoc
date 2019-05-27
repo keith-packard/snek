@@ -2214,7 +2214,7 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
 
 [%nonfacing]
 [appendix]
-= Snek on Adafruit ItsyBitsy
+= Snek on Adafruit ItsyBitsy (both 3v and 5v boards)
 
 Snek for the Adafruit ItsyBitsy includes the Common System, GPIO
 (without the `neopixel` function), and EEPROM
@@ -2253,10 +2253,17 @@ are two steps to getting snek installed on the device.
 [source]
 $ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
 +
- 2. Install the snek binary.
+ 2. Install the snek binary. Pick the right voltage for your board as that
+    also sets the right clock speed. For 5v boards, install the 5v binary, which
+    is the one without 3v in the name:
 +
 [source,subs="attributes+"]
 $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy-snek-{version}.hex
++
+for 3v boards, use the 3v image.
++
+[source,subs="attributes+"]
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy3v-snek-{version}.hex
 
 [%nonfacing]
 [appendix]
