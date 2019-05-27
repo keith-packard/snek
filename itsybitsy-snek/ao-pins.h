@@ -30,4 +30,69 @@
 #define SNEK_GETC()		(snek_avr_file.get(stdin))
 #define fflush(x)		ao_usb_flush(x)
 
+#define PIN_MAP		{			\
+	[0] = MAKE_MAP(PD, 2),			\
+	[1] = MAKE_MAP(PD, 3),			\
+	[2] = MAKE_MAP(PD, 1),			\
+	[3] = MAKE_MAP(PD, 0),			\
+	[4] = MAKE_MAP(PD, 4),			\
+	[5] = MAKE_MAP(PC, 6),			\
+	[6] = MAKE_MAP(PD, 7),			\
+	[7] = MAKE_MAP(PE, 6),			\
+	[8] = MAKE_MAP(PB, 4),			\
+	[9] = MAKE_MAP(PB, 5),			\
+	[10] = MAKE_MAP(PB, 6),			\
+	[11] = MAKE_MAP(PB, 7),			\
+	[12] = MAKE_MAP(PD, 6),			\
+	[13] = MAKE_MAP(PC, 7),			\
+	[14] = MAKE_MAP(PF, 7),			\
+	[15] = MAKE_MAP(PF, 6),			\
+	[16] = MAKE_MAP(PF, 5),			\
+	[17] = MAKE_MAP(PF, 4),			\
+	[18] = MAKE_MAP(PF, 1),			\
+	[19] = MAKE_MAP(PF, 0),			\
+	[20] = MAKE_MAP(PB, 3),			\
+	[21] = MAKE_MAP(PB, 2),			\
+	[22] = MAKE_MAP(PB, 1),			\
+	}
+
+#define ADC_MAP		{			\
+		[14 - FIRST_ADC] = 7,		\
+		[15 - FIRST_ADC] = 6,		\
+		[16 - FIRST_ADC] = 5,		\
+		[17 - FIRST_ADC] = 4,		\
+		[18 - FIRST_ADC] = 1,		\
+		[19 - FIRST_ADC] = 0,		\
+	}
+
+#define OCR_REG_ADDRS	{				\
+		[3] = (uint8_t) (uintptr_t) &OCR0B,	\
+		[5] = (uint8_t) (uintptr_t) &OCR3AL,	\
+		[6] = (uint8_t) (uintptr_t) &OCR4D,	\
+		[9] = (uint8_t) (uintptr_t) &OCR1AL,	\
+		[10] = (uint8_t) (uintptr_t) &OCR1BL,	\
+		[11] = (uint8_t) (uintptr_t) &OCR0A,	\
+		[13] = (uint8_t) (uintptr_t) &OCR4A,	\
+	}
+
+#define TCC_REG_ADDRS	{				\
+		[3] = (uint8_t) (uintptr_t) &TCCR0A,  	\
+		[5] = (uint8_t) (uintptr_t) &TCCR3A,	\
+		[6] = (uint8_t) (uintptr_t) &TCCR4A,	\
+		[9] = (uint8_t) (uintptr_t) &TCCR1A,	\
+		[10] = (uint8_t) (uintptr_t) &TCCR1A,	\
+		[11] = (uint8_t) (uintptr_t) &TCCR0A,	\
+		[13] = (uint8_t) (uintptr_t) &TCCR4A,	\
+	}
+
+#define TCC_REG_VALS	{			\
+		[3] = 1 << COM0B1,		\
+		[5] = 1 << COM3A1,		\
+		[6] = 1 << COM4D1,		\
+		[9] = 1 << COM1A1,		\
+		[10] = 1 << COM1B1,		\
+		[11] = 1 << COM0A1,		\
+		[13] = 1 << COM4A1,		\
+	}
+
 #endif /* _AO_PINS_H_ */

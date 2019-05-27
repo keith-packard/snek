@@ -40,7 +40,7 @@ SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
 SNEK_AVR_SRC = \
 	snek-io.c \
 	snek-avr-eeprom.c \
-	ao-snek-itsybitsy.c \
+	ao-snek-avr.c \
 	ao-usb-avr.c \
 	ao-notask.c \
 	ao-product.c \

@@ -12,6 +12,7 @@
  * General Public License for more details.
  */
 
+#include "ao.h"
 #include "snek.h"
 #include <snek-io.h>
 
@@ -184,40 +185,11 @@ static uint8_t	power_pin;
 static uint8_t	dir_pin;
 static uint8_t	on_pins[NUM_PIN];
 
-static const PROGMEM uint8_t _pin_map[NUM_PIN] = {
-	[0] = MAKE_MAP(PD, 2),
-	[1] = MAKE_MAP(PD, 3),
-	[2] = MAKE_MAP(PD, 1),
-	[3] = MAKE_MAP(PD, 0),
-	[4] = MAKE_MAP(PD, 4),
-	[5] = MAKE_MAP(PC, 6),
-	[6] = MAKE_MAP(PD, 7),
-	[7] = MAKE_MAP(PE, 6),
-	[8] = MAKE_MAP(PB, 4),
-	[9] = MAKE_MAP(PB, 5),
-	[10] = MAKE_MAP(PB, 6),
-	[11] = MAKE_MAP(PB, 7),
-	[12] = MAKE_MAP(PD, 6),
-	[13] = MAKE_MAP(PC, 7),
-	[14] = MAKE_MAP(PF, 7),
-	[15] = MAKE_MAP(PF, 6),
-	[16] = MAKE_MAP(PF, 5),
-	[17] = MAKE_MAP(PF, 4),
-	[18] = MAKE_MAP(PF, 1),
-	[19] = MAKE_MAP(PF, 0),
-	[20] = MAKE_MAP(PB, 3),
-	[21] = MAKE_MAP(PB, 2),
-	[22] = MAKE_MAP(PB, 1),
-};
-
-static const PROGMEM uint8_t _adc_map[NUM_ADC] = {
-	[14 - FIRST_ADC] = 7,
-	[15 - FIRST_ADC] = 6,
-	[16 - FIRST_ADC] = 5,
-	[17 - FIRST_ADC] = 4,
-	[18 - FIRST_ADC] = 1,
-	[19 - FIRST_ADC] = 0,
-};
+static const PROGMEM uint8_t _pin_map[NUM_PIN] = PIN_MAP;
+static const PROGMEM uint8_t _adc_map[NUM_ADC] = ADC_MAP;
+static uint8_t const PROGMEM ocr_reg_addrs[NUM_PIN] = OCR_REG_ADDRS;
+static volatile uint8_t const PROGMEM tcc_reg_addrs[] = TCC_REG_ADDRS;
+static uint8_t const PROGMEM tcc_reg_vals[] = TCC_REG_VALS;
 
 static uint8_t
 pin_map(uint8_t pin)
@@ -249,16 +221,6 @@ bit(uint8_t pin)
 	return 1 << MAP_B(pin_map(pin));
 }
 
-static uint8_t const PROGMEM ocr_reg_addrs[NUM_PIN] = {
-	[3] = (uint8_t) (uintptr_t) (uint8_t) (uintptr_t) &OCR0B,
-	[5] = (uint8_t) (uintptr_t) &OCR3AL,
-	[6] = (uint8_t) (uintptr_t) &OCR4D,
-	[9] = (uint8_t) (uintptr_t) &OCR1AL,
-	[10] = (uint8_t) (uintptr_t) &OCR1BL,
-	[11] = (uint8_t) (uintptr_t) &OCR0A,
-	[13] = (uint8_t) (uintptr_t) &OCR4A,
-};
-
 static bool
 has_adc(uint8_t p)
 {
@@ -276,35 +238,16 @@ has_pwm(uint8_t p)
 	return ocr_reg(p) != NULL;
 }
 
-static volatile uint8_t const PROGMEM tcc_reg_addrs[] = {
-	[3] = (uint8_t) (uintptr_t) &TCCR0A,
-	[5] = (uint8_t) (uintptr_t) &TCCR3A,
-	[6] = (uint8_t) (uintptr_t) &TCCR4A,
-	[9] = (uint8_t) (uintptr_t) &TCCR1A,
-	[10] = (uint8_t) (uintptr_t) &TCCR1A,
-	[11] = (uint8_t) (uintptr_t) &TCCR0A,
-	[13] = (uint8_t) (uintptr_t) &TCCR4A,
-};
-
 static volatile uint8_t *
 tcc_reg(uint8_t pin) {
 	return (volatile uint8_t *) (uintptr_t) pgm_read_byte(&tcc_reg_addrs[pin]);
 }
 
-static uint8_t const PROGMEM tcc_val_addrs[] = {
-	[3] = 1 << COM0B1,
-	[5] = 1 << COM3A1,
-	[6] = 1 << COM4D1,
-	[9] = 1 << COM1A1,
-	[10] = 1 << COM1B1,
-	[11] = 1 << COM0A1,
-	[13] = 1 << COM4A1,
-};
 
 static uint8_t
-tcc_val(uint8_t pin)
+tcc_reg_val(uint8_t pin)
 {
-	return (uint8_t) pgm_read_byte(&tcc_val_addrs[pin]);
+	return (uint8_t) pgm_read_byte(&tcc_reg_vals[pin]);
 }
 
 static void
@@ -385,10 +328,10 @@ set_out(uint8_t pin)
 	if (has_pwm(pin)) {
 		if (0 < p && p < 255) {
 			*ocr_reg(pin) = p;
-			*tcc_reg(pin) |= tcc_val(pin);
+			*tcc_reg(pin) |= tcc_reg_val(pin);
 			return SNEK_NULL;
 		}
-		*tcc_reg(pin) &= ~tcc_val(pin);
+		*tcc_reg(pin) &= ~tcc_reg_val(pin);
 	}
 	if (p)
 		*port_reg(pin) |= bit(pin);
