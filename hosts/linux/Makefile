@@ -12,19 +12,19 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT=..
+SNEK_ROOT=../..
 
 SNEK_NO_BUILD_TARGETS = 1
 
-include ../snek-install.defs
+include $(SNEK_ROOT)/snek-install.defs
 
 LINUX_DIST=snek-linux-$(SNEK_VERSION).tar.bz2
 LINUX_SH=snek-linux-$(SNEK_VERSION).sh
-DESKTOP_FILES=../posix/snek.desktop.in ../snekde/snekde.desktop.in
-PROGS=../posix/snek ../snekde/snekde ../snek-duino/snek-duino-install.in
-EXAMPLES=../examples
-ICONS=../snek.svg
-DOC=../doc/snek.pdf ../snek-duino/snek-duino-install.1 ../snekde/snekde.1 ../COPYING
+DESKTOP_FILES=$(SNEK_PORTS)/posix/snek.desktop.in $(SNEK_ROOT)/snekde/snekde.desktop.in
+PROGS=$(SNEK_PORTS)/posix/snek $(SNEK_ROOT)/snekde/snekde $(SNEK_PORTS)/snek-duino/snek-duino-install.in
+EXAMPLES=$(SNEK_ROOT)/examples
+ICONS=$(SNEK_ROOT)/snek.svg
+DOC=$(SNEK_ROOT)/doc/snek.pdf $(SNEK_PORTS)/snek-duino/snek-duino-install.1 $(SNEK_ROOT)/snekde/snekde.1 $(SNEK_ROOT)/COPYING
 LINUX_FILES=$(PROGS) $(DESKTOP_FILES) $(FIRMWARE) $(USBFIRMWARE) $(ICONS) $(DOC) $(EXAMPLES)
 
 all: $(LINUX_SH)

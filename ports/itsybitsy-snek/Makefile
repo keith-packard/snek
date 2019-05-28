@@ -12,28 +12,12 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT = ..
-SNEK_AVR = $(SNEK_ROOT)/avr
+SNEK_ROOT = ../..
+SNEK_AO = $(SNEK_ROOT)/ao
+SNEK_AVR = $(SNEK_ROOT)/chips/avr
 
 PROGNAME=itsybitsy-snek
 PRODUCT_NAME=ItsyBitsySnek
-
-#
-# Copyright © 2019 Keith Packard <keithp@keithp.com>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-
-SNEK_AO = $(SNEK_ROOT)/ao
-SNEK_AVR = $(SNEK_ROOT)/avr
 
 SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
 
@@ -99,7 +83,7 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_AVR_BUILTINS)
 
-include ../snek-install.defs
+include $(SNEK_ROOT)/snek-install.defs
 
 BASE=$(PROGNAME)-$(SNEK_VERSION)
 ELF=$(BASE).elf

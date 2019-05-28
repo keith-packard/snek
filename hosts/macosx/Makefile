@@ -13,7 +13,7 @@
 #
 
 SNEK_NO_BUILD_TARGETS = 1
-SNEK_ROOT=..
+SNEK_ROOT=../..
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -22,7 +22,7 @@ MACOSX_ICON_PNGS = $(shell for i in $(MACOSX_RES); do echo snek-$$i.png; done)
 MACOSX_ICON = snek.icns
 MACOSX_DIST = snek-mac-$(SNEK_VERSION).dmg
 
-SNEKDE = ../snekde/snekde.py
+SNEKDE = $(SNEK_ROOT)/snekde/snekde.py
 SNEKDE_SCRIPTS = runsnekde snekde-script
 SNEKDE_FILES = $(SNEKDE_SCRIPTS) snekde-Info.plist $(SNEKDE)
 
@@ -34,13 +34,13 @@ endif
 
 MACOSX_INSTALL = install-macosx
 
-MACOSX_DOCS = ../doc/snek.pdf ../COPYING ReadMe-Mac.rtf
+MACOSX_DOCS = $(SNEK_ROOT)/doc/snek.pdf $(SNEK_ROOT)/COPYING ReadMe-Mac.rtf
 
-MACOSX_FILES=$(SNEKDE_FILES) $(SNEK_FILES) serial $(MACOSX_ICON) $(MACOSX_SCRIPTS) $(MACOSX_INSTALL) $(MACOSX_DOCS) ../examples/*.py
+MACOSX_FILES=$(SNEKDE_FILES) $(SNEK_FILES) serial $(MACOSX_ICON) $(MACOSX_SCRIPTS) $(MACOSX_INSTALL) $(MACOSX_DOCS) $(SNEK_ROOT)/examples/*.py
 
 all: $(MACOSX_DIST)
 
-$(MACOSX_ICON): ../snek.svg
+$(MACOSX_ICON): $(SNEK_ROOT)/snek.svg
 	for i in $(MACOSX_RES); do rsvg-convert -w $$i -h $$i -o snek-$$i.png $^; done
 	png2icns $@ $(MACOSX_ICON_PNGS)
 
@@ -70,7 +70,7 @@ $(MACOSX_DIST): $(MACOSX_FILES) macosx
 	cp -a $(MACOSX_INSTALL) macosx
 	cp -a $(FIRMWARE) macosx
 	cp -a $(USBFIRMWARE) macosx
-	cp -a ../examples/* macosx/examples
+	cp -a $(SNEK_ROOT)/examples/* macosx/examples
 	#
 	# snekde
 	#

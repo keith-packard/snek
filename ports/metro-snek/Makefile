@@ -12,9 +12,9 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT = ..
+SNEK_ROOT = ../..
 
-SNEK_SAMD21 = $(SNEK_ROOT)/samd21
+SNEK_SAMD21 = $(SNEK_ROOT)/chips/samd21
 
 PROGNAME=metro-snek
 PRODUCT_NAME=MetroSnek

@@ -12,16 +12,17 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT = ..
+SNEK_ROOT = ../..
 
-SNEK_SAMD21 = $(SNEK_ROOT)/samd21
+SNEK_SAMD21 = $(SNEK_ROOT)/chips/samd21
 
-PROGNAME=feather-snek
-PRODUCT_NAME=FeatherSnek
+PROGNAME=playground-snek
+PRODUCT_NAME=PlaygroundSnek
 
 include $(SNEK_SAMD21)/snek-samd21.defs
 
 SNEK_LOCAL_SRC = \
+	snek-temperature.c \
 	$(SNEK_SAMD21_SRC)
 
 SNEK_LOCAL_INC = \
@@ -29,7 +30,8 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_SAMD21_BUILTINS) \
-	feather-snek.builtin
+	snek-temperature.builtin \
+	playground-snek.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 

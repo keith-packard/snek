@@ -17,10 +17,10 @@ version=3.7.0
 pypi_wheels=windows-curses==1.0
 packages=serial
 
-files =../COPYING
-	../doc/snek.pdf
+files =@SNEK_ROOT@/COPYING
+	@SNEK_ROOT@/doc/snek.pdf
 	@SNEK_FIRMWARE@
-	../examples
+	@SNEK_ROOT@/examples
 	snek.exe
 	altusmetrum.inf
 	altusmetrum.cat

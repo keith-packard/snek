@@ -12,7 +12,9 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT = ..
+SNEK_ROOT = ../..
+SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
+
 SNEK_LOCAL_SRC = \
 	snek-mega.c \
 	snek-atmega-eeprom.c \
@@ -34,13 +36,14 @@ SNEK_LOCAL_SRC = \
 	kf_sin.c \
 	kf_cos.c
 
-SNEK_LOCAL_VPATH = $(SNEK_ROOT)/atmega
-SNEK_LOCAL_INC = $(SNEK_LOCAL_VPATH)/snek-atmega.h machine/ieeefp.h fdlibm.h snek-mega-math.h
+SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
+SNEK_LOCAL_INC = $(SNEK_ATMEGA)/snek-atmega.h machine/ieeefp.h fdlibm.h snek-mega-math.h
+
 SNEK_LOCAL_BUILTINS = \
 	snek-mega.builtin \
 	snek-math.builtin
 
-include ../snek-install.defs
+include $(SNEK_ROOT)/snek-install.defs
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 

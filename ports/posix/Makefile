@@ -12,7 +12,7 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT=..
+SNEK_ROOT=../..
 
 SNEK_LOCAL_SRC = \
 	snek-main.c \
@@ -21,7 +21,7 @@ SNEK_LOCAL_SRC = \
 	snek-curses.c
 
 SNEK_LOCAL_INC = snek-posix.h
-SNEK_LOCAL_BUILTINS = snek-posix.builtin ../snek-math.builtin
+SNEK_LOCAL_BUILTINS = snek-posix.builtin $(SNEK_ROOT)/snek-math.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 

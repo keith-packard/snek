@@ -12,17 +12,17 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT=..
+SNEK_ROOT=../..
 
 SNEK_LOCAL_SRC = \
 	snek-windows.c \
-	../snek-math.c
+	$(SNEK_ROOT)/snek-math.c
 
 SNEK_LOCAL_INC = snek-windows.h
-SNEK_LOCAL_BUILTINS = snek-windows.builtin ../snek-math.builtin
+SNEK_LOCAL_BUILTINS = snek-windows.builtin $(SNEK_ROOT)/snek-math.builtin
 
 INF=altusmetrum.inf
-WINDOWS_FILES=snek.exe snek.ico snekde.py ../doc/snek.pdf ../examples ../COPYING $(FIRMWARE) $(USBFIRMWARE) $(INF)
+WINDOWS_FILES=snek.exe snek.ico snekde.py $(SNEK_ROOT)/doc/snek.pdf $(SNEK_ROOT)/examples $(SNEK_ROOT)/COPYING $(FIRMWARE) $(USBFIRMWARE) $(INF)
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -42,7 +42,7 @@ all: $(WINDOWS_INSTALL)
 $(WINDOWS_INSTALL): $(WINDOWS_FILES) snek.cfg
 	pynsist snek.cfg
 
-snek.cfg: snek.cfg.in ../snek-install.defs ../snek.defs
+snek.cfg: snek.cfg.in $(SNEK_ROOT)/snek-install.defs $(SNEK_ROOT)/snek.defs
 	for i in $(FIRMWARE); do echo "	$$i"; done | sed '/@SNEK_FIRMWARE@/r /dev/stdin' snek.cfg.in | sed '/@SNEK_FIRMWARE/d' | $(SNEK_SED) > $@
 
 snek.exe: $(SNEK_OBJ)
@@ -50,7 +50,7 @@ snek.exe: $(SNEK_OBJ)
 
 vpath %.svg ..
 
-snekde.py: ../snekde/snekde.py
+snekde.py: $(SNEK_ROOT)/snekde/snekde.py
 	cp $^ $@
 
 .SUFFIXES: .svg .build .icns .ico .rc .o .exe

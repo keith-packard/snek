@@ -13,7 +13,6 @@
 #
 
 SNEK_AO = $(SNEK_ROOT)/ao
-SNEK_AVR = $(SNEK_ROOT)/avr
 
 SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
 
