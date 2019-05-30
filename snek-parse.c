@@ -15,8 +15,11 @@
 #include "snek.h"
 #include <assert.h>
 
-bool snek_parse_middle;
 bool snek_interactive;
+
+bool snek_parse_middle;
+static uint8_t for_depth;
+
 static bool snek_print_val;
 
 uint8_t snek_parse_nformal;
@@ -48,8 +51,6 @@ typedef union {
 static snek_parse_val_t value_stack[VALUE_STACK_SIZE];
 
 static snek_value_stack_p_t value_stack_p = 0;
-
-static uint8_t for_depth;
 
 //#define VALUE_DEBUG
 
@@ -158,6 +159,7 @@ snek_parse_ret_t
 snek_parse(void)
 {
 	for (;;) {
+		/* Reset lex state */
 		snek_current_indent = 0;
 		snek_ignore_nl = 0;
 		snek_abort = false;

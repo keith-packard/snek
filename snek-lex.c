@@ -14,16 +14,14 @@
 
 #include "snek.h"
 
-uint8_t snek_current_indent;
-
-char *snek_file = "<stdin>";
-uint8_t snek_ignore_nl;
-
 snek_offset_t snek_lex_line = 1;
-static bool snek_lex_midline;
-static bool snek_lex_exdent;
+char *snek_file = "<stdin>";
 
+uint8_t snek_current_indent;
 uint8_t snek_lex_indent;
+uint8_t snek_ignore_nl;
+bool snek_lex_midline;
+bool snek_lex_exdent;
 
 #define SNEK_MAX_TOKEN	63
 

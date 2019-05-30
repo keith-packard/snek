@@ -568,13 +568,16 @@ snek_func_move(void *addr);
 
 /* snek-lex.c */
 
-extern uint8_t snek_current_indent;
-extern char *snek_file;
 extern snek_offset_t snek_line;
 extern snek_offset_t snek_lex_line;
+extern char *snek_file;
+
+extern uint8_t snek_current_indent;
+extern uint8_t snek_lex_indent;
 extern uint8_t snek_ignore_nl;
-extern bool snek_parse_middle;
-extern bool snek_interactive;
+extern bool snek_lex_midline;
+extern bool snek_lex_exdent;
+
 extern char snek_lex_text[];
 
 token_t
@@ -725,6 +728,9 @@ extern const snek_mem_t snek_name_mem;
 extern snek_name_t *snek_names;
 
 /* snek-parse.c */
+
+extern bool snek_parse_middle;
+extern bool snek_interactive;
 
 #define SNEK_MAX_FORMALS	10
 
