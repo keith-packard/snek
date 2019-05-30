@@ -566,7 +566,7 @@ snek_func_mark(void *addr);
 void
 snek_func_move(void *addr);
 
-/* snek-lex.l */
+/* snek-lex.c */
 
 extern uint8_t snek_current_indent;
 extern char *snek_file;
@@ -576,6 +576,9 @@ extern uint8_t snek_ignore_nl;
 extern bool snek_parse_middle;
 extern bool snek_interactive;
 extern char snek_lex_text[];
+
+token_t
+snek_lex(void);
 
 /* snek-list.c */
 
@@ -630,13 +633,6 @@ snek_list_move(void *addr);
 snek_poly_t
 snek_list_build(snek_list_type_t type, snek_offset_t size, ...);
 #endif
-
-/* snek-lex.c */
-
-extern uint8_t snek_lex_indent;
-
-token_t
-snek_lex(void);
 
 /* snek-memory.c */
 
