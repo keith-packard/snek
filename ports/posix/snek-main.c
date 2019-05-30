@@ -21,6 +21,7 @@ FILE	*snek_posix_input;
 
 static const struct option options[] = {
 	{ .name = "version", .has_arg = 0, .val = 'v' },
+	{ .name = "file", .has_arg = 1, .val = 'f' },
 	{ .name = "help", .has_arg = 0, .val = '?' },
 	{ .name = NULL, .has_arg = 0, .val = 0 },
 };
@@ -28,7 +29,7 @@ static const struct option options[] = {
 static void
 usage (char *program, int val)
 {
-	fprintf(stderr, "usage: %s [--version] [--help] <program.py>\n", program);
+	fprintf(stderr, "usage: %s [--version] [--help] [--file <file.py>] <program.py>\n", program);
 	exit(val);
 }
 
@@ -70,12 +71,16 @@ int
 main (int argc, char **argv)
 {
 	int c;
+	char *file = NULL;
 
-	while ((c = getopt_long(argc, argv, "v?", options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "v?f:", options, NULL)) != -1) {
 		switch (c) {
 		case 'v':
 			printf("%s version %s\n", argv[0], SNEK_VERSION);
 			exit(0);
+			break;
+		case 'f':
+			file = optarg;
 			break;
 		case '?':
 			usage(argv[0], 0);
@@ -86,6 +91,18 @@ main (int argc, char **argv)
 		}
 	}
 
+	snek_init();
+
+	if (file) {
+		snek_file = file;
+		snek_posix_input = fopen(snek_file, "r");
+		if (!snek_posix_input) {
+			perror(snek_file);
+			exit(1);
+		}
+		snek_parse();
+	}
+
 	if (argv[optind]) {
 		snek_file = argv[optind];
 		snek_posix_input = fopen(snek_file, "r");
@@ -94,12 +111,11 @@ main (int argc, char **argv)
 			exit(1);
 		}
 	} else {
+		snek_file = "<stdin>";
 		snek_posix_input = stdin;
 		snek_interactive = true;
 		printf("Welcome to Snek version %s\n", SNEK_VERSION);
 	}
-
-	snek_init();
 
 	bool ret = snek_parse() == snek_parse_success;
 
