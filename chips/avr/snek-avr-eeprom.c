@@ -114,5 +114,5 @@ snek_eeprom_getchar(FILE *stream)
 	}
 	snek_interactive = true;
 	snek_avr_file.get = snek_io_getc;
-	return snek_io_getc(stream);
+	return EOF;
 }

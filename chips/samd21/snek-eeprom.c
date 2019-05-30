@@ -86,5 +86,5 @@ snek_eeprom_getchar(FILE *stream)
 		return c;
 	snek_interactive = true;
 	__iob[0]->get = save_getc;
-	return (*save_getc)(stream);
+	return EOF;
 }

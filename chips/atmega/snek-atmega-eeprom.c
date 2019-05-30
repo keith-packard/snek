@@ -86,5 +86,5 @@ snek_eeprom_getchar(FILE *stream)
 	}
 	snek_interactive = true;
 	snek_duino_file.get = snek_io_getc;
-	return snek_io_getc(stream);
+	return EOF;
 }
