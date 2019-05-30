@@ -401,6 +401,14 @@ snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t 
 	}
 }
 
+void
+snek_code_reset(void)
+{
+	snek_compile_size = 0;
+	compile_alloc = 0;
+	snek_compile = NULL;
+}
+
 snek_code_t *
 snek_code_finish(void)
 {
@@ -416,9 +424,7 @@ snek_code_finish(void)
 		snek_code_dump(code);
 #endif
 	}
-	snek_compile_size = 0;
-	compile_alloc = 0;
-	snek_compile = NULL;
+	snek_code_reset();
 	return code;
 }
 

@@ -161,11 +161,21 @@ snek_parse(void)
 	for (;;) {
 		/* Reset lex state */
 		snek_current_indent = 0;
+		snek_lex_indent = 0;
 		snek_ignore_nl = 0;
-		snek_abort = false;
+		snek_lex_midline = false;
+		snek_lex_exdent = false;
+
+		/* Reset parse state */
 		snek_parse_middle = false;
 		value_stack_p = 0;
 		for_depth = 0;
+
+		/* Reset codegen state */
+		snek_code_reset();
+
+		/* Reset error state */
+		snek_abort = false;
 
 		parse_return_t ret = parse(NULL);
 
@@ -185,6 +195,9 @@ snek_parse(void)
 		default:
 			snek_error_syntax(snek_lex_text);
 			{
+				/* Skip input until we get back to
+				 * zero indent
+				 */
 				token_t token;
 				for (;;) {
 					snek_ignore_nl = 0;
