@@ -16,8 +16,8 @@ SNEK_ROOT = ../..
 SNEK_AO = $(SNEK_ROOT)/ao
 SNEK_AVR = $(SNEK_ROOT)/chips/avr
 
-PROGNAME=itsybitsy-snek
-PRODUCT_NAME=ItsyBitsySnek
+PROGNAME=itsybitsy5v-snek
+PRODUCT_NAME=ItsyBitsy5vSnek
 
 SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
 
@@ -42,7 +42,7 @@ SNEK_AVR_INC = \
 	ao-usb.h
 
 SNEK_AVR_BUILTINS = \
-	itsybitsy.builtin
+	itsybitsy5v.builtin
 
 OPT=-Os
 

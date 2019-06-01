@@ -2254,13 +2254,12 @@ are two steps to getting snek installed on the device.
 $ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
 +
  2. Install the snek binary. Pick the right voltage for your board as that
-    also sets the right clock speed. For 5v boards, install the 5v binary, which
-    is the one without 3v in the name:
+    also sets the right clock speed. For 5v boards, install the 5v binary:
 +
 [source,subs="attributes+"]
-$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy-snek-{version}.hex
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy5v-snek-{version}.hex
 +
-for 3v boards, use the 3v image.
+for 3v boards, use the 3v binary.
 +
 [source,subs="attributes+"]
 $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy3v-snek-{version}.hex
