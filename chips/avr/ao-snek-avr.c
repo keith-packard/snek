@@ -78,6 +78,9 @@ static uint8_t timer0_fract = 0;
 #define FIRST_ADC	14
 
 static uint8_t	power[NUM_PIN];
+static uint8_t	power_pin;
+static uint8_t	dir_pin;
+static uint8_t	on_pins[NUM_PIN];
 
 ISR(TIMER0_OVF_vect)
 {
@@ -159,6 +162,16 @@ port_init(void)
 	OCR4C = 0xff;
 
 	memset(power, 0xff, NUM_PIN);
+	DDRB = 0;
+	DDRC = 0;
+	DDRD = 0;
+	DDRE = 0;
+	DDRF = 0;
+	PORTB = 0;
+	PORTC = 0;
+	PORTD = 0;
+	PORTE = 0;
+	PORTF = 0;
 }
 
 #include <avr/wdt.h>
@@ -180,10 +193,6 @@ main (void)
 	for (;;)
 		snek_parse();
 }
-
-static uint8_t	power_pin;
-static uint8_t	dir_pin;
-static uint8_t	on_pins[NUM_PIN];
 
 static const PROGMEM uint8_t _pin_map[NUM_PIN] = PIN_MAP;
 static const PROGMEM uint8_t _adc_map[NUM_ADC] = ADC_MAP;
