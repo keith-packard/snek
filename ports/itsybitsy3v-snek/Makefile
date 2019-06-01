@@ -17,7 +17,7 @@ SNEK_AVR = $(SNEK_ROOT)/chips/avr
 SNEK_AO = $(SNEK_ROOT)/ao
 
 PROGNAME=itsybitsy3v-snek
-PRODUCT_NAME=ItsyBitsySnek
+PRODUCT_NAME=ItsyBitsy3vSnek
 
 SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
 
