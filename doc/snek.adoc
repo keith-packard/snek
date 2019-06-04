@@ -1672,7 +1672,7 @@ hello world.>
 === `sys.stdout.flush()`
 
 Flush output to the console, in case there is buffering somewhere.
-(((sys.stdout.flush))
+(((sys.stdout.flush)))
 
 === `ord(` _string_ `)`
 
