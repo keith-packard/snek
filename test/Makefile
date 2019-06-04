@@ -12,7 +12,11 @@
 # General Public License for more details.
 #
 
-SNEK?=../posix/snek
+SNEK_ROOT=..
+
+include $(SNEK_ROOT)/snek.defs
+
+SNEK?=$(SNEK_PORTS)/posix/snek
 
 SUCCESS_TESTS = \
 	andor.py \
