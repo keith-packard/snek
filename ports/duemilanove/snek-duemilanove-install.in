@@ -2,7 +2,7 @@
 
 SHAREDIR="@SHAREDIR@"
 
-SNEKDUINO="$SHAREDIR/snek-duino-@SNEK_VERSION@.hex"
+SNEKDUINO="$SHAREDIR/snek-duemilanove-@SNEK_VERSION@.hex"
 
 action="fuseload"
 
@@ -24,7 +24,7 @@ for i in "$@"; do
 		    mode=hex
 		    ;;
 		*)
-		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-duino.hex} {fuseload|load|fuse}" 1>&2
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-duemilanove.hex} {fuseload|load|fuse}" 1>&2
 		      exit 1
 		      ;;
 	    esac

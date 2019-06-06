@@ -2176,7 +2176,7 @@ To quit from the dialog and skip loading or saving a file, press Escape.
 = Snek on Arduino Duemilanove
 
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
-functions. It does not include the Math functions. Snek provides
+functions. It does not include the Math functions. Snek for the duemilanove provides
 pre-defined variables for all of the GPIO pins:(((Duemilanove)))(((Arduino)))
 
 D0 - D13::
@@ -2193,8 +2193,8 @@ usual serial boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
 On Linux, the snek installation includes a shell script,
-snek-duino-install, to install the binary using 'avrdude'. Read the
-snek-duino-install manual (also included in the installation) for more
+snek-duemilanove-install, to install the binary using 'avrdude'. Read the
+snek-duemilanove-install manual (also included in the installation) for more
 information.
 
 On other hosts, you'll need to install avrdude. Once you've done that, there
@@ -2210,7 +2210,7 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U 
  2. Install the snek binary.
 +
 [source,subs="attributes+"]
-$ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
+$ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duemilanove-{version}.hex
 
 [%nonfacing]
 [appendix]
@@ -2218,7 +2218,8 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duino-{version}.hex
 
 Snek for the Adafruit ItsyBitsy includes the Common System, GPIO
 (without the `neopixel` function), and EEPROM
-functions. Snek provides pre-defined variables for all of the the GPIO pins:(((ItsyBitsy)))
+functions. Snek for the itsybitsy provides pre-defined
+variables for all of the the GPIO pins:(((ItsyBitsy)))
 
 D0 - D13::
 Digital input and output pins. When used as input pins, Snek applies a
@@ -2233,7 +2234,7 @@ MISO, MOSI, SCK::
 Additional digital input and output pins. These work just like D0-D13.
 
 Snek fills the ATMega 32u4 flash completely leaving no space for the
-usual serial boot loader, so installing Snek requires a programming
+usual USB boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
 On Linux, the snek installation includes a shell script,
@@ -2257,19 +2258,19 @@ $ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse
     also sets the right clock speed. For 5v boards, install the 5v binary:
 +
 [source,subs="attributes+"]
-$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy5v-snek-{version}.hex
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-itsybitsy5v-{version}.hex
 +
 for 3v boards, use the 3v binary.
 +
 [source,subs="attributes+"]
-$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:itsybitsy3v-snek-{version}.hex
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-itsybitsy3v-{version}.hex
 
 [%nonfacing]
 [appendix]
 = Snek on Arduino Mega
 
 Snek for the Mega includes the Common System, EEPROM, GPIO and math
-functions. Snek provides pre-defined variables for all of the GPIO
+functions. Snek for the Mega provides pre-defined variables for all of the GPIO
 pins:(((Arduino Mega)))
 
 D0-D53::
@@ -2307,7 +2308,7 @@ $ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{versi
 = Snek on Metro M0 Express
 
 Snek for the Metro M0 Express includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek provides
+(including the `neopixel` function), and EEPROM functions. Snek for the metro m0 provides
 pre-defined variables for all of the GPIO pins:(((Metro M0
 Express)))(((Arduino)))
 
@@ -2332,7 +2333,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the metro-snek-{version}.uf2 file included in the snek
+Then, find the snek-metrom0-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Metro M0 file system.
 
@@ -2341,7 +2342,7 @@ Metro M0 file system.
 = Snek on Feather M0 Express
 
 Snek for the Feather M0 Express includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek provides
+(including the `neopixel` function), and EEPROM functions. Snek for the feather provides
 pre-defined variables for all of the GPIO pins:(((Feather M0
 Express)))(((Arduino)))
 
@@ -2369,7 +2370,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the feather-snek-{version}.uf2 file included in the snek
+Then, find the snek-feather-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Feather M0 file system.
 
@@ -2379,7 +2380,7 @@ Feather M0 file system.
 
 Snek for the Crickit includes the Common System, Math, GPIO (including
 the `neopixel` function), and
-EEPROM functions. Crickit-snek provides names for all of the GPIO pins:(((Crickit)))
+EEPROM functions. Snek for the Crickit provides names for all of the GPIO pins:(((Crickit)))
 
 DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
@@ -2413,7 +2414,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the crickit-snek-{version}.uf2 file included in the snek
+Then, find the snek-crickit-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Crickit file system.
 
@@ -2423,7 +2424,7 @@ Crickit file system.
 
 Snek for the Circuit Playground Express includes the Common System,
 Math, GPIO (including the `neopixel` function), Temperature and EEPROM
-functions. Playground-snek provides names for all of the external
+functions. Snek for the Playground provides names for all of the external
 connections as well as the built-in devices:
 
 A0 - A7::
@@ -2462,7 +2463,7 @@ to your computer over USB, sliding the switch to the right (towards
 the microphone) and then pressing the reset button twice in quick
 succession.(((Playground)))
 
-Then, find the playground-snek-{version}.uf2 file included in the snek
+Then, find the snek-playground-{version}.uf2 file included in the snek
 package for your machine and copy it to the CURRENT.UF2 file on the
 Circuit Playground Express file system.
 

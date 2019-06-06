@@ -16,20 +16,20 @@ SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 
 SNEK_LOCAL_SRC = \
-	snek-duino.c \
+	snek-duemilanove.c \
 	snek-atmega-eeprom.c \
 	snek-io.c \
 	snek-atmega-serial.c
 
 SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 SNEK_LOCAL_INC = $(SNEK_ATMEGA)/snek-atmega.h
-SNEK_LOCAL_BUILTINS = snek-duino.builtin
+SNEK_LOCAL_BUILTINS = snek-duemilanove.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
-BASE=snek-duino-$(SNEK_VERSION)
+BASE=snek-duemilanove-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
@@ -68,7 +68,7 @@ ISP = usbtiny
 #	BODLEVEL1	0	brown out 2.5-2.9V
 #	BODLEVEL0	1	brown out 2.5-2.9V
 
-all: $(HEX) snek-duino-install
+all: $(HEX) snek-duemilanove-install
 
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $^ $@
@@ -77,7 +77,7 @@ $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
-snek-duino-install: snek-duino-install.in
+snek-duemilanove-install: snek-duemilanove-install.in
 	$(SNEK_SED) $^ > $@
 	chmod +x $@
 
@@ -86,16 +86,16 @@ set-fuse:
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U hfuse:w:0xd7:m
 	avrdude -F -V -c $(ISP) -p ATMEGA328P -U efuse:w:0xfd:m
 
-load: $(HEX) snek-duino-install
-	./snek-duino-install -isp $(ISP) -hex $(HEX) load
+load: $(HEX) snek-duemilanove-install
+	./snek-duemilanove-install -isp $(ISP) -hex $(HEX) load
 
-install: snek-duino-install $(HEX) snek-duino-install.1
+install: snek-duemilanove-install $(HEX) snek-duemilanove-install.1
 	install -d $(DESTDIR)$(BINDIR)
-	install snek-duino-install $(DESTDIR)$(BINDIR)
+	install snek-duemilanove-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
-	install -m 0644 snek-duino-install.1 $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-duemilanove-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f *.elf *.hex *.map snek-duino-install
+	rm -f *.elf *.hex *.map snek-duemilanove-install

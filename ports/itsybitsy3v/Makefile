@@ -16,8 +16,8 @@ SNEK_ROOT = ../..
 SNEK_AVR = $(SNEK_ROOT)/chips/avr
 SNEK_AO = $(SNEK_ROOT)/ao
 
-PROGNAME=itsybitsy3v-snek
-PRODUCT_NAME=ItsyBitsy3vSnek
+PROGNAME=snek-itsybitsy3v
+PRODUCT_NAME=SnekItsyBitsy3v
 
 SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
 
@@ -42,7 +42,7 @@ SNEK_AVR_INC = \
 	ao-usb.h
 
 SNEK_AVR_BUILTINS = \
-	itsybitsy3v.builtin
+	snek-itsybitsy3v.builtin
 
 OPT=-Os
 
@@ -110,8 +110,8 @@ echo:
 
 ISP=avrisp2
 
-load: $(HEX) ../itsybitsy-snek/snek-itsybitsy-install
-	./snek-itsybitsy-install -quick -isp $(ISP) -hex $(HEX) load
+load: $(HEX) ../itsybitsy5v/snek-itsybitsy-install
+	../itsybitsy5v/snek-itsybitsy-install -quick -isp $(ISP) -hex $(HEX) load
 
 install: $(HEX)
 	install -d $(DESTDIR)$(SHAREDIR)

@@ -11,15 +11,15 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 .\" General Public License for more details.
 .\"
-.TH SNEK-ITSYBITSY-INSTALL 1 "snek-itsybitsy-install" ""
+.TH SNEK-DUEMILANOVE-INSTALL 1 "snek-duemilanove-install" ""
 .SH NAME
-snek-itsybitsy-instal \- Install Snek to Adafruit ItsyBitsy board
+snek-duemilanove-instal \- Install Snek to Duemilanove
 .SH SYNOPSIS
-.B "snek-itsybitsy-install" [OPTION]... [COMMAND]
+.B "snek-duemilanove-install" [OPTION]... [COMMAND]
 .SH DESCRIPTION
-.I snek-itsybitsy-install
-installs the Snek programming language on an Adafruit ItsyBitsy board
-with an ATmega32u4.
+.I snek-duemilanove-install
+installs the Snek programming language on an ATmega328P Arduemilanove
+Duemilanove board.
 .SH OPTIONS
 .TP
 \-isp <ISP model>
@@ -29,9 +29,6 @@ and 'avrisp2'. The default is 'usbtiny'.
 \-hex <snek.hex>
 Specifies the hex file to load to the board. The default is the
 currently installed version of Snek.
-.TP
-\-3v
-Use the 3v binary instead of the default 5v binary.
 .SH COMMANDS
 .TP
 fuseload

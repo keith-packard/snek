@@ -16,8 +16,8 @@ SNEK_ROOT = ../..
 
 SNEK_SAMD21 = $(SNEK_ROOT)/chips/samd21
 
-PROGNAME=metro-snek
-PRODUCT_NAME=MetroSnek
+PROGNAME=snek-feather
+PRODUCT_NAME=SnekFeather
 
 include $(SNEK_SAMD21)/snek-samd21.defs
 
@@ -29,7 +29,7 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_SAMD21_BUILTINS) \
-	metro-snek.builtin
+	snek-feather.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 

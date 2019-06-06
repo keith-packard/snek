@@ -21,10 +21,10 @@ include $(SNEK_ROOT)/snek-install.defs
 LINUX_DIST=snek-linux-$(SNEK_VERSION).tar.bz2
 LINUX_SH=snek-linux-$(SNEK_VERSION).sh
 DESKTOP_FILES=$(SNEK_PORTS)/posix/snek.desktop.in $(SNEK_ROOT)/snekde/snekde.desktop.in
-PROGS=$(SNEK_PORTS)/posix/snek $(SNEK_ROOT)/snekde/snekde $(SNEK_PORTS)/snek-duino/snek-duino-install.in
+PROGS=$(SNEK_PORTS)/posix/snek $(SNEK_ROOT)/snekde/snekde $(SNEK_PORTS)/snek-duemilanove/snek-duemilanove-install.in
 EXAMPLES=$(SNEK_ROOT)/examples
 ICONS=$(SNEK_ROOT)/snek.svg
-DOC=$(SNEK_ROOT)/doc/snek.pdf $(SNEK_PORTS)/snek-duino/snek-duino-install.1 $(SNEK_ROOT)/snekde/snekde.1 $(SNEK_ROOT)/COPYING
+DOC=$(SNEK_ROOT)/doc/snek.pdf $(SNEK_PORTS)/snek-duemilanove/snek-duemilanove-install.1 $(SNEK_ROOT)/snekde/snekde.1 $(SNEK_ROOT)/COPYING
 LINUX_FILES=$(PROGS) $(DESKTOP_FILES) $(FIRMWARE) $(USBFIRMWARE) $(ICONS) $(DOC) $(EXAMPLES)
 
 all: $(LINUX_SH)
