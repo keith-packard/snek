@@ -86,6 +86,7 @@ ao_snek_get_adc(uint8_t adc)
 	return ao_adc_read(adc);
 }
 
+#ifdef AO_LED_TX
 void
 ao_snek_running(bool running)
 {
@@ -94,6 +95,7 @@ ao_snek_running(bool running)
 	else
 		ao_led_on(AO_LED_TX);
 }
+#endif
 
 void
 ao_usb_out_hook(uint8_t *hook_buf, uint16_t len)
@@ -141,8 +143,12 @@ main(void)
 {
 	ao_clock_init();
 
+#ifdef LEDS_AVAILABLE
 	ao_led_init();
+#endif
+#ifdef AO_LED_TX
 	ao_led_on(AO_LED_TX);
+#endif
 	ao_timer_init();
 	ao_tcc_samd21_init();
 	ao_tc_samd21_init();
@@ -155,7 +161,9 @@ main(void)
 	snek_builtin_eeprom_load();
 	printf("Welcome to snek " SNEK_VERSION "\n");
 	fflush(stdout);
+#ifdef AO_LEX_TX
 	ao_snek_running(false);
+#endif
 	for (;;)
 		snek_parse();
 }

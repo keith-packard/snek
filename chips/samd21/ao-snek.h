@@ -43,8 +43,10 @@ ao_snek_reset(void);
 void
 ao_snek_running(bool running);
 
+#ifdef AO_LEX_TX
 #define SNEK_CODE_HOOK_START	ao_snek_running(true);
 #define SNEK_CODE_HOOK_STOP	ao_snek_running(false);
+#endif
 
 struct snek_neopixel {
 	union {

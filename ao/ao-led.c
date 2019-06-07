@@ -18,6 +18,7 @@
 
 #include "ao.h"
 
+#ifdef LEDS_AVAILABLE
 static const struct {
 	void		*port;
 	uint16_t	pin;
@@ -147,3 +148,4 @@ ao_led_init(void)
 	for (bit = 0; bit < N_LED; bit++)
 		ao_enable_output(ao_leds[bit].port, ao_leds[bit].pin, 0);
 }
+#endif
