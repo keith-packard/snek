@@ -63,4 +63,10 @@ extern struct snek_neopixel	*snek_neopixels;
 void
 ao_snek_neopixel_write(void *port, uint8_t pin, int npixel, struct snek_neopixel *pixels);
 
+void
+ao_snek_apa102_write(void *gpio_d, uint8_t pin_d,
+		     void *gpio_c, uint8_t pin_c,
+		     int npixel,
+		     struct snek_neopixel *pixels);
+
 #endif /* _AO_SNEK_H_ */

@@ -488,6 +488,14 @@ snek_builtin_neopixel(snek_poly_t pixels)
 		if (snek_abort)
 			return SNEK_NULL;
 	}
-	ao_snek_neopixel_write(ao_snek_pin[power_pin].gpio, ao_snek_pin[power_pin].pin, pixels_list->size, snek_neopixels);
+	if (power_pin == dir_pin)
+		ao_snek_neopixel_write(ao_snek_pin[power_pin].gpio, ao_snek_pin[power_pin].pin,
+				       pixels_list->size, snek_neopixels);
+	else
+		ao_snek_apa102_write(ao_snek_pin[power_pin].gpio,
+				     ao_snek_pin[power_pin].pin,
+				     ao_snek_pin[dir_pin].gpio,
+				     ao_snek_pin[dir_pin].pin,
+				     pixels_list->size, snek_neopixels);
 	return SNEK_NULL;
 }
