@@ -66,7 +66,7 @@ install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 
 upload:
 	+cd doc && make upload
-	for otheros in $(SNEK_OTHEROS_DIR); do cd "$$otheros" && make upload; done
+	for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload); done
 
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@
