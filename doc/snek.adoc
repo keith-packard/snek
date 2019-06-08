@@ -2273,6 +2273,45 @@ $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-itsybitsy3v-{version}.hex
 
 [%nonfacing]
 [appendix]
+= Snek on Adafruit ItsyBitsy M0
+
+Snek for the Adafruit ItsyBitsy includes the Common System, Math, GPIO
+(including the `neopixel` function), and EEPROM functions. Snek for
+the itsybitsy m0 provides pre-defined variables for all of the the
+GPIO pins:(((ItsyBitsy M0)))
+
+D0 - D13::
+Digital input and output pins. When used as input pins, Snek applies a
+pull-up resistor to the pin so that a disconnected pin will read as 1.
+D5 on the ItsyBitsy M0 is hooked to a 3.3V to 5V converter so that it
+can drive 5V devices. This means it cannot be used as an input pin.
+
+A0 - A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V.
+
+SDA, SCL, MISO, MOSI, SCK::
+Additional digital input and output pins. These work just like D0-D13.
+
+NEOPIXEL::
+The APA102 device on the board, which can be driven using the
+`neopixel` function.
+
+The Adafruit ItsyBitsy M0 board includes a boot loader which presents
+as a USB mass storage device with a FAT file system. You can get the
+board into this mode by connecting the board to your computer over USB
+and then pressing the reset button twice in succession. In boot loader
+mode, the red LED on D13 will pulse rapidly for a few seconds, then
+more slowly. At that point, the APA102 device will turn green.
+
+Once the ItsyBitsy M0 is in boot loader mode and has been mounted,
+find the snek-itsybitsym0-{version}.uf2 file included in the snek
+package for your machine and copy it to the CURRENT.UF2 file on the
+ItsyBitsy M0 file system.
+
+[%nonfacing]
+[appendix]
 = Snek on Arduino Mega
 
 Snek for the Mega includes the Common System, EEPROM, GPIO and math
