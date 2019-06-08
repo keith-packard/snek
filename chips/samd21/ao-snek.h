@@ -17,6 +17,28 @@
 
 #include <ao.h>
 
+#define RX_LINEBUF	132
+
+#define SNEK_GETC()		getc(stdin)
+#define SNEK_POOL		(16 * 1024)
+
+#define SNEK_IO_GETC(file)	ao_usb_getc()
+#define SNEK_IO_WAITING(file)	ao_usb_waiting()
+
+void
+ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t c, uint16_t value);
+
+void
+ao_snek_clr_pwm(void *gpio, uint8_t pin);
+
+int
+ao_snek_getc(FILE *stream);
+
+void
+snek(void);
+
+extern bool snek_eof;
+
 #define SNEK_PIN_PULL_DOWN	0x01
 
 int

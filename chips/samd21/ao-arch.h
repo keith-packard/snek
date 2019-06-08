@@ -69,6 +69,18 @@
 /* ADC maximum reported value */
 #define AO_ADC_MAX			4095
 
+#define AO_TCC_PERIOD		65536
+#define SNEK_PWM_MAX		(AO_TCC_PERIOD-1)
+
+#define AO_TICK_TYPE		uint32_t
+#define AO_TICK_SIGNED		int32_t
+
+bool
+ao_usb_waiting(void);
+
+#define AO_CMD_LEN		128
+#define AO_STACK_SIZE		2048
+
 #endif /* _AO_ARCH_H_ */
 
 

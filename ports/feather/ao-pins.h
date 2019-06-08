@@ -266,38 +266,4 @@
 
 #define LEDS_AVAILABLE		(AO_LED_TX)
 
-#define AO_CMD_LEN		128
-#define AO_STACK_SIZE		2048
-
-#define AO_TICK_TYPE		uint32_t
-#define AO_TICK_SIGNED		int32_t
-
-#define SNEK_GETC()		getc(stdin)
-#define SNEK_POOL		(16 * 1024)
-
-#define AO_TCC_PERIOD		65536
-#define SNEK_PWM_MAX		(AO_TCC_PERIOD-1)
-
-#define SNEK_IO_GETC(file)	ao_usb_getc()
-#define SNEK_IO_WAITING(file)	ao_usb_waiting()
-
-void
-ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t c, uint16_t value);
-
-void
-ao_snek_clr_pwm(void *gpio, uint8_t pin);
-
-#define RX_LINEBUF	132
-
-int
-ao_snek_getc(FILE *stream);
-
-bool
-ao_usb_waiting(void);
-
-void
-snek(void);
-
-extern bool snek_eof;
-
 #endif /* _AO_PINS_H_ */
