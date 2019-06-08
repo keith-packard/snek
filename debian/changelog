@@ -1,3 +1,15 @@
+snek (1.0-1) unstable; urgency=medium
+
+  * First production upstream release (1.0)
+  * ItsyBitsy 3v support
+  * ItsyBitsy M0 support
+  * APA102 driver
+  * Fix op= when global var in scope
+  * Reset parser/lexer at end of EEPROM loading
+  * Add page-up/page-down support in snekde
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 07 Jun 2019 20:01:33 -0700
+
 snek (0.98-1) unstable; urgency=medium
 
   * 0.98 upstream release
