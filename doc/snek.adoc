@@ -1958,14 +1958,20 @@ Turns all pins off.(((stopall)))
 
 === `neopixel(` _pixels_ `)`
 
-Programs a set of neopixel devices connected to the current Power
-pin. _pixels_ is a list or tuple, each element of which is a list
-or tuple of three numbers ranging from 0 to 1 for the desired red, green
-and blue intensity of the target neopixel.(((neopixel)))
+Programs either a set of neopixel devices connected to the current
+Power pin (when Power and Direction are the same) or a set of APA102
+devices connected to the current Power (used for APA102 Data) and
+Direction (use for APA102 Clock) pins (when Power and Direction are
+different). _pixels_ is a list or tuple, each element of which is a
+list or tuple of three numbers ranging from 0 to 1 for the desired
+red, green and blue intensity of the target neopixel.(((neopixel)))
 
-	> *talkto(NEOPIXEL)*
-	> *pixels = [(0.33, 0, 0), (0, 0.66, 0), (0, 0, 1)]*
-	> *neopixel(pixels)*
+[source,subs="verbatim,quotes"]
+----
+> *talkto(NEOPIXEL)*
+> *pixels = [(0.33, 0, 0), (0, 0.66, 0), (0, 0, 1)]*
+> *neopixel(pixels)*
+----
 
 This example programs three NeoPixel devices, the first one is set to
 one third intensity red, the second to two thirds intensity green and
