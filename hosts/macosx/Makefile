@@ -110,7 +110,7 @@ upload: $(MACOSX_DIST)
 
 clean:
 	rm -rf serial
-	rm -rf $(SNEK)
+	rm -rf snek
 	rm -f $(MACOSX_ICON) $(MACOSX_ICON_PNGS)
 	rm -f snekde-Info.plist snek-Info.plist
 	rm -rf macosx *.dmg
