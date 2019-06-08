@@ -176,7 +176,7 @@ for infile in "$target"/Snek/*.in; do
     esac
     desktop="$target"/Snek/"$desktop"
     rm -f "$desktop"
-    sed -e "s;@SHAREDIR@;$BIN;" -e "s;@BINDIR@;$BIN;" -e "s;@ICONDIR@;$BIN;" "$infile" > "$desktop"
+    sed -e "s;@"SHAREDIR"@;$BIN;g" -e "s;@"BINDIR"@;$BIN;g" -e "s;@"ICONDIR"@;$BIN;g" -e "s;@"SNEK_VERSION"@;@SNEK_VERSION@;g" "$infile" > "$desktop"
     chmod +x "$desktop"
 done
 
