@@ -1515,7 +1515,7 @@ otherwise `other` would be `12`.
 
 === `pass`
 The `pass` statement is a place-holder that does nothing and can
-be used anyplace a statement is needed when no execution is desired.(((pass)))
+be used any place a statement is needed when no execution is desired.(((pass)))
 
 [source,subs="verbatim,quotes"]
 ----
