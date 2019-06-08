@@ -1046,6 +1046,7 @@ def screen_paint():
 
 def screen_repaint():
     global snek_edit_win, snek_repl_win
+    stdscr.clear()
     snek_edit_win.repaint()
     snek_repl_win.repaint()
     screen_paint()
