@@ -48,7 +48,7 @@ snek.cfg: snek.cfg.in $(SNEK_ROOT)/snek-install.defs $(SNEK_ROOT)/snek.defs
 snek.exe: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
 
-vpath %.svg ..
+vpath %.svg $(SNEK_ROOT)
 
 snekde.py: $(SNEK_ROOT)/snekde/snekde.py
 	cp $^ $@
