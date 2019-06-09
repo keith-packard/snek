@@ -1229,7 +1229,7 @@ as indicating _base_ and _bound_. Here are some examples:
 === String Interpolation
 
 String interpolation in Snek can be confused with formatted printing
-in other languages. In Snek, the ``print`` function takes String
+in other languages. In Snek, the ``print`` function takes its
 arguments and prints them as they are given, separating
 them with spaces on the line.
 String interpolation produces a new String from a format
