@@ -294,7 +294,7 @@ hello, world
 There's lots of stuff going on here. First, we see how to declare a
 function by using the `def` keyword, followed by the name of the
 function, followed by the “arguments” in parentheses (we'll talk about
-arguments in the next section, for now just type `()`). After the arguments
+arguments in the next section, <<Simple Arithmetic>>. For now just type `()`). After the arguments
 there's a colon.
 
 Colons appear in several places in Snek and (outside of dictionaries)
@@ -332,7 +332,7 @@ hello, world
 The first call appends a `,` to the output, while the second call
 explicitly appends a newline character, causing the output to move to
 the next line. There are a few characters that use this backslash
-notation, those are described in the section on Strings.
+notation, those are described in the section on <<String Constants>>.
 
 === Simple Arithmetic
 
@@ -379,6 +379,7 @@ understand the mathematical convention that adjacent values should be
 multiplied. The return statement is how we tell Snek that this
 function computes a value that should be given back to the caller.
 
+[#for_range]
 === Loops, Ranges and Printing Two Values
 
 Now that we have a function to do this conversion, we can print a
@@ -424,10 +425,11 @@ a character. The result of string interpolation is another string
 which is then passed to print, which displays it.
 
 How the values are inserted depends on the character following the %
-mark; that's discussed in the section on String Interpolation
-below. How to format that set of values on the right is discussed in
-the next section on Lists and Tuples.
+mark; that's discussed in the section on <<String Interpolation>>. How
+to format that set of values on the right is discussed in the next
+section, <<lists_and_tuples_tutorial>>.
 
+[#lists_and_tuples_tutorial]
 === Lists and Tuples
 
 Lists and Tuples in Snek are closely related data types. Both
@@ -453,7 +455,7 @@ Let's assign these to variables so we can explore them in more detail:
 > *t = ( 'hello,', ' world' )*
 ----
 
-As mentioned above, Lists and Tuples are ordered. That means that each
+As mentioned above, <<lists_and_tuples_tutorial>> are ordered. That means that each
 element in a List or Tuple can be referenced by number. This number is
 called the index of the element, in Snek, indices start at 0:
 
@@ -479,6 +481,7 @@ Lists can be modified, Tuples cannot:
 That last output is the Snek machine telling us that the value
 ('hello', ' world') cannot be modified.
 
+[#for_list]
 We can use another form of the `for` statement to iterate over the
 values in a List or Tuple:(((for)))(((in)))(((print)))
 
@@ -496,9 +499,10 @@ hello,
  world
 ----
 
-Similar to the range form above, this for statement assigns the
-control variable (e in this case) to each of the elements of the list
-in turn and evaluates the statements within it.
+Similar to the form described in the
+<<for_range>> section, this for statement
+assigns the control variable (e in this case) to each of the elements
+of the list in turn and evaluates the statements within it.
 
 Lists and Tuples can be concatenated with the + operator:
 
@@ -567,8 +571,8 @@ elements to a dictionary by using a index which is not already
 present. When you ask for an element which isn't present, you get an
 error message.
 
-You can also iterate over the keys in a Dictionary using the same ``for
-v in a`` syntax above. Let's try our print_list function on d:
+You can also iterate over the keys in a Dictionary using the same ``for``
+<<for_list,syntax used above>>. Let's try our print_list function on d:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -625,9 +629,9 @@ as follows:(((while)))
 90.000000 F = 32.222225 C
 ----
 
-This does exactly what the for loop did above; it first assigns F to
-0, then iterates over the statements until F is no longer less than
-100.
+This does exactly what the for loop did in the <<for_range>> section:
+it first assigns F to 0, then iterates over the statements until F is
+no longer less than 100.
 
 === If
 
@@ -1002,6 +1006,7 @@ Strings/Lists/Tuples/Dictionaries are False. The name True is just
 another way of typing the number one. Similarly, the name False is
 just another way of typing the number zero.(((Boolean)))
 
+[#lists_and_tuples_reference]
 === Lists and Tuples
 
 The ``+=`` operator works a bit different on Lists than any other
@@ -1068,7 +1073,7 @@ _value_ ``%`` _value_::
 The Modulus operator computes an integer remainder on integer
 values. If the left operand is a string, it performs “interpolation”
 with either a single value or a list/tuple of values and is used to
-generate formatted output. See the String Interpolation section below
+generate formatted output. See the <<String Interpolation>> section
 for details.(((%)))
 
 _value_ *&#42;&#42;* _value_::
@@ -1292,7 +1297,7 @@ The Operation Assignment statements take the value of the left operand and
 the value of the right operand and performs the operation indicated by
 the operator. Then it stores the result back in the location indicated
 by the left operand. There are some subtleties about this which are
-discussed in the Lists and Tuples section of the Datatypes chapter.
+discussed in the <<lists_and_tuples_reference>> section of the <<Data Types>> chapter.
 (((+=)))(((–=)))(((*=)))(((/=)))(((//=)))(((%=)))(((**=)))(((&=)))(((|=)))(((^=)))(((<\<=)))(((>>=))) 
 
 == Control Flow
@@ -1710,7 +1715,7 @@ Compute the square root of its numeric argument.(((math.sqrt)))
 == Common System Functions
 
 These functions are system-dependent, but are generally available. If
-they are available, they will work as described below.
+they are available, they will work as described here.
 
 === `exit(` _value_ `)`
 
