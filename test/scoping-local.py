@@ -29,6 +29,6 @@ def fail(which):
 def local_decl():
     i = 0
     i += 1
-    return i;
+    return i
 
 if not local_decl() == 1: fail("local_decl() == 1")
