@@ -23,7 +23,7 @@ BOOK_ATTRIBUTES=--attribute='pdf-style=snek-book'
 ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
 
 .adoc.html:
-	asciidoctor -B$(SNEK_ROOT) $(ATTRIBUTES) -b html5 $*.adoc
+	asciidoctor -v -B$(SNEK_ROOT) $(ATTRIBUTES) -b html5 $*.adoc
 
 .adoc.pdf:
 	asciidoctor-pdf -B$(SNEK_ROOT) $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
