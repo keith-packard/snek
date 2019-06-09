@@ -78,6 +78,20 @@ snek_builtin_eeprom_load(void)
 }
 #endif
 
+static int __attribute__((noinline))
+eeprom_showc(char c)
+{
+	return putc(c, stdout);
+}
+
+static uint8_t __attribute__((noinline))
+eeprom_getc(void)
+{
+	if (snek_eeprom_addr < 1024)
+		return snek_intflash_read(snek_eeprom_addr++);
+	return 0xff;
+}
+
 snek_poly_t
 snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 {
@@ -86,12 +100,12 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	(void) nnamed;
 	(void) args;
 	if (nposition)
-		putc('b' & 0x1f, stdout);
+		eeprom_showc('b' & 0x1f);
 	snek_eeprom_addr = 0;
-	while (snek_eeprom_addr < 1024 && (c = snek_intflash_read(snek_eeprom_addr++)) != 0xff)
-		putc(c, stdout);
+	while ((c = eeprom_getc()) != 0xff)
+		eeprom_showc(c);
 	if (nposition)
-		putc('c' & 0x1f, stdout);
+		eeprom_showc('c' & 0x1f);
 	return SNEK_NULL;
 }
 
@@ -107,11 +121,9 @@ int
 snek_eeprom_getchar(FILE *stream)
 {
 	(void) stream;
-	if (snek_eeprom_addr < 1024) {
-		uint8_t c = snek_intflash_read(snek_eeprom_addr++);
-		if (c != 0xff)
-			return c;
-	}
+	uint8_t c = eeprom_getc();
+	if (c != 0xff)
+		return c;
 	snek_interactive = true;
 	snek_avr_file.get = snek_io_getc;
 	return EOF;
