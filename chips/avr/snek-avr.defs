@@ -1,0 +1,82 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+
+SNEK_AO = $(SNEK_ROOT)/ao
+
+SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
+
+SNEK_AVR_SRC = \
+	ao-snek.c \
+	snek-io.c \
+	ao-led.c \
+	ao-timer.c \
+	ao-usb-avr.c \
+	ao-stdio.c \
+	ao-notask.c \
+	ao-product.c \
+	ao-panic.c
+
+SNEK_AVR_INC = \
+	ao.h \
+	ao-arch.h \
+	ao-arch-funcs.h \
+	ao-flash.h \
+	ao-led.h \
+	ao-notask.h \
+	ao-pins.h \
+	ao-product.h \
+	ao-serial.h \
+	ao-snek.h \
+	ao-usb.h
+
+SNEK_AVR_BUILTINS =
+
+OPT=-Os
+
+SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
+
+AO_CFLAGS=\
+	-std=gnu99 $(WARN_FLAGS) $(OPT) -g
+
+AVR_CFLAGS=-DF_CPU=16000000UL -mmcu=atmega32u4 -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert \
+	-I. -I$(SNEK_AVR) -I$(SNEK_AO) -I$(SNEK_ROOT) $(AO_CFLAGS)
+
+CFLAGS = $(AVR_CFLAGS) $(SNEK_CFLAGS)
+
+LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
+	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
+	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x9a0 \
+	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
+	-Wl,-Map=$(MAP)
+
+CC=avr-gcc
+
+BASE=$(PROGNAME)-$(SNEK_VERSION)
+PROG=$(BASE).elf
+HEX=$(BASE).hex
+MAP=$(BASE).map
+
+PRODUCT=$(PRODUCT_NAME)-v$(SNEK_VERSION)
+IDPRODUCT=0x000a
+
+.SUFFIXES: .elf .hex
+
+.elf.hex:
+	avr-objcopy -O ihex -R .eeprom $^ $@
+
+echo:
+	echo PROG $(PROG) HEX $(HEX) MAP $(MAP)
+
+ao-product.h: $(SNEK_ROOT)/snek.defs Makefile
+	python3 $(SNEK_AO)/make-product.py -v $(SNEK_VERSION) -p $(PRODUCT_NAME) > $@

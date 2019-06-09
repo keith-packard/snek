@@ -22,8 +22,10 @@ def check(expect,got,which):
 
 a = { 1:2, 3:4 }
 b = { "a":"b", "c":"d" }
+c = { 1:2, 1:3 }
 
 check({3:4, 1:2}, a, "a == {3:4, 1:2}")
+check({1:3}, c, "c == {1:3}")
 check({"c":"d", "a":"b"}, b, 'b = {"c":"d", "a":"b"}')
 
 check(True, 1 in a, "1 in a")

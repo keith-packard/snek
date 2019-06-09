@@ -1,0 +1,69 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+SNEKITSYBITSYBASE5V="$SHAREDIR/snek-itsybitsy5v"
+SNEKITSYBITSYBASE3V="$SHAREDIR/snek-itsybitsy3v"
+SNEKITSYBITSYREST="-@SNEK_VERSION@.hex"
+SNEKITSYBITSY="$SNEKITSYBITSYBASE5V""$SNEKITSYBITSYREST"
+
+action="fuseload"
+
+ISP=usbtiny
+
+mode=arg
+
+verify=""
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		fuse|load|fuseload)
+		    action="$i"
+		    ;;
+		-isp|--isp)
+		    mode=isp
+		    ;;
+		-3v)
+		    SNEKITSYBITSY="$SNEKITSYBITSYBASE3V""$SNEKITSYBITSYREST"
+		    ;;
+		-5v)
+		    SNEKITSYBITSY="$SNEKITSYBITSYBASE5V""$SNEKITSYBITSYREST"
+		    ;;
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		-quick)
+		    verify="-V"
+		    ;;
+		*)
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-3v} {-5v} {-hex snek-itsybitsy5v.hex} {fuseload|load|fuse}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	isp)
+	    ISP="$i"
+	    mode=arg
+	    ;;
+	hex)
+	    SNEKITSYBITSY="$i"
+	    mode=arg
+	    ;;
+    esac
+done
+
+FUSES="-U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m"
+
+case "$action" in
+    fuse)
+	avrdude -V -c $ISP -p m32u4 -u $FUSES
+	;;
+    fuseload)
+	avrdude -V -c $ISP -p m32u4 -u $FUSES && avrdude $verify -c $ISP -p m32u4 -U flash:w:"${SNEKITSYBITSY}"
+	;;
+    load)
+	avrdude $verify -c $ISP -p m32u4 -U flash:w:"${SNEKITSYBITSY}"
+	;;
+esac

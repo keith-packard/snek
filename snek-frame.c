@@ -19,8 +19,14 @@ snek_frame_t	*snek_frame;
 
 static snek_frame_t *snek_pick_frame(bool globals)
 {
-	if (globals)
+	if (globals) {
+		if (!snek_globals) {
+			snek_globals = snek_alloc(sizeof (snek_frame_t));
+			snek_globals->prev = SNEK_OFFSET_NONE;
+			snek_globals->code = SNEK_OFFSET_NONE;
+		}
 		return snek_globals;
+	}
 	return snek_frame;
 }
 
@@ -89,6 +95,9 @@ snek_variable_lookup(bool globals, snek_id_t id, bool insert)
 	snek_frame_t	*frame;
 
 	frame = snek_pick_frame(globals);
+	if (!frame)
+		return NULL;
+
 	for (i = 0; i < frame->nvariables; i++) {
 		if (frame->variables[i].id == id)
 			return &frame->variables[i];
@@ -109,32 +118,23 @@ snek_frame_lookup(snek_id_t id, bool insert)
 {
 	snek_variable_t	*v = NULL;
 
-	if (snek_frame && (v = snek_variable_lookup(false, id, insert))) {
+	if ((v = snek_variable_lookup(false, id, insert))) {
 		if (!snek_is_global(v->value))
 			return v;
 	}
-	if (insert && !snek_globals) {
-		snek_globals = snek_alloc(sizeof (snek_frame_t));
-		snek_globals->prev = SNEK_OFFSET_NONE;
-		snek_globals->code = SNEK_OFFSET_NONE;
-	}
-	if (snek_globals && (v = snek_variable_lookup(true, id, insert)))
-		return v;
-	return v;
+	return snek_variable_lookup(true, id, insert);
 }
 
-bool
+void
 snek_frame_mark_global(snek_id_t id)
 {
 	if (snek_frame) {
 		snek_variable_t *v;
 
 		v = snek_variable_lookup(false, id, true);
-		if (!v)
-			return false;
-		v->value = SNEK_GLOBAL;
+		if (v)
+			v->value = SNEK_GLOBAL;
 	}
-	return true;
 }
 
 bool

@@ -1,0 +1,30 @@
+[Application]
+name=Snek Development Environment
+version=@SNEK_VERSION@
+script=snekde.py
+icon=snek.ico
+console=true
+
+[Shortcut Snek]
+target=$INSTDIR\snek.exe
+console=true
+icon=snek.ico
+
+[Python]
+version=3.7.0
+
+[Include]
+pypi_wheels=windows-curses==1.0
+packages=serial
+
+files =@SNEK_ROOT@/COPYING
+	@SNEK_ROOT@/doc/snek.pdf
+	@SNEK_FIRMWARE@
+	@SNEK_ROOT@/examples
+	snek.exe
+	altusmetrum.inf
+	altusmetrum.cat
+
+[Build]
+installer_name=snek-windows-@SNEK_VERSION_DASH@.exe
+nsi_template=pyapp_snek.nsi

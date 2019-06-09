@@ -1,0 +1,115 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+
+SNEK_AO = $(SNEK_ROOT)/ao
+
+SNEK_LOCAL_VPATH = $(SNEK_SAMD21):$(SNEK_AO)
+
+SNEK_SAMD21_SRC = \
+	ao-snek.c \
+	snek-altos.c \
+	snek-eeprom.c \
+	snek-math.c \
+	snek-gpio.c \
+	snek-io.c \
+	ao-interrupt.c \
+	ao-led.c \
+	ao-timer.c \
+	ao-neopixel.c \
+	ao-apa102.c \
+	ao-usb-samd21.c \
+	ao-tcc-samd21.c \
+	ao-tc-samd21.c \
+	ao-adc-samd21.c \
+	ao-flash-samd21.c \
+	ao-stdio.c \
+	ao-notask.c \
+	ao-product.c \
+	ao-panic.c
+
+SNEK_SAMD21_INC = \
+	ao.h \
+	ao-adc-samd21.h \
+	ao-arch.h \
+	ao-arch-funcs.h \
+	ao-flash.h \
+	ao-led.h \
+	ao-notask.h \
+	ao-pins.h \
+	ao-product.h \
+	ao-serial.h \
+	ao-snek.h \
+	ao-tcc-samd21.h \
+	ao-tc-samd21.h \
+	ao-usb.h \
+	samd21.h
+
+SNEK_SAMD21_BUILTINS = \
+	snek-altos.builtin \
+	$(SNEK_ROOT)/snek-math.builtin
+
+NEWLIB_PRINTF_CFLAGS =
+
+NEWLIB_CFLAGS= \
+	-ffreestanding -nostdlib \
+	-isystem $(NEWLIB_NANO)/arm-none-eabi/include \
+	$(NEWLIB_PRINTF_CFLAGS)
+
+OPT=-Os
+
+WARN_FLAGS=-Wall -Wextra -Werror -Wcast-align \
+	-Wpointer-arith \
+	-Wstrict-prototypes \
+	-Wmissing-prototypes \
+	-Wmissing-declarations \
+	-Wnested-externs \
+	-Wshadow \
+	-Warray-bounds=2
+
+AO_CFLAGS=\
+	-std=gnu99 $(WARN_FLAGS) $(OPT) -g
+
+SAMD21_CFLAGS=-mlittle-endian -mcpu=cortex-m0 -mthumb\
+	-I$(SNEK_SAMD21) -I$(SNEK_AO) -I$(SNEK_ROOT) -I. $(AO_CFLAGS) $(NEWLIB_CFLAGS)
+
+CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS)
+
+LDSCRIPT=$(SNEK_SAMD21)/snek-samd21.ld
+
+LDFLAGS=$(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -Wl,-T$(LDSCRIPT)  -n
+
+LIBS=-L$(NEWLIB_NANO)/arm-none-eabi/lib/thumb/v6-m -lc -lm -lgcc
+
+CC=arm-none-eabi-gcc
+OBJCOPY=arm-none-eabi-objcopy
+NEWLIB_NANO=/usr/lib/newlib-nano
+
+PROG=$(PROGNAME)-$(SNEK_VERSION).elf
+BIN=$(PROGNAME)-$(SNEK_VERSION).bin
+UF2=$(PROGNAME)-$(SNEK_VERSION).uf2
+MAP=$(PROGNAME)-$(SNEK_VERSION).map
+
+PRODUCT=$(PRODUCT_NAME)-v$(SNEK_VERSION)
+IDPRODUCT=0x000a
+
+.SUFFIXES: .elf .bin .uf2
+
+.elf.bin:
+	$(OBJCOPY) -O binary -j '.text' -j '.ARM.exidx' -j '.rodata' -j '.textram' -j '.data' $^ $@
+
+.bin.uf2:
+	python3 $(SNEK_SAMD21)/uf2conv.py -b 0x2000 -c -o $@ $^
+
+ao-product.h: $(SNEK_ROOT)/snek.defs Makefile
+	python3 $(SNEK_AO)/make-product.py -v $(SNEK_VERSION) -p $(PRODUCT_NAME) > $@

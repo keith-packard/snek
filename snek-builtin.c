@@ -27,6 +27,8 @@ snek_builtin_print(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	while (nposition--) {
 		snek_poly_t arg = *args++;
 		snek_poly_print(stdout, arg, 's');
+		if (nposition)
+			putc(' ', stdout);
 	}
 	snek_poly_t end = SNEK_NULL;
 

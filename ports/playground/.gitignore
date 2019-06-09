@@ -1,0 +1,6 @@
+*.bin
+*.map
+*.uf2
+*.elf
+*.o
+ao-product.h

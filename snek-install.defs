@@ -14,14 +14,16 @@ SNEKDIST ?= keithp.com:/var/www/snek/dist
 SNEKDOC ?= keithp.com:/var/www/snek
 #SNEKMAC ?= imac-remote:build/snek
 FIRMWARE ?= \
-	$(SNEK_ROOT)/snek-duino/snek-duino-$(SNEK_VERSION).hex \
-	$(SNEK_ROOT)/snek-mega/snek-mega-$(SNEK_VERSION).hex \
-	$(SNEK_ROOT)/metro-snek/metro-snek-$(SNEK_VERSION).uf2 \
-	$(SNEK_ROOT)/feather-snek/feather-snek-$(SNEK_VERSION).uf2 \
-	$(SNEK_ROOT)/crickit-snek/crickit-snek-$(SNEK_VERSION).uf2 \
-	$(SNEK_ROOT)/playground-snek/playground-snek-$(SNEK_VERSION).uf2 \
-	$(SNEK_ROOT)/itsybitsy-snek/itsybitsy-snek-$(SNEK_VERSION).hex
+	$(SNEK_PORTS)/crickit/snek-crickit-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/duemilanove/snek-duemilanove-$(SNEK_VERSION).hex \
+	$(SNEK_PORTS)/feather/snek-feather-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/itsybitsy3v/snek-itsybitsy3v-$(SNEK_VERSION).hex \
+	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy5v-$(SNEK_VERSION).hex \
+	$(SNEK_PORTS)/itsybitsym0/snek-itsybitsym0-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/mega/snek-mega-$(SNEK_VERSION).hex \
+	$(SNEK_PORTS)/metrom0/snek-metrom0-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/playground/snek-playground-$(SNEK_VERSION).uf2
 USBFIRMWARE ?= \
-	$(SNEK_ROOT)/snek-mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex
+	$(SNEK_PORTS)/mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex
 
 include $(SNEK_ROOT)/snek.defs

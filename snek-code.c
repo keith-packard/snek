@@ -401,6 +401,14 @@ snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t 
 	}
 }
 
+void
+snek_code_reset(void)
+{
+	snek_compile_size = 0;
+	compile_alloc = 0;
+	snek_compile = NULL;
+}
+
 snek_code_t *
 snek_code_finish(void)
 {
@@ -416,9 +424,7 @@ snek_code_finish(void)
 		snek_code_dump(code);
 #endif
 	}
-	snek_compile_size = 0;
-	compile_alloc = 0;
-	snek_compile = NULL;
+	snek_code_reset();
 	return code;
 }
 
@@ -731,10 +737,10 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			af = af / bf;
 			break;
 		case snek_op_div:
-			af = (float) (snek_float_to_int(af) / snek_float_to_int(bf));
+			af = floorf(af / bf);
 			break;
 		case snek_op_mod:
-			af = (float) (snek_float_to_int(af) % snek_float_to_int(bf));
+			af = af - floorf(af/bf) * bf;
 			break;
 		case snek_op_pow:
 			af = powf(af, bf);
@@ -919,8 +925,13 @@ snek_assign(snek_id_t id, snek_op_t op)
 		op = snek_op_assign;
 	}
 	for (;;) {
+		bool is_pure_assign = op == snek_op_assign;
+
 		if (id != SNEK_ID_NONE) {
-			ref = snek_id_ref(id, true);
+			if (!is_pure_assign && snek_frame && !snek_id_is_local(id))
+				ref = NULL;
+			else
+				ref = snek_id_ref(id, is_pure_assign);
 			if (!ref) {
 				snek_undefined(id);
 				return;
@@ -943,7 +954,7 @@ snek_assign(snek_id_t id, snek_op_t op)
 				return;
 		}
 
-		if (op == snek_op_assign)
+		if (is_pure_assign)
 			break;
 
 		/* Recover the two values popped from the stack so

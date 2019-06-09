@@ -432,6 +432,9 @@ snek_code_add_in_enum(snek_id_t id, uint8_t for_depth);
 void
 snek_code_patch_branch(snek_offset_t branch, snek_offset_t target);
 
+void
+snek_code_reset(void);
+
 snek_code_t *
 snek_code_finish(void);
 
@@ -524,7 +527,7 @@ extern bool snek_abort;
 extern snek_frame_t	*snek_globals;
 extern snek_frame_t	*snek_frame;
 
-bool
+void
 snek_frame_mark_global(snek_offset_t name);
 
 bool
@@ -566,16 +569,22 @@ snek_func_mark(void *addr);
 void
 snek_func_move(void *addr);
 
-/* snek-lex.l */
+/* snek-lex.c */
 
-extern uint8_t snek_current_indent;
-extern char *snek_file;
 extern snek_offset_t snek_line;
 extern snek_offset_t snek_lex_line;
+extern char *snek_file;
+
+extern uint8_t snek_current_indent;
+extern uint8_t snek_lex_indent;
 extern uint8_t snek_ignore_nl;
-extern bool snek_parse_middle;
-extern bool snek_interactive;
+extern bool snek_lex_midline;
+extern bool snek_lex_exdent;
+
 extern char snek_lex_text[];
+
+token_t
+snek_lex(void);
 
 /* snek-list.c */
 
@@ -630,13 +639,6 @@ snek_list_move(void *addr);
 snek_poly_t
 snek_list_build(snek_list_type_t type, snek_offset_t size, ...);
 #endif
-
-/* snek-lex.c */
-
-extern uint8_t snek_lex_indent;
-
-token_t
-snek_lex(void);
 
 /* snek-memory.c */
 
@@ -729,6 +731,9 @@ extern const snek_mem_t snek_name_mem;
 extern snek_name_t *snek_names;
 
 /* snek-parse.c */
+
+extern bool snek_parse_middle;
+extern bool snek_interactive;
 
 #define SNEK_MAX_FORMALS	10
 

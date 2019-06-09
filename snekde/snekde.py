@@ -43,7 +43,7 @@ snek_device = False
 
 snek_dialog_waiting = False
 
-snek_cur_file = None
+snek_cur_path = None
 
 #snek_debug_file = open('log', 'w')
 
@@ -480,6 +480,25 @@ class EditWin:
     def eob(self):
         self.point = len(self.text)
 
+    # Move to previous page. That means moving up by self.lines-1 and
+    # then placing that line at the bottom of the screen
+
+    def prev_page(self):
+        pos = self.point_to_cursor(self.point)
+        self.point = self.cursor_to_point((pos[0], pos[1] - (self.lines)-1))
+        new_line = self.point_to_cursor(self.point)[1]
+        top_line = new_line - (self.lines-1)
+        top_pos = self.cursor_to_point((0, top_line))
+        self.top_line = self.point_to_cursor(top_pos)[1]
+
+    # Move to next page. This means moving down by self.lines-1 and
+    # then placing that line at the top of the screen
+
+    def next_page(self):
+        pos = self.point_to_cursor(self.point)
+        self.point = self.cursor_to_point((pos[0], pos[1] + (self.lines)-1))
+        self.top_line = self.point_to_cursor(self.point)[1]
+
     # Check whether in the last line of the buffer
 
     def in_last_line(self):
@@ -681,6 +700,10 @@ class EditWin:
             self.down()
         elif ch == curses.KEY_HOME or ch == ord('a') & 0x1f:
             self.bol()
+        elif ch == curses.KEY_PPAGE:
+            self.prev_page()
+        elif ch == curses.KEY_NPAGE:
+            self.next_page()
         elif ch == curses.KEY_END or ch == ord('e') & 0x1f:
             self.eol()
         elif ch == ord('\t'):
@@ -785,8 +808,7 @@ class GetFileWin:
     file = ""
     full_file = ""
 
-    def __init__(self, label, new=False):
-        global snek_cur_file
+    def __init__(self, label, path, new=False):
         self.label = label
         self.new = new
         self.nlines = snek_lines - 2
@@ -798,14 +820,14 @@ class GetFileWin:
         self.window = curses.newwin(self.nlines, self.ncols, self.y, self.x)
         self.window.keypad(True)
         self.window.notimeout(False)
-        if snek_cur_file:
-            self.dir = snek_cur_file.parent
+        if path:
+            self.dir = path.parent
         else:
             self.dir = Path().resolve()
         self.get_files()
-        if snek_cur_file:
+        if path:
             for i in range(len(self.files)):
-                if self.files[i] == snek_cur_file.name:
+                if self.files[i] == path.name:
                     self.set_ent(i)
                     break
 
@@ -872,8 +894,6 @@ class GetFileWin:
         self.window.refresh()
 
     def run_dialog(self):
-        global snek_cur_file
-
         while True:
             self.repaint()
             self.window.refresh()
@@ -889,16 +909,19 @@ class GetFileWin:
                 self.set_ent(self.cur_ent - 1)
             elif ch == curses.KEY_DOWN or ch == ord('n') & 0x1f:
                 self.set_ent(self.cur_ent + 1)
-            elif ch in (curses.ascii.BS, curses.KEY_BACKSPACE, curses.ascii.DEL):
-                if len(self.file) > 0:
-                    self.file = self.file[0:-1]
-            elif curses.ascii.isprint(ch):
-                self.file = self.file + chr(ch)
-            
+            else:
+                if not self.new:
+                    curses.beep()
+                elif ch in (curses.ascii.BS, curses.KEY_BACKSPACE, curses.ascii.DEL):
+                    if len(self.file) > 0:
+                        self.file = self.file[0:-1]
+                elif curses.ascii.isprint(ch):
+                    self.file = self.file + chr(ch)
+                else:
+                    curses.beep()
+                    
         del self.window
         screen_repaint()
-        if self.path:
-            snek_cur_file = self.path
         return self.path
 
 class GetPortWin:
@@ -991,8 +1014,11 @@ help_text = (
     ("F3", "Put"),
     ("F4", "Quit"),
     ("F5", "Load"),
-    ("F6", "Save")
+    ("F6", "Save"),
+    ("F7", "Switch")
     )
+
+# Paint the function key help text and the separator line
 
 def screen_paint():
     global stdscr, snek_device, snek_edit_win
@@ -1020,6 +1046,7 @@ def screen_paint():
 
 def screen_repaint():
     global snek_edit_win, snek_repl_win
+    stdscr.clear()
     snek_edit_win.repaint()
     snek_repl_win.repaint()
     screen_paint()
@@ -1095,32 +1122,56 @@ def snekde_put_text():
     snek_device.command("reset()\n", intr='')
     snek_edit_win.changed = False
 
+#
+# Load a path into the edit buffer
+#
+def load_file(path):
+    global snek_cur_path
+    with open(path, 'r') as myfile:
+        data = myfile.read()
+        snek_edit_win.set_text(data)
+        snek_cur_path = path
+        snek_edit_win.changed = False
+
+#
+# Save the edit buffer to a path
+#
+def save_file(path):
+    global snek_cur_path
+    with open(path, 'w') as myfile:
+        myfile.write(snek_edit_win.text)
+        snek_cur_path = path
+        snek_edit_win.changed = False
+
+#
+# Display a dialog box requesting a file name,
+# then load that file
+# 
 def snekde_load_file():
-    global snek_edit_win
-    dialog = GetFileWin("Load File")
-    name = dialog.run_dialog()
-    if not name:
+    global snek_edit_win, snek_cur_path
+    dialog = GetFileWin("Load File", snek_cur_path, new=False)
+    path = dialog.run_dialog()
+    if not path:
         return
     try:
-        with open(name, 'r') as myfile:
-            data = myfile.read()
-            snek_edit_win.set_text(data)
+        load_file(path)
     except OSError as e:
         ErrorWin("%s: %s" % (e.filename, e.strerror))
         
+#
+# Display a dialog box requesting a file name,
+# then save to that file
+# 
 def snekde_save_file():
-    global snek_edit_win, snek_cur_file
-    dialog = GetFileWin("Save File")
-    cur_file = snek_cur_file
-    name = dialog.run_dialog()
-    if not name:
+    global snek_edit_win, snek_cur_path
+    dialog = GetFileWin("Save File", snek_cur_path, new=True)
+    path = dialog.run_dialog()
+    if not path:
         return
-    if name != cur_file and name.exists():
-        ErrorWin("%s: already exists" % str(name))
+    if path != snek_cur_path and path.exists():
+        ErrorWin("%s: already exists" % str(path))
     try:
-        with open(name, 'w') as myfile:
-            myfile.write(snek_edit_win.text)
-            snek_edit_win.changed = False
+        save_file(path)
     except OSError as e:
         ErrorWin("%s: %s" % (e.filename, e.strerror))
 
@@ -1130,66 +1181,67 @@ def run():
     prev_exit = False
     while True:
         ch = snek_current_window.getch()
-        if ch == curses.KEY_NPAGE or ch == curses.KEY_PPAGE or ch == ord('o') & 0x1f:
-            if snek_current_window is snek_edit_win:
-                snek_current_window = snek_repl_win
-            else:
-                snek_current_window = snek_edit_win
-        elif ch == 3:
+        if ch == curses.ascii.ESC:
+            ch = snek_current_window.getch() | 0x80
+        if ch == 3:
             if snek_device:
                 snek_device.interrupt()
-        elif ch == curses.KEY_F1:
+        elif ch == curses.KEY_F1 or ch == ord('1') | 0x80:
             snekde_open_device()
-        elif ch == curses.KEY_F2:
+        elif ch == curses.KEY_F2 or ch == ord('2') | 0x80:
             if snek_device:
                 snekde_get_text()
             else:
                 ErrorWin("No device")
-        elif ch == curses.KEY_F3:
+        elif ch == curses.KEY_F3 or ch == ord('3') | 0x80:
             if snek_device:
                 snekde_put_text()
             else:
                 ErrorWin("No device")
-        elif ch == curses.KEY_F4:
+        elif ch == curses.KEY_F4 or ch == ord('4') | 0x80:
             if snek_edit_win.changed and not prev_exit:
                 ErrorWin("Unsaved changes, quit again to abandon them")
                 prev_exit = True
                 continue
             sys.exit(0)
-        elif ch == curses.KEY_F5:
+        elif ch == curses.KEY_F5 or ch == ord('5') | 0x80:
             snekde_load_file()
-        elif ch == curses.KEY_F6:
+        elif ch == curses.KEY_F6 or ch == ord('6') | 0x80:
             snekde_save_file()
-        else:
-            if ch == ord('\n'):
-                if snek_current_window is snek_edit_win:
-                    snek_current_window.dispatch(ch)
-                    snek_current_window.auto_indent()
-                elif snek_device:
-                    data = snek_repl_win.cur_line()
-                    #
-                    # Trim off snek prompts
-                    #
-                    while True:
-                        if data[:2] == "> " or data[:2] == "+ ":
-                            data = data[2:]
-                        elif data[:1] == ">" or data[:1] == "+":
-                            data = data[1:]
-                        else:
-                            break
-                    #
-                    # If we're not at the end of the buffer, copy
-                    # the line to the end
-                    #
-                    if not snek_repl_win.in_last_line():
-                        snek_repl_win.eob()
-                        snek_repl_win.insert_at_point(data)
-                    snek_repl_win.eob()
-                    snek_current_window.dispatch(ch)
-                    data += '\n'
-                    snek_device.command(data,intr='')
+        elif ch == curses.KEY_F7 or ch == ord('7') | 0x80 or ch == ord('o') & 0x1f:
+            if snek_current_window is snek_edit_win:
+                snek_current_window = snek_repl_win
             else:
+                snek_current_window = snek_edit_win
+        elif ch == ord('\n'):
+            if snek_current_window is snek_edit_win:
                 snek_current_window.dispatch(ch)
+                snek_current_window.auto_indent()
+            elif snek_device:
+                data = snek_repl_win.cur_line()
+                #
+                # Trim off snek prompts
+                #
+                while True:
+                    if data[:2] == "> " or data[:2] == "+ ":
+                        data = data[2:]
+                    elif data[:1] == ">" or data[:1] == "+":
+                        data = data[1:]
+                    else:
+                        break
+                #
+                # If we're not at the end of the buffer, copy
+                # the line to the end
+                #
+                if not snek_repl_win.in_last_line():
+                    snek_repl_win.eob()
+                    snek_repl_win.insert_at_point(data)
+                snek_repl_win.eob()
+                snek_current_window.dispatch(ch)
+                data += '\n'
+                snek_device.command(data,intr='')
+        else:
+            snek_current_window.dispatch(ch)
         prev_exit = False
 
 

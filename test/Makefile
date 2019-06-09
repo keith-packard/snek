@@ -12,9 +12,13 @@
 # General Public License for more details.
 #
 
-SNEK?=../posix/snek
+SNEK_ROOT=..
 
-TESTS = \
+include $(SNEK_ROOT)/snek.defs
+
+SNEK?=$(SNEK_PORTS)/posix/snek
+
+SUCCESS_TESTS = \
 	andor.py \
 	list.py \
 	dict.py \
@@ -33,11 +37,16 @@ TESTS = \
 	slice.py \
 	while.py \
 	while-break.py \
-	while-else.py
+	while-else.py \
+	scoping-global.py \
+	scoping-local.py
+
+FAIL_TESTS = \
+	scoping-no-decl.py
 
 check:
 	@exit=0; \
-	for TEST in $(TESTS); do \
+	for TEST in $(SUCCESS_TESTS); do \
 		echo "Running test $$TEST."; \
 		if python3 $$TEST; then \
 			echo "    python pass"; \
@@ -46,6 +55,23 @@ check:
 			exit=1; \
 		fi; \
 		if $(SNEK) $$TEST; then \
+			echo "    snek pass"; \
+		else \
+			echo "    ***************** snek fail ***********************"; \
+			exit=1; \
+		fi; \
+	done; \
+	for TEST in $(FAIL_TESTS); do \
+		echo "Running test $$TEST."; \
+		python3 $$TEST; \
+		if [ $$? -eq 1 ]; then \
+			echo "    python pass"; \
+		else \
+			echo "    ***************** python fail *********************"; \
+			exit=1; \
+		fi; \
+		$(SNEK) $$TEST; \
+		if [ $$? -eq 1 ]; then \
 			echo "    snek pass"; \
 		else \
 			echo "    ***************** snek fail ***********************"; \

@@ -19,12 +19,12 @@ include snek-install.defs
 
 SNEK_OTHEROS?=1
 ifeq ($(SNEK_OTHEROS),1)
-SNEK_OTHEROS_DIR=linux windows macosx
+SNEK_OTHEROS_DIR=$(SNEK_HOSTS)/linux $(SNEK_HOSTS)/windows $(SNEK_HOSTS)/macosx
 endif
 
 SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
 
-SNEKS = posix/snek $(FIRMWARE)
+SNEKS = $(SNEK_PORTS)/posix/snek $(FIRMWARE)
 
 all: $(SNEKS)
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done
@@ -66,9 +66,7 @@ install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 
 upload:
 	+cd doc && make upload
-	+cd linux && make upload
-	+cd windows && make upload
-	+cd macosx && make upload
+	for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload); done
 
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@

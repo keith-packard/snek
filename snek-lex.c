@@ -14,16 +14,14 @@
 
 #include "snek.h"
 
-uint8_t snek_current_indent;
-
-char *snek_file = "<stdin>";
-uint8_t snek_ignore_nl;
-
 snek_offset_t snek_lex_line = 1;
-static bool snek_lex_midline;
-static bool snek_lex_exdent;
+char *snek_file = "<stdin>";
 
+uint8_t snek_current_indent;
 uint8_t snek_lex_indent;
+uint8_t snek_ignore_nl;
+bool snek_lex_midline;
+bool snek_lex_exdent;
 
 #define SNEK_MAX_TOKEN	63
 
@@ -319,6 +317,14 @@ trailing(char *next, snek_op_t without_op, token_t without, snek_op_t with_op, t
 	}
 }
 
+static token_t __attribute__((noinline))
+snek_lex_close(token_t t)
+{
+	if (snek_ignore_nl)
+		snek_ignore_nl--;
+	return t;
+}
+
 token_t
 snek_lex(void)
 {
@@ -401,23 +407,17 @@ snek_lex(void)
 			++snek_ignore_nl;
 			RETURN(OP);
 		case ')':
-			if (snek_ignore_nl)
-				--snek_ignore_nl;
-			RETURN(CP);
+			return snek_lex_close(CP);
 		case '[':
 			++snek_ignore_nl;
 			RETURN(OS);
 		case ']':
-			if (snek_ignore_nl)
-				--snek_ignore_nl;
-			RETURN(CS);
+			return snek_lex_close(CS);
 		case '{':
 			++snek_ignore_nl;
 			RETURN(OC);
 		case '}':
-			if (snek_ignore_nl)
-				--snek_ignore_nl;
-			RETURN(CC);
+			return snek_lex_close(CC);
 		case '+':
 			return check_equal(PLUS, snek_op_plus, snek_op_assign_plus);
 		case '-':
