@@ -2237,7 +2237,7 @@ To quit from the dialog and skip loading or saving a file, press Escape.
 = Snek on Arduino Duemilanove
 
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
-functions. It does not include the Math functions. Snek for the duemilanove provides
+functions. It does not include the Math functions. Snek for the Duemilanove provides
 pre-defined variables for all of the GPIO pins:(((Duemilanove)))(((Arduino)))
 
 D0 - D13::
