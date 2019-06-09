@@ -737,10 +737,10 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			af = af / bf;
 			break;
 		case snek_op_div:
-			af = (float) (snek_float_to_int(af) / snek_float_to_int(bf));
+			af = floorf(af / bf);
 			break;
 		case snek_op_mod:
-			af = (float) (snek_float_to_int(af) % snek_float_to_int(bf));
+			af = af - floorf(af/bf) * bf;
 			break;
 		case snek_op_pow:
 			af = powf(af, bf);
