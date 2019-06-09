@@ -1658,15 +1658,19 @@ elements in a Tuple, List or Dictionary(((len)))
 4
 ----
 
-=== `print(` _string_ `, end='\n')`
+=== `print(` _value1_ `, `_value2_`, …, `end='\n')`
 
-Print writes a string to the console followed by the end value
-(default: `'\n'`).(((print)))
+Print writes all of its positional parameters to the console separated
+by spaces (`' '`) followed by the `end` named parameter (default:
+`'\n'`).(((print)))
 
 [source,subs="verbatim,quotes"]
 ----
 > *print('hello world', end='.')*
 hello world.> 
+> *print('hello', 'world')*
+hello world
+> 
 ----
 
 === `sys.stdout.flush()`
