@@ -107,7 +107,8 @@ projects in Arduino robotics:
 
  * Henry Gillespie, another 11th-grade student-teacher, created a
    robot that automatically measured a person's
-   height. This used an optical sensor to monitor movement of a light
+   height. This used an optical sensor to monitor movement of a beam as it
+   lowered onto the person's head
    and showed measurements on an attached 7-segment display. We've shown
    this device at numerous local Lego shows.
 
@@ -581,7 +582,7 @@ Let's assign our Dictionary to a variable and play with it a bit:
 
 This example shows creating the Dictionary and assigning it to `d`, then
 fetching elements of the dictionary and assigning new values. You can add
-elements to a dictionary by using a index that is not already
+elements to a dictionary by using an index that is not already
 present. When you ask for an element which isn't present, you get an
 error message.
 
