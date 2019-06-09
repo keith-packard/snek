@@ -542,7 +542,7 @@ Note that Snek re-ordered our dictionary. That's because Dictionaries
 are always stored in sorted order, and that sorting includes the type
 of the keys. Dictionaries can contain only one element with the same
 key, although you're free to specify them with duplicate keys; only
-the first value will occur in the resulting Dictionary.
+the last value will occur in the resulting Dictionary.
 
 Let's assign our Dictionary to a variable and play with it a bit:
 
