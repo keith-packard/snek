@@ -81,7 +81,7 @@ snek_builtin_eeprom_load(void)
 static int __attribute__((noinline))
 eeprom_showc(char c)
 {
-	return putc(c, stdout);
+	return ao_usb_putc(c, NULL);
 }
 
 static uint8_t __attribute__((noinline))
