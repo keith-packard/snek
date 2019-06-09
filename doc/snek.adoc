@@ -54,25 +54,25 @@ https://keithp.com
 == History and Motivations
 
 Teaching computer programming to students in the 10-14 age range
-offers some interesting challenges. Graphical languages which
+offers some interesting challenges. Graphical languages that
 construct programs from elements dragged with a mouse or touch-pad can
-be frustratingly slow. These languages don't develop portable skills
-usable with more advanced languages. Sophisticated languages like C,
+be frustratingly slow. Users of these languages don't develop portable skills
+necessary for more advanced languages. Sophisticated languages like C,
 Java and even Python are so large as to overwhelm the novice with rich
 semantics like “objects” and other higher level programming
 constructs.
 
 In days long past, beginning programmers were usually presented with
-microcomputers running very small languages, like BASIC, Forth or
-Logo. These languages were restricted not to help the student, but
-because the hosts they ran on were very small.
+microcomputers running very small languages: BASIC, Forth,
+Logo or the like. These languages were not restricted to aid the student, but
+because the hosts they ran on were small.
 
 Introductory programming is taught today in a huge range of
-environments, from embedded systems through cloud-based systems. Many
-of these are technological dead-ends—closed systems that offer no way
-to even extract source code and re-use it in another environment.
+environments, from embedded systems to cloud-based systems. Many
+of these are technological dead-ends — closed systems that offer no way
+even to extract source code, much less to reuse it in another environment.
 
-Some systems, such as Raspberry PI and Arduino, are open—they use
+Some systems, such as Raspberry PI and Arduino, are open — they use
 standard languages so that skills learned with them are useful
 elsewhere. While the smallest of these machines are similar
 in memory and CPU size to those early microcomputers, these smaller
@@ -81,43 +81,47 @@ compiler running on a separate desktop or laptop system.
 
 === Arduino in the Lego Program
 
-I brought Arduino systems into the classroom about five years ago. The
-hardware was fabulous and we built a number of fun robots. After a
-couple of years, I built some custom Arduino hardware for our needs—
-with screw terminals for the inputs and outputs, a battery pack on the
-back and high-current motor controllers to animate the robots. They're
-still Arduino's though (with an ATmega 328P processor and a FTDI
-USB to serial converter) so we can use the stock Arduino
-development tools.
+I brought Arduino systems into the classroom about five
+years ago. The hardware was fabulous and we built a number
+of fun robots. After a couple of years, I built some custom
+Arduino hardware for our needs.  Our hardware had screw
+terminals for the inputs and outputs, a battery pack on the
+back and high-current motor controllers to animate the
+robots. Because these platforms are Arduino (with an ATmega 328P
+processor and a FTDI USB to serial converter) we can use
+the stock Arduino development tools.
 
-Students struggled with the complex syntax, especially typing the
-obscure punctuation marks and remembering to insert semicolons. I
+Students struggled with the complex syntax of Arduino C:
+they found it especially hard to type the
+obscure punctuation marks and remember to insert semicolons. I
 often heard comments like “this takes too much typing” and “why is it
-so picky about semicolons”. The lack of an interactive mode made
-experimenting a bit slower than our Logo systems. In spite of the
+so picky about semicolons?” The lack of an interactive mode made
+experimenting a bit slower than on our Logo systems. In spite of the
 difficulties, there have been students who have done interesting
 projects with them:
 
- * Chris Reekie an 11th-grade student-teacher in the program, took the
+ * Chris Reekie, an 11th-grade student-teacher in the program, took the
    line follower robot design and re-wrote the Arduino firmware to
    include a PID controller algorithm. The results were spectacular,
    with the robot capable of smoothly following a line at high speed.
 
  * Henry Gillespie, another 11th-grade student-teacher, created a
-   height-measuring robot to automatically measure people's
-   height. This used an optical sensor to monitor movement of a sensor
-   and communication with an attached 7-segment display. We've shown
+   robot that automatically measured a person's
+   height. This used an optical sensor to monitor movement of a light
+   and showed measurements on an attached 7-segment display. We've shown
    this device at numerous local Lego shows.
 
- * Mark Fernandez, now a mechanical engineering student at Washington
-   University in St Louis, built a solar energy system that
-   automatically tracked the sun while he was in eighth grade.
+ * Mark Fernandez, an eighth-grade student, built a solar
+   energy system that automatically tracked the sun. Mark is
+   now a mechanical engineering student at Washington
+   University in St Louis.
 
-The hardware was just what we wanted, and a few students have used
-skills learned in the program later on, but the software was not aimed
-at young students just starting to write code. Instead of throwing out
-our existing systems and starting over, I wondered if we couldn't keep
-using the same (hand-made) hardware and just change the programming
+The hardware was just what we wanted, and a few students
+used skills learned in the program later on. However, the
+software was not aimed at young students just starting to
+write code. Instead of throwing out our existing systems and
+starting over, I wondered if we couldn't keep using the same
+(hand-made) hardware and but improve the programming
 environment.
 
 === A New Language
@@ -127,14 +131,15 @@ and offer an experience more like Lego Logo. I wanted something that
 students could use as a foundation for further computer education and
 exploration, something very much like Python.
 
-There is a smaller version of Python, called MicroPython, but that is
-still a fairly large language which takes a few hundred kB of ROM and a
-significant amount of RAM. It's also large enough that we
-couldn't cover it in any detail in our class time.
+There is a smaller version of Python, called MicroPython: it
+is still a fairly large language which takes a few hundred
+kB of ROM and a significant amount of RAM. The language is
+also large enough that we couldn't cover it in any detail in
+our class time.
 
-I finally decided to just try and write a small Python-inspired
-language that could fit on our existing hardware, which is compatible
-with the Arduino Duemilanove. These machines have:
+I finally decided to just try and write a small
+Python-inspired language that could fit on our existing
+Arduino Duemilanove compatible hardware.  This machine has:
 
  * 32kB of Flash
  * 2kB of RAM
@@ -144,25 +149,26 @@ with the Arduino Duemilanove. These machines have:
  * 6 Analog inputs
  * 14 Digital input/output pins
 
-Shrinking the language to a small Python subset should let the
-language run on this hardware while also being simple enough to expose
-students to the whole language in a small amount of class time.
+I believe that shrinking the language to a small Python
+subset will let the language run on this hardware while also
+being simple enough to expose students to the whole language
+in a small amount of class time.
 
 === Introducing Snek
 
 The goals of the Snek language are:
 
- * Text-based. A text-based language offers a richer environment for
+ * *Text-based.* A text-based language offers a richer environment for
    people comfortable with using a keyboard. It is more representative
    of real-world programming than building software using icons and a
    mouse.
 
- * Forward-looking. Skills developed while learning Snek should be
+ * *Forward-looking.* Skills developed while learning Snek should be
    transferable to other development environments.
 
- * Small. Not just to fit in smaller devices, the Snek language should
-   be small enough to teach in a few hours to people with limited
-   exposure to software.
+ * *Small.* This is not just to fit in smaller devices: the
+   Snek language should be small enough to teach in a few
+   hours to people with limited exposure to software.
 
 Snek is Python-inspired, but it is not Python. It is possible to write
 Snek programs that run under a full Python system, but most Python
@@ -175,7 +181,7 @@ explore the language a bit to get a flavor of how it works. We won't
 be covering anything in detail, nor will all the subtleties be
 explored. The hope is to provide a framework for those details.
 
-This tutorial shows what appears on the screen, both what the user
+This tutorial shows what appears on the screen — both what the user
 types and what Snek displays. User input is shown *`in bold face,
 like this`* on the lines which start with `>` or `+`. Snek output is
 shown `in a lighter face, like this` on other lines.
@@ -183,7 +189,7 @@ shown `in a lighter face, like this` on other lines.
 === Hello World
 
 A traditional exercise in any new language is to get it to print the
-words `hello, world` to the console. Because snek offers an
+words `hello, world` to the console. Because Snek offers an
 interactive command line, we can actually do this in several ways.
 
 The first way is to use Snek to echo back what you type at it. Start
@@ -273,12 +279,12 @@ get the value by using the name elsewhere:
 'hello, world'
 ----
 
-Snek creates variables whenever you assign a value to an unknown
-variable.
+Snek creates a variable whenever you assign a value to it
+for the first time.
 
 === Functions
 
-Now let's define a function which uses `print` to print `hello world`
+Let's define a function which uses `print` to print `hello world`
 and call it. To define a new function in Snek, we use the `def`
 keyword like this:(((def)))
 
@@ -292,6 +298,7 @@ hello, world
 ----
 
 There's lots of stuff going on here. First, we see how to declare a
+
 function by using the `def` keyword, followed by the name of the
 function, followed by the “arguments” in parentheses (we'll talk about
 arguments in the next section, <<Simple Arithmetic>>. For now just type `()`). After the arguments
@@ -309,14 +316,14 @@ While entering a long compound statement like this, the command
 processor will prompt with `+` instead of `>` to let you know that
 it's still waiting for more input before it does anything. It's the
 “line with the old indentation level” that displays the second
-`+`. Hitting enter on that line ends the list of statements for the
+`>`. Hitting enter on that line ends the list of statements for the
 `hello` function and gets you back to the regular command prompt.
 
-Finally, we invoke the new `hello` function and see the results.
+Finally, we call the new `hello` function and see the results.
 
-So far, in these examples, Snek ends each print operation by moving to
+Snek normally ends each print operation by moving to
 the next line. That's because the print function has a named parameter
-called `end` which is set to a newline by default. You can change it
+called `end` which is set to a newline (`'\n'`) by default. You can change it
 to whatever you like, as in:
 
 [source,subs="verbatim,quotes"]
@@ -406,28 +413,33 @@ handy reference table for offline use:(((for)))(((in)))(((range)))
 90.000000 F = 32.222225 C
 ----
 
-First off, we've got a new statement, the `for` statement. This walks
-over a range of values, assigning the control variable (`F`, in this
-case) all of the values in the range and then evaluating the
-statements within it. The range function creates this set of values
-for `F` by starting at the first value and stepping to just before the
-second value. Each time, it steps by the third value. You can elide
-the first value and Snek will use 0 as the starting point. You can
-elide the third value and Snek will step by 1.
+We see a new statement here: the `for`
+statement. This walks over a range of values, assigning the
+control variable (`F`, in this case) to each of the values
+in the range and then evaluating the list of statements
+within it. The `range` function creates the list of values
+for `F` by starting at the first value and stepping to just
+before the second value. If you give `range` only two
+arguments, Snek will step by 1. If you give `range` only one
+argument, Snek will use 0 as the starting point.
 
-Second, we need to insert the numeric values into the string shown by
-print. In many languages, that's done with a special formatted
-printing function. In Snek, there's a more general purpose mechanism
-called “String Interpolation”. Using the % operator, Snek walks over
-the string on the left and inserts values from the set of values
-enclosed in parenthesis on the right wherever there is a % followed by
-a character. The result of string interpolation is another string
-which is then passed to print, which displays it.
+We need to insert the numeric values into the string shown
+by print. Many languages use a special formatted-printing
+function to accomplish this. In Snek, there's a more
+general-purpose mechanism called “string
+interpolation”. String interpolation uses the `%` operator.
+Snek walks over the
+string on the left and inserts values from the list of values
+enclosed in parenthesis on the right wherever there is a `%`
+followed by a character. The result of string interpolation
+is another string which is then passed to print, which
+displays it.
 
-How the values are inserted depends on the character following the %
-mark; that's discussed in the section on <<String Interpolation>>. How
-to format that set of values on the right is discussed in the next
-section, <<lists_and_tuples_tutorial>>.
+How the values are formatted depends on the character
+following the % mark; that's discussed in the section on
+_String Interpolation_ later. How to make that set of
+values on the right is discussed in the next section on
+_Lists and Tuples_.
 
 [#lists_and_tuples_tutorial]
 === Lists and Tuples
@@ -478,12 +490,12 @@ Lists can be modified, Tuples cannot:
 <stdin>:5 invalid type: ('hello,', ' world')
 ----
 
-That last output is the Snek machine telling us that the value
+That last output is Snek telling us that the value
 ('hello', ' world') cannot be modified.
 
 [#for_list]
 We can use another form of the `for` statement to iterate over the
-values in a List or Tuple:(((for)))(((in)))(((print)))
+values in a List or Tuple:(((for)))(((in)))
 
 [source,subs="verbatim,quotes"]
 ----
@@ -499,12 +511,14 @@ hello,
  world
 ----
 
+
 Similar to the form described in the
-<<for_range>> section, this for statement
-assigns the control variable (e in this case) to each of the elements
+<<for_range>> section, this `for` statement
+assigns the control variable (`e` in this case) to each of the elements
 of the list in turn and evaluates the statements within it.
 
-Lists and Tuples can be concatenated with the + operator:
+Lists and Tuples can be concatenated (joined into a single
+thing) with the `+` operator:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -512,8 +526,8 @@ Lists and Tuples can be concatenated with the + operator:
 ['hello,', ' world']
 ----
 
-Finally, Tuples of one element have a slightly odd syntax. To
-distinguish them from expressions enclosed in parenthesis, the value
+Tuples of one element have a slightly odd syntax, to
+distinguish them from expressions enclosed in parentheses: the value
 within the Tuple is followed by a comma:
 
 [source,subs="verbatim,quotes"]
@@ -524,15 +538,16 @@ within the Tuple is followed by a comma:
 ----
 === Dictionaries
 
-Dictionaries are the fanciest data structure in Snek. Like Lists and
-Tuples, Dictionaries hold multiple values. Unlike those, Dictionaries
-are not indexed by numbers. Instead, Dictionaries are index by
-another Snek value. The only requirement is that the value be
-unchanging, which means Dictionaries can only be indexed by immutable
-values. Lists and Dictionaries are the only mutable data structures in
-Snek, so there are lots of options for Dictionary indices.(((Dictionary)))
+Dictionaries are the fanciest data structure in Snek. Like
+Lists and Tuples, Dictionaries hold multiple values. Unlike
+Lists and Tuples, Dictionaries are not indexed by
+numbers. Instead, Dictionaries are indexed by another Snek
+value. The only requirement is that the index value be immutable,
+so that it can never change. Lists and Dictionaries are the only mutable data
+structures in Snek, so there are lots of options for
+Dictionary indices.(((Dictionary)))
 
-The indexing value in a Dictionary is called the “key”, the indexing
+The indexing value in a Dictionary is called the “key”, the indexed
 value is called the “value”. Dictionaries are input by enclosing
 key/value pairs, separated by commas, inside curly braces:
 
@@ -565,14 +580,14 @@ Let's assign our Dictionary to a variable and play with it a bit:
 <stdin>:7 invalid value: 56
 ----
 
-This example shows creating the Dictionary and assigning it to d, then
-fetching elements of the dictionary and assigning to them. You can add
-elements to a dictionary by using a index which is not already
+This example shows creating the Dictionary and assigning it to `d`, then
+fetching elements of the dictionary and assigning new values. You can add
+elements to a dictionary by using a index that is not already
 present. When you ask for an element which isn't present, you get an
 error message.
 
 You can also iterate over the keys in a Dictionary using the same ``for``
-<<for_list,syntax used above>>. Let's try our print_list function on d:
+<<for_list,syntax used above>>. Let's try our print_list function on `d`:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -582,7 +597,7 @@ hello,
 1
 ----
 
-Finally, you can test to see if an element is in a Dictionary using the `in` operator:
+You can test to see if an element is in a Dictionary using the `in` operator:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -602,9 +617,9 @@ nope
 
 === While
 
-The For statement is useful when iterating over a range of
+The `for` statement is useful when iterating over a range of
 values. Sometimes we want to use more general control flow. We can
-re-write our temperature conversion chart program using a while loop
+rewrite our temperature conversion chart program using a while loop
 as follows:(((while)))
 
 [source,subs="verbatim,quotes"]
@@ -629,18 +644,19 @@ as follows:(((while)))
 90.000000 F = 32.222225 C
 ----
 
-This does exactly what the for loop did in the <<for_range>> section:
-it first assigns F to 0, then iterates over the statements until F is
+This does exactly what the `for` loop did in the <<for_range>> section:
+it first assigns `F` to 0, then iterates over the statements until `F` is
 no longer less than 100.
 
 === If
 
-If statements provide a way of selecting one of many paths of
-execution. Each block of statements is preceded by an expression, if
-that expression is True, then the following statements are
+"If" statements provide a way of selecting one of many paths of
+execution. Each block of statements is preceded by an expression: if
+the expression evaluates to `True`, then the following statements are
 executed. Otherwise, the next test is tried until the end of the
-If is reached. Here's a function which measures how many upper case,
-lower case and digits are in a string:(((if)))
+`if` is reached. Here's a function which measures how many
+upper case letters,
+lower case letters and digits are in a string:(((if)))
 
 [source,subs="verbatim,quotes"]
 ----
@@ -670,15 +686,19 @@ upper 3
 other 5
 ----
 
+The `elif` statements try other alternatives if previous
+`if` tests have not worked. The `else` statement is tried if
+all previous `if` and `elif` tests have not worked.
+
 This example also introduces the less-than-or-equal comparison
-operator, ``\<=``, and demonstrates that ``for v in a`` also works on strings.
+operator ``\<=`` and demonstrates that ``for v in a`` also works on strings.
 
 === Controlling GPIOs
 
 General-purpose IO pins, or “GPIOs”, are pins on an embedded processor
 which can be controlled by a program running on that processor.
 
-When snek runs on embedded devices like the Duemilanove or the Metro
+When Snek runs on embedded devices like the Duemilanove or the Metro
 M0 Express, it provides functions to directly manipulate these GPIO
 pins. You can use either of these, or any other device which uses the
 standard Arduino pin numbers, for these examples.(((GPIO)))
@@ -720,7 +740,13 @@ control the LED with this primitive switch:(((read)))(((off)))
 ----
 
 When the wire is connected, the LED turns *off*, and when the wire is
-not, the LED turns *on*. That's how simple switches work on Arduino.
+not, the LED turns *on*. That's how simple switches work on
+Arduino.
+
+Snek repeatedly reads the input and sets the LED as fast as
+it can. This happens thousands of times per second, giving
+the illusion that the LED changes the instant the switch
+changes.
 
 ==== Using an analog input
 
@@ -737,12 +763,12 @@ Analog pin 0 and make the LED track the sensor:(((read)))(((onfor)))
 
 ==== Controlling motors
 
-So far, we've only talked about using one pin at a time. Arduino motor
-controllers take two pins—one for power and one for direction. Snek
+So far we've only talked about using one pin at a time. Arduino motor
+controllers take two pins: one for power and one for direction. Snek
 lets you tell it both pins at the same time and then provides separate
 functions to set the power and direction. If you have a motor
-controller hooked to your board with pin 3 as power and pin 2 for
-direction you can run the motor at half power and have it alternate
+controller hooked to your board with pin 3 as power and pin
+2 as direction you can run the motor at half power and have it alternate
 directions with:(((setpower)))(((setleft)))(((setright)))
 
 [source,subs="verbatim,quotes"]
@@ -759,13 +785,13 @@ directions with:(((setpower)))(((setleft)))(((setright)))
 
 = Snek Reference Manual
 
-The remainder of this book forms a reference manual for the Snek
-language, including commonly available builtin functions and the Snek development environment.
+The remainder of this book is a reference manual for the Snek
+language, including built-in functions and the Snek development environment.
 
 == Lexical Structure
 
-Snek programs are broken into a sequence of tokens by the lexer,
-then the sequence of tokens is recognized by a parser.
+Snek programs are broken into a sequence of tokens by a lexer.
+The sequence of tokens is recognized by a parser.
 
 === Numbers
 
@@ -788,24 +814,25 @@ exponent::
 The letter 'e' or 'E' followed by an optional sign and a non-empty
 sequence of digits indicating the exponent magnitude.
 
-All parts are optional, although the number must include either an
-integer-part or a fraction and if only the fraction, then that must
-have at least one digit.
+All parts are optional, although the number must include at
+least one digit in either the integer part or the fraction.
 
-32-bit IEEE floating point values range from approximately
--1.70141e+38 to 1.70141e+38. There is 1 sign bit, 8 bits of exponent
-and 23 stored/24 effective bits of significand (often referred to as
-the mantissa). There are two values of infinity (plus and minus) and
-one value of NaN. Computations using integer values will generate an
-error for values which cannot be represented as a 32-bit integer. That
-includes values that are too large and values with fractional
-components.
+Floating point values (represented internally in IEEE 854
+32-bit format) range from approximately `-1.70141e+38` to
+`1.70141e+38`. There is 1 sign bit, 8 bits of exponent and 23
+stored/24 effective bits of significand (often referred to
+as the mantissa). There are two values of infinity (positive and
+negative) and a "Not a Number" (NaN) value indicating a
+failed computation. Computations using integer
+values will generate an error for values which cannot be
+represented as a 24-bit integer. That includes values that
+are too large and values with fractional components.
 
 === Names
 
 Names in Snek are used to refer to variables, both global and local to
 a particular function. Names consist of an initial letter or
-underscore followed by a sequence of letters, digits, underscore and
+underscore, followed by a sequence of letters, digits, underscore and
 period. Here are some valid names:(((Name)))
 
 [source,subs="verbatim,quotes"]
@@ -827,7 +854,7 @@ And here are some invalid names:
 === Keywords
 
 Keywords look like regular Snek names, but they are handled specially
-by the parser and thus cannot be used as names. Here is the list of
+by the language and thus cannot be used as names. Here is the list of
 Snek keywords:(((Keyword)))
 
 ----
@@ -854,13 +881,14 @@ separating out names and keywords from operators and other syntax.
 
 Snek uses indentation to identify program structure. Snek does not
 permit tabs to be used for indentation; tabs are invalid characters in
-Snek programs. Statements in the same block are indented the same
+Snek programs. Statements in the same block (list of
+statements) are indented the same
 amount; statements in deeper blocks are indented more, statements in
-external blocks less.
+shallower blocks less.
 
-When typing Snek directly at the Snek prompt, blank lines become
-significant as Snek cannot know what you will type next. You can see
-this in the Tutorial where Snek finishes an indented block at the
+When typing Snek directly at the Snek prompt blank lines become
+significant, as Snek cannot know what you will type next. You can see
+this in the Tutorial, where Snek finishes an indented block at the
 blank line.
 
 When loading Snek from a file, blank lines (and lines which contain
@@ -888,7 +916,7 @@ Carriage Return. Move to the first column on the current line.
 
 \t::
 Tab. Advance to the next 'tab stop' in the output. This is usually the
-next multiple-of-8.
+next multiple-of-8 column in the current line.
 
 \xdd::
 Hex value. Use two hex digits to represent any character.
@@ -897,13 +925,20 @@ Hex value. Use two hex digits to represent any character.
 Backslash. Use two backslashes in the input to get one backslash in
 the string constant.
 
-Anything else following the backslash is just that character.
+Anything else following the backslash is just that
+character. In particular:
+
+\"::
+Literal double-quote. Useful inside double-quoted strings.
+
+\'::
+Literal single-quote. Useful inside single-quoted strings.
 
 === List and Tuple Constants
 
-List and Tuple constants in Snek are values separated by commas
-enclosed in either square brackets (for Lists) or parentheses (for
-Tuples).
+List and Tuple constants in Snek are values separated by
+commas and enclosed in either square brackets (for Lists) or
+parentheses (for Tuples).
 
 Here are some valid Lists:
 
@@ -929,7 +964,7 @@ single-valued Tuples are represented with a trailing comma.
 
 === Dictionary Constants
 
-Dictionaries in Snek are key/value pairs separated by commas and all
+Dictionaries in Snek are key/value pairs separated by commas and
 enclosed in curly braces. Keys are separated from values with a colon.(((Dictionary)))
 
 Here are some valid Dictionaries:
@@ -941,9 +976,9 @@ Here are some valid Dictionaries:
 { 1: 'one' }
 ----
 
-You can include entries with duplicate keys, the resulting Dictionary
+You can include entries with duplicate keys: the resulting Dictionary
 will contain only the last entry. The order of the entries does not
-matter; the resulting dictionary will always be the same:
+matter otherwise: the resulting dictionary will always be the same:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -958,16 +993,16 @@ representation.
 == Data Types
 
 Like Python, Snek does not have type declarations. Instead, each value
-has an intrinsic representation and all variables may hold values of
+has an intrinsic representation — any variable may hold a value with
 any representation. To keep things reasonably simple, Snek has only a
 handful of representation types:
 
 Numbers::
 Instead of having integers and floating point values, Snek
-dispenses with integers and provides only 32-bit IEEE floats. Integer
+represents numbers in floating point as described earlier. Integer
 values of less than 24 bits can be represented exactly in these
-floating point values, so programs requiring precise integer behavior
-can still work, as long as the values can be held in 24-bits.(((Number)))
+floating point values: programs requiring precise integer behavior
+can still work as long as the values can be held in 24-bits.(((Number)))
 
 Strings::
 Strings are just lists of bytes. Snek does not have any intrinsic
@@ -976,12 +1011,12 @@ you can store UTF-8 values in them comfortably. Just don't expect
 indexing to return Unicode code points.(((String)))
 
 Lists::
-Lists are an ordered set of values. You can change the contents of a
-list, add or remove elements. In other languages, these are often
+Lists are ordered collections of values. You can change the contents of a
+list by adding or removing elements. In other languages, these are often
 called arrays or vectors. Lists are “mutable” values.(((List)))
 
 Tuples::
-Tuples are immutable lists of values. That is, you can't change the
+Tuples are immutable lists of values. You can't change the
 contents of a list once created, although if one of the elements of
 the list *is* mutable, you can modify that and see the changed results
 in the tuple.(((Tuple)))
@@ -1044,7 +1079,7 @@ Operators are things like ``+`` or ``–``. They are part of the
 grammar of the language and serve to make programs more readable than
 they would be if everything was a function call. Like Python, the
 behavior of Snek operators often depends on the values they are
-operating on.  Snek includes many (most?) of the Python
+operating on.  Snek includes most of the Python
 operators. Some numeric operations work on floating point values,
 others work on integer values. Operators which work only on integer
 values convert floating point values to integers, and then take the
@@ -1066,12 +1101,15 @@ _value_ ``/`` _value_::
 The Divide operator performs division on numbers.(((/)))
 
 _value_ ``//`` _value_::
-The Div operator performs division on integer values, producing an
-integer result.(((//)))
+The Div operator performs "integer division" on numbers, producing a
+result that is the nearest integer less than or equal to the
+quotient.(((//)))
 
 _value_ ``%`` _value_::
-The Modulus operator computes an integer remainder on integer
-values. If the left operand is a string, it performs “interpolation”
+The Modulus operator gives the "remainder after division"
+of its arguments, such that `x == y * (x // y) + x % y` for
+all numbers `x` and `y`.
+If the left operand is a string, it performs “interpolation”
 with either a single value or a list/tuple of values and is used to
 generate formatted output. See the <<String Interpolation>> section
 for details.(((%)))
@@ -1095,10 +1133,10 @@ _value_ ``>>`` _value_::
 The Right Shift operator does bit-wise left shift on integers.(((>>)))
 
 ``!`` _value_::
-The Not operator performs a Boolean Not operation on its one right
+The Not operator performs a Boolean negation operation on its right
 operand. That is, if the operand is one of the True values, then Not returns
-False (which is 0), and if the operand is a False value, then Not
-returns True (which is 1).(((!)))
+`False` (which is 0), and if the operand is a `False` value, then Not
+returns `True` (which is 1).(((!)))
 
 ``~`` _value_::
 The Logical Not operator performs a bit-wise NOT operation on its
@@ -1110,10 +1148,10 @@ performs negation on numbers.(((–)))
 
 ``+`` _value_::
 When used as a unary prefix operator, the Unary Plus operator
-does nothing at all.(((+)))
+does nothing at all to a number.(((+)))
 
 _value_ ``[`` _index_ ``]``::
-The Index operator selects the _index_ member of strings, lists,
+The Index operator selects the _index_-th member of strings, lists,
 tuples and dictionaries.((([ ])))
 
 ``[`` _value_ _[_ ``,`` _value_ … _]_ ``]``::
@@ -1162,7 +1200,8 @@ one. If _stride_ is positive, the default value for _base_ is 0 and
 the default for _bound_ is the length of the array. If _stride_ is
 negative, the default value for _base_ is the index of the last
 element in _value_ (which is ``len(``_value_``) – 1``) and the default
-value for _bound_ is ``–1``. Here are some examples:
+value for _bound_ is ``–1``. A slice with a single colon is taken
+as indicating _base_ and _bound_. Here are some examples:
 
 [source,subs="verbatim,quotes"]
 ----
@@ -1190,7 +1229,7 @@ value for _bound_ is ``–1``. Here are some examples:
 
 String interpolation in Snek can be confused with formatted printing
 in other languages. In Snek, the ``print`` function takes a single
-S. String interpolation is how this String is generated from a format
+String. String interpolation is how this String is generated from a format
 specification String and a List or Tuple of parameters.(((%)))(((string interpolation)))
 
 If only a single value is needed, it need not be enclosed in a List or
@@ -1199,7 +1238,8 @@ then String interpolation will get the wrong answer.
 
 Within the format specification String are conversion specifiers which
 indicate where to insert values from the parameters. These are
-indicated with a ``%`` sign followed by a single character which is
+indicated with a ``%`` sign followed by a single character:
+this character is
 the format indicator and specifies how to format the value. The first
 conversion specifier uses the first element from the parameters,
 etc. The format indicator characters are:
@@ -1326,9 +1366,9 @@ else:
     else_statements
 ----
 
-If _if_value_ is True, then _if_statements_ are executed. Otherwise,
-if _elif_value_ is True, then _elif_statements_ are executed. If none
-of the if or elif values are True, then the _else_statements_ are
+If _if_value_ is true, then _if_statements_ are executed. Otherwise,
+if _elif_value_ is true, then _elif_statements_ are executed. If none
+of the if or elif values are true, then the _else_statements_ are
 executed.
 
 === `while`
@@ -1353,7 +1393,7 @@ again, and if it evaluates as `True` again, the while block is
 again executed. This continues until the _while_value_ evaluates as
 `False`.
 
-When the _while_value_ evaluates as `False`, then the `else:` block
+When the _while_value_ evaluates as `False`, the `else:` block
 is executed. If a `break` statement is executed as a part of the
 while statements, then the program immediately jumps past the else
 statements. If a `continue` statement is executed as a part of the
@@ -1365,9 +1405,10 @@ ____
 `for` _name_ `in` _value_ `:` block _[_ `else:` block _]_
 ____
 
-The `for` statement assigns _name_ to each of the list of _values_ and
+For each value `v` in the list of _values_, the `for`
+statement assigns `v` to _name_ and
 then executes a block of statements. _Value_ can be specified in two
-different ways, either as a List, Tuple, Dictionary or String value, or
+different ways: as a List, Tuple, Dictionary or String values, or
 as a range expression involving numbers:(((for)))(((else)))
 
 [source,subs="verbatim,quotes"]
@@ -1380,8 +1421,9 @@ else:
 
 In this case, the _value_ must be a List,
 Tuple, Dictionary or String. For Lists and Tuples, the values are the
-elements of the object. For Strings, the values are strings of each
-separate character in the string. For Dictionaries, the values are the
+elements of the object. For Strings, the values are strings
+made from each
+separate (ASCII) character in the string. For Dictionaries, the values are the
 keys in the dictionary.
 
 [source,subs="verbatim,quotes"]
@@ -1719,11 +1761,11 @@ they are available, they will work as described here.
 
 === `exit(` _value_ `)`
 
-Terminate snek and return _value_ to the operating system. How that
+Terminate Snek and return _value_ to the operating system. How that
 value is interpreted depends on the operating system. On
 Posix-compatible systems, _value_ should be a number which forms the
-exit code for the Snek process with zero indicating Success and
-non-zero indicating Failure.(((exit)))
+exit code for the Snek process with zero indicating success and
+non-zero indicating failure.(((exit)))
 
 === `time.sleep(` _seconds_ `)`
 
@@ -1970,7 +2012,7 @@ Turns all pins off.(((stopall)))
 Programs either a set of neopixel devices connected to the current
 Power pin (when Power and Direction are the same) or a set of APA102
 devices connected to the current Power (used for APA102 Data) and
-Direction (use for APA102 Clock) pins (when Power and Direction are
+Direction (used for APA102 Clock) pins (when Power and Direction are
 different). _pixels_ is a list or tuple, each element of which is a
 list or tuple of three numbers ranging from 0 to 1 for the desired
 red, green and blue intensity of the target neopixel.(((neopixel)))
@@ -1998,14 +2040,14 @@ programs to the device.(((eeprom)))
 
 === `eeprom.write()`
 
-Reads characters from the console and writes them to eeprom until a ^D
+Reads characters from the console and writes them to eeprom until a `^D`
 character is read.(((eeprom.write)))
 
 === `eeprom.show()`
 
 Dumps the current contents of eeprom out to the console. If a
-parameter is passed to this function then a ^B character is sent
-before the text, and a ^C is sent afterwards. `Snekde` uses this feature
+parameter is passed to this function then a `^B` character is sent
+before the text, and a `^C` is sent afterwards. Snekde uses this feature
 to accurately capture the program text when the Get command is
 invoked.(((eeprom.show)))
 
@@ -2090,14 +2132,14 @@ return -1 if no characters are pending.(((stdscr.getch)))
 
 == Snek Development Environment
 
-The Snek Development Environment, snekde, is a Python program which runs
+The Snek Development Environment, Snekde, is a Python program which runs
 on Linux, Mac OS X and Windows to work with small devices running
 Snek, such as the Duemilanove and Metro M0 Express boards.(((snekde)))
 
 === Starting Snekde
 
-On Windows and Linux, launch snekde from your application menu. On Mac OS
-X, snekde is installed along with the other snek files in the Snek
+On Windows and Linux, launch `snekde` from your application menu. On Mac OS
+X, Snekde is installed along with the other Snek files in the Snek
 folder inside your personal Applications folder, which is
 inside your Home folder. Double click on the Snekde icon to launch.
 
@@ -2106,14 +2148,14 @@ mouse at all, instead it is controlled entirely using keyboard
 commands.
 
 Snekde splits the window into two panes. The upper pane is the
-”editor pane” that holds your snek program. The lower pane is the
-“console pane” and handles communications with the snek device.
+”editor pane” that holds your Snek program. The lower pane is the
+“console pane” and handles communications with the Snek device.
 
 === Basic Navigation
 
 Across the top of the window you'll see a list of commands which are
 bound to function keys. Those are there to remind you how to control
-snekde.
+Snekde.
 
 If your function keys don't work, you can use the Esc key
 along with a number key instead. Press and release the Esc key, then
@@ -2121,14 +2163,14 @@ press and release a number key. For instance, to invoke the F1
 command, press and release Esc, then press and release '1'.
 
 Between the two panes is a separator line. At the end of that line is
-the name of the currently connected snek device, such as /dev/ttyUSB0
-on Linux or COM12 on Windows. If there isn't a device connected, it
+the name of the currently connected Snek device, such as `/dev/ttyUSB0`
+on Linux or `COM12` on Windows. If there isn't a device connected, it
 will say "<no device>".
 
 The cursor shows which pane you are currently working with. To switch
 between the editor and console panes, use the F7 key. If you don't
 have one of these, or if it doesn't work, you can also use Esc-7 or
-Ctrl-o (press and hold the control key, press the 'o' key and then
+Ctrl-o (press and hold the Ctrl key, press the `o` key and then
 release both).
 
 You can move around the current pane with the arrow, home, end and
@@ -2139,10 +2181,10 @@ movement commands. The selected region of text will be highlighted.
 
 === Connecting to a Device
 
-To connect to a device running snek, press the F1 key (usually right
+To connect to a device running Snek, press the F1 key (usually right
 next to the ESC key on your keyboard). That will display a dialog box
 in the middle of the screen listing all of the devices which might be
-running snek (if you've got a serial modem or other similar device,
+running Snek (if you've got a serial modem or other similar device,
 that will also be listed here). Select the target device and press the
 ENTER key.
 
@@ -2150,7 +2192,7 @@ Don't expect anything to happen in the lower pane just yet; you'll
 have to get the attention of the device first.
 
 Switch to the Console pane (F7) and press Ctrl-c to interrupt any
-currently running snek program. You should see the Snek prompt (“> ”)
+currently running Snek program. You should see the Snek prompt (“> ”)
 appear in the pane.
 
 === Getting and Putting Programs to a Device
@@ -2163,7 +2205,7 @@ without needing to communicate with it first.
 The Get command fetches the current program from the connected device
 and puts it into the Editor pane. The Put command writes the Editor
 pane contents into non-volatile memory in the target device and then
-restarts the target device to have it re-load the program. Both of
+restarts the target device to have it reload the program. Both of
 these commands will interrupt any running Snek program before doing
 any work.
 
@@ -2207,22 +2249,22 @@ Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
-On Linux, the snek installation includes a shell script,
+On Linux, the Snek installation includes a shell script,
 snek-duemilanove-install, to install the binary using 'avrdude'. Read the
 snek-duemilanove-install manual (also included in the installation) for more
 information.
 
-On other hosts, you'll need to install avrdude. Once you've done that, there
-are two steps to getting snek installed on the device.
+On other hosts, you'll need to install 'avrdude'. Once you've done that, there
+are two steps to getting Snek installed on the device.
 
  1. Set the 'fuses' on the target device. This sets the start address back to the beginning of
     memory instead of the boot loader, and then has the device leave the eeprom contents alone when
-    re-flashing. That means you won't lose your snek program when updating the firmware.
+    re-flashing. That means you won't lose your Snek program when updating the firmware.
 +
 [source]
 $ avrdude -F -V -c usbtiny -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
 +
- 2. Install the snek binary.
+ 2. Install the Snek binary.
 +
 [source,subs="attributes+"]
 $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duemilanove-{version}.hex
@@ -2252,24 +2294,24 @@ Snek fills the ATMega 32u4 flash completely leaving no space for the
 usual USB boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
-On Linux, the snek installation includes a shell script,
+On Linux, the Snek installation includes a shell script,
 snek-itsybitsy-install, to install the binary using 'avrdude'. Read the
 snek-itsybitsy-install manual (also included in the installation) for more
 information.
 
-On other hosts, you'll need to install avrdude. Once you've done that, there
-are two steps to getting snek installed on the device.
+On other hosts, you'll need to install 'avrdude'. Once you've done that, there
+are two steps to getting Snek installed on the device.
 
  1. Set the 'fuses' on the target device. This sets the start address
     back to the beginning of memory instead of the boot loader, and
     then has the device leave the eeprom contents alone when
-    re-flashing. That means you won't lose your snek program when
+    re-flashing. That means you won't lose your Snek program when
     updating the firmware.
 +
 [source]
 $ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
 +
- 2. Install the snek binary. Pick the right voltage for your board as that
+ 2. Install the Snek binary. Pick the right voltage for your board as that
     also sets the right clock speed. For 5v boards, install the 5v binary:
 +
 [source,subs="attributes+"]
@@ -2315,8 +2357,8 @@ mode, the red LED on D13 will pulse rapidly for a few seconds, then
 more slowly. At that point, the APA102 device will turn green.
 
 Once the ItsyBitsy M0 is in boot loader mode and has been mounted,
-find the snek-itsybitsym0-{version}.uf2 file included in the snek
-package for your machine and copy it to the CURRENT.UF2 file on the
+find the `snek-itsybitsym0-`{version}`.uf2` file included in the Snek
+package for your machine and copy it to the `CURRENT.UF2` file on the
 ItsyBitsy M0 file system.
 
 [%nonfacing]
@@ -2336,23 +2378,23 @@ Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 5V.
 
-Snek fits comfortably in the ATmega2560 flash flash, leaving plenty of
+Snek fits comfortably in the ATmega2560 flash, leaving plenty of
 space for the serial boot loader, so re-installing Snek can be done
 over USB. However, the default firmware loaded on the ATMega16u2 that
 acts as USB to serial converter doesn't do any XON/XOFF flow control
 and so that should be replaced before installing Snek as Snekde will
 not get or put source code successfully without it.
 
-On Linux, the snek installation includes a shell script,
+On Linux, the Snek installation includes a shell script,
 snek-mega-install, to install the binary using 'avrdude'. Read the
 snek-mega-install manual (also included in the installation) for more
 information.
 
-On other hosts, you'll need to install avrdude. Once you've done that,
-you can use it to get snek installed on the device. Because the EEPROM
-fuse bit can't be set this way, when you do this, any snek program
+On other hosts, you'll need to install 'avrdude'. Once you've done that,
+you can use it to get Snek installed on the device. Because the EEPROM
+fuse bit can't be set this way, when you do this any Snek program
 stored on the device will be erased. Find out what port the Mega is
-connected to, use that as the value for `<port>` and then run avrdude as follows:
+connected to, use that as the value for `<port>` and then run 'avrdude' as follows:
 
 [source,subs="attributes+"]
 $ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{version}.hex:i
@@ -2387,8 +2429,8 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the snek-metrom0-{version}.uf2 file included in the snek
-package for your machine and copy it to the CURRENT.UF2 file on the
+Then, find the `snek-metrom0-`{version}`.uf2` file included in the Snek
+package for your machine and copy it to the `CURRENT.UF2` file on the
 Metro M0 file system.
 
 [%nonfacing]
@@ -2424,8 +2466,8 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the snek-feather-{version}.uf2 file included in the snek
-package for your machine and copy it to the CURRENT.UF2 file on the
+Then, find the `snek-feather-`{version}`.uf2` file included in the Snek
+package for your machine and copy it to the `CURRENT.UF2` file on the
 Feather M0 file system.
 
 [%nonfacing]
@@ -2441,8 +2483,8 @@ High current “Darlington” 500mA drive outputs.
 
 MOTOR1, MOTOR2::
 Bi-directional DC motor control, 1A max current. These are tuples with
-two values each. MOTOR1[0] and MOTOR2[0] are the power pins. MOTOR1[1]
-and MOTOR2[1] are the direction pins. Note that there's a bit of
+two values each. `MOTOR1[0]` and `MOTOR2[0]` are the power pins. `MOTOR1[1]`
+and `MOTOR2[1]` are the direction pins. Note that there's a bit of
 firmware behind these pins as the TI DRV8833 chip has a slightly funky
 control mechanism.
 
@@ -2468,8 +2510,8 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the snek-crickit-{version}.uf2 file included in the snek
-package for your machine and copy it to the CURRENT.UF2 file on the
+Then, find the `snek-crickit-`{version}`.uf2` file included in the Snek
+package for your machine and copy it to the `CURRENT.UF2` file on the
 Crickit file system.
 
 [%nonfacing]
@@ -2517,8 +2559,8 @@ to your computer over USB, sliding the switch to the right (towards
 the microphone) and then pressing the reset button twice in quick
 succession.(((Playground)))
 
-Then, find the snek-playground-{version}.uf2 file included in the snek
-package for your machine and copy it to the CURRENT.UF2 file on the
+Then, find the `snek-playground-`{version}`.uf2` file included in the Snek
+package for your machine and copy it to the `CURRENT.UF2` file on the
 Circuit Playground Express file system.
 
 ifdef::backend-pdf[]
