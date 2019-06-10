@@ -1,3 +1,9 @@
+snek (1.0-2) unstable; urgency=medium
+
+  * Update debian/copyright.
+
+ -- Keith Packard <keithp@keithp.com>  Sun, 09 Jun 2019 19:04:03 -0700
+
 snek (1.0-1) unstable; urgency=medium
 
   * First production upstream release (1.0)
