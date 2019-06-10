@@ -68,11 +68,9 @@ static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
 	},
 };
 
-#if SNEK_MEM_CACHE_NUM
+#ifdef SNEK_MEM_CACHE_NUM
 static const void ** const snek_mem_cache[] = {
-#if SNEK_MEM_CACHE_NUM > 0
 	(const void **) &SNEK_MEM_CACHE_0,
-#endif
 #if SNEK_MEM_CACHE_NUM > 1
 	(const void **) &SNEK_MEM_CACHE_1,
 #endif
