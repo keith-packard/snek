@@ -40,8 +40,11 @@ check: all
 SHAREFILES = \
 	snek.defs \
 	$(SNEK_SRC) \
+	$(SNEK_EXT_SRC) \
 	$(SNEK_RAW_INC) \
+	$(SNEK_EXT_INC) \
 	$(SNEK_BUILTINS) \
+	$(SNEK_EXT_BUILTINS) \
 	$(SNEK_ROOT)/snek-gram.ll \
 	$(SNEK_ROOT)/snek-builtin.py
 
