@@ -30,6 +30,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 		| DEF
 			@{
 				snek_parse_nformal = 0;
+				snek_parse_nnamed = 0;
 			}@
 		  NAME
 			@{
@@ -74,9 +75,14 @@ formal		: NAME
 		;
 opt-named-p	: ASSIGN expr
 			@{
+				snek_parse_nnamed = 1;
 				snek_code_add_op_id(snek_op_assign_named, snek_parse_formals[--snek_parse_nformal]);
 			}@
 		|
+			@{
+				if (snek_parse_nnamed)
+					return parse_return_syntax;
+			}@
 		;
 opt-stats	: stat opt-stats
 		|
