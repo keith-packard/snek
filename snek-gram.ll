@@ -499,6 +499,8 @@ expr-prim	: OP opt-tuple CP
 		| OS opt-actuals CS
 			@{
 				snek_offset_t num = value_pop().offset;
+				if (num >= 256)
+					return parse_return_syntax;
 				snek_code_add_op_offset(snek_op_list, num);
 			}@
 		| OC
