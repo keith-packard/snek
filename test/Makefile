@@ -42,7 +42,12 @@ SUCCESS_TESTS = \
 	scoping-local.py
 
 FAIL_TESTS = \
-	scoping-no-decl.py
+	scoping-no-decl.py \
+	list-named.py \
+	tuple-named.py \
+	range-named.py \
+	formal-named-first.py \
+	actual-named-first.py
 
 check:
 	@exit=0; \
@@ -63,14 +68,14 @@ check:
 	done; \
 	for TEST in $(FAIL_TESTS); do \
 		echo "Running test $$TEST."; \
-		python3 $$TEST; \
+		python3 $$TEST 2>/dev/null; \
 		if [ $$? -eq 1 ]; then \
 			echo "    python pass"; \
 		else \
 			echo "    ***************** python fail *********************"; \
 			exit=1; \
 		fi; \
-		$(SNEK) $$TEST; \
+		$(SNEK) $$TEST 2>/dev/null; \
 		if [ $$? -eq 1 ]; then \
 			echo "    snek pass"; \
 		else \
