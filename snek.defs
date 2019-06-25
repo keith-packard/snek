@@ -30,6 +30,11 @@ SNEK_SRC = \
 	snek-string.c \
 	$(SNEK_LOCAL_SRC)
 
+SNEK_EXT_SRC = \
+	snek-io.c \
+	snek-math.c \
+	snek-temperature.c
+
 SNEK_OBJ=$(SNEK_SRC:.c=.o)
 
 SNEK_RAW_INC = \
@@ -44,10 +49,17 @@ SNEK_INC = \
 	$(SNEK_BUILT_INC) \
 	$(SNEK_LOCAL_INC)
 
+SNEK_EXT_INC = \
+	$(SNEK_ROOT)/snek-io.h
+
 SNEK_BUILTINS = \
 	$(SNEK_ROOT)/snek-keyword.builtin \
 	$(SNEK_ROOT)/snek-base.builtin \
 	$(SNEK_LOCAL_BUILTINS)
+
+SNEK_EXT_BUILTINS = \
+	$(SNEK_ROOT)/snek-math.builtin \
+	$(SNEK_ROOT)/snek-temperature.builtin
 
 SNEK_MOST_WARNINGS =  \
 	-Wall \
@@ -66,7 +78,7 @@ SNEK_WARNINGS = \
 
 SNEK_BASE_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) -DSNEK_VERSION='"$(SNEK_VERSION)"'
 
-SNEK_CFLAGS = $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)
+SNEK_CFLAGS ?= $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)
 
 SNEK_SED = sed \
 	-e 's;@ICONDIR@;$(ICONDIR);g' \

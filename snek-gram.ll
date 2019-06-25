@@ -30,6 +30,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 		| DEF
 			@{
 				snek_parse_nformal = 0;
+				snek_parse_nnamed = 0;
 			}@
 		  NAME
 			@{
@@ -74,9 +75,14 @@ formal		: NAME
 		;
 opt-named-p	: ASSIGN expr
 			@{
+				snek_parse_nnamed = 1;
 				snek_code_add_op_id(snek_op_assign_named, snek_parse_formals[--snek_parse_nformal]);
 			}@
 		|
+			@{
+				if (snek_parse_nnamed)
+					return parse_return_syntax;
+			}@
 		;
 opt-stats	: stat opt-stats
 		|
@@ -276,6 +282,8 @@ for-stat	: FOR NAME
 for-params	: RANGE OP opt-actuals CP COLON
 			@{
 				snek_offset_t num = value_pop().offset;
+				if (num >= 256)
+					return parse_return_syntax;
 				snek_id_t id = value_pop().id;
 				snek_code_add_in_range(id, num, for_depth);
 			for_push_prevs:
@@ -491,6 +499,8 @@ expr-prim	: OP opt-tuple CP
 		| OS opt-actuals CS
 			@{
 				snek_offset_t num = value_pop().offset;
+				if (num >= 256)
+					return parse_return_syntax;
 				snek_code_add_op_offset(snek_op_list, num);
 			}@
 		| OC
@@ -539,7 +549,10 @@ opt-tuple-p	: COMMA
 			}@
 		  opt-actuals
 			@{
-				value_push_offset(value_pop().offset + 1);
+				snek_offset_t num = value_pop().offset;
+				if (num >= 256)
+					return parse_return_syntax;
+				value_push_offset(num + 1);
 				value_push_bool(true);
 			}@
 		|
