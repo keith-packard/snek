@@ -195,6 +195,8 @@ snek_parse(void)
 		case parse_return_syntax:
 		default:
 			snek_error_syntax(snek_lex_text);
+			if (!snek_interactive)
+				return snek_parse_error;
 			{
 				/* Skip input until we get back to
 				 * zero indent
