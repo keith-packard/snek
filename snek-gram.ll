@@ -549,7 +549,10 @@ opt-tuple-p	: COMMA
 			}@
 		  opt-actuals
 			@{
-				value_push_offset(value_pop().offset + 1);
+				snek_offset_t num = value_pop().offset;
+				if (num >= 256)
+					return parse_return_syntax;
+				value_push_offset(num + 1);
 				value_push_bool(true);
 			}@
 		|
