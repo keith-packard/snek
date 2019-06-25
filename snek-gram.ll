@@ -282,6 +282,8 @@ for-stat	: FOR NAME
 for-params	: RANGE OP opt-actuals CP COLON
 			@{
 				snek_offset_t num = value_pop().offset;
+				if (num >= 256)
+					return parse_return_syntax;
 				snek_id_t id = value_pop().id;
 				snek_code_add_in_range(id, num, for_depth);
 			for_push_prevs:
