@@ -235,6 +235,10 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 	return ip + snek_op_extra_size(op);
 }
 
+#endif
+
+#ifdef DEBUG_COMPILE
+
 static void
 snek_code_dump(snek_code_t *code)
 {
