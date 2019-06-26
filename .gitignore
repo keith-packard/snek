@@ -2,4 +2,6 @@ TAGS
 snek-builtin.h
 snek-gram.h
 snek.pc
-*.o
+**/*.o
+**/*.pyc
+**/__pycache__
