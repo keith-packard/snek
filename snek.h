@@ -287,7 +287,7 @@ typedef struct snek_builtin {
 				snek_poly_t	(*func4)(snek_poly_t a0, snek_poly_t a1, snek_poly_t a2, snek_poly_t a3);
 			};
 		};
-		float		value;
+		snek_poly_t	value;
 	};
 } snek_builtin_t;
 
@@ -884,7 +884,7 @@ snek_builtin_id_to_poly(snek_id_t id)
 {
 	if (id < SNEK_BUILTIN_MAX_FUNC)
 		return snek_offset_to_poly(id << SNEK_ALLOC_SHIFT, snek_builtin);
-	return snek_float_to_poly(SNEK_BUILTIN_VALUE(&snek_builtins[id-1]));
+	return SNEK_BUILTIN_VALUE(&snek_builtins[id-1]);
 }
 
 static inline snek_id_t
