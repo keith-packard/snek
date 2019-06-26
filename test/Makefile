@@ -39,7 +39,8 @@ SUCCESS_TESTS = \
 	while-break.py \
 	while-else.py \
 	scoping-global.py \
-	scoping-local.py
+	scoping-local.py \
+	none.py
 
 FAIL_TESTS = \
 	scoping-no-decl.py \
