@@ -205,7 +205,7 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 		break;
 	case snek_op_call:
 		memcpy(&o, &code->code[ip], sizeof(snek_offset_t));
-		dbg("%d actuals\n", o);
+		dbg("%d position %d named\n", o & 0xff, o >> 8);
 		break;
 	case snek_op_slice:
 		if (code->code[ip] & SNEK_OP_SLICE_START) dbg(" start");
