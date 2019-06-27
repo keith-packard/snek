@@ -98,12 +98,6 @@ strtod (const char * nptr, char ** endptr)
     c = *nptr++;
 
     flag = 0;
-    if (c == '-') {
-	flag = FL_MINUS;
-	c = *nptr++;
-    } else if (c == '+') {
-	c = *nptr++;
-    }
 
     x.u32 = 0;
     exp = 0;
@@ -166,8 +160,6 @@ strtod (const char * nptr, char ** endptr)
 	*endptr = (char *)nptr - 1;
 
     x.flt = __floatunsisf (x.u32);		/* manually	*/
-    if ((flag & FL_MINUS) && (flag & FL_ANY))
-	x.flt = -x.flt;
 
     if (x.flt != 0) {
 	int pwr;
