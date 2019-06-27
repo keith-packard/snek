@@ -40,7 +40,8 @@ SUCCESS_TESTS = \
 	while-else.py \
 	scoping-global.py \
 	scoping-local.py \
-	none.py
+	none.py \
+	args.py
 
 FAIL_TESTS = \
 	scoping-no-decl.py \
@@ -48,7 +49,11 @@ FAIL_TESTS = \
 	tuple-named.py \
 	range-named.py \
 	formal-named-first.py \
-	actual-named-first.py
+	actual-named-first.py \
+	args-missing.py \
+	arg-dup1.py \
+	arg-dup2.py \
+	arg-unknown.py
 
 check:
 	@exit=0; \

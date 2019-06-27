@@ -23,7 +23,7 @@ static uint8_t for_depth;
 static bool snek_print_val;
 
 uint8_t snek_parse_nformal;
-static uint8_t snek_parse_nnamed;
+uint8_t snek_parse_nnamed;
 snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 snek_token_val_t snek_token_val;

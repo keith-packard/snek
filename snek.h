@@ -231,7 +231,8 @@ typedef struct snek_in {
 } snek_in_t;
 
 typedef struct snek_func {
-	snek_soffset_t	nformal;
+	uint8_t		nformal;
+	uint8_t		nrequired;
 	snek_offset_t	code;
 	snek_id_t	formals[0];
 } snek_func_t;
@@ -509,6 +510,9 @@ snek_poly_t
 snek_error_args(snek_soffset_t want, snek_soffset_t got);
 
 snek_poly_t
+snek_error_arg(snek_id_t bad);
+
+snek_poly_t
 snek_error_syntax(char *where);
 
 #if SNEK_DEBUG
@@ -738,6 +742,7 @@ extern bool snek_interactive;
 #define SNEK_MAX_FORMALS	10
 
 extern uint8_t snek_parse_nformal;
+extern uint8_t snek_parse_nnamed;
 extern snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 typedef enum {
