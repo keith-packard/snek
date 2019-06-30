@@ -1,0 +1,26 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+ANALOG1,-2,	0
+ANALOG2,-2,	1
+ANALOG3,-2,	2
+ANALOG4,-2,	3
+ANALOG5,-2,	4
+ANALOG6,-2,	5
+ANALOG7,-2,	6
+ANALOG8,-2,	7
+MOTOR1,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(8), snek_float_to_poly(9))
+MOTOR2,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(10), snek_float_to_poly(11))
+MOTOR3,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(12), snek_float_to_poly(13))
+MOTOR4,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(14), snek_float_to_poly(15))
+NEOPIXEL, -2,	16
