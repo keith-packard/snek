@@ -142,9 +142,15 @@ static const struct ao_snek_pin ao_snek_pin[AO_SNEK_NUM_PIN] = {
 	{ .gpio = AO_SNEK_GPIO_14, .pin = AO_SNEK_PIN_14, .timer = AO_SNEK_TIMER_14, .channel = AO_SNEK_CHANNEL_14, .adc = AO_SNEK_ADC_14, .flags = AO_SNEK_FLAGS_14 },
 	{ .gpio = AO_SNEK_GPIO_15, .pin = AO_SNEK_PIN_15, .timer = AO_SNEK_TIMER_15, .channel = AO_SNEK_CHANNEL_15, .adc = AO_SNEK_ADC_15, .flags = AO_SNEK_FLAGS_15 },
 	{ .gpio = AO_SNEK_GPIO_16, .pin = AO_SNEK_PIN_16, .timer = AO_SNEK_TIMER_16, .channel = AO_SNEK_CHANNEL_16, .adc = AO_SNEK_ADC_16, .flags = AO_SNEK_FLAGS_16 },
+#if AO_SNEK_NUM_PIN > 17
 	{ .gpio = AO_SNEK_GPIO_17, .pin = AO_SNEK_PIN_17, .timer = AO_SNEK_TIMER_17, .channel = AO_SNEK_CHANNEL_17, .adc = AO_SNEK_ADC_17, .flags = AO_SNEK_FLAGS_17 },
+#endif
+#if AO_SNEK_NUM_PIN > 18
 	{ .gpio = AO_SNEK_GPIO_18, .pin = AO_SNEK_PIN_18, .timer = AO_SNEK_TIMER_18, .channel = AO_SNEK_CHANNEL_18, .adc = AO_SNEK_ADC_18, .flags = AO_SNEK_FLAGS_18 },
+#endif
+#if AO_SNEK_NUM_PIN > 19
 	{ .gpio = AO_SNEK_GPIO_19, .pin = AO_SNEK_PIN_19, .timer = AO_SNEK_TIMER_19, .channel = AO_SNEK_CHANNEL_19, .adc = AO_SNEK_ADC_19, .flags = AO_SNEK_FLAGS_19 },
+#endif
 #if AO_SNEK_NUM_PIN > 20
 	{ .gpio = AO_SNEK_GPIO_20, .pin = AO_SNEK_PIN_20, .timer = AO_SNEK_TIMER_20, .channel = AO_SNEK_CHANNEL_20, .adc = AO_SNEK_ADC_20, .flags = AO_SNEK_FLAGS_20 },
 #endif
