@@ -51,6 +51,10 @@
 #if AO_DFLL48M
 #define AO_SYSCLK	AO_DFLL48M
 #endif
+#ifdef AO_XOSC
+#define AO_FDPLL96M	(AO_XOSC_FREQ / AO_XOSC_DIV * AO_XOSC_MUL)
+#define AO_SYSCLK	AO_FDPLL96M
+#endif
 
 #endif
 
@@ -69,6 +73,7 @@
 /* ADC maximum reported value */
 #define AO_ADC_MAX			4095
 
+/* This has to be 65536 so that TCC and TC match; TC isn't configurable */
 #define AO_TCC_PERIOD		65536
 #define SNEK_PWM_MAX		(AO_TCC_PERIOD-1)
 

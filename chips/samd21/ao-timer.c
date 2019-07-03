@@ -127,6 +127,20 @@ ao_clock_init(void)
 	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSC32KRDY)) == 0)
 		;
 #endif
+#ifdef AO_XOSC
+	/* Enable xosc (external xtal oscillator) */
+	samd21_sysctrl.xosc = ((SAMD21_SYSCTRL_XOSC_STARTUP_8192 << SAMD21_SYSCTRL_XOSC_STARTUP) |
+			       (1 << SAMD21_SYSCTRL_XOSC_AMPGC) |
+			       (SAMD21_SYSCTRL_XOSC_GAIN_16MHz << SAMD21_SYSCTRL_XOSC_GAIN) |
+			       (0 << SAMD21_SYSCTRL_XOSC_ONDEMAND) |
+			       (0 << SAMD21_SYSCTRL_XOSC_RUNSTDBY) |
+			       (1 << SAMD21_SYSCTRL_XOSC_XTALEN));
+	samd21_sysctrl.xosc |= ((1 << SAMD21_SYSCTRL_XOSC_ENABLE));
+
+	/* Wait for xosc */
+	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSCRDY)) == 0)
+		;
+#endif
 
 	/* Reset gclk */
 	samd21_gclk.ctrl = (1 << SAMD21_GCLK_CTRL_SWRST)
@@ -155,6 +169,48 @@ ao_clock_init(void)
 
 	samd21_gclk_clkctrl(AO_GCLK_XOSC32K, SAMD21_GCLK_CLKCTRL_ID_DFLL48M_REF);
 #endif
+
+#ifdef AO_XOSC
+
+	/* program DPLL */
+
+	/* Divide down to 1MHz */
+	samd21_sysctrl.dpllctrlb = (((AO_XOSC_DIV/2 - 1) << SAMD21_SYSCTRL_DPLLCTRLB_DIV) |
+				    (0 << SAMD21_SYSCTRL_DPLLCTRLB_LBYPASS) |
+				    (SAMD21_SYSCTRL_DPLLCTRLB_LTIME_DEFAULT << SAMD21_SYSCTRL_DPLLCTRLB_LTIME) |
+				    (SAMD21_SYSCTRL_DPLLCTRLB_REFCLK_XOSC << SAMD21_SYSCTRL_DPLLCTRLB_REFCLK) |
+				    (0 << SAMD21_SYSCTRL_DPLLCTRLB_WUF) |
+				    (1 << SAMD21_SYSCTRL_DPLLCTRLB_LPEN) |
+				    (SAMD21_SYSCTRL_DPLLCTRLB_FILTER_DEFAULT << SAMD21_SYSCTRL_DPLLCTRLB_FILTER));
+
+	/* Multiply up to 48MHz */
+	samd21_sysctrl.dpllratio = ((AO_XOSC_MUL - 1) << SAMD21_SYSCTRL_DPLLRATIO_LDR);
+
+	/* Always on in run mode, off in standby mode */
+	samd21_sysctrl.dpllctrla = ((0 << SAMD21_SYSCTRL_DPLLCTRLA_ONDEMAND) |
+				    (0 << SAMD21_SYSCTRL_DPLLCTRLA_RUNSTDBY));
+
+	/* Enable DPLL */
+	samd21_sysctrl.dpllctrla |= (1 << SAMD21_SYSCTRL_DPLLCTRLA_ENABLE);
+
+	/* Wait for the DPLL to be enabled */
+	while ((samd21_sysctrl.dpllstatus & (1 << SAMD21_SYSCTRL_DPLLSTATUS_ENABLE)) == 0)
+		;
+
+	/* Wait for the DPLL to be ready */
+	while ((samd21_sysctrl.dpllstatus & (1 << SAMD21_SYSCTRL_DPLLSTATUS_CLKRDY)) == 0)
+		;
+
+	/*
+	 * Switch generator 0 (CPU clock) to DPLL
+	 */
+
+	/* divide by 1 */
+	samd21_gclk_gendiv(AO_GCLK_SYSCLK, 1);
+
+	/* select DPLL as source */
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_FDPLL96M, AO_GCLK_SYSCLK);
+#else
 
 	/*
 	 * Enable DFLL48M clock
@@ -222,6 +278,7 @@ ao_clock_init(void)
 
 	/* select DFLL48M as source */
 	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_DFLL48M, AO_GCLK_SYSCLK);
+#endif
 
 	/* Set up all of the clocks to be /1 */
 
@@ -230,8 +287,11 @@ ao_clock_init(void)
 	samd21_pm.apbbsel = ((0 << SAMD21_PM_APBBSEL_APBBDIV));
 	samd21_pm.apbcsel = ((0 << SAMD21_PM_APBCSEL_APBCDIV));
 
+	/* Disable OSC8M */
+	samd21_sysctrl.osc8m &= ~(1 << SAMD21_SYSCTRL_OSC8M_ENABLE);
+
 	/* Additional misc configuration stuff */
 
-	/* Disable automativ NVM write operations */
+	/* Disable automatic NVM write operations */
 	samd21_nvmctrl.ctrlb |= (1 << SAMD21_NVMCTRL_CTRLB_MANW);
 }
