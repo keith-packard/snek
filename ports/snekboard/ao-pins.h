@@ -19,8 +19,11 @@
 #ifndef _AO_PINS_H_
 #define _AO_PINS_H_
 
-/* Run dffl48m clock at 48MHz */
-#define AO_DFLL48M		48000000
+/* Run fdpll96m clock from a 16MHz clock divided to 1MHz, multiplied to 48MHz */
+#define AO_XOSC			1
+#define AO_XOSC_FREQ		16000000
+#define AO_XOSC_DIV		16
+#define AO_XOSC_MUL		48
 
 #define AO_AHB_PRESCALER	1
 #define AO_APBA_PRESCALER	1
