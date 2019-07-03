@@ -96,6 +96,8 @@ is_name(char c, bool first)
 		return true;
 	if (c == '_')
 		return true;
+	if (c & 0x80)
+		return true;
 	if (!first) {
 		if (c == '.')
 			return true;
