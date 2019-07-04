@@ -91,9 +91,9 @@ void
 ao_snek_running(bool running)
 {
 	if (running)
-		ao_led_off(AO_LED_TX);
-	else
 		ao_led_on(AO_LED_TX);
+	else
+		ao_led_off(AO_LED_TX);
 }
 #endif
 
