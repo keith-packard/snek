@@ -24,6 +24,10 @@
 #define AO_POWER_MANAGEMENT	0
 #endif
 
+#ifndef AO_USB_DEVICE_ID_SERIAL
+#define AO_USB_DEVICE_ID_SERIAL 1
+#endif
+
 #if USE_USB_FIFO
 static struct ao_fifo	ao_usb_rx_fifo;
 #endif
@@ -328,7 +332,7 @@ ao_usb_ep0_in_start(uint16_t max)
 struct ao_usb_line_coding ao_usb_line_coding = {115200, 0, 0, 8};
 
 #if AO_USB_DEVICE_ID_SERIAL
-static uint8_t ao_usb_serial[2 + 48];
+static uint8_t ao_usb_serial[2 + 64];
 
 /* Convert a 32-bit value to 8 hexidecimal UCS2 characters */
 static void
