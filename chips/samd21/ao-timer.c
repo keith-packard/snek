@@ -13,6 +13,7 @@
  */
 
 #include <ao.h>
+#include <ao-snek.h>
 
 #ifndef HAS_TICK
 #define HAS_TICK 1
@@ -52,26 +53,6 @@ void samd21_systick_isr(void)
 {
 	if (samd21_systick.csr & (1 << SAMD21_SYSTICK_CSR_COUNTFLAG)) {
 		++ao_tick_count;
-#if HAS_TASK_QUEUE
-		if (ao_task_alarm_tick && (int16_t) (ao_tick_count - ao_task_alarm_tick) >= 0)
-			ao_task_check_alarm((uint16_t) ao_tick_count);
-#endif
-#if AO_DATA_ALL
-		if (++ao_data_count == ao_data_interval) {
-			ao_data_count = 0;
-#if HAS_ADC
-#if HAS_FAKE_FLIGHT
-			if (ao_fake_flight_active)
-				ao_fake_flight_poll();
-			else
-#endif
-				ao_adc_poll();
-#endif
-#if (AO_DATA_ALL & ~(AO_DATA_ADC))
-			ao_wakeup((void *) &ao_data_count);
-#endif
-		}
-#endif
 #ifdef AO_TIMER_HOOK
 		AO_TIMER_HOOK;
 #endif

@@ -121,6 +121,8 @@
  * LED		PA02
  */
 
+#define AO_SNEK_PWM_RAMP_STEP	256
+
 /* ANALOG1 */
 #define AO_SNEK_GPIO_0		(&samd21_port_b)
 #define AO_SNEK_PIN_0		8
@@ -183,6 +185,7 @@
 #define AO_SNEK_TIMER_8		(&samd21_tcc2)
 #define AO_SNEK_CHANNEL_8	AO_SNEK_TIMER_CH(0, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TCC)
 #define AO_SNEK_ADC_8		0xff
+#define AO_SNEK_FLAGS_8		SNEK_PIN_RAMP_PWM
 
 /* MOTOR1_DIR */
 #define AO_SNEK_GPIO_9		(&samd21_port_a)
@@ -197,6 +200,7 @@
 #define AO_SNEK_TIMER_10	(&samd21_tcc2)
 #define AO_SNEK_CHANNEL_10	AO_SNEK_TIMER_CH(1, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TCC)
 #define AO_SNEK_ADC_10		0xff
+#define AO_SNEK_FLAGS_10	SNEK_PIN_RAMP_PWM
 
 /* MOTOR2_DIR */
 #define AO_SNEK_GPIO_11		(&samd21_port_a)
@@ -211,6 +215,7 @@
 #define AO_SNEK_TIMER_12	(&samd21_tc3)
 #define AO_SNEK_CHANNEL_12	AO_SNEK_TIMER_CH(0, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TC)
 #define AO_SNEK_ADC_12		0xff
+#define AO_SNEK_FLAGS_12	SNEK_PIN_RAMP_PWM
 
 /* MOTOR3_DIR */
 #define AO_SNEK_GPIO_13		(&samd21_port_a)
@@ -225,6 +230,7 @@
 #define AO_SNEK_TIMER_14	(&samd21_tc3)
 #define AO_SNEK_CHANNEL_14	AO_SNEK_TIMER_CH(1, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TC)
 #define AO_SNEK_ADC_14		0xff
+#define AO_SNEK_FLAGS_14	SNEK_PIN_RAMP_PWM
 
 /* MOTOR4_DIR */
 #define AO_SNEK_GPIO_15		(&samd21_port_a)
