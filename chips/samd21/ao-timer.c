@@ -70,7 +70,7 @@ ao_timer_set_adc_interval(uint8_t interval)
 }
 #endif
 
-#define SYSTICK_RELOAD (AO_SYSTICK / 100 - 1)
+#define SYSTICK_RELOAD (AO_SYSTICK / AO_HERTZ - 1)
 
 void
 ao_timer_init(void)
