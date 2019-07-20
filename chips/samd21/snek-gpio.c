@@ -20,7 +20,7 @@ static uint8_t	power_pin;
 static uint8_t	dir_pin;
 static uint16_t	power[AO_SNEK_NUM_PIN];
 #ifdef AO_SNEK_PWM_RAMP_STEP
-static uint16_t	current_power[AO_SNEK_NUM_PIN];
+static int32_t	current_power[AO_SNEK_NUM_PIN];
 static uint8_t	pwm_ramping;
 #endif
 static uint32_t	on_pins;
@@ -206,46 +206,9 @@ ao_snek_port_init(void)
 	memset(power, 0xff, sizeof(power));
 }
 
-#ifdef AO_SNEK_PWM_RAMP_STEP
-void
-ao_snek_step_pwm(void)
-{
-	uint8_t p;
-	if (!pwm_ramping)
-		return;
-
-	pwm_ramping = 0;
-	for (p = 0; p < AO_SNEK_NUM_PIN; p++) {
-		if (ao_snek_pin[p].flags & SNEK_PIN_RAMP_PWM) {
-			if (current_power[p] != power[p]) {
-				if (current_power[p] < power[p]) {
-					uint16_t change = power[p] - current_power[p];
-					if (change > AO_SNEK_PWM_RAMP_STEP)
-						change = AO_SNEK_PWM_RAMP_STEP;
-					current_power[p] += change;
-				} else {
-					uint16_t change = current_power[p] - power[p];
-					if (change > AO_SNEK_PWM_RAMP_STEP)
-						change = AO_SNEK_PWM_RAMP_STEP;
-					current_power[p] -= change;
-				}
-				ao_snek_set_pwm(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, ao_snek_pin[p].timer, ao_snek_pin[p].channel, current_power[p]);
-				pwm_ramping = 1;
-			}
-		}
-	}
-}
-#endif
-
 static void
 ao_snek_port_set_pwm(uint8_t p, uint16_t pwm)
 {
-#ifdef AO_SNEK_PWM_RAMP_STEP
-	if ((ao_snek_pin[p].flags & SNEK_PIN_RAMP_PWM)) {
-		pwm_ramping = 1;
-		return;
-	}
-#endif
 	ao_snek_set_pwm(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, ao_snek_pin[p].timer, ao_snek_pin[p].channel, pwm);
 }
 
@@ -280,6 +243,18 @@ has_pwm(uint8_t p)
 }
 
 static bool
+has_ramp_pwm(uint8_t p)
+{
+	return (ao_snek_pin[p].flags & SNEK_PIN_RAMP_PWM) != 0;
+}
+
+static bool
+has_ramp_dir(uint8_t p)
+{
+	return p > 0 && (ao_snek_pin[p-1].flags & SNEK_PIN_RAMP_PWM) != 0;
+}
+
+static bool
 has_adc(uint8_t p)
 {
 	return ao_snek_pin[p].adc != 0xff;
@@ -306,8 +281,14 @@ set_off(uint8_t pin)
 static snek_poly_t
 _set_out(uint8_t pin, uint16_t p)
 {
+#ifdef AO_SNEK_PWM_RAMP_STEP
+	if (has_ramp_dir(pin) || has_ramp_pwm(pin)) {
+		pwm_ramping = 1;
+		return SNEK_NULL;
+	}
+#endif
 	if (has_pwm(pin)) {
-		if ((0 < p && p < SNEK_PWM_MAX) || (ao_snek_pin[pin].flags & SNEK_PIN_RAMP_PWM)) {
+		if ((0 < p && p < SNEK_PWM_MAX)) {
 			ao_snek_port_set_pwm(pin, p);
 			return SNEK_NULL;
 		}
@@ -358,6 +339,63 @@ static snek_poly_t set_out(uint8_t pin)
 		p = power[pin];
 
 	return _set_out(pin, p);
+}
+#endif
+
+#ifdef AO_SNEK_PWM_RAMP_STEP
+static int32_t
+ao_snek_pwm_power(uint8_t p)
+{
+	if (!is_on(p))
+		return 0;
+	if (is_on(p+1))
+		return (int32_t) power[p];
+	else
+		return - (int32_t) power[p];
+}
+
+void
+ao_snek_step_pwm(void)
+{
+	uint8_t p;
+	if (!pwm_ramping)
+		return;
+
+	pwm_ramping = 0;
+	for (p = 0; p < AO_SNEK_NUM_PIN; p++) {
+		if (ao_snek_pin[p].flags & SNEK_PIN_RAMP_PWM) {
+			int32_t pow = ao_snek_pwm_power(p);
+			if (current_power[p] != pow) {
+
+				/* Compute next power value */
+				int32_t change = pow - current_power[p];
+
+				if (change < -AO_SNEK_PWM_RAMP_STEP)
+					change = -AO_SNEK_PWM_RAMP_STEP;
+				else if (change > AO_SNEK_PWM_RAMP_STEP)
+					change = AO_SNEK_PWM_RAMP_STEP;
+				current_power[p] += change;
+
+				/* Convert power value into dir/pwm */
+				bool dval;
+				uint16_t pval;
+				if (current_power[p] >= 0) {
+					dval = true;
+					pval = (uint16_t) current_power[p];
+				} else {
+					dval = false;
+					pval = (uint16_t) -current_power[p];
+				}
+
+				/* Set dir and pwm pins */
+				ao_snek_port_set(p + 1, dval);
+				ao_snek_port_set_pwm(p, pval);
+
+				/* Note that we're still changing the value */
+				pwm_ramping = 1;
+			}
+		}
+	}
 }
 #endif
 
