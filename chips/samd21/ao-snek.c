@@ -161,7 +161,7 @@ main(void)
 	snek_builtin_eeprom_load();
 	printf("Welcome to snek " SNEK_VERSION "\n");
 	fflush(stdout);
-#ifdef AO_LEX_TX
+#ifdef AO_LED_TX
 	ao_snek_running(false);
 #endif
 	for (;;)
