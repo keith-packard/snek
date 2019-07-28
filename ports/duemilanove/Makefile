@@ -15,15 +15,20 @@
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 
-SNEK_LOCAL_SRC = \
-	snek-duemilanove.c \
-	snek-atmega-eeprom.c \
-	snek-io.c \
-	snek-atmega-serial.c
+include $(SNEK_ATMEGA)/snek-atmega.defs
 
 SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
-SNEK_LOCAL_INC = $(SNEK_ATMEGA)/snek-atmega.h
-SNEK_LOCAL_BUILTINS = snek-duemilanove.builtin
+
+SNEK_LOCAL_SRC = \
+	snek-duemilanove.c \
+	$(SNEK_ATMEGA_SRC)
+
+SNEK_LOCAL_INC = \
+	$(SNEK_ATMEGA_INC)
+
+SNEK_LOCAL_BUILTINS = \
+	$(SNEK_ATMEGA_BUILTINS) \
+	snek-duemilanove.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 

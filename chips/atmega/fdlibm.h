@@ -16,7 +16,7 @@
 #include <sys/types.h>
 #include <machine/ieeefp.h>
 #include <stdint.h>
-#include <snek-mega-math.h>
+#include <snek-atmega-math.h>
 
 typedef int32_t __int32_t;
 typedef uint32_t __uint32_t;

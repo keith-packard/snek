@@ -15,33 +15,24 @@
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 
-SNEK_LOCAL_SRC = \
-	snek-mega.c \
-	snek-atmega-eeprom.c \
-	snek-io.c \
-	snek-atmega-serial.c \
-	snek-math.c \
-	ef_remainder.c \
-	snek-mega-math.c \
-	sf_asinh.c \
-	ef_acosh.c \
-	ef_atanh.c \
-	sf_log1p.c \
-	sf_log2.c \
-	sf_log2_data.c \
-	sf_erf.c \
-	wf_tgamma.c \
-	erf_lgamma.c \
-	erf_gamma.c \
-	kf_sin.c \
-	kf_cos.c
+include $(SNEK_ATMEGA)/snek-atmega.defs
 
 SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
-SNEK_LOCAL_INC = $(SNEK_ATMEGA)/snek-atmega.h machine/ieeefp.h fdlibm.h snek-mega-math.h
+
+SNEK_LOCAL_SRC = \
+	$(SNEK_ATMEGA_SRC) \
+	$(SNEK_ATMEGA_MATH_SRC) \
+	snek-mega.c \
+
+SNEK_LOCAL_INC = \
+	$(SNEK_ATMEGA_INC) \
+	$(SNEK_ATMEGA_MATH_INC)
 
 SNEK_LOCAL_BUILTINS = \
-	snek-mega.builtin \
-	snek-math.builtin
+	$(SNEK_ATMEGA_BUILTINS) \
+	$(SNEK_ATMEGA_MATH_BUILTINS) \
+	snek-math.builtin \
+	snek-mega.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 

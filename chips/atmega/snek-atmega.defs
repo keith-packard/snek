@@ -1,0 +1,51 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+
+SNEK_ATMEGA_MATH_SRC = \
+	snek-math.c \
+	ef_remainder.c \
+	snek-atmega-math.c \
+	sf_asinh.c \
+	ef_acosh.c \
+	ef_atanh.c \
+	sf_log1p.c \
+	sf_log2.c \
+	sf_log2_data.c \
+	sf_erf.c \
+	wf_tgamma.c \
+	erf_lgamma.c \
+	erf_gamma.c \
+	kf_sin.c \
+	kf_cos.c
+
+SNEK_ATMEGA_SRC = \
+	snek-atmega-eeprom.c \
+	snek-io.c \
+	snek-atmega-serial.c
+
+SNEK_ATMEGA_MATH_INC = \
+	$(SNEK_ATMEGA)/snek-atmega-math.h \
+	$(SNEK_ATMEGA)/fdlibm.h \
+	$(SNEK_ATMEGA)/math_config.h
+
+SNEK_ATMEGA_INC = \
+	$(SNEK_ATMEGA)/snek-atmega.h
+
+SNEK_ATMEGA_MATH_BUILTINS = \
+	snek-math.builtin
+
+SNEK_ATMEGA_BUILTINS = \
+	snek-eeprom.builtin \
+	snek-gpio.builtin \
+	snek-atmega.builtin
