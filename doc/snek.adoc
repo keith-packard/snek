@@ -2301,17 +2301,22 @@ snekboard file system.
 = Snek on Arduino Duemilanove
 
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
-functions. It does not include the Math functions. Snek for the Duemilanove provides
-pre-defined variables for all of the GPIO pins:(((Duemilanove)))(((Arduino)))
+functions. It does not include the Math functions, nor the `pulldown`
+function. Snek for the Duemilanove provides pre-defined variables for
+all of the GPIO pins:(((Duemilanove)))(((Arduino)))
 
 D0 - D13::
-Digital input and output pins. When used as input pins, Snek applies a
-pull-up resistor to the pin so that a disconnected pin will read as 1.
+Digital input and output pins. By default, when used as input pins,
+Snek applies a pull-up resistor to the pin so that a disconnected pin
+will read as 1. Change this using `pullnone` or `pullup` functions.
 
 A0 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
-to 5V.
+to 5V. By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone` or `pullup` functions.
 
 Snek fills the ATMega 328P flash completely leaving no space for the
 usual serial boot loader, so installing Snek requires a programming
@@ -2347,13 +2352,19 @@ functions. Snek for the itsybitsy provides pre-defined
 variables for all of the the GPIO pins:(((ItsyBitsy)))
 
 D0 - D13::
-Digital input and output pins. When used as input pins, Snek applies a
-pull-up resistor to the pin so that a disconnected pin will read as 1.
+Digital input and output pins. By default, when used as input pins,
+Snek applies a pull-up resistor to the pin so that a disconnected pin
+will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
+functions.
 
 A0 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
-to 5V.
+to either 3.3V (on the 3v device) or 5V (on the 5V device).  By
+default, when used as input pins, Snek does not apply either a pull-up
+or pull-down resistor to the pin so that a disconnected pin will read
+an indeterminate value. Change this using `pullnone`, `pullup` or
+`pulldown` functions.
 
 MISO, MOSI, SCK::
 Additional digital input and output pins. These work just like D0-D13.
@@ -2400,15 +2411,20 @@ the itsybitsy m0 provides pre-defined variables for all of the the
 GPIO pins:(((ItsyBitsy M0)))
 
 D0 - D13::
-Digital input and output pins. When used as input pins, Snek applies a
-pull-up resistor to the pin so that a disconnected pin will read as 1.
-D5 on the ItsyBitsy M0 is hooked to a 3.3V to 5V converter so that it
-can drive 5V devices. This means it cannot be used as an input pin.
+Digital input and output pins. By default, when used as input pins,
+Snek applies a pull-up resistor to the pin so that a disconnected pin
+will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
+functions.  D5 on the ItsyBitsy M0 is hooked to a 3.3V to 5V converter
+so that it can drive 5V devices. This means it cannot be used as an
+input pin.
 
 A0 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
-to 5V.
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
 
 SDA, SCL, MISO, MOSI, SCK::
 Additional digital input and output pins. These work just like D0-D13.
@@ -2433,18 +2449,23 @@ ItsyBitsy M0 file system.
 [appendix]
 = Snek on Arduino Mega
 
-Snek for the Mega includes the Common System, EEPROM, GPIO and math
-functions. Snek for the Mega provides pre-defined variables for all of the GPIO
+Snek for the Mega includes the Common System, EEPROM, GPIO (not
+including the `pulldown` function) and math functions. Snek for the
+Mega provides pre-defined variables for all of the GPIO
 pins:(((Arduino Mega)))
 
 D0-D53::
-Digital input and output pins. When used as input pins, Snek applies a
-pull-up resistor to the pin so that a disconnected pin will read as 1.
+Digital input and output pins. By default, when used as input pins,
+Snek applies a pull-up resistor to the pin so that a disconnected pin
+will read as 1. Change this using `pullnone` or `pullup` functions.
 
 A0-A15::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
-to 5V.
+to 5V. By default, when used as input pins, Snek does not apply either
+a pull-up or pull-down resistor to the pin so that a disconnected pin
+will read an indeterminate value. Change this using `pullnone` or
+`pullup` functions.
 
 Snek fits comfortably in the ATmega2560 flash, leaving plenty of
 space for the serial boot loader, so re-installing Snek can be done
@@ -2477,13 +2498,18 @@ pre-defined variables for all of the GPIO pins:(((Metro M0
 Express)))(((Arduino)))
 
 D0 - D13::
-Digital input and output pins. When used as input pins, Snek applies a
-pull-up resistor to the pin so that a disconnected pin will read as 1.
+Digital input and output pins. By default, when used as input pins,
+Snek applies a pull-up resistor to the pin so that a disconnected pin
+will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
+functions.
 
 A0 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
-to 5V.
+to 3.3V. By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
 
 SDA, SCL::
 Additional Digital input and output pins. These work just like D0-D13.
@@ -2511,13 +2537,18 @@ pre-defined variables for all of the GPIO pins:(((Feather M0
 Express)))(((Arduino)))
 
 D0 - D13::
-Digital input and output pins. When used as input pins, Snek applies a
-pull-up resistor to the pin so that a disconnected pin will read as 1.
+Digital input and output pins.  By default, when used as input pins,
+Snek applies a pull-up resistor to the pin so that a disconnected pin
+will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
+functions.
 
 A0 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
-to 5V.
+to 3.3V. By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
 
 SDA, SCL, SCK, MOSI, MISO::
 Additional Digital input and output pins. These work just like D0-D13.
