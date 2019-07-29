@@ -1960,6 +1960,11 @@ on. All input and output values range between 0 and 1. Digital pins
 use only 0 or 1, analog pins support the full range of values from 0
 to 1.(((GPIO)))
 
+Input pins can be set so that they read as 0 or 1 when nothing is
+connected by using `pulldown` or `pullup`. Using `pullnone` makes the
+pin “float” to provide accurate analog readings. Digital pins are
+to `pullup` by default, Analog pins are set to `pullnone`.
+
 Output pins are either *on* or *off*. A pin which is *on* has its
 value set to the current power for that pin; changes to the current
 power for the pin are effective immediately. A pin which is *off* has
@@ -2006,6 +2011,26 @@ turns the current Power pin *off*.(((onfor)))
 Returns the value of _pin_. If this is an analog pin, then `read`
 returns a value from `0 to 1` (inclusive). If this a digital pin, then
 `read` returns either `0` or `1`.(((read)))
+
+=== `pullnone(` _pin_ `)`
+
+Removes any `pullup` or `pulldown` settings for _pin_, leaving the
+value floating when nothing is connected. Use this setting on analog
+pins to get continuous values rather than just 0 or 1. This is the
+default setting for Analog pins.
+
+=== `pullup(` _pin_ `)`
+
+Assigns a `pullup` setting for _pin_, so that the `read` will return 1
+when nothing is connected. When in this mode, analog pins will return
+only 0 or 1. This is the default setting for Digital pins.
+
+=== `pulldown(` _pin_ `)`
+
+Assigns a `pullup` setting for _pin_, so that the `read` will return 0
+when nothing is connected. When in this mode, analog pins will return
+only 0 or 1. Note that some boards do not support this mode, in which
+case this function will not be available.
 
 === `stopall()`
 
