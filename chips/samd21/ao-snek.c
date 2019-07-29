@@ -158,7 +158,7 @@ main(void)
 	setjmp(snek_reset_buf);
 	ao_snek_port_init();
 	snek_init();
-	snek_builtin_eeprom_load();
+	snek_eeprom_load();
 	printf("Welcome to snek " SNEK_VERSION "\n");
 	fflush(stdout);
 #ifdef AO_LED_TX

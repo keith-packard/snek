@@ -24,3 +24,5 @@ on, 0
 off, 0
 read, 1
 stopall, 0
+pullnone, 1
+pullup, 1

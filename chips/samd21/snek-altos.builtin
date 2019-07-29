@@ -13,19 +13,7 @@
 #
 time.sleep, 1
 time.monotonic, 0
-talkto, 1
-setpower, 1
-setleft, 0
-setright, 0
-onfor, 1
-on, 0
-off, 0
-read, 1
-stopall, 0
-eeprom.write, 0
-eeprom.show, -1
-eeprom.load, 0
-eeprom.erase, 0
+pulldown, 1
 reset, 0
 random.seed, 1
 random.randrange, 1

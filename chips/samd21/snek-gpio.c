@@ -19,6 +19,8 @@
 static uint8_t	power_pin;
 static uint8_t	dir_pin;
 static uint16_t	power[AO_SNEK_NUM_PIN];
+static uint8_t	pull[AO_SNEK_NUM_PIN];
+
 #ifdef AO_SNEK_PWM_RAMP_STEP
 static int32_t	current_power[AO_SNEK_NUM_PIN];
 static uint8_t	pwm_ramping;
@@ -200,7 +202,12 @@ ao_snek_port_init(void)
 	uint8_t p;
 	for (p = 0; p < AO_SNEK_NUM_PIN; p++) {
 		ao_snek_clr_pwm(ao_snek_pin[p].gpio, ao_snek_pin[p].pin);
-		ao_enable_input(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, AO_EXTI_MODE_PULL_NONE);
+		ao_enable_input(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, AO_MODE_PULL_NONE);
+		pull[p] = AO_MODE_PULL_NONE;
+		if (ao_snek_pin[p].flags & SNEK_PIN_PULL_DOWN)
+			pull[p] = AO_MODE_PULL_DOWN;
+		else if (ao_snek_pin[p].flags & SNEK_PIN_PULL_UP)
+			pull[p] = AO_MODE_PULL_UP;
 	}
 
 	memset(power, 0xff, sizeof(power));
@@ -242,6 +249,7 @@ has_pwm(uint8_t p)
 	return ao_snek_pin[p].timer != NULL;
 }
 
+#ifdef AO_SNEK_PWM_RAMP_STEP
 static bool
 has_ramp_pwm(uint8_t p)
 {
@@ -253,6 +261,7 @@ has_ramp_dir(uint8_t p)
 {
 	return p > 0 && (ao_snek_pin[p-1].flags & SNEK_PIN_RAMP_PWM) != 0;
 }
+#endif
 
 static bool
 has_adc(uint8_t p)
@@ -408,12 +417,23 @@ set_dir(uint8_t pin, uint8_t d)
 		ao_enable_output(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin, is_on(pin) && power[pin] != 0);
 		set_out(pin);
 	} else {
-		uint32_t mode = AO_EXTI_MODE_PULL_UP;
+		uint32_t mode = AO_MODE_PULL_UP;
+		switch (pull[pin]) {
+		case AO_MODE_PULL_NONE:
+			mode = AO_MODE_PULL_NONE;
+			break;
+		case AO_MODE_PULL_DOWN:
+			mode = AO_MODE_PULL_DOWN;
+			break;
+		case AO_MODE_PULL_UP:
+			mode = AO_MODE_PULL_UP;
+			break;
+		}
 		if (has_adc(pin)) {
-			ao_snek_set_adc(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin);
-			mode = AO_EXTI_MODE_PULL_NONE;
-		} else if (ao_snek_pin[pin].flags & SNEK_PIN_PULL_DOWN) {
-			mode = AO_EXTI_MODE_PULL_DOWN;
+			if (mode == AO_MODE_PULL_NONE)
+				ao_snek_set_adc(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin);
+			else
+				ao_snek_clr_adc(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin);
 		}
 		ao_enable_input(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin, mode);
 	}
@@ -494,8 +514,34 @@ snek_builtin_onfor(snek_poly_t a)
 {
 	snek_builtin_on();
 	snek_builtin_time_sleep(a);
-	snek_builtin_off();
-	return a;
+	return snek_builtin_off();
+}
+
+snek_poly_t
+snek_builtin_pullnone(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull[p] = AO_MODE_PULL_NONE;
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_pullup(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull[p] = AO_MODE_PULL_UP;
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_pulldown(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull[p] = AO_MODE_PULL_DOWN;
+	return SNEK_NULL;
 }
 
 #define analog_reference 1
@@ -508,7 +554,7 @@ snek_builtin_read(snek_poly_t a)
 		return SNEK_NULL;
 	set_dir(p, 0);
 
-	if (has_adc(p)) {
+	if (has_adc(p) && pull[p] == AO_MODE_PULL_NONE) {
 		float value = ao_snek_port_get_analog(p) / (float) AO_ADC_MAX;
 		return snek_float_to_poly(value);
 	} else {

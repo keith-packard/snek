@@ -46,7 +46,11 @@ snek(void);
 extern bool snek_eof;
 
 #define SNEK_PIN_PULL_DOWN	0x01
-#define SNEK_PIN_RAMP_PWM	0x02
+#define SNEK_PIN_PULL_UP	0x02
+#define SNEK_PIN_RAMP_PWM	0x04
+
+void
+snek_eeprom_load(void);
 
 int
 snek_eeprom_getchar(FILE *stream);

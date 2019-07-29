@@ -15,18 +15,21 @@
 #include "snek.h"
 
 #define NUM_PIN	70
+#define A0	54
 
 static uint8_t	power_pin;
 static uint8_t	dir_pin;
 static uint8_t	power[NUM_PIN];
 static uint8_t	on_pins[(NUM_PIN + 7) >> 3];
 
-static inline uint8_t on_byte(uint8_t p)
+static uint8_t	pull_pins[(NUM_PIN + 7) >> 3];
+
+static inline uint8_t pin_byte(uint8_t p)
 {
 	return p >> 3;
 }
 
-static inline uint8_t on_bit(uint8_t p)
+static inline uint8_t pin_bit(uint8_t p)
 {
 	return (p & 7);
 }
@@ -70,6 +73,8 @@ ISR(TIMER0_OVF_vect)
 static void
 port_init(void)
 {
+	uint8_t p;
+
 	/* Enable ADC */
 	ADCSRA = ((1 << ADPS2) |
 		  (1 << ADPS1) |
@@ -145,6 +150,9 @@ port_init(void)
 	OCR5BH = 0;
 
 	memset(power, 0xff, NUM_PIN);
+	memset(pull_pins, 0x00, NUM_PIN);
+	for (p = 0; p < A0; p++)
+		pull_pins[pin_byte(p)] |= (1 << pin_bit(p));
 }
 
 FILE snek_duino_file = FDEV_SETUP_STREAM(snek_uart_putchar, snek_eeprom_getchar, _FDEV_SETUP_RW);
@@ -236,8 +244,6 @@ static vuint8_t * PROGMEM const port_to_input_PGM[] = {
 	&PINK,
 	&PINL,
 };
-
-#define A0	54
 
 const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	// PORTLIST
@@ -489,6 +495,12 @@ tcc_val(uint8_t pin)
 	return (uint8_t) pgm_read_byte(&tcc_vals[pin]);
 }
 
+static bool
+is_pull(uint8_t pin)
+{
+	return (pull_pins[pin_byte(pin)] >> pin_bit(pin)) & 1;
+}
+
 static void
 set_dir(uint8_t pin, uint8_t d)
 {
@@ -500,7 +512,7 @@ set_dir(uint8_t pin, uint8_t d)
 		*r |= b;
 	} else {
 		*r &= ~b;
-		if (pin < A0)
+		if (is_pull(pin))
 			*p |= b;
 		else
 			*p &= ~b;
@@ -541,19 +553,19 @@ snek_builtin_talkto(snek_poly_t a)
 static bool
 is_on(uint8_t pin)
 {
-	return (on_pins[on_byte(pin)] >> on_bit(pin)) & 1;
+	return (on_pins[pin_byte(pin)] >> pin_bit(pin)) & 1;
 }
 
 static void
 set_on(uint8_t pin)
 {
-	on_pins[on_byte(pin)] |= 1 << on_bit(pin);
+	on_pins[pin_byte(pin)] |= 1 << pin_bit(pin);
 }
 
 static void
 set_off(uint8_t pin)
 {
-	on_pins[on_byte(pin)] &= ~(1 << on_bit(pin));
+	on_pins[pin_byte(pin)] &= ~(1 << pin_bit(pin));
 }
 
 static snek_poly_t
@@ -622,8 +634,25 @@ snek_builtin_onfor(snek_poly_t a)
 {
 	snek_builtin_on();
 	snek_builtin_time_sleep(a);
-	snek_builtin_off();
-	return a;
+	return snek_builtin_off();
+}
+
+snek_poly_t
+snek_builtin_pullnone(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull_pins[pin_byte(p)] &= ~(1 << pin_bit(p));
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_pullup(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull_pins[pin_byte(p)] |= (1 << pin_bit(p));
+	return SNEK_NULL;
 }
 
 #define analog_reference 1

@@ -19,6 +19,14 @@
 #include <util/delay.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
+#include <math.h>
+
+#define sqrtf snek_sqrtf
+
+static inline float
+sqrtf(float x) {
+	return powf(x, 0.5f);
+}
 
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)

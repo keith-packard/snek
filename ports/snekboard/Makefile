@@ -17,7 +17,9 @@ SNEK_ROOT = ../..
 SNEK_SAMD21 = $(SNEK_ROOT)/chips/samd21
 
 PROGNAME=snek-board
-PRODUCT_NAME=SnekBoard
+PRODUCT_NAME=snekboard
+IDPRODUCT=0x804D
+IDVENDOR=0x239A
 
 BOOTLOADER_BIN=bootloader-snekboard-v3.7.0.bin
 

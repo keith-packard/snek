@@ -82,6 +82,17 @@ static uint8_t	power_pin;
 static uint8_t	dir_pin;
 static uint8_t	on_pins[NUM_PIN];
 
+#define SNEK_PULL_NONE	0
+#define SNEK_PULL_UP	1
+
+/* digital pins all use PULL_UP by default */
+static uint8_t	pull[NUM_PIN] = {
+	1, 1, 1, 1,
+	1, 1, 1, 1,
+	1, 1, 1, 1,
+	1, 1
+};
+
 ISR(TIMER0_OVF_vect)
 {
 	// copy these to local variables so they can be stored in registers
@@ -270,7 +281,7 @@ set_dir(uint8_t pin, uint8_t d)
 		*r |= b;
 	} else {
 		*r &= ~b;
-		if (!has_adc(pin))
+		if (pull[pin])
 			*p |= b;
 		else
 			*p &= ~b;
@@ -392,8 +403,25 @@ snek_builtin_onfor(snek_poly_t a)
 {
 	snek_builtin_on();
 	snek_builtin_time_sleep(a);
-	snek_builtin_off();
-	return a;
+	return snek_builtin_off();
+}
+
+snek_poly_t
+snek_builtin_pullnone(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull[p] = SNEK_PULL_NONE;
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_pullup(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull[p] = SNEK_PULL_UP;
+	return SNEK_NULL;
 }
 
 #define analog_reference 1
@@ -406,7 +434,7 @@ snek_builtin_read(snek_poly_t a)
 		return SNEK_NULL;
 	set_dir(p, 0);
 
-	if (has_adc(p)) {
+	if (has_adc(p) && !pull[p]) {
 		uint8_t pin = pgm_read_byte(&_adc_map[p - FIRST_ADC]);
 		ADMUX = (analog_reference << REFS0) | (pin & 7);
 		ADCSRA |= (1 << ADSC);
