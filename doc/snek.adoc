@@ -2259,6 +2259,45 @@ To quit from the dialog and skip loading or saving a file, press Escape.
 
 [%nonfacing]
 [appendix]
+= Snek on snekboard
+
+Snek for the snekboard includes the Common System, Math, GPIO
+(including the `neopixel` function) and EEPROM fountain's. Snek for the
+snekboard provides pre-defined variables for the eight analog I/O pins
+as well as the four 9V motor controllers:(((snekboard)))
+
+A1-A8::
+Analog input and output pins. When used as output pins, you can use
+setpower to control the drive power. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V. By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+M1-M4::
+Bi-directional 9V DC motor control, 2.5A max current. These are tuples
+with two values each. `M1[0]`, `M2[0]`, `M3[0]` and `M4[0]` are the
+power pins. `M1[1]`, `M2[1]`, `M3[1]` and `M4[1]` are the direction
+pins. Note that there's a bit of firmware behind these pins that keeps
+the outputs from changing power too rapidly.
+
+NEOPIXEL::
+The two APA102 devices on the board, which can be driven using the
+`neopixel` function.
+
+Snekboard includes a boot loader which
+presents as a USB mass storage device with a FAT file system. You can
+get the board into this mode by connecting the board to your computer
+over USB and then pressing the blue reset button twice in quick
+succession.
+
+Then, find the `snek-board-`{version}`.uf2` file included in the Snek
+package for your machine and copy it to the `CURRENT.UF2` file to the
+snekboard file system.
+
+[%nonfacing]
+[appendix]
 = Snek on Arduino Duemilanove
 
 Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
