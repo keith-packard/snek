@@ -11,16 +11,16 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-ANALOG1,-2,	0
-ANALOG2,-2,	1
-ANALOG3,-2,	2
-ANALOG4,-2,	3
-ANALOG5,-2,	4
-ANALOG6,-2,	5
-ANALOG7,-2,	6
-ANALOG8,-2,	7
-MOTOR1,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(8), snek_float_to_poly(9))
-MOTOR2,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(10), snek_float_to_poly(11))
-MOTOR3,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(12), snek_float_to_poly(13))
-MOTOR4,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(14), snek_float_to_poly(15))
+A1,	-2,	0
+A2,	-2,	1
+A3,	-2,	2
+A4,	-2,	3
+A5,	-2,	4
+A6,	-2,	5
+A7,	-2,	6
+A8,	-2,	7
+M1,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(8), snek_float_to_poly(9))
+M2,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(10), snek_float_to_poly(11))
+M3,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(12), snek_float_to_poly(13))
+M4,	-2,	= snek_list_build(snek_list_tuple, 2, snek_float_to_poly(14), snek_float_to_poly(15))
 NEOPIXEL, -2,	16
