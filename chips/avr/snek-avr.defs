@@ -37,7 +37,10 @@ SNEK_AVR_INC = \
 	snek-avr.h \
 	ao-usb.h
 
-SNEK_AVR_BUILTINS =
+SNEK_AVR_BUILTINS = \
+	snek-gpio.builtin \
+	snek-eeprom.builtin \
+	snek-avr.builtin
 
 OPT=-Os
 
