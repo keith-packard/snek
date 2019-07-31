@@ -180,6 +180,22 @@ def dump_names(fp):
     fprint("};", file=fp)
     fprint("#define SNEK_BUILTIN_NAMES_SIZE %d" % total, file=fp)
 
+def trim_mu(n):
+    if n.find('.') >= 0:
+        return n[:n.find('.')]
+    return n
+
+mu_skip = ['len', 'print', 'end', 'False', 'True', 'ord', 'chr', 'None']
+
+def dump_mu(fp):
+    all_names = {}
+    for name in sorted(builtins):
+        if not name.keyword and not name.name in mu_skip:
+            all_names[trim_mu(name.name)] = True
+
+    for name in sorted(all_names.keys()):
+        fprint("        '%s'," % name, file=fp)
+
 def max_args():
     max = 0
     for name in sorted(builtins):
@@ -247,6 +263,7 @@ def builtin_main():
     parser.add_argument('builtins', metavar='F', nargs='+',
                         help='input files describing builtins')
     parser.add_argument('-o', '--output', dest='output', help='output file')
+    parser.add_argument('-m', '--mu', action='store_true', help='output just non-keyword constants')
 
     args=parser.parse_args()
 
@@ -257,6 +274,10 @@ def builtin_main():
 
     if args.output:
         fp = open(args.output, mode='w')
+
+    if args.mu:
+        dump_mu(fp)
+        return
 
     fprint("#ifdef SNEK_BUILTIN_DATA", file=fp)
     fprint("#undef SNEK_BUILTIN_DATA", file=fp)
