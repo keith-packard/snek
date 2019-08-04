@@ -147,7 +147,7 @@ strtod (const char * nptr, char ** endptr)
 	    i = 0;
 	    do {
 		if (i < 3200)
-		    i = (((i << 2) + i) << 1) + c;	/* i = 10*i + c	*/
+		    i = i * 10 + c;
 		c = *nptr++ - '0';
 	    } while (c <= 9);
 	    if (flag & FL_MEXP)
