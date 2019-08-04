@@ -51,6 +51,7 @@ volatile uint8_t	ao_data_count;
 
 void samd21_systick_isr(void)
 {
+	ao_arch_release_interrupts();
 	if (samd21_systick.csr & (1 << SAMD21_SYSTICK_CSR_COUNTFLAG)) {
 		++ao_tick_count;
 #ifdef AO_TIMER_HOOK
@@ -81,6 +82,8 @@ ao_timer_init(void)
 	samd21_systick.csr = ((1 << SAMD21_SYSTICK_CSR_ENABLE) |
 			   (1 << SAMD21_SYSTICK_CSR_TICKINT) |
 			   (SAMD21_SYSTICK_CSR_CLKSOURCE_HCLK_8 << SAMD21_SYSTICK_CSR_CLKSOURCE));
+	/* Set clock to lowest priority */
+	samd21_scb.shpr3 |= 3 << 30;
 }
 
 #endif
