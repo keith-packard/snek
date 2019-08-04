@@ -34,7 +34,8 @@
  * ao_panic.c
  */
 
-#define AO_PANIC_CRASH		14	/* Processor crashed */
+#define AO_PANIC_CRASH		1	/* Processor crashed */
+#define AO_PANIC_USB		2	/* USB communication error */
 
 /* Stop the operating system, beeping and blinking the reason */
 void
