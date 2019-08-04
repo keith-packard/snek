@@ -1222,6 +1222,7 @@ samd21_usb_desc_set_byte_count(uint8_t ep, uint8_t bank, uint32_t count)
 	uint32_t pcksize = samd21_usb_desc[ep].bank[bank].pcksize;
 
 	pcksize &= ~(SAMD21_USB_DESC_PCKSIZE_BYTE_COUNT_MASK << SAMD21_USB_DESC_PCKSIZE_BYTE_COUNT);
+	pcksize &= ~(SAMD21_USB_DESC_PCKSIZE_MULTI_PACKET_SIZE_MASK << SAMD21_USB_DESC_PCKSIZE_MULTI_PACKET_SIZE);
 	pcksize |= (count << SAMD21_USB_DESC_PCKSIZE_BYTE_COUNT);
 	samd21_usb_desc[ep].bank[bank].pcksize = pcksize;
 }
@@ -1252,6 +1253,7 @@ static inline void
 samd21_usb_ep_set_ready(uint8_t ep, uint8_t bank)
 {
 	samd21_usb.ep[ep].epstatusset = (1 << (SAMD21_USB_EP_EPSTATUS_BK0RDY + bank));
+	samd21_usb.ep[ep].epintflag = (1 << (SAMD21_USB_EP_EPINTFLAG_TRFAIL0 + bank));
 }
 
 static inline void
@@ -1456,6 +1458,8 @@ extern struct samd21_systick samd21_systick;
 #define  SAMD21_SYSTICK_CSR_CLKSOURCE_EXTERNAL		0
 #define  SAMD21_SYSTICK_CSR_CLKSOURCE_HCLK_8		1
 #define SAMD21_SYSTICK_CSR_COUNTFLAG	16
+
+#define SAMD21_SYSTICK_PRI		15
 
 /* The NVIC starts at 0xe000e100, so add that to the offsets to find the absolute address */
 
