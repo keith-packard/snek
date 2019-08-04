@@ -856,7 +856,7 @@ ao_usb_enable(void)
 
 	/* configure interrupts */
 	samd21_nvic_set_enable(SAMD21_NVIC_ISR_USB_POS);
-	samd21_nvic_set_priority(SAMD21_NVIC_ISR_USB_POS, 3);
+	samd21_nvic_set_priority(SAMD21_NVIC_ISR_USB_POS, 2);
 
 	samd21_usb.intenset = ((1 << SAMD21_USB_INTFLAG_EORST));
 
