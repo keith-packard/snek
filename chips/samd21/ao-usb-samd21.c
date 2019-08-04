@@ -804,12 +804,16 @@ ao_usb_enable(void)
 	samd21_gclk_clkctrl(0, SAMD21_GCLK_CLKCTRL_ID_USB);
 
 	/* Reset USB Device */
+
 	samd21_usb.ctrla |= (1 << SAMD21_USB_CTRLA_SWRST);
 
-	memset(&samd21_usb_desc, 0, sizeof (samd21_usb_desc));
-
-	while (samd21_usb.syncbusy & (1 << SAMD21_USB_SYNCBUSY_SWRST))
+	while ((samd21_usb.syncbusy & (1 << SAMD21_USB_SYNCBUSY_SWRST)) == 0)
 		;
+
+	while ((samd21_usb.syncbusy & (1 << SAMD21_USB_SYNCBUSY_SWRST)) != 0)
+		;
+
+	memset(&samd21_usb_desc, 0, sizeof (samd21_usb_desc));
 
 	/* Detach */
 	samd21_usb.ctrlb |= (1 << SAMD21_USB_CTRLB_DETACH);
