@@ -748,7 +748,7 @@ extern snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 typedef enum {
 	snek_parse_success,
 	snek_parse_error,
-} snek_parse_ret_t;
+} __attribute__((packed)) snek_parse_ret_t;
 
 snek_parse_ret_t
 snek_parse(void);
@@ -802,6 +802,9 @@ snek_string_get(char *string, snek_poly_t p, bool report_error);
 
 snek_poly_t
 snek_string_cat(char *a, char *b);
+
+snek_poly_t
+snek_string_times(char *a, snek_soffset_t b);
 
 char *
 snek_string_slice(char *a, snek_slice_t *slice);

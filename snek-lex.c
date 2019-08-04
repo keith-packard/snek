@@ -151,7 +151,7 @@ typedef enum nstate {
 	n_frac,
 	n_expsign,
 	n_exp
-} nstate_t;
+} __attribute__((packed)) nstate_t;
 
 typedef enum nclass {
 	c_digit,
@@ -159,7 +159,7 @@ typedef enum nclass {
 	c_e,
 	c_sign,
 	c_other,
-} nclass_t;
+} __attribute__((packed)) nclass_t;
 
 static nclass_t
 cclass(char c)
