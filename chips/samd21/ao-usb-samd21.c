@@ -632,9 +632,6 @@ _ao_usb_in_send(void)
 	/* Toggle our usage */
 	ao_usb_in_tx_which = 1 - ao_usb_in_tx_which;
 	ao_usb_tx_count = 0;
-
-	while ((ao_usb_in_pending & (1 << ao_usb_in_tx_which)) != 0)
-		ao_sleep(&ao_usb_in_pending);
 }
 
 /* Wait for a free IN buffer. Interrupts are blocked */
@@ -661,9 +658,11 @@ ao_usb_flush(FILE *file)
 	 * want to send an empty packet
 	 */
 	ao_arch_block_interrupts();
-	while (!ao_usb_in_flushed)
-		_ao_usb_in_send();
-
+	if (!ao_usb_in_flushed) {
+		_ao_usb_in_wait();
+		if (!ao_usb_in_flushed)
+			_ao_usb_in_send();
+	}
 	ao_arch_release_interrupts();
 	return 0;
 }
