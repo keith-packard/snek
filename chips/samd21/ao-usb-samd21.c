@@ -243,8 +243,6 @@ ao_usb_set_configuration(void)
 	ao_usb_configuration = 0;
 
 	ao_wakeup(AO_USB_OUT_SLEEP_ADDR);
-
-	ao_usb_running = 1;
 }
 
 /* Send an IN data packet */
@@ -583,6 +581,7 @@ samd21_usb_isr(void)
 		uint8_t avail = (epintflag >> SAMD21_USB_EP_EPINTFLAG_TRCPT0) & 3;
 		if (avail) {
 			ao_usb_out_avail |= avail;
+			ao_usb_running = 1;
 #if USE_USB_FIFO
 			ao_usb_fifo_check();
 #else
