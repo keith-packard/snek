@@ -809,11 +809,19 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			}
 			break;
 		case snek_op_times:
-			if (at == snek_list && bt == snek_float) {
-				al = snek_poly_to_list(a);
-				if (snek_list_type(al) != snek_list_dict) {
-					snek_soffset_t bo = snek_poly_get_soffset(b);
-					ret = snek_list_to_poly(snek_list_times(al, bo));
+			if (bt == snek_float) {
+				snek_soffset_t bo = snek_poly_get_soffset(b);
+				if (bo < 0)
+					ret = SNEK_NULL;
+				else {
+					if (at == snek_list) {
+						al = snek_poly_to_list(a);
+						if (snek_list_type(al) != snek_list_dict) {
+							ret = snek_list_to_poly(snek_list_times(al, bo));
+						}
+					} else if (at == snek_string) {
+						ret = snek_string_times(snek_poly_to_string(a), bo);
+					}
 				}
 			}
 			break;

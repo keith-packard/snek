@@ -79,6 +79,22 @@ snek_string_slice(char *a, snek_slice_t *slice)
 	return r;
 }
 
+snek_poly_t
+snek_string_times(char *a, snek_soffset_t b)
+{
+	snek_offset_t alen = strlen(a);
+	char *s = snek_alloc(alen * b + 1);
+	if (s) {
+		char *t = s;
+		while (b--) {
+			memcpy(t, a, alen);
+			t += alen;
+		}
+		*t = '\0';
+	}
+	return snek_string_to_poly(s);
+}
+
 static uint8_t
 snek_next_format(char *a)
 {
