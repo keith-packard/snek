@@ -46,16 +46,54 @@
  * For the samd21, we want to use the DFLL48 clock
  */
 
-#ifndef AO_SYSCLK
+/* GCLK 0 is always the system clock source */
+
+#define AO_GCLK_SYSCLK	0
+
+/* If there's a 32kHz xtal, use that for the 32kHz oscillator */
+#ifdef AO_XOSC32K
+# ifndef AO_GCLK_XOSC32K
+#  define AO_GCLK_XOSC32K	1
+# endif
+#endif
+
+/* If there's a high-freq xtal, use that */
+#ifdef AO_XOSC
+# ifndef AO_GCLK_XOSC
+#  define AO_GCLK_XOSC	1
+# endif
+
+# ifndef AO_XOSC_GCLK_DIV
+#  define AO_XOSC_GCLK_DIV 1
+# endif
+
+# define AO_FDPLL96M	((AO_XOSC_FREQ / AO_XOSC_DIV * AO_XOSC_MUL) / AO_XOSC_GCLK_DIV)
+
+/* By default, use the xosc for the system, but allow the dfll48m to
+ * drive USB if desired.
+ */
+
+# ifndef AO_GCLK_FDPLL96M
+#  define AO_SYSCLK		AO_FDPLL96M
+#  define AO_GCLK_FDPLL96M	AO_GCLK_SYSCLK
+#  define AO_GCLK_DFLL48M	2
+# endif
+
+#endif	/* AO_XOSC */
 
 #if AO_DFLL48M
-#define AO_SYSCLK	AO_DFLL48M
-#endif
-#ifdef AO_XOSC
-#define AO_FDPLL96M	(AO_XOSC_FREQ / AO_XOSC_DIV * AO_XOSC_MUL)
-#define AO_SYSCLK	AO_FDPLL96M
+# ifndef AO_GCLK_DFLL48M
+#  define AO_SYSCLK	AO_DFLL48M
+#  define AO_GCLK_DFLL48M AO_GCLK_SYSCLK
+# endif
 #endif
 
+#ifndef AO_GCLK_USB
+# if AO_DFLL48M
+#  define AO_GCLK_USB AO_GCLK_DFLL48M
+# else
+#  define AO_GCLK_USB AO_GCLK_SYSCLK
+# endif
 #endif
 
 #define AO_HCLK		(AO_SYSCLK / AO_AHB_PRESCALER)

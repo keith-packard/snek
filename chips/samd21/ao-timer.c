@@ -98,34 +98,6 @@ ao_clock_init(void)
 	samd21_pm.apbamask |= ((1 << SAMD21_PM_APBAMASK_GCLK) |
 			       (1 << SAMD21_PM_APBAMASK_SYSCTRL));
 
-#ifdef AO_XOSC32K
-	/* Enable xosc32k (external 32.768kHz oscillator) */
-	samd21_sysctrl.xosc32k = ((6 << SAMD21_SYSCTRL_XOSC32K_STARTUP) |
-				  (1 << SAMD21_SYSCTRL_XOSC32K_XTALEN) |
-				  (1 << SAMD21_SYSCTRL_XOSC32K_EN32K));
-
-	/* requires separate store */
-	samd21_sysctrl.xosc32k |= (1 << SAMD21_SYSCTRL_XOSC32K_ENABLE);
-
-	/* Wait for osc */
-	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSC32KRDY)) == 0)
-		;
-#endif
-#ifdef AO_XOSC
-	/* Enable xosc (external xtal oscillator) */
-	samd21_sysctrl.xosc = ((SAMD21_SYSCTRL_XOSC_STARTUP_8192 << SAMD21_SYSCTRL_XOSC_STARTUP) |
-			       (1 << SAMD21_SYSCTRL_XOSC_AMPGC) |
-			       (SAMD21_SYSCTRL_XOSC_GAIN_16MHz << SAMD21_SYSCTRL_XOSC_GAIN) |
-			       (0 << SAMD21_SYSCTRL_XOSC_ONDEMAND) |
-			       (0 << SAMD21_SYSCTRL_XOSC_RUNSTDBY) |
-			       (1 << SAMD21_SYSCTRL_XOSC_XTALEN));
-	samd21_sysctrl.xosc |= ((1 << SAMD21_SYSCTRL_XOSC_ENABLE));
-
-	/* Wait for xosc */
-	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSCRDY)) == 0)
-		;
-#endif
-
 	/* Reset gclk */
 	samd21_gclk.ctrl = (1 << SAMD21_GCLK_CTRL_SWRST)
 		;
@@ -135,26 +107,26 @@ ao_clock_init(void)
 	       (samd21_gclk.status & (1 << SAMD21_GCLK_STATUS_SYNCBUSY)))
 		;
 
-#define AO_GCLK_SYSCLK	0
-
-#ifdef AO_XOSC32K
-#define AO_GCLK_XOSC32K	1
-
-	/*
-	 * Use xosc32k as source of gclk generator AO_GCLK_XOSC32K
-	 */
-
-	samd21_gclk_gendiv(AO_GCLK_XOSC32K, 1);
-	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_XOSC32K, AO_GCLK_XOSC32K);
-
-	/*
-	 * Use generator as source for dfm48m reference
-	 */
-
-	samd21_gclk_clkctrl(AO_GCLK_XOSC32K, SAMD21_GCLK_CLKCTRL_ID_DFLL48M_REF);
-#endif
-
 #ifdef AO_XOSC
+	/* Enable xosc (external xtal oscillator) */
+	samd21_sysctrl.xosc = ((SAMD21_SYSCTRL_XOSC_STARTUP_8192 << SAMD21_SYSCTRL_XOSC_STARTUP) |
+			       (1 << SAMD21_SYSCTRL_XOSC_AMPGC) |
+			       (SAMD21_SYSCTRL_XOSC_GAIN_16MHz << SAMD21_SYSCTRL_XOSC_GAIN) |
+			       (0 << SAMD21_SYSCTRL_XOSC_ONDEMAND) |
+			       (1 << SAMD21_SYSCTRL_XOSC_RUNSTDBY) |
+			       (1 << SAMD21_SYSCTRL_XOSC_XTALEN));
+	samd21_sysctrl.xosc |= ((1 << SAMD21_SYSCTRL_XOSC_ENABLE));
+
+	/* Wait for xosc */
+	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSCRDY)) == 0)
+		;
+
+	/* Use xosc as source of gclk generator AO_GCLK_XOSC */
+
+	samd21_gclk_gendiv(AO_GCLK_XOSC, 1);
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_XOSC, AO_GCLK_XOSC);
+
+	samd21_gclk_clkctrl(AO_GCLK_XOSC, SAMD21_GCLK_CLKCTRL_ID_DPLL);
 
 	/* program DPLL */
 
@@ -185,16 +157,20 @@ ao_clock_init(void)
 	while ((samd21_sysctrl.dpllstatus & (1 << SAMD21_SYSCTRL_DPLLSTATUS_CLKRDY)) == 0)
 		;
 
+	samd21_gclk_wait_sync();
+
 	/*
 	 * Switch generator 0 (CPU clock) to DPLL
 	 */
 
 	/* divide by 1 */
-	samd21_gclk_gendiv(AO_GCLK_SYSCLK, 1);
+	samd21_gclk_gendiv(AO_GCLK_SYSCLK, AO_XOSC_GCLK_DIV);
 
 	/* select DPLL as source */
-	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_FDPLL96M, AO_GCLK_SYSCLK);
-#else
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_FDPLL96M, AO_GCLK_FDPLL96M);
+#endif
+
+#ifdef AO_DFLL48M
 
 	/*
 	 * Enable DFLL48M clock
@@ -204,6 +180,33 @@ ao_clock_init(void)
 	samd21_dfll_wait_sync();
 
 #ifdef AO_XOSC32K
+#define AO_GCLK_XOSC32K	1
+
+	/* Enable xosc32k (external 32.768kHz oscillator) */
+	samd21_sysctrl.xosc32k = ((6 << SAMD21_SYSCTRL_XOSC32K_STARTUP) |
+				  (1 << SAMD21_SYSCTRL_XOSC32K_XTALEN) |
+				  (1 << SAMD21_SYSCTRL_XOSC32K_EN32K));
+
+	/* requires separate store */
+	samd21_sysctrl.xosc32k |= (1 << SAMD21_SYSCTRL_XOSC32K_ENABLE);
+
+	/* Wait for osc */
+	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSC32KRDY)) == 0)
+		;
+
+	/*
+	 * Use xosc32k as source of gclk generator AO_GCLK_XOSC32K
+	 */
+
+	samd21_gclk_gendiv(AO_GCLK_XOSC32K, 1);
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_XOSC32K, AO_GCLK_XOSC32K);
+
+	/*
+	 * Use generator as source for dfm48m reference
+	 */
+
+	samd21_gclk_clkctrl(AO_GCLK_XOSC32K, SAMD21_GCLK_CLKCTRL_ID_DFLL48M_REF);
+
 	/* Set multiplier to get as close to 48MHz as we can without going over */
 	samd21_sysctrl.dfllmul = (((31/4) << SAMD21_SYSCTRL_DFLLMUL_CSTEP) |
 				  ((255/4) << SAMD21_SYSCTRL_DFLLMUL_FSTEP) |
@@ -245,6 +248,7 @@ ao_clock_init(void)
 	samd21_dfll_wait_sync();
 
 	samd21_sysctrl.dfllctrl = ((1 << SAMD21_SYSCTRL_DFLLCTRL_MODE) |
+				   (1 << SAMD21_SYSCTRL_DFLLCTRL_BPLCKC) |
 				   (1 << SAMD21_SYSCTRL_DFLLCTRL_CCDIS) |
 				   (1 << SAMD21_SYSCTRL_DFLLCTRL_USBCRM) |
 				   (1 << SAMD21_SYSCTRL_DFLLCTRL_ENABLE));
@@ -254,14 +258,14 @@ ao_clock_init(void)
 #endif
 
 	/*
-	 * Switch generator 0 (CPU clock) to DFLL48M
+	 * Switch generator to DFLL48M
 	 */
 
 	/* divide by 1 */
 	samd21_gclk_gendiv(AO_GCLK_SYSCLK, 1);
 
 	/* select DFLL48M as source */
-	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_DFLL48M, AO_GCLK_SYSCLK);
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_DFLL48M, AO_GCLK_DFLL48M);
 #endif
 
 	/* Set up all of the clocks to be /1 */

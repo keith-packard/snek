@@ -1708,6 +1708,8 @@ samd21_dfll_wait_sync(void)
 static inline void
 samd21_gclk_gendiv(uint32_t id, uint32_t div)
 {
+	if (div == 1)
+		div = 0;
 	samd21_gclk.gendiv = ((id << SAMD21_GCLK_GENDIV_ID) |
 			      (div << SAMD21_GCLK_GENDIV_DIV));
 	samd21_gclk_wait_sync();

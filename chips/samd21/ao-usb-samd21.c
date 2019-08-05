@@ -793,15 +793,15 @@ ao_usb_enable(void)
 {
 	int	t;
 
-	/* Enable USB clock */
-	samd21_pm.apbbmask |= (1 << SAMD21_PM_APBBMASK_USB);
-
 	/* Set up USB DM/DP pins */
 	samd21_port_pmux_set(&samd21_port_a, 24, SAMD21_PORT_PMUX_FUNC_G);
 	samd21_port_pmux_set(&samd21_port_a, 25, SAMD21_PORT_PMUX_FUNC_G);
 
 	/* Assign gclk 0 to USB reference */
-	samd21_gclk_clkctrl(0, SAMD21_GCLK_CLKCTRL_ID_USB);
+	samd21_gclk_clkctrl(AO_GCLK_USB, SAMD21_GCLK_CLKCTRL_ID_USB);
+
+	/* Enable USB clock */
+	samd21_pm.apbbmask |= (1 << SAMD21_PM_APBBMASK_USB);
 
 	/* Reset USB Device */
 

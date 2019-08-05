@@ -19,6 +19,9 @@
 #ifndef _AO_PINS_H_
 #define _AO_PINS_H_
 
+/* Run dfll48m from USB so that USB is happy */
+#define AO_DFLL48M		48000000
+
 /* Run fdpll96m clock from a 16MHz clock divided to 1MHz, multiplied to 48MHz */
 #define AO_XOSC			1
 #define AO_XOSC_FREQ		16000000
