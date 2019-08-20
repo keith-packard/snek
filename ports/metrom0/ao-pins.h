@@ -246,6 +246,7 @@
 
 #define LED_0_PORT		(&samd21_port_a)
 #define LED_0_PIN		27
+#define LED_0_INVERT		1
 #define LED_PIN_TX		0
 #define AO_LED_TX		(1 << LED_PIN_TX)
 #define AO_LED_PANIC		AO_LED_TX
