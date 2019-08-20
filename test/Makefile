@@ -41,7 +41,8 @@ SUCCESS_TESTS = \
 	scoping-global.py \
 	scoping-local.py \
 	none.py \
-	args.py
+	args.py \
+	assert-success.py
 
 FAIL_TESTS = \
 	scoping-no-decl.py \
@@ -53,7 +54,8 @@ FAIL_TESTS = \
 	args-missing.py \
 	arg-dup1.py \
 	arg-dup2.py \
-	arg-unknown.py
+	arg-unknown.py \
+	assert-fail.py
 
 check:
 	@exit=0; \

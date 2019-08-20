@@ -131,6 +131,8 @@ const char * const snek_op_names[] = {
 	[snek_op_assign_named] = "assign_named",
 
 	[snek_op_global] = "global",
+	[snek_op_del] = "del",
+	[snek_op_assert] = "assert",
 
 	[snek_op_branch] = "branch",
 	[snek_op_branch_true] = "branch_true",
@@ -1175,6 +1177,11 @@ snek_code_run(snek_code_t *code_in)
 					}
 				} else {
 					snek_id_del(id);
+				}
+				break;
+			case snek_op_assert:
+				if (!snek_poly_true(snek_a)) {
+					snek_error_0("AssertionError");
 				}
 				break;
 			case snek_op_branch:
