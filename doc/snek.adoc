@@ -858,11 +858,11 @@ by the language and thus cannot be used as names. Here is the list of
 Snek keywords:(((Keyword)))
 
 ----
-and       break     continue  def
-del       elif      else      for
-global    if        import    in
-is        not       or        pass
-range     return    while
+and       assert    break     continue
+def       del       elif      else
+for       global    if        import
+in        is        not       or
+pass      range     return    while
 ----
 
 === Punctuation
@@ -1626,6 +1626,13 @@ is visible after that function finishes.
 
 The Del statement deletes either variables or elements within a List
 or Dictionary.(((del)))
+
+=== `assert`  _location_
+
+The Assert statement is used to add debugging information to a program.
+When the expression passed to assert returns `False`, the program will
+print `AssertionError` and you will know that the condition you expected
+to be true is not.
 
 == Functions
 
