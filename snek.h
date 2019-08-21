@@ -516,7 +516,7 @@ snek_error_arg(snek_id_t bad);
 snek_poly_t
 snek_error_syntax(char *where);
 
-#if SNEK_DEBUG
+#if defined(SNEK_DEBUG) || defined(DEBUG_MEMORY)
 void
 snek_panic(const char *message);
 #endif
