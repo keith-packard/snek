@@ -1183,6 +1183,7 @@ snek_code_run(snek_code_t *code_in)
 				if (!snek_poly_true(snek_a)) {
 					snek_error_0("AssertionError");
 				}
+				snek_a = SNEK_NULL;
 				break;
 			case snek_op_branch:
 				memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
