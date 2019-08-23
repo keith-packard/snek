@@ -14,7 +14,11 @@
 def, DEF
 del, DEL
 global, GLOBAL
-assert, ASSERT
+
+#ifdef SNEK_ASSSERT
+    assert, ASSERT
+#endif
+
 if, IF
 else, ELSE
 elif, ELIF
