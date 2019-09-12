@@ -1,5 +1,5 @@
 #
-# Copyright © 2019 Keith Packard <keithp@keithp.com>
+# Copyright © 2019 Paulo Henrique Silva <ph.silva@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,27 +11,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-def, DEF
-del, DEL
-global, GLOBAL
+#
+# Check assert success
+#
 
-#ifdef SNEK_ASSERT
-    assert, ASSERT
-#endif
-
-if, IF
-else, ELSE
-elif, ELIF
-for, FOR
-while, WHILE
-continue, CONTINUE
-pass, PASS
-break, BREAK
-return, RETURN
-import, IMPORT
-range, RANGE
-or, OR
-and, AND
-is, IS
-in, IN
-not, NOT
+assert 42 == 42
+assert True
+assert 1
+assert [42]
+assert "true"
+assert "false"  # string s is True if len(s) > 0

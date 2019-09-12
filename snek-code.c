@@ -131,7 +131,10 @@ const char * const snek_op_names[] = {
 	[snek_op_assign_named] = "assign_named",
 
 	[snek_op_global] = "global",
-
+	[snek_op_del] = "del",
+#ifdef SNEK_ASSERT
+	[snek_op_assert] = "assert",
+#endif
 	[snek_op_branch] = "branch",
 	[snek_op_branch_true] = "branch_true",
 	[snek_op_branch_false] = "branch_false",
@@ -1177,6 +1180,14 @@ snek_code_run(snek_code_t *code_in)
 					snek_id_del(id);
 				}
 				break;
+#ifdef SNEK_ASSERT
+			case snek_op_assert:
+				if (!snek_poly_true(snek_a)) {
+					snek_error_0("AssertionError");
+				}
+				snek_a = SNEK_NULL;
+				break;
+#endif
 			case snek_op_branch:
 				memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				break;
