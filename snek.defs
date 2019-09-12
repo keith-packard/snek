@@ -76,7 +76,7 @@ SNEK_WARNINGS = \
 	$(SNEK_MOST_WARNINGS) \
 	-Wimplicit-fallthrough
 
-SNEK_ASSERT ?=
+SNEK_ASSERT ?= 1
 
 SNEK_BASE_CFLAGS = \
 	-D_DEFAULT_SOURCE \
