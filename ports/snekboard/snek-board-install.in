@@ -1,0 +1,50 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+BOOT_VERSION=3.7.0
+
+BOOT_FILE=$SHAREDIR/bootloader-snekboard-v${BOOT_VERSION}.bin
+SNEK_FILE=$SHAREDIR/snek-board-@SNEK_VERSION@.elf
+
+mode=arg
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		-elf)
+		    mode=elf
+		    ;;
+		-boot)
+		    mode=boot
+		    ;;
+		*)
+		    echo "Usage: $0 {-elf snek-board-@SNEK_VERSION@.elf} {-boot bootloader-snekboard-v${BOOT_VERSION}.bin" 1>&2
+		    exit 1
+		    ;;
+	    esac
+	    ;;
+	elf)
+	    SNEK_FILE="$i"
+	    mode=arg
+	    ;;
+	boot)
+	    BOOT_FILE="$i"
+	    mode=arg
+	    ;;
+    esac
+done
+
+openocd -f interface/stlink.cfg \
+        -c 'transport select hla_swd' \
+	-c 'set CHIPNAME at91samd21g18' \
+	-c 'set CPUTAPID 0x0bc11477' \
+	-f target/at91samdXX.cfg \
+	-c init \
+	-c 'reset halt' \
+	-c "flash write_image erase unlock $BOOT_FILE" \
+	-c "flash write_image erase unlock $SNEK_FILE" \
+	-c 'reset init' \
+	-c 'reset run' \
+	-c 'shutdown'

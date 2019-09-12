@@ -40,7 +40,7 @@ include $(SNEK_ROOT)/snek-install.defs
 SRC=$(SNEK_SRC)
 OBJ=$(SRC:.c=.o)
 
-all: $(ELF) $(BIN) $(UF2)
+all: $(PROG) $(BIN) $(UF2) snek-board-install
 
 $(PROG): Makefile $(OBJ)
 	$(call quiet,CC) $(LDFLAGS) -Wl,-M=$(MAP) -o $@ $(OBJ) $(LIBS)
@@ -51,10 +51,21 @@ distclean:	clean
 
 clean::
 	rm -f *.o $(PROGNAME)*.elf $(PROGNAME)*.bin $(PROGNAME)*.uf2 $(PROGNAME)*.map ao-product.h
+	rm -f snek-board-install
 
-install:
+snek-board-install: snek-board-install.in
+	$(SNEK_SED) $^ > $@
+	chmod +x $@
+
+echo:
+	echo PROG is $(PROG)
+
+install: $(PROG) $(UF2) $(BOOTLOADER_BIN) snek-board-install snek-board-install.1
 	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(BOOTLOADER_BIN) $(DESTDIR)$(SHAREDIR)
+	install -d $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-board-install.1 $(DESTDIR)$(MANDIR)/man1
 
 uninstall:

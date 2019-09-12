@@ -4,3 +4,4 @@ snek-board*.uf2
 snek-board*.elf
 *.o
 ao-product.h
+snek-board-install

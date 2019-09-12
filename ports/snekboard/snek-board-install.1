@@ -1,0 +1,37 @@
+.\"
+.\" Copyright © 2019 Keith Packard <keithp@keithp.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.TH SNEK-BOARD-INSTALL 1 "snek-board-install" ""
+.SH NAME
+snek-board-install \- Install Snek to Snek Board
+.SH SYNOPSIS
+.B "snek-board-install" [OPTION]... [COMMAND]
+.SH DESCRIPTION
+.I snek-board-install
+installs the Snek programming language on a Snek Board which is an ATMEL
+SAMD21D based board designed to work with Lego Power Functions
+components. This requires a connection to the board through a SWD debug device.
+.SH OPTIONS
+.TP
+\-elf <snek.elf>
+Specifies the elf file containing the snek executable to load to the board. The default is the
+currently installed version of Snek.
+.TP
+\-boot <bootloader.bin>
+Specifies the bin file containing the boot loader for the board. The
+default is the boot loader provided with the installed version of Snek.
+.SH USAGE
+Connect the snek-board to a STLinkv2 board, then run
+snek-board-install.
+.SH AUTHOR
+Keith Packard
