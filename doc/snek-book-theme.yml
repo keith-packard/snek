@@ -69,7 +69,7 @@ footer:
   font_size: 8
   recto:
     center:
-      content: 'CC SA 3.0 License'
+      content: 'GNU General Public License Version 3 or later'
   verso:
     center:
       content: '© 2019 Keith Packard'
