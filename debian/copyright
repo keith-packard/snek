@@ -10,26 +10,26 @@ Files: examples/neopixel.py
 Copyright: 2019 Keith Packard
 License: GPL-2+
 
-Files:	ports/mega/sf_asinh.c
-	ports/mega/erf_gamma.c
-	ports/mega/ef_acosh.c
-	ports/mega/kf_sin.c
-	ports/mega/kf_cos.c
-	ports/mega/ef_remainder.c
-	ports/mega/sf_log1p.c
-	ports/mega/sf_erf.c
-	ports/mega/wf_tgamma.c
-	ports/mega/fdlibm.h
-	ports/mega/erf_lgamma.c
-	ports/mega/ef_atanh.c
+Files:	chips/atmega/sf_asinh.c
+	chips/atmega/erf_gamma.c
+	chips/atmega/ef_acosh.c
+	chips/atmega/kf_sin.c
+	chips/atmega/kf_cos.c
+	chips/atmega/ef_remainder.c
+	chips/atmega/sf_log1p.c
+	chips/atmega/sf_erf.c
+	chips/atmega/wf_tgamma.c
+	chips/atmega/fdlibm.h
+	chips/atmega/erf_lgamma.c
+	chips/atmega/ef_atanh.c
 Copyright: 1993 Sun Microsystems, Inc.  All rights reserved.
 License: SunPro
 
-Files:	ports/mega/math_config.h
-	ports/mega/sf_exp.c
-	ports/mega/sf_exp2.c
-	ports/mega/sf_log2.c
-	ports/mega/sf_log2_data.c
+Files:	chips/atmega/math_config.h
+	chips/atmega/sf_exp.c
+	chips/atmega/sf_exp2.c
+	chips/atmega/sf_log2.c
+	chips/atmega/sf_log2_data.c
 Copyright: 2017-2018 Arm Ltd.  All rights reserved.
 License: BSD-3-Clause
 
