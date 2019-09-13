@@ -11,3 +11,6 @@ export OPT=-O2
 
 %:
 	dh $@
+
+override_dh_strip:
+	dh_strip -X.elf
