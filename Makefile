@@ -74,6 +74,9 @@ upload:
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@
 
+snek-mu.py:
+	find . -name '*.builtin' -print0 | xargs -0 python3 ./snek-builtin.py --mu -o $@
+
 clean:
 	rm -f snek.pc
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done

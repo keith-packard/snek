@@ -18,6 +18,8 @@ SNEK_SAMD21 = $(SNEK_ROOT)/chips/samd21
 
 PROGNAME=snek-crickit
 PRODUCT_NAME=SnekCrickit
+IDPRODUCT=0x002c
+IDVENDOR=0xfffe
 
 include $(SNEK_SAMD21)/snek-samd21.defs
 

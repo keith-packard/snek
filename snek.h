@@ -138,6 +138,9 @@ typedef enum {
 
 	snek_op_global,
 	snek_op_del,
+#ifdef SNEK_ASSERT
+	snek_op_assert,
+#endif
 
 	snek_op_branch,
 	snek_op_branch_true,
@@ -231,7 +234,8 @@ typedef struct snek_in {
 } snek_in_t;
 
 typedef struct snek_func {
-	snek_soffset_t	nformal;
+	uint8_t		nformal;
+	uint8_t		nrequired;
 	snek_offset_t	code;
 	snek_id_t	formals[0];
 } snek_func_t;
@@ -287,7 +291,7 @@ typedef struct snek_builtin {
 				snek_poly_t	(*func4)(snek_poly_t a0, snek_poly_t a1, snek_poly_t a2, snek_poly_t a3);
 			};
 		};
-		float		value;
+		snek_poly_t	value;
 	};
 } snek_builtin_t;
 
@@ -509,9 +513,12 @@ snek_poly_t
 snek_error_args(snek_soffset_t want, snek_soffset_t got);
 
 snek_poly_t
+snek_error_arg(snek_id_t bad);
+
+snek_poly_t
 snek_error_syntax(char *where);
 
-#if SNEK_DEBUG
+#if defined(SNEK_DEBUG) || defined(DEBUG_MEMORY)
 void
 snek_panic(const char *message);
 #endif
@@ -738,12 +745,13 @@ extern bool snek_interactive;
 #define SNEK_MAX_FORMALS	10
 
 extern uint8_t snek_parse_nformal;
+extern uint8_t snek_parse_nnamed;
 extern snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 typedef enum {
 	snek_parse_success,
 	snek_parse_error,
-} snek_parse_ret_t;
+} __attribute__((packed)) snek_parse_ret_t;
 
 snek_parse_ret_t
 snek_parse(void);
@@ -797,6 +805,9 @@ snek_string_get(char *string, snek_poly_t p, bool report_error);
 
 snek_poly_t
 snek_string_cat(char *a, char *b);
+
+snek_poly_t
+snek_string_times(char *a, snek_soffset_t b);
 
 char *
 snek_string_slice(char *a, snek_slice_t *slice);
@@ -884,7 +895,7 @@ snek_builtin_id_to_poly(snek_id_t id)
 {
 	if (id < SNEK_BUILTIN_MAX_FUNC)
 		return snek_offset_to_poly(id << SNEK_ALLOC_SHIFT, snek_builtin);
-	return snek_float_to_poly(SNEK_BUILTIN_VALUE(&snek_builtins[id-1]));
+	return SNEK_BUILTIN_VALUE(&snek_builtins[id-1]);
 }
 
 static inline snek_id_t

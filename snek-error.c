@@ -110,7 +110,13 @@ snek_error_step(void)
 snek_poly_t
 snek_error_args(snek_soffset_t want, snek_soffset_t got)
 {
-	return snek_error("wrong number of args. wanted %d got %d", want, got);
+	return snek_error("bad args. wanted %d got %d", want, got);
+}
+
+snek_poly_t
+snek_error_arg(snek_id_t bad)
+{
+	return snek_error("bad arg \"%s\"", snek_name_string(bad));
 }
 
 snek_poly_t

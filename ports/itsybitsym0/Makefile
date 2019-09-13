@@ -18,6 +18,8 @@ SNEK_SAMD21 = $(SNEK_ROOT)/chips/samd21
 
 PROGNAME=snek-itsybitsym0
 PRODUCT_NAME=SnekItsyBitsyM0
+IDPRODUCT=0x8011
+IDVENDOR=0x239A
 
 include $(SNEK_SAMD21)/snek-samd21.defs
 

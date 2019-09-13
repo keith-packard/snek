@@ -131,7 +131,10 @@ const char * const snek_op_names[] = {
 	[snek_op_assign_named] = "assign_named",
 
 	[snek_op_global] = "global",
-
+	[snek_op_del] = "del",
+#ifdef SNEK_ASSERT
+	[snek_op_assert] = "assert",
+#endif
 	[snek_op_branch] = "branch",
 	[snek_op_branch_true] = "branch_true",
 	[snek_op_branch_false] = "branch_false",
@@ -205,7 +208,7 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 		break;
 	case snek_op_call:
 		memcpy(&o, &code->code[ip], sizeof(snek_offset_t));
-		dbg("%d actuals\n", o);
+		dbg("%d position %d named\n", o & 0xff, o >> 8);
 		break;
 	case snek_op_slice:
 		if (code->code[ip] & SNEK_OP_SLICE_START) dbg(" start");
@@ -234,6 +237,10 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 	}
 	return ip + snek_op_extra_size(op);
 }
+
+#endif
+
+#ifdef DEBUG_COMPILE
 
 static void
 snek_code_dump(snek_code_t *code)
@@ -805,11 +812,19 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			}
 			break;
 		case snek_op_times:
-			if (at == snek_list && bt == snek_float) {
-				al = snek_poly_to_list(a);
-				if (snek_list_type(al) != snek_list_dict) {
-					snek_soffset_t bo = snek_poly_get_soffset(b);
-					ret = snek_list_to_poly(snek_list_times(al, bo));
+			if (bt == snek_float) {
+				snek_soffset_t bo = snek_poly_get_soffset(b);
+				if (bo < 0)
+					ret = SNEK_NULL;
+				else {
+					if (at == snek_list) {
+						al = snek_poly_to_list(a);
+						if (snek_list_type(al) != snek_list_dict) {
+							ret = snek_list_to_poly(snek_list_times(al, bo));
+						}
+					} else if (at == snek_string) {
+						ret = snek_string_times(snek_poly_to_string(a), bo);
+					}
 				}
 			}
 			break;
@@ -1165,6 +1180,14 @@ snek_code_run(snek_code_t *code_in)
 					snek_id_del(id);
 				}
 				break;
+#ifdef SNEK_ASSERT
+			case snek_op_assert:
+				if (!snek_poly_true(snek_a)) {
+					snek_error_0("AssertionError");
+				}
+				snek_a = SNEK_NULL;
+				break;
+#endif
 			case snek_op_branch:
 				memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
 				break;

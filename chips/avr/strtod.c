@@ -98,12 +98,6 @@ strtod (const char * nptr, char ** endptr)
     c = *nptr++;
 
     flag = 0;
-    if (c == '-') {
-	flag = FL_MINUS;
-	c = *nptr++;
-    } else if (c == '+') {
-	c = *nptr++;
-    }
 
     x.u32 = 0;
     exp = 0;
@@ -153,7 +147,7 @@ strtod (const char * nptr, char ** endptr)
 	    i = 0;
 	    do {
 		if (i < 3200)
-		    i = (((i << 2) + i) << 1) + c;	/* i = 10*i + c	*/
+		    i = i * 10 + c;
 		c = *nptr++ - '0';
 	    } while (c <= 9);
 	    if (flag & FL_MEXP)
@@ -166,8 +160,6 @@ strtod (const char * nptr, char ** endptr)
 	*endptr = (char *)nptr - 1;
 
     x.flt = __floatunsisf (x.u32);		/* manually	*/
-    if ((flag & FL_MINUS) && (flag & FL_ANY))
-	x.flt = -x.flt;
 
     if (x.flt != 0) {
 	int pwr;

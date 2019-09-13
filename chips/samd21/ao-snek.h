@@ -31,6 +31,12 @@ ao_snek_set_pwm(void *gpio, uint8_t pin, void *timer, uint8_t c, uint16_t value)
 void
 ao_snek_clr_pwm(void *gpio, uint8_t pin);
 
+#ifdef AO_SNEK_PWM_RAMP_STEP
+#define AO_TIMER_HOOK		ao_snek_step_pwm()
+void
+ao_snek_step_pwm(void);
+#endif
+
 int
 ao_snek_getc(FILE *stream);
 
@@ -40,6 +46,11 @@ snek(void);
 extern bool snek_eof;
 
 #define SNEK_PIN_PULL_DOWN	0x01
+#define SNEK_PIN_PULL_UP	0x02
+#define SNEK_PIN_RAMP_PWM	0x04
+
+void
+snek_eeprom_load(void);
 
 int
 snek_eeprom_getchar(FILE *stream);
@@ -65,7 +76,7 @@ ao_snek_reset(void);
 void
 ao_snek_running(bool running);
 
-#ifdef AO_LEX_TX
+#ifdef AO_LED_TX
 #define SNEK_CODE_HOOK_START	ao_snek_running(true);
 #define SNEK_CODE_HOOK_STOP	ao_snek_running(false);
 #endif

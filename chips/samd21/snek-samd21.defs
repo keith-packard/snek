@@ -56,6 +56,8 @@ SNEK_SAMD21_INC = \
 	samd21.h
 
 SNEK_SAMD21_BUILTINS = \
+	snek-gpio.builtin \
+	snek-eeprom.builtin \
 	snek-altos.builtin \
 	$(SNEK_ROOT)/snek-math.builtin
 
@@ -101,7 +103,8 @@ UF2=$(PROGNAME)-$(SNEK_VERSION).uf2
 MAP=$(PROGNAME)-$(SNEK_VERSION).map
 
 PRODUCT=$(PRODUCT_NAME)-v$(SNEK_VERSION)
-IDPRODUCT=0x000a
+IDVENDOR?=0xfffe
+IDPRODUCT?=0x000a
 
 .SUFFIXES: .elf .bin .uf2
 
@@ -112,4 +115,4 @@ IDPRODUCT=0x000a
 	python3 $(SNEK_SAMD21)/uf2conv.py -b 0x2000 -c -o $@ $^
 
 ao-product.h: $(SNEK_ROOT)/snek.defs Makefile
-	python3 $(SNEK_AO)/make-product.py -v $(SNEK_VERSION) -p $(PRODUCT_NAME) > $@
+	python3 $(SNEK_AO)/make-product.py -i $(IDPRODUCT) -V $(IDVENDOR) -v $(SNEK_VERSION) -p $(PRODUCT_NAME) > $@

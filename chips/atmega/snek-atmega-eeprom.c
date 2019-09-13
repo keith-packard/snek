@@ -59,15 +59,6 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 static snek_soffset_t	snek_eeprom_addr;
 
 snek_poly_t
-snek_builtin_eeprom_load(void)
-{
-	snek_interactive = false;
-	snek_eeprom_addr = 0;
-	snek_duino_file.get = snek_eeprom_getchar;
-	return SNEK_NULL;
-}
-
-snek_poly_t
 snek_builtin_eeprom_erase(void)
 {
 	if (eeprom_read_byte((uint8_t *) 0) != 0xff)

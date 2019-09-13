@@ -34,7 +34,8 @@
  * ao_panic.c
  */
 
-#define AO_PANIC_CRASH		14	/* Processor crashed */
+#define AO_PANIC_CRASH		1	/* Processor crashed */
+#define AO_PANIC_USB		2	/* USB communication error */
 
 /* Stop the operating system, beeping and blinking the reason */
 void
@@ -51,9 +52,9 @@ ao_panic(uint8_t reason);
 
 extern volatile AO_TICK_TYPE ao_tick_count;
 
-/* Our timer runs at 100Hz */
+/* Our timer runs at 1kHz */
 #ifndef AO_HERTZ
-#define AO_HERTZ		100
+#define AO_HERTZ		1000
 #endif
 #define AO_MS_TO_TICKS(ms)	((ms) / (1000 / AO_HERTZ))
 #define AO_SEC_TO_TICKS(s)	((s) * AO_HERTZ)

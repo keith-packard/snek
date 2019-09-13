@@ -19,9 +19,9 @@
 #ifndef _AO_ARCH_FUNCS_H_
 #define _AO_ARCH_FUNCS_H_
 
-#define AO_EXTI_MODE_PULL_NONE	0
-#define AO_EXTI_MODE_PULL_UP	1
-#define AO_EXTI_MODE_PULL_DOWN	2
+#define AO_MODE_PULL_NONE	0
+#define AO_MODE_PULL_UP		1
+#define AO_MODE_PULL_DOWN	2
 
 static inline void ao_enable_port(struct samd21_port *port)
 {
@@ -87,9 +87,9 @@ ao_enable_input(struct samd21_port *port, uint8_t pin, uint32_t mode)
 		  (1 << SAMD21_PORT_PINCFG_INEN) |
 		  (0 << SAMD21_PORT_PINCFG_PMUXEN));
 
-	if (mode != AO_EXTI_MODE_PULL_NONE) {
+	if (mode != AO_MODE_PULL_NONE) {
 		pincfg |= (1 << SAMD21_PORT_PINCFG_PULLEN);
-		ao_gpio_set(port, pin, mode == AO_EXTI_MODE_PULL_UP);
+		ao_gpio_set(port, pin, mode == AO_MODE_PULL_UP);
 	}
 
 	samd21_port_pincfg_set(port, pin,

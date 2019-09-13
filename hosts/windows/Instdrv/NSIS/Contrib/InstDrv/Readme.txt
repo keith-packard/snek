@@ -122,7 +122,7 @@ History
 
 License
 
-Copyright © 2003 Jan Kiszka (Jan.Kiszka@web.de)
+Copyright Â© 2003 Jan Kiszka (Jan.Kiszka@web.de)
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

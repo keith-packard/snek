@@ -91,9 +91,9 @@ void
 ao_snek_running(bool running)
 {
 	if (running)
-		ao_led_off(AO_LED_TX);
-	else
 		ao_led_on(AO_LED_TX);
+	else
+		ao_led_off(AO_LED_TX);
 }
 #endif
 
@@ -158,10 +158,10 @@ main(void)
 	setjmp(snek_reset_buf);
 	ao_snek_port_init();
 	snek_init();
-	snek_builtin_eeprom_load();
+	snek_eeprom_load();
 	printf("Welcome to snek " SNEK_VERSION "\n");
 	fflush(stdout);
-#ifdef AO_LEX_TX
+#ifdef AO_LED_TX
 	ao_snek_running(false);
 #endif
 	for (;;)

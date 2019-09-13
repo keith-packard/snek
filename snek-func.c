@@ -29,8 +29,34 @@ snek_func_alloc(snek_code_t *code)
 		return NULL;
 	func->code = snek_pool_offset(code);
 	func->nformal = snek_parse_nformal;
+	func->nrequired = snek_parse_nformal - snek_parse_nnamed;
 	memcpy(func->formals, snek_parse_formals, snek_parse_nformal * sizeof (snek_id_t));
 	return func;
+}
+
+static bool __attribute__((noinline))
+snek_func_actual(snek_id_t id, snek_poly_t value, uint8_t pos)
+{
+	snek_variable_t *existing = &snek_frame->variables[snek_frame->nvariables-1];
+	snek_variable_t *insert = &snek_frame->variables[pos];
+
+	while (existing > insert) {
+		if (existing->id == id)
+			return false;
+		existing--;
+	}
+	existing->id = id;
+	existing->value = value;
+	return true;
+}
+
+static bool
+snek_func_check_formal(snek_id_t id, snek_func_t *func)
+{
+	for (uint8_t f = 0; f < func->nformal; f++)
+		if (func->formals[f] == id)
+			return true;
+	return false;
 }
 
 bool
@@ -42,26 +68,49 @@ snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip)
 
 	snek_func_t *func = snek_poly_to_func(snek_a);
 
-	if (nposition != func->nformal)
-	{
+	if (nposition > func->nformal) {
 		snek_error_args(func->nformal, nposition);
 		return false;
 	}
 
-	snek_variable_t *v = &snek_frame->variables[nparam];
+	uint8_t pos = nparam;
+	snek_offset_t save_stackp = snek_stackp;
+	snek_poly_t value;
+	snek_id_t id;
 
-	while (nnamed--) {
-		v--;
-		v->value = snek_stack_pop();
-		v->id = snek_stack_pop_soffset();
+	/* Pop the named actuals off the stack, assigning by name */
+	while (pos > nposition) {
+		pos--;
+		value = snek_stack_pop();
+		id = snek_stack_pop_soffset();
+		if (!snek_func_check_formal(id, func))
+			goto fail;
+
+		if (!snek_func_actual(id, value, pos))
+			goto fail;
 	}
-	/* Pop the arguments off the stack, assigning in reverse order */
-	while (nposition--) {
-		v--;
-		v->id = func->formals[nposition];
-		v->value = snek_stack_pop();
+
+	/* Pop the positional actuals off the stack, assigning in reverse order */
+	while (pos) {
+		pos--;
+		value = snek_stack_pop();
+		id = func->formals[pos];
+
+		if (!snek_func_actual(id, value, pos))
+			goto fail;
 	}
+
+	for (pos = 0; pos < func->nrequired; pos++)
+		if (!snek_frame->variables[pos].id) {
+			id = func->formals[pos];
+			goto fail;
+		}
+
 	return true;
+fail:
+	snek_stackp = save_stackp;
+	snek_error_arg(id);
+	return false;
 }
 
 snek_offset_t

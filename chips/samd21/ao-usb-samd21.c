@@ -24,6 +24,10 @@
 #define AO_POWER_MANAGEMENT	0
 #endif
 
+#ifndef AO_USB_DEVICE_ID_SERIAL
+#define AO_USB_DEVICE_ID_SERIAL 1
+#endif
+
 #if USE_USB_FIFO
 static struct ao_fifo	ao_usb_rx_fifo;
 #endif
@@ -239,8 +243,6 @@ ao_usb_set_configuration(void)
 	ao_usb_configuration = 0;
 
 	ao_wakeup(AO_USB_OUT_SLEEP_ADDR);
-
-	ao_usb_running = 1;
 }
 
 /* Send an IN data packet */
@@ -328,7 +330,7 @@ ao_usb_ep0_in_start(uint16_t max)
 struct ao_usb_line_coding ao_usb_line_coding = {115200, 0, 0, 8};
 
 #if AO_USB_DEVICE_ID_SERIAL
-static uint8_t ao_usb_serial[2 + 48];
+static uint8_t ao_usb_serial[2 + 64];
 
 /* Convert a 32-bit value to 8 hexidecimal UCS2 characters */
 static void
@@ -579,6 +581,7 @@ samd21_usb_isr(void)
 		uint8_t avail = (epintflag >> SAMD21_USB_EP_EPINTFLAG_TRCPT0) & 3;
 		if (avail) {
 			ao_usb_out_avail |= avail;
+			ao_usb_running = 1;
 #if USE_USB_FIFO
 			ao_usb_fifo_check();
 #else
@@ -629,9 +632,6 @@ _ao_usb_in_send(void)
 	/* Toggle our usage */
 	ao_usb_in_tx_which = 1 - ao_usb_in_tx_which;
 	ao_usb_tx_count = 0;
-
-	while ((ao_usb_in_pending & (1 << ao_usb_in_tx_which)) != 0)
-		ao_sleep(&ao_usb_in_pending);
 }
 
 /* Wait for a free IN buffer. Interrupts are blocked */
@@ -658,9 +658,11 @@ ao_usb_flush(FILE *file)
 	 * want to send an empty packet
 	 */
 	ao_arch_block_interrupts();
-	while (!ao_usb_in_flushed)
-		_ao_usb_in_send();
-
+	if (!ao_usb_in_flushed) {
+		_ao_usb_in_wait();
+		if (!ao_usb_in_flushed)
+			_ao_usb_in_send();
+	}
 	ao_arch_release_interrupts();
 	return 0;
 }
@@ -791,23 +793,27 @@ ao_usb_enable(void)
 {
 	int	t;
 
-	/* Enable USB clock */
-	samd21_pm.apbbmask |= (1 << SAMD21_PM_APBBMASK_USB);
-
 	/* Set up USB DM/DP pins */
 	samd21_port_pmux_set(&samd21_port_a, 24, SAMD21_PORT_PMUX_FUNC_G);
 	samd21_port_pmux_set(&samd21_port_a, 25, SAMD21_PORT_PMUX_FUNC_G);
 
 	/* Assign gclk 0 to USB reference */
-	samd21_gclk_clkctrl(0, SAMD21_GCLK_CLKCTRL_ID_USB);
+	samd21_gclk_clkctrl(AO_GCLK_USB, SAMD21_GCLK_CLKCTRL_ID_USB);
+
+	/* Enable USB clock */
+	samd21_pm.apbbmask |= (1 << SAMD21_PM_APBBMASK_USB);
 
 	/* Reset USB Device */
+
 	samd21_usb.ctrla |= (1 << SAMD21_USB_CTRLA_SWRST);
 
-	memset(&samd21_usb_desc, 0, sizeof (samd21_usb_desc));
-
-	while (samd21_usb.syncbusy & (1 << SAMD21_USB_SYNCBUSY_SWRST))
+	while ((samd21_usb.syncbusy & (1 << SAMD21_USB_SYNCBUSY_SWRST)) == 0)
 		;
+
+	while ((samd21_usb.syncbusy & (1 << SAMD21_USB_SYNCBUSY_SWRST)) != 0)
+		;
+
+	memset(&samd21_usb_desc, 0, sizeof (samd21_usb_desc));
 
 	/* Detach */
 	samd21_usb.ctrlb |= (1 << SAMD21_USB_CTRLB_DETACH);
@@ -850,7 +856,7 @@ ao_usb_enable(void)
 
 	/* configure interrupts */
 	samd21_nvic_set_enable(SAMD21_NVIC_ISR_USB_POS);
-	samd21_nvic_set_priority(SAMD21_NVIC_ISR_USB_POS, 3);
+	samd21_nvic_set_priority(SAMD21_NVIC_ISR_USB_POS, 2);
 
 	samd21_usb.intenset = ((1 << SAMD21_USB_INTFLAG_EORST));
 

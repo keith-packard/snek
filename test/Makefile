@@ -39,10 +39,23 @@ SUCCESS_TESTS = \
 	while-break.py \
 	while-else.py \
 	scoping-global.py \
-	scoping-local.py
+	scoping-local.py \
+	none.py \
+	args.py \
+	assert-success.py
 
 FAIL_TESTS = \
-	scoping-no-decl.py
+	scoping-no-decl.py \
+	list-named.py \
+	tuple-named.py \
+	range-named.py \
+	formal-named-first.py \
+	actual-named-first.py \
+	args-missing.py \
+	arg-dup1.py \
+	arg-dup2.py \
+	arg-unknown.py \
+	assert-fail.py
 
 check:
 	@exit=0; \
@@ -63,14 +76,14 @@ check:
 	done; \
 	for TEST in $(FAIL_TESTS); do \
 		echo "Running test $$TEST."; \
-		python3 $$TEST; \
+		python3 $$TEST 2>/dev/null; \
 		if [ $$? -eq 1 ]; then \
 			echo "    python pass"; \
 		else \
 			echo "    ***************** python fail *********************"; \
 			exit=1; \
 		fi; \
-		$(SNEK) $$TEST; \
+		$(SNEK) $$TEST 2>/dev/null; \
 		if [ $$? -eq 1 ]; then \
 			echo "    snek pass"; \
 		else \

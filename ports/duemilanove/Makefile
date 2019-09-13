@@ -15,15 +15,22 @@
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 
-SNEK_LOCAL_SRC = \
-	snek-duemilanove.c \
-	snek-atmega-eeprom.c \
-	snek-io.c \
-	snek-atmega-serial.c
+SNEK_ASSERT = 0
+
+include $(SNEK_ATMEGA)/snek-atmega.defs
 
 SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
-SNEK_LOCAL_INC = $(SNEK_ATMEGA)/snek-atmega.h
-SNEK_LOCAL_BUILTINS = snek-duemilanove.builtin
+
+SNEK_LOCAL_SRC = \
+	snek-duemilanove.c \
+	$(SNEK_ATMEGA_SRC)
+
+SNEK_LOCAL_INC = \
+	$(SNEK_ATMEGA_INC)
+
+SNEK_LOCAL_BUILTINS = \
+	$(SNEK_ATMEGA_BUILTINS) \
+	snek-duemilanove.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -34,7 +41,10 @@ ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
-CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert
+
+OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
+
+CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
 LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
 	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7a0 \

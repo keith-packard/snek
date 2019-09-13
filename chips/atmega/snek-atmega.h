@@ -23,7 +23,7 @@
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
 #define VALUE_STACK_SIZE	16
-#define PARSE_STACK_SIZE	56
+#define PARSE_STACK_SIZE	52
 #define SNEK_STACK		32
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
 #define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
@@ -67,7 +67,7 @@
 #define SNEK_BUILTIN_FUNC2(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func2))
 #define SNEK_BUILTIN_FUNC3(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func3))
 #define SNEK_BUILTIN_FUNC4(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func4))
-#define SNEK_BUILTIN_VALUE(b)	(pgm_read_float(&(b)->value))
+#define SNEK_BUILTIN_VALUE(b)	((snek_poly_t)(uint32_t)pgm_read_dword(&(b)->value))
 
 #define SNEK_ROOT_DECLARE(n)	PROGMEM n
 #define SNEK_ROOT_TYPE(n) 	((const snek_mem_t *) pgm_read_ptr(&(n)->type))

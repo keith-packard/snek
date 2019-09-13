@@ -61,20 +61,19 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 static int (*save_getc)(FILE *file);
 
 snek_poly_t
-snek_builtin_eeprom_load(void)
+snek_builtin_eeprom_erase(void)
+{
+	ao_flash_erase_all();
+	return SNEK_NULL;
+}
+
+void
+snek_eeprom_load(void)
 {
 	snek_interactive = false;
 	ao_flash_read_init();
 	save_getc = __iob[0]->get;
 	__iob[0]->get = snek_eeprom_getchar;
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_eeprom_erase(void)
-{
-	ao_flash_erase_all();
-	return SNEK_NULL;
 }
 
 int

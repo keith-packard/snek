@@ -6,8 +6,8 @@ vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.builtin $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
-SNEK_VERSION = 1.0
-SNEK_DATE = 2019-06-09
+SNEK_VERSION = 1.1
+SNEK_DATE = 2019-09-12
 
 SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
@@ -76,7 +76,16 @@ SNEK_WARNINGS = \
 	$(SNEK_MOST_WARNINGS) \
 	-Wimplicit-fallthrough
 
-SNEK_BASE_CFLAGS = -D_DEFAULT_SOURCE -I$(SNEK_ROOT) -DSNEK_VERSION='"$(SNEK_VERSION)"'
+SNEK_ASSERT ?= 1
+
+SNEK_BASE_CFLAGS = \
+	-D_DEFAULT_SOURCE \
+	-I$(SNEK_ROOT) \
+	-DSNEK_VERSION='"$(SNEK_VERSION)"'
+
+ifeq ($(SNEK_ASSERT),1)
+	SNEK_BASE_CFLAGS += -DSNEK_ASSERT=$(SNEK_ASSERT)
+endif
 
 SNEK_CFLAGS ?= $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)
 
@@ -94,8 +103,14 @@ SNEK_SED = sed \
 
 ifndef SNEK_NO_BUILD_TARGETS
 
+LOLA_FLAGS =
+
+ifeq ($(SNEK_ASSERT),1)
+	LOLA_FLAGS = -DSNEK_ASSERT
+endif
+
 snek-gram.h: $(SNEK_ROOT)/snek-gram.ll
-	lola -o $@ $^
+	lola $(LOLA_FLAGS) -o $@ $^
 
 snek-builtin.h: $(SNEK_ROOT)/snek-builtin.py $(SNEK_BUILTINS)
 	python3 $^ -o $@

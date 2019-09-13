@@ -75,8 +75,8 @@ formal		: NAME
 		;
 opt-named-p	: ASSIGN expr
 			@{
-				snek_parse_nnamed = 1;
-				snek_code_add_op_id(snek_op_assign_named, snek_parse_formals[--snek_parse_nformal]);
+				snek_parse_nnamed++;
+				snek_code_add_op_id(snek_op_assign_named, snek_parse_formals[snek_parse_nformal-1]);
 			}@
 		|
 			@{
@@ -107,7 +107,17 @@ small-stat	: assign-expr
 		| PASS
 		| GLOBAL globals
 		| DEL del dels-p
+{SNEK_ASSERT
+		| ASSERT assert
+}
 		;
+
+{SNEK_ASSERT
+assert  : expr
+			@{ snek_code_add_op(snek_op_assert); }@
+		;
+}
+
 dels-p		: COMMA del
 		  dels-p
 		|

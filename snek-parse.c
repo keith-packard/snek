@@ -23,7 +23,7 @@ static uint8_t for_depth;
 static bool snek_print_val;
 
 uint8_t snek_parse_nformal;
-static uint8_t snek_parse_nnamed;
+uint8_t snek_parse_nnamed;
 snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 snek_token_val_t snek_token_val;
@@ -195,6 +195,8 @@ snek_parse(void)
 		case parse_return_syntax:
 		default:
 			snek_error_syntax(snek_lex_text);
+			if (!snek_interactive)
+				return snek_parse_error;
 			{
 				/* Skip input until we get back to
 				 * zero indent

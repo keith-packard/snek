@@ -13,6 +13,7 @@
  */
 
 #include <ao.h>
+#include <ao-snek.h>
 
 #ifndef HAS_TICK
 #define HAS_TICK 1
@@ -50,28 +51,9 @@ volatile uint8_t	ao_data_count;
 
 void samd21_systick_isr(void)
 {
+	ao_arch_release_interrupts();
 	if (samd21_systick.csr & (1 << SAMD21_SYSTICK_CSR_COUNTFLAG)) {
 		++ao_tick_count;
-#if HAS_TASK_QUEUE
-		if (ao_task_alarm_tick && (int16_t) (ao_tick_count - ao_task_alarm_tick) >= 0)
-			ao_task_check_alarm((uint16_t) ao_tick_count);
-#endif
-#if AO_DATA_ALL
-		if (++ao_data_count == ao_data_interval) {
-			ao_data_count = 0;
-#if HAS_ADC
-#if HAS_FAKE_FLIGHT
-			if (ao_fake_flight_active)
-				ao_fake_flight_poll();
-			else
-#endif
-				ao_adc_poll();
-#endif
-#if (AO_DATA_ALL & ~(AO_DATA_ADC))
-			ao_wakeup((void *) &ao_data_count);
-#endif
-		}
-#endif
 #ifdef AO_TIMER_HOOK
 		AO_TIMER_HOOK;
 #endif
@@ -89,7 +71,7 @@ ao_timer_set_adc_interval(uint8_t interval)
 }
 #endif
 
-#define SYSTICK_RELOAD (AO_SYSTICK / 100 - 1)
+#define SYSTICK_RELOAD (AO_SYSTICK / AO_HERTZ - 1)
 
 void
 ao_timer_init(void)
@@ -100,6 +82,8 @@ ao_timer_init(void)
 	samd21_systick.csr = ((1 << SAMD21_SYSTICK_CSR_ENABLE) |
 			   (1 << SAMD21_SYSTICK_CSR_TICKINT) |
 			   (SAMD21_SYSTICK_CSR_CLKSOURCE_HCLK_8 << SAMD21_SYSTICK_CSR_CLKSOURCE));
+	/* Set clock to lowest priority */
+	samd21_scb.shpr3 |= 3 << 30;
 }
 
 #endif
@@ -114,7 +98,90 @@ ao_clock_init(void)
 	samd21_pm.apbamask |= ((1 << SAMD21_PM_APBAMASK_GCLK) |
 			       (1 << SAMD21_PM_APBAMASK_SYSCTRL));
 
+	/* Reset gclk */
+	samd21_gclk.ctrl = (1 << SAMD21_GCLK_CTRL_SWRST)
+		;
+
+	/* Wait for reset to complete */
+	while ((samd21_gclk.ctrl & (1 << SAMD21_GCLK_CTRL_SWRST)) &&
+	       (samd21_gclk.status & (1 << SAMD21_GCLK_STATUS_SYNCBUSY)))
+		;
+
+#ifdef AO_XOSC
+	/* Enable xosc (external xtal oscillator) */
+	samd21_sysctrl.xosc = ((SAMD21_SYSCTRL_XOSC_STARTUP_8192 << SAMD21_SYSCTRL_XOSC_STARTUP) |
+			       (1 << SAMD21_SYSCTRL_XOSC_AMPGC) |
+			       (SAMD21_SYSCTRL_XOSC_GAIN_16MHz << SAMD21_SYSCTRL_XOSC_GAIN) |
+			       (0 << SAMD21_SYSCTRL_XOSC_ONDEMAND) |
+			       (1 << SAMD21_SYSCTRL_XOSC_RUNSTDBY) |
+			       (1 << SAMD21_SYSCTRL_XOSC_XTALEN));
+	samd21_sysctrl.xosc |= ((1 << SAMD21_SYSCTRL_XOSC_ENABLE));
+
+	/* Wait for xosc */
+	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSCRDY)) == 0)
+		;
+
+	/* Use xosc as source of gclk generator AO_GCLK_XOSC */
+
+	samd21_gclk_gendiv(AO_GCLK_XOSC, 1);
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_XOSC, AO_GCLK_XOSC);
+
+	samd21_gclk_clkctrl(AO_GCLK_XOSC, SAMD21_GCLK_CLKCTRL_ID_DPLL);
+
+	/* program DPLL */
+
+	/* Divide down to 1MHz */
+	samd21_sysctrl.dpllctrlb = (((AO_XOSC_DIV/2 - 1) << SAMD21_SYSCTRL_DPLLCTRLB_DIV) |
+				    (0 << SAMD21_SYSCTRL_DPLLCTRLB_LBYPASS) |
+				    (SAMD21_SYSCTRL_DPLLCTRLB_LTIME_DEFAULT << SAMD21_SYSCTRL_DPLLCTRLB_LTIME) |
+				    (SAMD21_SYSCTRL_DPLLCTRLB_REFCLK_XOSC << SAMD21_SYSCTRL_DPLLCTRLB_REFCLK) |
+				    (0 << SAMD21_SYSCTRL_DPLLCTRLB_WUF) |
+				    (1 << SAMD21_SYSCTRL_DPLLCTRLB_LPEN) |
+				    (SAMD21_SYSCTRL_DPLLCTRLB_FILTER_DEFAULT << SAMD21_SYSCTRL_DPLLCTRLB_FILTER));
+
+	/* Multiply up to 48MHz */
+	samd21_sysctrl.dpllratio = ((AO_XOSC_MUL - 1) << SAMD21_SYSCTRL_DPLLRATIO_LDR);
+
+	/* Always on in run mode, off in standby mode */
+	samd21_sysctrl.dpllctrla = ((0 << SAMD21_SYSCTRL_DPLLCTRLA_ONDEMAND) |
+				    (0 << SAMD21_SYSCTRL_DPLLCTRLA_RUNSTDBY));
+
+	/* Enable DPLL */
+	samd21_sysctrl.dpllctrla |= (1 << SAMD21_SYSCTRL_DPLLCTRLA_ENABLE);
+
+	/* Wait for the DPLL to be enabled */
+	while ((samd21_sysctrl.dpllstatus & (1 << SAMD21_SYSCTRL_DPLLSTATUS_ENABLE)) == 0)
+		;
+
+	/* Wait for the DPLL to be ready */
+	while ((samd21_sysctrl.dpllstatus & (1 << SAMD21_SYSCTRL_DPLLSTATUS_CLKRDY)) == 0)
+		;
+
+	samd21_gclk_wait_sync();
+
+	/*
+	 * Switch generator 0 (CPU clock) to DPLL
+	 */
+
+	/* divide by 1 */
+	samd21_gclk_gendiv(AO_GCLK_SYSCLK, AO_XOSC_GCLK_DIV);
+
+	/* select DPLL as source */
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_FDPLL96M, AO_GCLK_FDPLL96M);
+#endif
+
+#ifdef AO_DFLL48M
+
+	/*
+	 * Enable DFLL48M clock
+	 */
+
+	samd21_sysctrl.dfllctrl = (1 << SAMD21_SYSCTRL_DFLLCTRL_ENABLE);
+	samd21_dfll_wait_sync();
+
 #ifdef AO_XOSC32K
+#define AO_GCLK_XOSC32K	1
+
 	/* Enable xosc32k (external 32.768kHz oscillator) */
 	samd21_sysctrl.xosc32k = ((6 << SAMD21_SYSCTRL_XOSC32K_STARTUP) |
 				  (1 << SAMD21_SYSCTRL_XOSC32K_XTALEN) |
@@ -126,21 +193,6 @@ ao_clock_init(void)
 	/* Wait for osc */
 	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSC32KRDY)) == 0)
 		;
-#endif
-
-	/* Reset gclk */
-	samd21_gclk.ctrl = (1 << SAMD21_GCLK_CTRL_SWRST)
-		;
-
-	/* Wait for reset to complete */
-	while ((samd21_gclk.ctrl & (1 << SAMD21_GCLK_CTRL_SWRST)) &&
-	       (samd21_gclk.status & (1 << SAMD21_GCLK_STATUS_SYNCBUSY)))
-		;
-
-#define AO_GCLK_SYSCLK	0
-
-#ifdef AO_XOSC32K
-#define AO_GCLK_XOSC32K	1
 
 	/*
 	 * Use xosc32k as source of gclk generator AO_GCLK_XOSC32K
@@ -154,16 +206,7 @@ ao_clock_init(void)
 	 */
 
 	samd21_gclk_clkctrl(AO_GCLK_XOSC32K, SAMD21_GCLK_CLKCTRL_ID_DFLL48M_REF);
-#endif
 
-	/*
-	 * Enable DFLL48M clock
-	 */
-
-	samd21_sysctrl.dfllctrl = (1 << SAMD21_SYSCTRL_DFLLCTRL_ENABLE);
-	samd21_dfll_wait_sync();
-
-#ifdef AO_XOSC32K
 	/* Set multiplier to get as close to 48MHz as we can without going over */
 	samd21_sysctrl.dfllmul = (((31/4) << SAMD21_SYSCTRL_DFLLMUL_CSTEP) |
 				  ((255/4) << SAMD21_SYSCTRL_DFLLMUL_FSTEP) |
@@ -205,6 +248,7 @@ ao_clock_init(void)
 	samd21_dfll_wait_sync();
 
 	samd21_sysctrl.dfllctrl = ((1 << SAMD21_SYSCTRL_DFLLCTRL_MODE) |
+				   (1 << SAMD21_SYSCTRL_DFLLCTRL_BPLCKC) |
 				   (1 << SAMD21_SYSCTRL_DFLLCTRL_CCDIS) |
 				   (1 << SAMD21_SYSCTRL_DFLLCTRL_USBCRM) |
 				   (1 << SAMD21_SYSCTRL_DFLLCTRL_ENABLE));
@@ -214,14 +258,15 @@ ao_clock_init(void)
 #endif
 
 	/*
-	 * Switch generator 0 (CPU clock) to DFLL48M
+	 * Switch generator to DFLL48M
 	 */
 
 	/* divide by 1 */
 	samd21_gclk_gendiv(AO_GCLK_SYSCLK, 1);
 
 	/* select DFLL48M as source */
-	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_DFLL48M, AO_GCLK_SYSCLK);
+	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_DFLL48M, AO_GCLK_DFLL48M);
+#endif
 
 	/* Set up all of the clocks to be /1 */
 
@@ -230,8 +275,11 @@ ao_clock_init(void)
 	samd21_pm.apbbsel = ((0 << SAMD21_PM_APBBSEL_APBBDIV));
 	samd21_pm.apbcsel = ((0 << SAMD21_PM_APBCSEL_APBCDIV));
 
+	/* Disable OSC8M */
+	samd21_sysctrl.osc8m &= ~(1 << SAMD21_SYSCTRL_OSC8M_ENABLE);
+
 	/* Additional misc configuration stuff */
 
-	/* Disable automativ NVM write operations */
+	/* Disable automatic NVM write operations */
 	samd21_nvmctrl.ctrlb |= (1 << SAMD21_NVMCTRL_CTRLB_MANW);
 }

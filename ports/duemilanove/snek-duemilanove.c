@@ -21,6 +21,12 @@ static uint8_t	dir_pin;
 static uint8_t	power[NUM_PIN];
 static uint32_t	on_pins;
 
+#define SNEK_PULL_NONE	0
+#define SNEK_PULL_UP	1
+
+/* digital pins all use PULL_UP by default */
+static uint32_t pull_pins = 0x03fff;
+
 #define clockCyclesPerMicrosecond	(F_CPU / 1000000L)
 #define clockCyclesToMicroseconds(a)	((a) / clockCyclesPerMicrosecond)
 
@@ -166,6 +172,12 @@ bit(uint8_t pin)
 }
 
 static bool
+is_pull(uint8_t pin)
+{
+	return (pull_pins >> pin) & 1;
+}
+
+static bool
 has_pwm(uint8_t p)
 {
 	return ((p) == 3 || (p) == 5 || (p) == 6 || (p) == 9 || (p) == 10 || (p) == 11);
@@ -225,7 +237,7 @@ set_dir(uint8_t pin, uint8_t d)
 		*r |= b;
 	} else {
 		*r &= ~b;
-		if (pin < 14)
+		if (is_pull(pin))
 			*p |= b;
 		else
 			*p &= ~b;
@@ -347,8 +359,25 @@ snek_builtin_onfor(snek_poly_t a)
 {
 	snek_builtin_on();
 	snek_builtin_time_sleep(a);
-	snek_builtin_off();
-	return a;
+	return snek_builtin_off();
+}
+
+snek_poly_t
+snek_builtin_pullnone(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull_pins &= ~(1 << p);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_pullup(snek_poly_t a)
+{
+	uint8_t p = snek_poly_get_pin(a);
+	if (!snek_abort)
+		pull_pins |= 1 << p;
+	return SNEK_NULL;
 }
 
 #define analog_reference 1
@@ -361,7 +390,7 @@ snek_builtin_read(snek_poly_t a)
 		return SNEK_NULL;
 	set_dir(p, 0);
 
-	if (p >= 14) {
+	if (p >= 14 && !is_pull(p)) {
 		uint8_t pin = p - 14;
 		ADMUX = (analog_reference << REFS0) | (pin & 7);
 		ADCSRA |= (1 << ADSC);
