@@ -1627,12 +1627,12 @@ is visible after that function finishes.
 The Del statement deletes either variables or elements within a List
 or Dictionary.(((del)))
 
-=== `assert`  _location_
+=== `assert`  _value_
 
-The Assert statement is used to add debugging information to a program.
-When the expression passed to assert returns `False`, the program will
-print `AssertionError` and you will know that the condition you expected
-to be true is not.
+If _value_ is `False`, the program will print `AssertionError` and
+then stop. Otherwise, the program will continue executing. This is
+useful to add checks inside your program to help catch problems
+earlier.
 
 == Functions
 
