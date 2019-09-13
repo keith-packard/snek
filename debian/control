@@ -6,7 +6,7 @@ Homepage: https://keithp.com
 Build-Depends: debhelper (>= 12), libreadline-dev, avr-libc, gcc-avr,
  binutils-arm-none-eabi, gcc-arm-none-eabi, libnewlib-nano-arm-none-eabi,
  python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf, ruby-coderay
-Standards-Version: 4.3.0
+Standards-Version: 4.4.0
 
 Package: snek
 Architecture: all
