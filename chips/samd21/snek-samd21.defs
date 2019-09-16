@@ -23,6 +23,7 @@ SNEK_SAMD21_SRC = \
 	snek-math.c \
 	snek-gpio.c \
 	snek-io.c \
+	snek-input.c \
 	ao-interrupt.c \
 	ao-led.c \
 	ao-timer.c \
@@ -59,7 +60,8 @@ SNEK_SAMD21_BUILTINS = \
 	snek-gpio.builtin \
 	snek-eeprom.builtin \
 	snek-altos.builtin \
-	$(SNEK_ROOT)/snek-math.builtin
+	snek-math.builtin \
+	snek-input.builtin
 
 NEWLIB_PRINTF_CFLAGS =
 

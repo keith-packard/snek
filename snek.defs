@@ -33,6 +33,7 @@ SNEK_SRC = \
 SNEK_EXT_SRC = \
 	snek-io.c \
 	snek-math.c \
+	snek-input.c \
 	snek-temperature.c
 
 SNEK_OBJ=$(SNEK_SRC:.c=.o)
