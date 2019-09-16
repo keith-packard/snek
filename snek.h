@@ -797,7 +797,7 @@ snek_print(snek_buf_t *buf, snek_poly_t poly);
 
 /* snek-string.c */
 
-char *
+snek_poly_t
 snek_string_make(char c);
 
 snek_poly_t

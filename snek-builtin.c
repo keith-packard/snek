@@ -64,7 +64,7 @@ snek_poly_t
 snek_builtin_chr(snek_poly_t a)
 {
 	snek_soffset_t s = snek_poly_get_soffset(a);
-	return snek_string_to_poly(snek_string_make(s));
+	return snek_string_make(s);
 }
 
 snek_poly_t
