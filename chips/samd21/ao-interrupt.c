@@ -14,12 +14,6 @@
 
 #include <ao.h>
 
-extern void main(void);
-extern char __stack__;
-extern char __text_start__, __text_end__;
-extern char __data_start__, __data_end__;
-extern char __bss_start__, __bss_end__;
-
 /* Interrupt functions */
 
 void samd21_halt_isr(void)
@@ -43,15 +37,15 @@ samd21_flash_size(void)
 	return nvmp << (3 + psz);
 }
 
-void start(void)
+void
+_init(void);
+
+void
+_init(void)
 {
 	/* Turn on sysctrl */
 	samd21_pm.apbamask |= (1 << SAMD21_PM_APBAMASK_SYSCTRL);
-
 	samd21_scb.vtor = (uint32_t) &samd21_interrupt_vector;
-	memcpy(&__data_start__, &__text_end__, &__data_end__ - &__data_start__);
-	memset(&__bss_start__, '\0', &__bss_end__ - &__bss_start__);
-	main();
 }
 
 #define STRINGIFY(x) #x
@@ -109,10 +103,13 @@ isr(tcc3);
 
 #define i(addr,name)	[(addr)/4] = samd21_ ## name ## _isr
 
+extern char __stack[];
+void _start(void);
+
 __attribute__ ((section(".interrupt")))
 const void *samd21_interrupt_vector[] __attribute((aligned(128))) = {
-	[0] = &__stack__,
-	[1] = start,
+	[0] = __stack,
+	[1] = _start,
 	i(0x08, nmi),
 	i(0x0c, hardfault),
 	i(0x2c, svc),

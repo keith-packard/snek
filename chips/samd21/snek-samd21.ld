@@ -20,7 +20,7 @@ MEMORY {
 	rom (rx) :   ORIGIN = 0x00002000, LENGTH = 128K - 8K
 	flash (rw) : ORIGIN = 0x00020000, LENGTH = 64K
 	ram (!w) :   ORIGIN = 0x20000000, LENGTH = 32K - 2K
-	stack (!w) : ORIGIN = 0x20000000 + 32k - 2K, LENGTH = 2K
+	stack (!w) : ORIGIN = 0x20000000 + 32K - 2K, LENGTH = 2K
 }
 
 SECTIONS {
@@ -28,12 +28,10 @@ SECTIONS {
 	 * Rom contents
 	 */
 
-	.text ORIGIN(rom) : {
-		__text_start__ = .;
+	.text : {
+		__text_start = .;
 
 		KEEP(*(.interrupt))	/* interrupt vectors */
-
-		. = ORIGIN(rom) + 0x100;
 
 		*(.text*)	/* Executable code */
 	} > rom
@@ -43,61 +41,98 @@ SECTIONS {
 	} > rom
 
 	.rodata : {
-		. = ALIGN(8);
 		*(.rodata*)	/* Constants */
-		. = ALIGN(8);
 	} > rom
 
-	__text_end__ = .;
+	. = ALIGN(8);
 
-	/* Functions placed in RAM (required for flashing)
-	 *
-	 * Align to 8 bytes as that's what the ARM likes text
-	 * segment alignments to be, and if we don't, then
-	 * we end up with a mismatch between the location in
-	 * ROM and the desired location in RAM. I don't
-	 * entirely understand this, but at least this appears
-	 * to work...
-	 */
+	__text_end = .;
 
-	__data_start__ = ORIGIN(ram);
+	/* Functions placed in RAM (required for flashing) */
 
-	.textram : {
+	.textram : ALIGN_WITH_INPUT {
+		PROVIDE(__data_start = .);
 		*(.ramtext)
-		. = ALIGN(8);
 	} >ram AT>rom
+	PROVIDE(__data_source = LOADADDR(.textram));
 
-	/* Data -- relocated to RAM, but written to ROM
-	 */
-	.data : {
-		__snek_data_start__ = .;
+	/* Data -- relocated to RAM, but written to ROM */
+	.data : ALIGN_WITH_INPUT {
+		PROVIDE(__snek_data_start = .);
 		snek*(.data)
-		__snek_data_end__ = .;
+		__snek_data_end = .;
 		*(.data)	/* initialized data */
-		. = ALIGN(8);
-		__data_end__ = .;
 	} >ram AT>rom
+	PROVIDE(__snek_data_source = LOADADDR(.data));
+	PROVIDE(__snek_data_size = __snek_data_end - __snek_data_start);
 
-	.bss : {
-		__bss_start__ = .;
-		__snek_bss_start__ = .;
-		snek*(.bss)
-		snek*(COMMON)
-		__snek_bss_end__ = .;
-		*(.bss)
-		*(COMMON)
-		. = ALIGN(8);
-		__bss_end__ = .;
+	/* Place .tdata initialization values in rom
+	 * These will be after the regular data initialization
+	 * and when copied will be placed in .tdata_space.
+	 * Allocate addresses in ram so that we can make sure
+	 * there is space. Not that this means the ram
+	 *
+	 * The .tbss segment must immediately follow the .tdata
+	 * segment or the linker complains about them not beingn
+	 * adjacent
+	 */
+	.tdata : ALIGN_WITH_INPUT {
+		PROVIDE(__tls_base = .);
+		*(.tdata .tdata.* .gnu.linkonce.td.*)
+		__data_end = .;
+	} >ram AT>rom
+	PROVIDE(__tdata_source = LOADADDR(.tdata));
+	PROVIDE(__tdata_size = SIZEOF(.tdata));
+	PROVIDE(__data_size = __data_end - __data_start);
+
+	/* Assign .tbss symbols addresses in rom so that they have the
+	 * right values to make them fall right after the .tdata
+	 * symbols. When linked, the resulting relocations will be
+	 * written with correct values. I think this relies on the
+	 * .tbss segment not being large enough to overflow the rom
+	 * memory area
+	 */
+	.tbss : {
+		PROVIDE(__bss_start = .);
+		*( .tbss .tbss.* .gnu.linkonce.tb.* )
+		*( .tcommon .tcommon.* )
+		PROVIDE(__tls_end = .);
+	} >ram
+	PROVIDE(__tbss_size = SIZEOF(.tbss));
+	__tls_size = __tls_end - __tls_base;
+
+	/*
+	 * The linker special cases .tbss segments which are
+	 * identified as segments which are not loaded and are
+	 * thread_local.
+	 *
+	 * For these segments, the linker does not advance 'dot'
+	 * across them.  We actually need memory allocated for tbss,
+	 * so we create a special segment here just to make room
+	 */
+	.tbss_space : {
+		. = . + __tbss_size;
 	} >ram
 
-	PROVIDE(end = .);
+	.bss : {
+		PROVIDE(__snek_bss_start = .);
+		snek*( .bss .bss.* )
+		snek*(COMMON)
+		__snek_bss_end = .;
+		*( .bss .bss.*)
+		*(COMMON)
+		__bss_end = .;
+		PROVIDE(end = .);
+	} >ram
+	PROVIDE(__snek_bss_size = (__snek_bss_end - __snek_bss_start));
+	PROVIDE(__bss_size = __bss_end - __bss_start);
 
-	PROVIDE(__stack__ = ORIGIN(stack) + LENGTH(stack));
+	PROVIDE(__stack = ORIGIN(stack) + LENGTH(stack));
 
 	PROVIDE(__flash__ = ORIGIN(flash));
 	PROVIDE(__flash_end__ = ORIGIN(flash) + LENGTH(flash));
 }
 
-ENTRY(start);
+ENTRY(_start);
 
 
