@@ -111,7 +111,7 @@ IDPRODUCT?=0x000a
 .SUFFIXES: .elf .bin .uf2
 
 .elf.bin:
-	$(OBJCOPY) -O binary -j '.text' -j '.ARM.exidx' -j '.rodata' -j '.textram' -j '.data' $^ $@
+	$(OBJCOPY) -O binary -S $^ $@
 
 .bin.uf2:
 	python3 $(SNEK_SAMD21)/uf2conv.py -b 0x2000 -c -o $@ $^
