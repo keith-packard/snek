@@ -15,6 +15,8 @@
 #include "snek.h"
 #include <math.h>
 
+bool snek_in_input;
+
 snek_poly_t
 snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 {
@@ -29,7 +31,7 @@ snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 			putc(' ', stdout);
 	}
 	(void) nnamed;
-	fflush(stdout);
+	snek_in_input = true;
 	while ((c = getchar()) != '\n' && c != EOF) {
 		if (snek_is_null(s)) {
 			s = snek_string_make(c);
@@ -38,6 +40,7 @@ snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 			s = snek_string_cat(snek_poly_to_string(s), in);
 		}
 	}
+	snek_in_input = false;
 	return s;
 }
 
