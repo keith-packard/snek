@@ -1,6 +1,7 @@
 SNEK_LOCAL_VPATH ?= .
 
 vpath %.c $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
+vpath %.S $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.h $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
@@ -122,6 +123,9 @@ endif
 quiet ?= $($1)
 
 .c.o:
+	$(call quiet,CC) -c $(CFLAGS) -o $@ $<
+
+.S.o:
 	$(call quiet,CC) -c $(CFLAGS) -o $@ $<
 
 endif
