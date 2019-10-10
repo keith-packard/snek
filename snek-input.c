@@ -47,15 +47,22 @@ snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 snek_poly_t
 snek_builtin_float(snek_poly_t a)
 {
-	if (snek_poly_type(a) != snek_string)
+	float f;
+	switch (snek_poly_type(a)) {
+	case snek_string:
+		f = strtof(snek_poly_to_string(a), NULL);
+		break;
+	case snek_float:
+		f = snek_poly_to_float(a);
+		break;
+	default:
 		return snek_error_type_1(a);
-	return snek_float_to_poly(strtof(snek_poly_to_string(a), NULL));
+	}
+	return snek_float_to_poly(f);
 }
 
 snek_poly_t
 snek_builtin_int(snek_poly_t a)
 {
-	if (snek_poly_type(a) != snek_string)
-		return snek_error_type_1(a);
-	return snek_float_to_poly(truncf(strtof(snek_poly_to_string(a), NULL)));
+	return snek_float_to_poly(truncf(snek_poly_get_float(snek_builtin_float(a))));
 }
