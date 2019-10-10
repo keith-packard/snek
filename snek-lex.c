@@ -23,7 +23,9 @@ uint8_t snek_ignore_nl;
 bool snek_lex_midline;
 bool snek_lex_exdent;
 
-#define SNEK_MAX_TOKEN	63
+#ifndef SNEK_MAX_TOKEN
+#define SNEK_MAX_TOKEN	255
+#endif
 
 char snek_lex_text[SNEK_MAX_TOKEN + 1];
 static uint8_t snek_lex_len;

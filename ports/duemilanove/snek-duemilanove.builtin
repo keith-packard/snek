@@ -33,3 +33,4 @@ A4, -2, 18
 A5, -2, 19
 #include <snek-atmega.h>
 #define SNEK_POOL 1024
+#define SNEK_MAX_TOKEN 63
