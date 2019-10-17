@@ -67,12 +67,10 @@ ao_enable_output(struct samd21_port *port, uint8_t pin, uint8_t v)
 	samd21_port_pincfg_set(port, pin,
 			       (1 << SAMD21_PORT_PINCFG_DRVSTR) |
 			       (1 << SAMD21_PORT_PINCFG_PULLEN) |
-			       (1 << SAMD21_PORT_PINCFG_INEN) |
-			       (1 << SAMD21_PORT_PINCFG_PMUXEN),
+			       (1 << SAMD21_PORT_PINCFG_INEN),
 			       (0 << SAMD21_PORT_PINCFG_DRVSTR) |
 			       (0 << SAMD21_PORT_PINCFG_PULLEN) |
-			       (0 << SAMD21_PORT_PINCFG_INEN) |
-			       (0 << SAMD21_PORT_PINCFG_PMUXEN));
+			       (0 << SAMD21_PORT_PINCFG_INEN));
 }
 
 static inline void
