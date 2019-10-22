@@ -24,6 +24,7 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/metrom0/snek-metrom0-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/nano33iot/snek-nano33iot-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/playground/snek-playground-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/qemu-arm/snek-qemu-arm-$(SNEK_VERSION).elf \
 	$(SNEK_PORTS)/snekboard/snek-board-$(SNEK_VERSION).uf2
 
 USBFIRMWARE ?= \
