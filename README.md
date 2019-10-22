@@ -60,7 +60,8 @@ Here's some places that have seen recent work
 
 ## Build and Run!
 
-If you want to build Snek yourself, 
+If you want to build Snek yourself, you'll need to have the build
+tools and other dependencies installed.
 
 ### Dependencies
 To build Snek you need these dependencies:
@@ -89,6 +90,25 @@ In the source of the project run:
 
 	$ make
 	$ make install
+
+### Some useful make options
+
+If you just type 'make', the system will build all of the embedded
+binaries along with Linux and Windows versions of snek to run locally
+and then create packages for Linux, Windows and Mac OS X. 'make
+install' will copy all of the build products to /usr/local. Here are
+some useful options to control the build:
+
+	$ make SNEK_OTHEROS=0 SNEK_OTHEROS_DIR=hosts/linux
+
+This instructs the build to only build a Linux package, and not a
+Windows or Mac OS X package.
+
+	$ make PREFIX=$HOME/.local
+
+This compiles everything to run from your home directory, instead of
+/usr/local. You can use this option with `make PREFIX=$HOME/.local
+install` to actually install things there.
 
 ## Running on Embedded Devices
 
