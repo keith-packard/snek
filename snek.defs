@@ -77,16 +77,10 @@ SNEK_WARNINGS = \
 	$(SNEK_MOST_WARNINGS) \
 	-Wimplicit-fallthrough
 
-SNEK_ASSERT ?= 1
-
 SNEK_BASE_CFLAGS = \
 	-D_DEFAULT_SOURCE \
 	-I$(SNEK_ROOT) \
 	-DSNEK_VERSION='"$(SNEK_VERSION)"'
-
-ifeq ($(SNEK_ASSERT),1)
-	SNEK_BASE_CFLAGS += -DSNEK_ASSERT=$(SNEK_ASSERT)
-endif
 
 SNEK_CFLAGS ?= $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)
 
@@ -105,10 +99,6 @@ SNEK_SED = sed \
 ifndef SNEK_NO_BUILD_TARGETS
 
 LOLA_FLAGS =
-
-ifeq ($(SNEK_ASSERT),1)
-	LOLA_FLAGS = -DSNEK_ASSERT
-endif
 
 snek-gram.h: $(SNEK_ROOT)/snek-gram.ll
 	lola $(LOLA_FLAGS) -o $@ $^

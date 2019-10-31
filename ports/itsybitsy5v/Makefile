@@ -20,8 +20,6 @@ PRODUCT_NAME=SnekItsyBitsy5v
 
 AVR_CLOCK=16000000UL
 
-SNEK_ASSERT = 0
-
 include $(SNEK_AVR)/snek-avr.defs
 
 SNEK_LOCAL_SRC = \

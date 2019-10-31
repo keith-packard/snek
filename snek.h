@@ -138,9 +138,7 @@ typedef enum {
 
 	snek_op_global,
 	snek_op_del,
-#ifdef SNEK_ASSERT
 	snek_op_assert,
-#endif
 
 	snek_op_branch,
 	snek_op_branch_true,

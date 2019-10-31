@@ -15,8 +15,6 @@
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 
-SNEK_ASSERT = 0
-
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
 SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)

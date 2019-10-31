@@ -107,16 +107,9 @@ small-stat	: assign-expr
 		| PASS
 		| GLOBAL globals
 		| DEL del dels-p
-{SNEK_ASSERT
-		| ASSERT assert
-}
-		;
-
-{SNEK_ASSERT
-assert  : expr
+		| ASSERT expr
 			@{ snek_code_add_op(snek_op_assert); }@
 		;
-}
 
 dels-p		: COMMA del
 		  dels-p
