@@ -22,6 +22,7 @@ include $(SNEK_ATMEGA)/snek-atmega.defs
 SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 
 SNEK_LOCAL_SRC = \
+	snek-pow.c \
 	snek-duemilanove.c \
 	$(SNEK_ATMEGA_SRC)
 
