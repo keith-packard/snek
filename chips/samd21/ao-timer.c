@@ -110,7 +110,7 @@ ao_clock_init(void)
 #ifdef AO_XOSC
 	/* Enable xosc (external xtal oscillator) */
 	samd21_sysctrl.xosc = ((SAMD21_SYSCTRL_XOSC_STARTUP_8192 << SAMD21_SYSCTRL_XOSC_STARTUP) |
-			       (1 << SAMD21_SYSCTRL_XOSC_AMPGC) |
+			       (0 << SAMD21_SYSCTRL_XOSC_AMPGC) |
 			       (SAMD21_SYSCTRL_XOSC_GAIN_16MHz << SAMD21_SYSCTRL_XOSC_GAIN) |
 			       (0 << SAMD21_SYSCTRL_XOSC_ONDEMAND) |
 			       (1 << SAMD21_SYSCTRL_XOSC_RUNSTDBY) |
@@ -121,16 +121,9 @@ ao_clock_init(void)
 	while ((samd21_sysctrl.pclksr & (1 << SAMD21_SYSCTRL_PCLKSR_XOSCRDY)) == 0)
 		;
 
-	/* Use xosc as source of gclk generator AO_GCLK_XOSC */
-
-	samd21_gclk_gendiv(AO_GCLK_XOSC, 1);
-	samd21_gclk_genctrl(SAMD21_GCLK_GENCTRL_SRC_XOSC, AO_GCLK_XOSC);
-
-	samd21_gclk_clkctrl(AO_GCLK_XOSC, SAMD21_GCLK_CLKCTRL_ID_DPLL);
-
 	/* program DPLL */
 
-	/* Divide down to 1MHz */
+	/* Divide down */
 	samd21_sysctrl.dpllctrlb = (((AO_XOSC_DIV/2 - 1) << SAMD21_SYSCTRL_DPLLCTRLB_DIV) |
 				    (0 << SAMD21_SYSCTRL_DPLLCTRLB_LBYPASS) |
 				    (SAMD21_SYSCTRL_DPLLCTRLB_LTIME_DEFAULT << SAMD21_SYSCTRL_DPLLCTRLB_LTIME) |
@@ -139,7 +132,7 @@ ao_clock_init(void)
 				    (1 << SAMD21_SYSCTRL_DPLLCTRLB_LPEN) |
 				    (SAMD21_SYSCTRL_DPLLCTRLB_FILTER_DEFAULT << SAMD21_SYSCTRL_DPLLCTRLB_FILTER));
 
-	/* Multiply up to 48MHz */
+	/* Multiply up */
 	samd21_sysctrl.dpllratio = ((AO_XOSC_MUL - 1) << SAMD21_SYSCTRL_DPLLRATIO_LDR);
 
 	/* Always on in run mode, off in standby mode */
