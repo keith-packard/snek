@@ -19,14 +19,14 @@
 #ifndef _AO_PINS_H_
 #define _AO_PINS_H_
 
-/* Run dfll48m from USB so that USB is happy */
-#define AO_DFLL48M		48000000
-
-/* Run fdpll96m clock from a 16MHz clock divided to 1MHz, multiplied to 48MHz */
+/* Run fdpll96m clock from a 16MHz clock divided to 62.5kHz, multiplied to 48MHz
+ * Attempts to use a PLL input higher than 250kHz failed, so we'll use something
+ * as low as possible, which means above 32kHz
+ */
 #define AO_XOSC			1
 #define AO_XOSC_FREQ		16000000
-#define AO_XOSC_DIV		16
-#define AO_XOSC_MUL		48
+#define AO_XOSC_DIV		256
+#define AO_XOSC_MUL		768
 
 #define AO_AHB_PRESCALER	1
 #define AO_APBA_PRESCALER	1
@@ -38,7 +38,6 @@
 #define HAS_USB			1
 #define AO_USB_OUT_HOOK		1
 #define USE_USB_FIFO		1
-#define HAS_BEEP		0
 
 #define AO_SNEK_TIMER_FUNC_E	0
 #define AO_SNEK_TIMER_FUNC_F	0x80
