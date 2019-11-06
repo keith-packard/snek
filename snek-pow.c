@@ -45,7 +45,7 @@ expf(float a)
 	 */
 	if (a >= 0.5) {
 		int _e;
-		a = frexp(a, &_e)/2.0;
+		a = frexpf(a, &_e)/2.0;
 		e = _e + 1;
 		if (e > 7)
 			return INFINITY;
@@ -98,7 +98,7 @@ float
 logf(float a)
 {
 	int e;
-	a = frexp(a, &e);
+	a = frexpf(a, &e);
 	float l = -_log2;
 	if (a != 0.5f) {
 		uint8_t loop;
