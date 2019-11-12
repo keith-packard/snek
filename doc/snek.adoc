@@ -2299,7 +2299,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the blue reset button twice in quick
 succession.
 
-Then, find the `snek-board-`{version}`.uf2` file included in the Snek
+Then, find the `snek-board-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file to the
 snekboard file system.
 
@@ -2448,7 +2448,7 @@ mode, the red LED on D13 will pulse rapidly for a few seconds, then
 more slowly. At that point, the APA102 device will turn green.
 
 Once the ItsyBitsy M0 is in boot loader mode and has been mounted,
-find the `snek-itsybitsym0-`{version}`.uf2` file included in the Snek
+find the `snek-itsybitsym0-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 ItsyBitsy M0 file system.
 
@@ -2530,7 +2530,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the `snek-metrom0-`{version}`.uf2` file included in the Snek
+Then, find the `snek-metrom0-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Metro M0 file system.
 
@@ -2572,7 +2572,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the `snek-feather-`{version}`.uf2` file included in the Snek
+Then, find the `snek-feather-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Feather M0 file system.
 
@@ -2616,7 +2616,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the `snek-crickit-`{version}`.uf2` file included in the Snek
+Then, find the `snek-crickit-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Crickit file system.
 
@@ -2665,7 +2665,7 @@ to your computer over USB, sliding the switch to the right (towards
 the microphone) and then pressing the reset button twice in quick
 succession.(((Playground)))
 
-Then, find the `snek-playground-`{version}`.uf2` file included in the Snek
+Then, find the `snek-playground-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Circuit Playground Express file system.
 
