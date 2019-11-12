@@ -161,7 +161,7 @@ class SnekDevice:
         self.interface = interface
         self.device = device
         self.serial = serial.Serial(port=device,
-                                    baudrate=38400,
+                                    baudrate=115200,
                                     bytesize=serial.EIGHTBITS,
                                     parity=serial.PARITY_NONE,
                                     stopbits=serial.STOPBITS_ONE,
