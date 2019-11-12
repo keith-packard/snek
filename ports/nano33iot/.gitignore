@@ -1,0 +1,7 @@
+snek-nano33iot*.bin
+snek-nano33iot*.map
+snek-nano33iot*.uf2
+snek-nano33iot*.elf
+*.o
+ao-product.h
+
