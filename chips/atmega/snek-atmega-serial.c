@@ -182,8 +182,14 @@ snek_uart_getch(void)
 void
 snek_uart_putch(char c)
 {
-	if (c == '\n')
+	switch (c) {
+	case 'q' & 0x1f:
+	case 's' & 0x1f:
+		return;
+	case '\n':
 		snek_uart_putch('\r');
+		break;
+	}
 	for (;;) {
 		cli();
 		if (ring_put(&tx_ring, c)) {
