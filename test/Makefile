@@ -31,6 +31,7 @@ SUCCESS_TESTS = \
 	for-nested.py \
 	global.py \
 	if.py \
+	int.py \
 	math.py \
 	op.py \
 	range.py \
