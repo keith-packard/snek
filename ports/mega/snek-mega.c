@@ -149,8 +149,8 @@ port_init(void)
 	OCR5AH = 0;
 	OCR5BH = 0;
 
-	memset(power, 0xff, NUM_PIN);
-	memset(pull_pins, 0x00, NUM_PIN);
+	memset(power, 0xff, sizeof(power));
+	memset(pull_pins, 0x00, sizeof(pull_pins));
 	for (p = 0; p < A0; p++)
 		pull_pins[pin_byte(p)] |= (1 << pin_bit(p));
 }
