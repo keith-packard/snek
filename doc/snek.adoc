@@ -385,6 +385,16 @@ understand the mathematical convention that adjacent values should be
 multiplied. The return statement is how we tell Snek that this
 function computes a value that should be given back to the caller.
 
+Numbers in Snek may be written using `_` as a separator, which is
+especially useful when writing large numbers.
+
+[source,subs="verbatim,quotes"]
+----
+> # you can write
+> c = 299_792_458
+> # and Snek will interpret as
+> c = 299792458
+----
 [#for_range]
 === Loops, Ranges and Printing Two Values
 
