@@ -15,7 +15,9 @@
 #include "snek.h"
 
 /* UART baud rate */
+#ifndef UART_BAUD
 #define UART_BAUD  		115200
+#endif
 #define UART_BAUD_U2X(div)	((F_CPU / (div) / UART_BAUD - 1) / 2)
 #define UART_U2X		(UART_BAUD_U2X(4) <= 4095)
 #define UART_BAUD_SCALE		(UART_U2X ? UART_BAUD_U2X(4) : UART_BAUD_U2X(8))
