@@ -18,13 +18,10 @@ too small to run [MicroPython](https://micropython.org/).
 
 ## Downloads
 
- * Snek is packaged for Debian but not yet in the main archive. I have
-   made packages available in my personal archive for
-   now. Instructions for using that can be found
-   [here](http://keithp.com/archive/README).  This archive also
-   includes _lola_, the LL parser generator used in building Snek.
+ * Snek is packaged for Debian and is available for the unstable release.
 
- * Packages for Linux, Mac OS X and Windows are available in the
+ * Packages for Linux, including older versions of Debian, Mac OS X
+   and Windows are available in the
    [Snek Dist directory](http://keithp.com/snek/dist)
 
 ## To Do list
@@ -36,27 +33,15 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
- * [Adafruit ItsyBitsy 5V](https://www.adafruit.com/product/3677)
-   port.  This device uses the Atmel ATmega 32u4 SoC which is similar
-   to the 328P, but has integrate USB support so it doesn't need an
-   external USB to serial converter. Getting a USB stack tucked into
-   the ROM took some squeezing, and I had to remove some functionality
-   (random numbers and pre-defined port names) to make it fit.
+ * [Arduino Nano 33 IoT](https://store.arduino.cc/usa/nano-33-iot)
+   port.  This device uses the Atmel SAMD21 SoC, but can't run
+   Circuit Python because it doesn't have flash storage. The Snek port
+   can drive the GPIO pins in simple ways, but doesn't have drivers
+   for the other devices on the board.
 
- * [NeoPixel](https://learn.adafruit.com/adafruit-neopixel-uberguide)
-   driver.  NeoPixel is Adafruit's name for the WS2812 (and similar)
-   scalable full-color light source. The current driver is
-   samd21g-specific, but could be ported to other SoCs.
-   
- * [Circuit Playground Express](https://www.adafruit.com/product/3333)
-   port.  The 10 integrated NeoPixels encourated me to write a
-   NeoPixel driver. This still needs drivers for the accelerometer,
-   speaker and microphone.
-
- * [Crickit FeatherWing](https://www.adafruit.com/product/3343) port.
-   This device has built-in drivers for motors and other devices,
-   along with convenient plugs for other devices. If you want to get
-   started building Snek robots, this is a great board to buy.
+ * QEMU, both ARM and RISC-V. This is the first RISC-V port of Snek,
+   but I've got plans for real hardware once I've done a bit more work
+   on the underlying SiFive freedom-metal system.
 
 ## Build and Run!
 
@@ -70,19 +55,20 @@ To build Snek you need these dependencies:
   * [gcc-avr](https://ccrma.stanford.edu/~juanig/articles/wiriavrlib/AVR_GCC.html)
   * [avr-libc](https://www.nongnu.org/avr-libc/)
   * [gcc-arm-none-eabi](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
-  * [newlib-nano](https://keithp.com/newlib-nano/)
+  * [gcc-riscv64-unknown-elf](https://github.com/sifive/freedom-tools/)
+  * [picolibc](https://keithp.com/picolibc/)
   * [python3](https://www.python.org/)
   * [pyserial](https://github.com/pyserial/)
   * [python curses](https://docs.python.org/3/library/curses.html)
 
-On Debian, you can get everything other than Lola from the main archive:
+On Debian, you can get everything other than picolibc from the main archive:
 
-	# apt install gcc-avr avr-libc python3-serial gcc-arm-none-eabi libnewlib-nano-arm-none-eabi
+	# apt install lola gcc-avr avr-libc python3-serial gcc-arm-none-eabi gcc-riscv64-unknown 
 
-To install Lola, download the source and install it;
+To install picolibc, download the source and install it. Instructions
+for building and installing that are included in the picolibc project:
 
-	$ git clone git://keithp.com/git/lola.git
-	$ cd lola && make install
+	$ git clone git://keithp.com/git/picolibc.git
 
 ### Building and install
 
