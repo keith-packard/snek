@@ -1,3 +1,14 @@
+snek (1.2-1) unstable; urgency=medium
+
+  * Upstream release 1.2
+  * Switch from newlib-nano to picolibc (tracking upstream change)
+  * Add PEP-515 support (thanks to Paulo Henrique Silva <ph.silva@carta.com>)
+  * Improve clock setup on snekboard to make USB happier.
+  * Add QEMU ports for ARM and RISC-V
+  * Add support for Arduino Nano 33 IoT board
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 15 Nov 2019 16:07:29 -0800
+
 snek (1.1-1) unstable; urgency=medium
 
   * Upstream release 1.1
