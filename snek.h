@@ -21,7 +21,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
-#include <assert.h>
 
 #include "snek-builtin.h"
 

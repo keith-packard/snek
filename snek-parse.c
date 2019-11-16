@@ -13,7 +13,6 @@
  */
 
 #include "snek.h"
-#include <assert.h>
 
 bool snek_interactive;
 
