@@ -7,8 +7,8 @@ vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.builtin $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
-SNEK_VERSION = 1.1
-SNEK_DATE = 2019-09-12
+SNEK_VERSION = 1.2
+SNEK_DATE = 2019-11-15
 
 SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
