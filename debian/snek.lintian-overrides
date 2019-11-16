@@ -1,5 +1,5 @@
 snek: pkg-config-unavailable-for-cross-compilation usr/lib/pkgconfig/snek.pc
-snek: arch-independent-package-contains-binary-or-object usr/share/snek/snek-board-1.1.elf
-snek: arch-dependent-file-in-usr-share usr/share/snek/snek-board-1.1.elf
-snek: unstripped-binary-or-object usr/share/snek/snek-board-1.1.elf
-snek: statically-linked-binary usr/share/snek/snek-board-1.1.elf
+snek: arch-independent-package-contains-binary-or-object usr/share/snek/snek-*.elf
+snek: arch-dependent-file-in-usr-share usr/share/snek/snek-*.elf
+snek: unstripped-binary-or-object usr/share/snek/snek-*.elf
+snek: statically-linked-binary usr/share/snek/snek-*.elf
