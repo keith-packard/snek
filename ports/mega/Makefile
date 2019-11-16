@@ -22,7 +22,8 @@ SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 SNEK_LOCAL_SRC = \
 	$(SNEK_ATMEGA_SRC) \
 	$(SNEK_ATMEGA_MATH_SRC) \
-	snek-mega.c \
+	snek-input.c \
+	snek-mega.c
 
 SNEK_LOCAL_INC = \
 	$(SNEK_ATMEGA_INC) \
@@ -32,6 +33,7 @@ SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
 	$(SNEK_ATMEGA_MATH_BUILTINS) \
 	snek-math.builtin \
+	snek-input.builtin \
 	snek-mega.builtin
 
 include $(SNEK_ROOT)/snek-install.defs

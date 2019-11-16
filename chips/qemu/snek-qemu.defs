@@ -1,0 +1,69 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+
+SNEK_LOCAL_SRC = \
+	snek-math.c \
+	snek-io.c \
+	snek-input.c \
+	snek-qemu.c
+
+SNEK_LOCAL_INC = \
+	snek-qemu.h
+
+SNEK_LOCAL_BUILTINS = \
+	snek-qemu.builtin \
+	snek-math.builtin \
+	snek-input.builtin
+
+SNEK_LOCAL_VPATH = $(SNEK_QEMU)
+
+PICOLIBC_PRINTF_CFLAGS =
+
+PICOLIBC_CFLAGS= \
+	-specs=picolibc.specs \
+	$(PICOLIBC_PRINTF_CFLAGS)
+
+OPT=-O0 -g
+
+WARN_FLAGS=-Wall -Wextra -Wcast-align \
+	-Wpointer-arith \
+	-Wstrict-prototypes \
+	-Wmissing-prototypes \
+	-Wmissing-declarations \
+	-Wnested-externs \
+	-Wshadow \
+	-Warray-bounds=2\
+	-Wno-missing-prototypes\
+	-Wno-unused-parameter\
+	-Wno-strict-prototypes\
+	-Wno-missing-declarations
+
+CFLAGS=$(ARCH_CFLAGS) --semihost \
+	-std=gnu99 $(WARN_FLAGS) $(OPT) -g \
+	-I. -I$(SNEK_QEMU) -I$(SNEK_ROOT) $(PICOLIBC_CFLAGS) $(SNEK_CFLAGS)
+
+LDFLAGS=$(CFLAGS) -n
+
+LIBS=-lm
+
+PROG=$(PROGNAME)-$(SNEK_VERSION).elf
+MAP=$(PROGNAME)-$(SNEK_VERSION).map
+
+CC=$(ARCH)-gcc
+OBJCOPY=$(ARCH)-objcopy
+
+distclean:	clean
+
+clean::
+	rm -f *.o $(PROGNAME)*.elf $(PROGNAME)*.map

@@ -157,11 +157,14 @@ class SnekDevice:
     # that gets data that are read
     #
 
-    def __init__(self, device, interface):
+    def __init__(self, port, interface):
         self.interface = interface
-        self.device = device
-        self.serial = serial.Serial(port=device,
-                                    baudrate=38400,
+        self.device = port.device
+        rate = 115200
+        if 'Arduino Mega' in port.description:
+            rate = 38400
+        self.serial = serial.Serial(port=self.device,
+                                    baudrate=rate,
                                     bytesize=serial.EIGHTBITS,
                                     parity=serial.PARITY_NONE,
                                     stopbits=serial.STOPBITS_ONE,
@@ -993,7 +996,7 @@ class GetPortWin:
                 screen_repaint()
                 if self.curline >= len(self.ports):
                     return None
-                return self.ports[self.curline].device
+                return self.ports[self.curline]
             elif ch == curses.KEY_UP or ch == ord('p') & 0x1f:
                 self.curline = max(0, self.curline-1)
             elif ch == curses.KEY_DOWN or ch == ord('n') & 0x1f:
@@ -1090,11 +1093,11 @@ def screen_fini():
 def snekde_open_device():
     global snek_device, snek_monitor
     dialog = GetPortWin()
-    name = dialog.run_dialog()
-    if not name:
+    port = dialog.run_dialog()
+    if not port:
         return
     try:
-        device = SnekDevice(name, snek_monitor)
+        device = SnekDevice(port, snek_monitor)
         device.start()
         if snek_device:
             snek_device.close()
@@ -1105,7 +1108,7 @@ def snekde_open_device():
         message = e.strerror
         if not message:
             message = "failed"
-        ErrorWin("%s: %s" % (name, message))
+        ErrorWin("%s: %s" % (port.name, message))
 
 def snekde_get_text():
     global snek_edit_win, snek_device

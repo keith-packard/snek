@@ -59,6 +59,7 @@ ao_tcc_init(struct samd21_tcc *tcc, uint32_t apbcmask)
 		     (0 << SAMD21_TCC_WAVE_SWAP(3)));
 
 	tcc->ctrla = (1 << SAMD21_TCC_CTRLA_ENABLE);
+	tcc->dbgctrl = (1 << SAMD21_TCC_DBGCTRL_DBGRUN);
 }
 
 void

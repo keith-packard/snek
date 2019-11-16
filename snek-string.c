@@ -14,13 +14,13 @@
 
 #include "snek.h"
 
-char *
+snek_poly_t
 snek_string_make(char c)
 {
 	char *new = snek_alloc(2);
 	if (new)
 		new[0] = c;
-	return new;
+	return snek_string_to_poly(new);
 }
 
 snek_poly_t
@@ -33,7 +33,7 @@ snek_string_get(char *string, snek_poly_t p, bool report_error)
 			snek_error_value(p);
 		return SNEK_NULL;
 	}
-	return snek_string_to_poly(snek_string_make(string[o]));
+	return snek_string_make(string[o]);
 }
 
 static char *

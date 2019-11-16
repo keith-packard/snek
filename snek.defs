@@ -1,13 +1,14 @@
 SNEK_LOCAL_VPATH ?= .
 
 vpath %.c $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
+vpath %.S $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.h $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.builtin $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
-SNEK_VERSION = 1.1
-SNEK_DATE = 2019-09-12
+SNEK_VERSION = 1.2
+SNEK_DATE = 2019-11-15
 
 SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
@@ -33,6 +34,7 @@ SNEK_SRC = \
 SNEK_EXT_SRC = \
 	snek-io.c \
 	snek-math.c \
+	snek-input.c \
 	snek-temperature.c
 
 SNEK_OBJ=$(SNEK_SRC:.c=.o)
@@ -76,16 +78,10 @@ SNEK_WARNINGS = \
 	$(SNEK_MOST_WARNINGS) \
 	-Wimplicit-fallthrough
 
-SNEK_ASSERT ?= 1
-
 SNEK_BASE_CFLAGS = \
 	-D_DEFAULT_SOURCE \
 	-I$(SNEK_ROOT) \
 	-DSNEK_VERSION='"$(SNEK_VERSION)"'
-
-ifeq ($(SNEK_ASSERT),1)
-	SNEK_BASE_CFLAGS += -DSNEK_ASSERT=$(SNEK_ASSERT)
-endif
 
 SNEK_CFLAGS ?= $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)
 
@@ -104,10 +100,6 @@ SNEK_SED = sed \
 ifndef SNEK_NO_BUILD_TARGETS
 
 LOLA_FLAGS =
-
-ifeq ($(SNEK_ASSERT),1)
-	LOLA_FLAGS = -DSNEK_ASSERT
-endif
 
 snek-gram.h: $(SNEK_ROOT)/snek-gram.ll
 	lola $(LOLA_FLAGS) -o $@ $^
@@ -131,6 +123,9 @@ endif
 quiet ?= $($1)
 
 .c.o:
+	$(call quiet,CC) -c $(CFLAGS) -o $@ $<
+
+.S.o:
 	$(call quiet,CC) -c $(CFLAGS) -o $@ $<
 
 endif

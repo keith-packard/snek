@@ -15,7 +15,9 @@
 #include "snek.h"
 
 /* UART baud rate */
-#define UART_BAUD  		38400
+#ifndef UART_BAUD
+#define UART_BAUD  		115200
+#endif
 #define UART_BAUD_U2X(div)	((F_CPU / (div) / UART_BAUD - 1) / 2)
 #define UART_U2X		(UART_BAUD_U2X(4) <= 4095)
 #define UART_BAUD_SCALE		(UART_U2X ? UART_BAUD_U2X(4) : UART_BAUD_U2X(8))
@@ -182,8 +184,14 @@ snek_uart_getch(void)
 void
 snek_uart_putch(char c)
 {
-	if (c == '\n')
+	switch (c) {
+	case 'q' & 0x1f:
+	case 's' & 0x1f:
+		return;
+	case '\n':
 		snek_uart_putch('\r');
+		break;
+	}
 	for (;;) {
 		cli();
 		if (ring_put(&tx_ring, c)) {

@@ -38,6 +38,7 @@ ao_tc_init(struct samd21_tc *tc, uint32_t apbcmask)
 		     (SAMD21_TC_CTRLA_WAVEGEN_NPWM << SAMD21_TC_CTRLA_WAVEGEN) |
 		     (SAMD21_TC_CTRLA_MODE_COUNT16) |
 		     (1 << SAMD21_TC_CTRLA_ENABLE));
+	tc->dbgctrl = (1 << SAMD21_TC_DBGCTRL_DBGRUN);
 }
 
 void

@@ -13,13 +13,11 @@ n=('-----', '.----', '..---', '...--', '....-',
 
 def d(l):
     l = ord(l)
-    if 97 <= l and l <= 122:
-        return a[l-97]
-    return n[l-48]
+    if l < 58: return n[l-48]
+    return a[l-97]
 
 def l(c):
-    es = d(c)
-    for e in es:
+    for e in d(c):
         if e == '.':
             onfor(T)
         else:

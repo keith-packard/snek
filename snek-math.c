@@ -255,7 +255,7 @@ m1(math_erf, erff);
 m1(math_erfc, erfcf);
 m1(math_gamma, tgammaf);
 
-#if defined(WIN32) || defined(__APPLE__)
+#if defined(WIN32) || defined(__APPLE__) || defined(_PICOLIBC__)
 m1(math_lgamma, lgammaf);
 #else
 static float

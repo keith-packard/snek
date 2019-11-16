@@ -8,6 +8,8 @@ action="fuseload"
 
 ISP=usbtiny
 
+ISPPORT=""
+
 mode=arg
 
 for i in "$@"; do
@@ -23,8 +25,11 @@ for i in "$@"; do
 		-hex|--hex)
 		    mode=hex
 		    ;;
+		-port|--port)
+		    mode=port
+		    ;;
 		*)
-		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-duemilanove.hex} {fuseload|load|fuse}" 1>&2
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-isp arduinoisp} {-hex snek-duemilanove.hex} {-port /dev/ttyUSB0} {fuseload|load|fuse}" 1>&2
 		      exit 1
 		      ;;
 	    esac
@@ -37,19 +42,34 @@ for i in "$@"; do
 	    SNEKDUINO="$i"
 	    mode=arg
 	    ;;
+	port)
+	    ISPPORT="-P $i"
+	    mode=arg
     esac
 done
 
 FUSES="-U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m"
 
+case "$ISP" in
+    arduinoisp)
+    # For ArdinoISP, use avrisp + 19200 baud...
+    [ "$ISPPORT" ] || ISPPORT="-P /dev/ttyUSB0"
+    AVRDUDE="avrdude $ISPPORT -c avrisp -b 19200 -p ATMEGA328P"
+    ;;
+    *)
+    AVRDUDE="avrdude $ISPPORT -c $ISP -p ATMEGA328P"
+    ;;
+esac
+
+
 case "$action" in
     fuse)
-	avrdude -V -c $ISP -p ATMEGA328P -u $FUSES
+	$AVRDUDE -V -u $FUSES
 	;;
     fuseload)
-	avrdude -V -c $ISP -p ATMEGA328P -u $FUSES && avrdude -c $ISP -p ATMEGA328P -U flash:w:"${SNEKDUINO}"
+	$AVRDUDE -V -u $FUSES && $AVRDUDE -U flash:w:"${SNEKDUINO}"
 	;;
     load)
-	avrdude -c $ISP -p ATMEGA328P -U flash:w:"${SNEKDUINO}"
+	$AVRDUDE -U flash:w:"${SNEKDUINO}"
 	;;
 esac

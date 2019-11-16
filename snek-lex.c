@@ -23,7 +23,9 @@ uint8_t snek_ignore_nl;
 bool snek_lex_midline;
 bool snek_lex_exdent;
 
-#define SNEK_MAX_TOKEN	63
+#ifndef SNEK_MAX_TOKEN
+#define SNEK_MAX_TOKEN	255
+#endif
 
 char snek_lex_text[SNEK_MAX_TOKEN + 1];
 static uint8_t snek_lex_len;
@@ -159,6 +161,7 @@ typedef enum nclass {
 	c_e,
 	c_sign,
 	c_other,
+	c_underscore
 } __attribute__((packed)) nclass_t;
 
 static nclass_t
@@ -172,6 +175,8 @@ cclass(char c)
 		return c_e;
 	if (c == '-' || c == '+')
 		return c_sign;
+	if (c == '_')
+		return c_underscore;
 	return c_other;
 }
 
@@ -179,11 +184,11 @@ static token_t
 number(char c)
 {
 	nstate_t n = n_int;
-	nclass_t t;
+	nclass_t t = c_digit;
 
 	start_token();
 	for (;;) {
-		if (!add_token(c))
+		if (t != c_underscore && !add_token(c))
 			RETURN(TOKEN_NONE);
 		c = lexchar();
 		t = cclass(c);
@@ -191,6 +196,7 @@ number(char c)
 		case n_int:
 			switch (t) {
 			case c_digit:
+			case c_underscore:
 				continue;
 			case c_dot:
 				n = n_frac;

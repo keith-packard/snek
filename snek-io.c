@@ -48,23 +48,41 @@ snek_io_addc(char c)
 		SNEK_IO_PUTC(c);
 }
 
+#ifdef SNEK_BUILTIN_input
+extern bool snek_in_input;
+static char unget;
+#endif
+
 int
 snek_io_getc(FILE *stream)
 {
 	(void) stream;
 	if (used == avail) {
+#ifdef SNEK_BUILTIN_input
+		if (!snek_in_input)
+#endif
+		{
 	restart_cooked:
-		if (snek_parse_middle)
-			SNEK_IO_PUTC('+');
-		else
-			SNEK_IO_PUTC('>');
-		SNEK_IO_PUTC(' ');
+			if (snek_parse_middle)
+				SNEK_IO_PUTC('+');
+			else
+				SNEK_IO_PUTC('>');
+			SNEK_IO_PUTC(' ');
+		}
 	restart_raw:
 		used = avail = 0;
 		for (;;) {
 			if (!SNEK_IO_WAITING(stream))
 				fflush(stdout);
-			uint8_t c = SNEK_IO_GETC(stream);
+			uint8_t c;
+
+#ifdef SNEK_BUILTIN_input
+			if (unget) {
+				c = unget;
+				unget = 0;
+			} else
+#endif
+			c = SNEK_IO_GETC(stream);
 
 			switch (c)
 			{
@@ -79,6 +97,12 @@ snek_io_getc(FILE *stream)
 				raw_mode = false;
 				continue;
 			case 'c' & 0x1f:
+#ifdef SNEK_BUILTIN_input
+				if (snek_in_input) {
+					unget = c;
+					return EOF;
+				}
+#endif
 				snek_abort = false;
 				if (raw_mode)
 					goto restart_raw;

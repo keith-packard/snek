@@ -107,31 +107,20 @@ ao_usb_out_hook(uint8_t *hook_buf, uint16_t len)
 			snek_abort = true;
 }
 
-int _errno;
-
-int *__errno(void)
-{
-	return &_errno;
-}
-
 static jmp_buf	snek_reset_buf;
 
-extern char __snek_data_start__, __snek_data_end__;
-extern char __snek_bss_start__, __snek_bss_end__;
-extern char __text_start__, __text_end__;
-extern char __data_start__, __data_end__;
-extern char __bss_start__, __bss_end__;
+extern char __snek_data_source[];
+extern char __snek_data_start[], __snek_data_size[];
+extern char __snek_bss_start[], __snek_bss_size[];
 
 snek_poly_t
 snek_builtin_reset(void)
 {
 	/* reset data */
-	memcpy(&__snek_data_start__,
-	       &__text_end__ + (&__snek_data_start__ - &__data_start__),
-	       &__snek_data_end__ - &__snek_data_start__);
+	memcpy(__snek_data_start, __snek_data_source, (uintptr_t) __snek_data_size);
 
 	/* reset bss */
-	memset(&__snek_bss_start__, '\0', &__snek_bss_end__ - &__snek_bss_start__);
+	memset(__snek_bss_start, '\0', (uintptr_t) __snek_bss_size);
 
 	/* and off we go! */
 	longjmp(snek_reset_buf, 1);

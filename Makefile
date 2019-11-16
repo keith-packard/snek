@@ -67,9 +67,13 @@ install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
 	+for snek in $(SNEKS); do (cd `dirname $$snek` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
 
-upload:
+upload: $(SNEKS)
 	+cd doc && make upload
-	for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload); done
+	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload); done
+
+otheros: $(SNEKS)
+	+cd doc && make
+	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make); done
 
 snek.pc: snek.pc.in
 	$(SNEK_SED) $^ > $@

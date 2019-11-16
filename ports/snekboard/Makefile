@@ -42,7 +42,7 @@ OBJ=$(SRC:.c=.o)
 
 all: $(PROG) $(BIN) $(UF2) snek-board-install
 
-$(PROG): Makefile $(OBJ)
+$(PROG): Makefile $(OBJ) $(SNEK_SAMD21)/snek-samd21.ld
 	$(call quiet,CC) $(LDFLAGS) -Wl,-M=$(MAP) -o $@ $(OBJ) $(LIBS)
 
 $(OBJ): $(SNEK_INC)

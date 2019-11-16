@@ -23,6 +23,7 @@ SNEK_SAMD21_SRC = \
 	snek-math.c \
 	snek-gpio.c \
 	snek-io.c \
+	snek-input.c \
 	ao-interrupt.c \
 	ao-led.c \
 	ao-timer.c \
@@ -59,14 +60,14 @@ SNEK_SAMD21_BUILTINS = \
 	snek-gpio.builtin \
 	snek-eeprom.builtin \
 	snek-altos.builtin \
-	$(SNEK_ROOT)/snek-math.builtin
+	snek-math.builtin \
+	snek-input.builtin
 
-NEWLIB_PRINTF_CFLAGS =
+PICOLIBC_PRINTF_CFLAGS =
 
-NEWLIB_CFLAGS= \
-	-ffreestanding -nostdlib \
-	-isystem $(NEWLIB_NANO)/arm-none-eabi/include \
-	$(NEWLIB_PRINTF_CFLAGS)
+PICOLIBC_CFLAGS= \
+	-specs=picolibc.specs \
+	$(PICOLIBC_PRINTF_CFLAGS)
 
 OPT=-Os
 
@@ -83,19 +84,18 @@ AO_CFLAGS=\
 	-std=gnu99 $(WARN_FLAGS) $(OPT) -g
 
 SAMD21_CFLAGS=-mlittle-endian -mcpu=cortex-m0 -mthumb\
-	-I$(SNEK_SAMD21) -I$(SNEK_AO) -I$(SNEK_ROOT) -I. $(AO_CFLAGS) $(NEWLIB_CFLAGS)
+	-I$(SNEK_SAMD21) -I$(SNEK_AO) -I$(SNEK_ROOT) -I. $(AO_CFLAGS) $(PICOLIBC_CFLAGS)
 
 CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS)
 
 LDSCRIPT=$(SNEK_SAMD21)/snek-samd21.ld
 
-LDFLAGS=$(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -Wl,-T$(LDSCRIPT)  -n
+LDFLAGS=$(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -T$(LDSCRIPT)  -n
 
-LIBS=-L$(NEWLIB_NANO)/arm-none-eabi/lib/thumb/v6-m -lc -lm -lgcc
+LIBS=-lm
 
 CC=arm-none-eabi-gcc
 OBJCOPY=arm-none-eabi-objcopy
-NEWLIB_NANO=/usr/lib/newlib-nano
 
 PROG=$(PROGNAME)-$(SNEK_VERSION).elf
 BIN=$(PROGNAME)-$(SNEK_VERSION).bin
@@ -109,7 +109,7 @@ IDPRODUCT?=0x000a
 .SUFFIXES: .elf .bin .uf2
 
 .elf.bin:
-	$(OBJCOPY) -O binary -j '.text' -j '.ARM.exidx' -j '.rodata' -j '.textram' -j '.data' $^ $@
+	$(OBJCOPY) -O binary -S $^ $@
 
 .bin.uf2:
 	python3 $(SNEK_SAMD21)/uf2conv.py -b 0x2000 -c -o $@ $^

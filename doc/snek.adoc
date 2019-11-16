@@ -385,6 +385,16 @@ understand the mathematical convention that adjacent values should be
 multiplied. The return statement is how we tell Snek that this
 function computes a value that should be given back to the caller.
 
+Numbers in Snek may be written using `_` as a separator, which is
+especially useful when writing large numbers.
+
+[source,subs="verbatim,quotes"]
+----
+> # you can write
+> c = 299_792_458
+> # and Snek will interpret as
+> c = 299792458
+----
 [#for_range]
 === Loops, Ranges and Printing Two Values
 
@@ -2299,7 +2309,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the blue reset button twice in quick
 succession.
 
-Then, find the `snek-board-`{version}`.uf2` file included in the Snek
+Then, find the `snek-board-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file to the
 snekboard file system.
 
@@ -2448,7 +2458,7 @@ mode, the red LED on D13 will pulse rapidly for a few seconds, then
 more slowly. At that point, the APA102 device will turn green.
 
 Once the ItsyBitsy M0 is in boot loader mode and has been mounted,
-find the `snek-itsybitsym0-`{version}`.uf2` file included in the Snek
+find the `snek-itsybitsym0-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 ItsyBitsy M0 file system.
 
@@ -2530,7 +2540,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the `snek-metrom0-`{version}`.uf2` file included in the Snek
+Then, find the `snek-metrom0-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Metro M0 file system.
 
@@ -2572,7 +2582,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the `snek-feather-`{version}`.uf2` file included in the Snek
+Then, find the `snek-feather-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Feather M0 file system.
 
@@ -2616,7 +2626,7 @@ get the board into this mode by connecting the board to your computer
 over USB and then pressing the reset button twice in quick
 succession.
 
-Then, find the `snek-crickit-`{version}`.uf2` file included in the Snek
+Then, find the `snek-crickit-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Crickit file system.
 
@@ -2665,9 +2675,50 @@ to your computer over USB, sliding the switch to the right (towards
 the microphone) and then pressing the reset button twice in quick
 succession.(((Playground)))
 
-Then, find the `snek-playground-`{version}`.uf2` file included in the Snek
+Then, find the `snek-playground-{version}.uf2` file included in the Snek
 package for your machine and copy it to the `CURRENT.UF2` file on the
 Circuit Playground Express file system.
+
+[%nonfacing]
+[appendix]
+= Snek on Arduino SA Nano 33 IoT
+
+Snek for the Nano 33 IoT includes the Common System, Math, GPIO, and
+EEPROM functions. Snek for the Nano 33 IoT provides names for all of the GPIO pins:(((Nano 33 IoT)))
+
+D0 - D12::
+Digital outputs
+By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+D13 or LED::
+The yellow LED near the USB connector.
+
+A0-A5::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V. By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+The Arduino SA Nano 33 IoT board includes a boot loader which works
+with the Arduino IDE. Snek includes a replacement boot loader which
+presents as a USB mass storage device with a FAT file system. To
+install this boot loader, start the Arduino IDE, find the
+update-bootloader-nano33iot.ino project included in thte Snek package
+for your machine and load it into the Arduino IDE. Then compile and
+download that to the Nano 33 IoT board. That will replace the boot
+loader and restart the board, at which point it should present a file
+system.  For future updates, you can get the board back into this mode
+by connecting the board to your computer over USB and then pressing
+the reset button twice in quick succession.
+
+Onec the board is showing a file system on your computer, find the
+`snek-nano33iot-{version}.uf2` file included in the Snek package for
+your machine and copy it to the file system.
 
 ifdef::backend-pdf[]
 [index]
