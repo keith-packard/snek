@@ -1,3 +1,10 @@
+snek (1.2-2) unstable; urgency=medium
+
+  * Expose compiler flags in build log
+  * Add dpkg-buildflags to Linux snek binary
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 15 Nov 2019 23:30:08 -0800
+
 snek (1.2-1) unstable; urgency=medium
 
   * Upstream release 1.2
