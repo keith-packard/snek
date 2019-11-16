@@ -14,3 +14,6 @@ export OPT=-O2
 
 override_dh_strip:
 	dh_strip -X.elf
+
+override_dh_dwz:
+	dh_dwz -X.elf
