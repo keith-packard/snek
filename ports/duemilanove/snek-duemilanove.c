@@ -180,7 +180,12 @@ is_pull(uint8_t pin)
 static bool
 has_pwm(uint8_t p)
 {
-	return ((p) == 3 || (p) == 5 || (p) == 6 || (p) == 9 || (p) == 10 || (p) == 11);
+	const uint16_t pwm_pins = (1 << 3) | (1 << 5) | (1 << 6)
+				| (1 << 9) | (1 << 10) | (1 << 11);
+
+	p &= 15;
+
+	return pwm_pins & 1 << p;
 }
 
 static volatile uint8_t * const PROGMEM ocr_reg_addrs[] = {
