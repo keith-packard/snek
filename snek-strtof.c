@@ -31,17 +31,25 @@
 /* $Id: strtod.c 2191 2010-11-05 13:45:57Z arcanum $ */
 
 
-#include <avr/pgmspace.h>
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
 #include <math.h>		/* INFINITY, NAN		*/
 #include <stdlib.h>
 
+#ifdef AVR
+#define strtof strtod
+#define float double
+#include <avr/pgmspace.h>
+#else
+#define PROGMEM
+#define pgm_read_dword(x)	(*x)
+#endif
+
 /* Only GCC 4.2 calls the library function to convert an unsigned long
    to float.  Other GCC-es (including 4.3) use a signed long to float
    conversion along with a large inline code to correct the result.	*/
-extern double __floatunsisf (unsigned long);
+extern float __floatunsisf (unsigned long);
 
 PROGMEM static const float pwr_p10 [6] = {
     1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32
@@ -50,8 +58,8 @@ PROGMEM static const float pwr_m10 [6] = {
     1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32
 };
 
-/**  The strtod() function converts the initial portion of the string pointed
-     to by \a nptr to double representation.
+/**  The strtof() function converts the initial portion of the string pointed
+     to by \a nptr to float representation.
 
      The expected form of the string is an optional plus ( \c '+' ) or minus
      sign ( \c '-' ) followed by a sequence of digits optionally containing
@@ -75,8 +83,8 @@ PROGMEM static const float pwr_m10 [6] = {
      in \c errno.  If the correct value would cause underflow, zero is
      returned and \c ERANGE is stored in \c errno.
  */
-double
-strtod (const char * nptr, char ** endptr)
+float
+strtof (const char * nptr, char ** endptr)
 {
     union {
 	unsigned long u32;
