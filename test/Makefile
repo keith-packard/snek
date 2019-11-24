@@ -16,7 +16,12 @@ SNEK_ROOT=..
 
 include $(SNEK_ROOT)/snek.defs
 
-SNEK?=$(SNEK_PORTS)/posix/snek
+PYTHON3?=python3
+SNEK_NATIVE?=$(SNEK_PORTS)/posix/snek
+SNEK_RISCV?=$(SNEK_PORTS)/qemu-riscv/snek-riscv
+SNEK_ARM?=$(SNEK_PORTS)/qemu-arm/snek-arm
+
+LANGS=python3 $(SNEK_NATIVE)
 
 SUCCESS_TESTS = \
 	andor.py \
@@ -62,34 +67,27 @@ check:
 	@exit=0; \
 	for TEST in $(SUCCESS_TESTS); do \
 		echo "Running test $$TEST."; \
-		if python3 $$TEST; then \
-			echo "    python pass"; \
-		else \
-			echo "    ***************** python fail *********************"; \
-			exit=1; \
-		fi; \
-		if $(SNEK) $$TEST; then \
-			echo "    snek pass"; \
-		else \
-			echo "    ***************** snek fail ***********************"; \
-			exit=1; \
-		fi; \
+		for lang in $(LANGS); do \
+			baselang=`basename $$lang`; \
+			if $$lang $$TEST; then \
+				echo "    pass $$baselang"; \
+			else \
+				echo "    ***************** $baselang fail *********************"; \
+				exit=1;\
+			fi; \
+		done; \
 	done; \
 	for TEST in $(FAIL_TESTS); do \
 		echo "Running test $$TEST."; \
-		python3 $$TEST 2>/dev/null; \
-		if [ $$? -eq 1 ]; then \
-			echo "    python pass"; \
-		else \
-			echo "    ***************** python fail *********************"; \
-			exit=1; \
-		fi; \
-		$(SNEK) $$TEST 2>/dev/null; \
-		if [ $$? -eq 1 ]; then \
-			echo "    snek pass"; \
-		else \
-			echo "    ***************** snek fail ***********************"; \
-			exit=1; \
-		fi; \
+		for lang in $(LANGS); do \
+			baselang=`basename $$lang`; \
+			$$lang $$TEST >/dev/null 2>&1; \
+			if [ $$? -eq 1 ]; then \
+				echo "    pass $$baselang"; \
+			else \
+				echo "    ***************** $baselang fail *********************"; \
+				exit=1;\
+			fi; \
+		done; \
 	done; \
 	exit $$exit
