@@ -11,20 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: make
-      - run: make check
+      - run: make check PREFIX=
       - name: prepare artifacts
-        run: |
-          mkdir -p artifacts
-
-          for f in $(find ports -iname '*.uf2' -or -iname '*.hex' -or -iname '*.bin' -or -iname '*.map' -or -iname '*qemu-*.elf'); do
-            cp -v "$f" artifacts
-          done
-
-          for f in $(find hosts -iname 'snek-*.exe' -or -iname 'snek-*.sh' -or -iname 'snek-*.dmg'); do
-            cp -v "$f" artifacts
-          done
-
-          cp -v doc/snek.pdf doc/snek.html doc/snek.css artifacts
+        run: make DESTDIR=`pwd`/artifacts PREFIX= install
       - uses: actions/upload-artifact@v1
         with:
           name: snek
