@@ -27,7 +27,7 @@ include $(SNEK_ROOT)/snek-install.defs
 SRC=$(SNEK_SRC)
 OBJ=$(SRC:.c=.o)
 
-all: $(PROG) run-arm
+all: $(PROG) snek-arm
 
 $(PROG): Makefile $(OBJ)
 	$(call quiet,CC) $(LDFLAGS) -Wl,-Tsnek-qemu-arm.ld -Wl,-M=$(MAP) -o $@ $(OBJ) $(LIBS)
@@ -38,7 +38,7 @@ install: $(PROG)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
 
-run-arm: run-arm.in
+snek-arm: snek-arm.in
 	$(SNEK_SED) $^ > $@
 	chmod +x $@
 
