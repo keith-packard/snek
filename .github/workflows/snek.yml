@@ -1,0 +1,31 @@
+name: snek
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: phsilva/snek:latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - run: make
+      - run: make check
+      - name: prepare artifacts
+        run: |
+          mkdir -p artifacts
+
+          for f in $(find ports -iname '*.uf2' -or -iname '*.hex' -or -iname '*.bin' -or -iname '*.map' -or -iname '*qemu-*.elf'); do
+            cp -v "$f" artifacts
+          done
+
+          for f in $(find hosts -iname 'snek-*.exe' -or -iname 'snek-*.sh' -or -iname 'snek-*.dmg'); do
+            cp -v "$f" artifacts
+          done
+
+          cp -v doc/snek.pdf doc/snek.html doc/snek.css artifacts
+      - uses: actions/upload-artifact@v1
+        with:
+          name: snek
+          path: artifacts
