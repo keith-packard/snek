@@ -53,7 +53,7 @@ clean::
 upload: $(BIN)
 	bossac -e -w -v -b -R $(BIN)
 
-install:
+install: $(UF2)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 

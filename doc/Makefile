@@ -51,5 +51,7 @@ snek-cover-book.pdf: snek-cover.svg
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) fonts $(SNEKDOC)
 
+coderay-asciidoctor.css: $(HTML_FILES)
+
 clean::
 	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES) coderay-asciidoctor.css

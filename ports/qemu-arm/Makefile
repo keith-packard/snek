@@ -34,9 +34,10 @@ $(PROG): Makefile $(OBJ)
 
 $(OBJ): $(SNEK_INC)
 
-install: $(PROG)
+install: $(PROG) snek-arm
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
+	install -m 0755 snek-arm $(DESTDIR)$(SHAREDIR)
 
 snek-arm: snek-arm.in
 	$(SNEK_SED) $^ > $@

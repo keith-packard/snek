@@ -37,7 +37,7 @@ all: snek snek.desktop
 snek: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
 
-install: snek snek.1
+install: snek snek.desktop snek.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(APPDIR)
@@ -47,7 +47,6 @@ install: snek snek.1
 
 snek.desktop: snek.desktop.in
 	$(SNEK_SED) $^ > $@
-
 
 clean::
 	rm -f snek snek.desktop

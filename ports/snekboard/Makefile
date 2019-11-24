@@ -60,11 +60,12 @@ snek-board-install: snek-board-install.in
 echo:
 	echo PROG is $(PROG)
 
-install: $(PROG) $(UF2) $(BOOTLOADER_BIN) snek-board-install snek-board-install.1
+install: $(UF2) $(BOOTLOADER_BIN) snek-board-install snek-board-install.1
 	install -d $(DESTDIR)$(SHAREDIR)
-	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(BOOTLOADER_BIN) $(DESTDIR)$(SHAREDIR)
+	install -d $(DESTDIR)$(BINDIR)
+	install snek-board-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-board-install.1 $(DESTDIR)$(MANDIR)/man1
 
