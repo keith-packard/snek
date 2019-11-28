@@ -146,6 +146,7 @@ typedef enum {
 	snek_op_range_start,
 	snek_op_range_step,
 	snek_op_in_step,
+	snek_op_return,
 
 	snek_op_line,
 
@@ -157,7 +158,6 @@ typedef enum {
 } __attribute__((packed)) snek_op_t;
 
 typedef enum {
-	snek_forward_return,
 	snek_forward_break,
 	snek_forward_continue,
 	snek_forward_if,

@@ -140,6 +140,8 @@ const char * const snek_op_names[] = {
 	[snek_op_range_start] = "range_start",
 	[snek_op_range_step] = "range_step",
 	[snek_op_in_step] = "in_step",
+	[snek_op_return] = "return",
+
 	[snek_op_null] = "null",
 	[snek_op_nop] = "nop",
 	[snek_op_line] = "line",
@@ -419,7 +421,6 @@ snek_code_finish(void)
 {
 	if (snek_compile_size == 0)
 		return NULL;
-	snek_code_patch_forward(0, snek_compile_size, snek_forward_return, snek_code_current());
 	snek_code_t *code = snek_alloc(sizeof (snek_code_t) + snek_compile_size);
 
 	if (code) {
@@ -1177,6 +1178,9 @@ snek_code_run(snek_code_t *code_in)
 				} else {
 					snek_id_del(id);
 				}
+				break;
+			case snek_op_return:
+				ip = snek_code->size;
 				break;
 			case snek_op_assert:
 				if (!snek_poly_true(snek_a)) {
