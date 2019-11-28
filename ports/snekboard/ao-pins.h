@@ -123,8 +123,6 @@
  * LED		PA02
  */
 
-#define AO_SNEK_PWM_RAMP_STEP	512
-
 /* ANALOG1 */
 #define AO_SNEK_GPIO_0		(&samd21_port_b)
 #define AO_SNEK_PIN_0		8
