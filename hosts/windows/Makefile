@@ -56,7 +56,7 @@ snekde.py: $(SNEK_ROOT)/snekde/snekde.py
 .SUFFIXES: .svg .build .icns .ico .rc .o .exe
 
 .svg.build:
-	for i in $(RES); do rsvg-convert -w $$i -h $$i -o $*-$$i.png $^; done && touch $@
+	for i in $(RES); do rsvg-convert -w $$i -h $$i -o $*-$$i.png $^ || exit 1; done && touch $@
 
 .build.ico:
 	icotool -c -o $@ $(shell for i in $(RES); do echo $*-$$i.png; done)

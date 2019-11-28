@@ -34,7 +34,7 @@ DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES)
 
 install: $(DOCFILES)
 	install -d $(DESTDIR)$(DOCDIR)
-	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR); done
+	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
 
 snek-book.pdf: snek.adoc snek-book-theme.yml
 	asciidoctor-pdf -o `pwd`/$@ -B$(SNEK_ROOT) $(ATTRIBUTES) $(BOOK_ATTRIBUTES) snek.adoc
