@@ -406,6 +406,9 @@ snek_code_add_string(char *string);
 void
 snek_code_add_op_offset(snek_op_t op, snek_offset_t offset);
 
+void
+snek_code_add_op_uint8(snek_op_t op, uint8_t u8);
+
 static inline void
 snek_code_add_op_id(snek_op_t op, snek_id_t id)
 {
@@ -430,8 +433,11 @@ snek_code_add_in_range(snek_id_t id, snek_offset_t nactual, uint8_t for_depth);
 void
 snek_code_add_in_enum(snek_id_t id, uint8_t for_depth);
 
-void
-snek_code_patch_branch(snek_offset_t branch, snek_offset_t target);
+static inline void
+snek_code_patch_branch(snek_offset_t branch, snek_offset_t target)
+{
+	memcpy(snek_compile + branch + 1, &target, sizeof (snek_offset_t));
+}
 
 void
 snek_code_reset(void);

@@ -262,6 +262,12 @@ static snek_offset_t	compile_alloc;
 
 #define COMPILE_INC	32
 
+/*
+ * Extend the temporary space used for bytecode to make
+ * space for 'n' more bytes. If 'data' is provided, copy that
+ * into the new space
+ */
+
 static void
 compile_extend(snek_offset_t n, void *data)
 {
@@ -273,11 +279,16 @@ compile_extend(snek_offset_t n, void *data)
 		compile_alloc += COMPILE_INC;
 		snek_compile = new_compile;
 	}
-	if (data)
-		memcpy(snek_compile + snek_compile_size, data, n);
+	memcpy(snek_compile + snek_compile_size, data, n);
 	snek_compile_size += n;
 }
 
+/*
+ * Remove the previous instruction by resetting the snek_compile_size
+ * and snek_compile_prev values. Note that snek_compile_prev_prev is
+ * not valid after this call, so you can't do this more than once or
+ * snek_compile_prev will become invalid too.
+ */
 void
 snek_code_delete_prev(void)
 {
@@ -285,6 +296,9 @@ snek_code_delete_prev(void)
 	snek_compile_prev = snek_compile_prev_prev;
 }
 
+/*
+ * Add an opcode to the current bytecode
+ */
 void
 snek_code_add_op(snek_op_t op)
 {
@@ -293,38 +307,58 @@ snek_code_add_op(snek_op_t op)
 	compile_extend(1, &op);
 }
 
+/*
+ * Add an instruction with an 'offset' parameter to the current
+ * bytecode
+ */
+void
+snek_code_add_op_offset(snek_op_t op, snek_offset_t o)
+{
+	snek_code_add_op(op);
+	compile_extend(sizeof (snek_offset_t), &o);
+}
+
+/*
+ * Add an instruction with a 'uint8_t' parameter to the current
+ * bytecode
+ */
+void
+snek_code_add_op_uint8(snek_op_t op, uint8_t u8)
+{
+	snek_code_add_op(op);
+	compile_extend(sizeof(uint8_t), &u8);
+}
+
+/*
+ * Add an immediate number to the current bytecode.
+ *
+ * If that number can be represented exactly by a signed
+ * 8-bit value, use that instead of a full 32-bit float
+ */
 void
 snek_code_add_number(float number)
 {
 	int8_t i8 = (int8_t) number;
 	if ((float) i8 == number) {
-		snek_code_add_op(snek_op_int);
-		compile_extend(sizeof(int8_t), &i8);
+		snek_code_add_op_uint8(snek_op_int, (uint8_t) i8);
 	} else {
 		snek_code_add_op(snek_op_num);
 		compile_extend(sizeof(float), &number);
 	}
 }
 
+/*
+ * Add an immediate string to the current bytecode
+ */
 void
 snek_code_add_string(char *string)
 {
 	snek_offset_t s;
-	snek_offset_t strpos;
 
 	snek_stack_push_string(string);
-	snek_code_add_op(snek_op_string);
-	strpos = snek_compile_size;
-	compile_extend(sizeof (snek_offset_t), NULL);
+	snek_code_add_op_offset(snek_op_string, 0);
 	s = snek_pool_offset(snek_stack_pop_string(string));
-	memcpy(snek_compile + strpos, &s, sizeof (snek_offset_t));
-}
-
-void
-snek_code_add_op_offset(snek_op_t op, snek_offset_t o)
-{
-	snek_code_add_op(op);
-	compile_extend(sizeof (snek_offset_t), &o);
+	memcpy(snek_compile + snek_compile_prev + 1, &s, sizeof (snek_offset_t));
 }
 
 void
@@ -336,8 +370,7 @@ snek_code_add_forward(snek_forward_t forward)
 void
 snek_code_add_slice(uint8_t param)
 {
-	snek_code_add_op(snek_op_slice);
-	compile_extend(1, &param);
+	snek_code_add_op_uint8(snek_op_slice, param);
 }
 
 static snek_id_t
@@ -349,13 +382,11 @@ snek_for_tmp(uint8_t for_depth, uint8_t i)
 void
 snek_code_add_in_range(snek_id_t id, snek_offset_t nactual, uint8_t for_depth)
 {
-	snek_code_add_op(snek_op_range_start);
-	compile_extend(sizeof (snek_offset_t), &nactual);
+	snek_code_add_op_offset(snek_op_range_start, nactual);
 	compile_extend(sizeof(uint8_t), &for_depth);
 	compile_extend(sizeof (snek_id_t), &id);
 
-	snek_code_add_op(snek_op_range_step);
-	compile_extend(sizeof(snek_offset_t), NULL);
+	snek_code_add_op_offset(snek_op_range_step, 0);
 	compile_extend(sizeof(uint8_t), &for_depth);
 	compile_extend(sizeof (snek_id_t), &id);
 }
@@ -371,16 +402,9 @@ snek_code_add_in_enum(snek_id_t id, uint8_t for_depth)
 	snek_code_add_op_id(snek_op_assign, list);
 	snek_code_add_number(0.0f);
 	snek_code_add_op_id(snek_op_assign, i);
-	snek_code_add_op(snek_op_in_step);
-	compile_extend(sizeof(snek_offset_t), NULL);
+	snek_code_add_op_offset(snek_op_in_step, 0);
 	compile_extend(sizeof(uint8_t), &for_depth);
 	compile_extend(sizeof(snek_id_t), &id);
-}
-
-void
-snek_code_patch_branch(snek_offset_t branch, snek_offset_t target)
-{
-	memcpy(snek_compile + branch + 1, &target, sizeof (snek_offset_t));
 }
 
 void
