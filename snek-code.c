@@ -389,22 +389,38 @@ snek_code_add_in_range(snek_id_t id, uint8_t nactual, uint8_t for_depth)
 	compile_extend(sizeof (snek_id_t), &id);
 }
 
+/*
+ * Add code for the start of a 'for i in expr' loop
+ */
 void
 snek_code_add_in_enum(snek_id_t id, uint8_t for_depth)
 {
 	snek_id_t	list;
 	snek_id_t	i;
 
+	/* list holds the result of the expr */
 	list = snek_for_tmp(for_depth, 0);
+	/* i holds the index into list */
 	i = snek_for_tmp(for_depth, 1);
+
+	/* Initialize list with the expr parameter */
 	snek_code_add_op_id(snek_op_assign, list);
+
+	/* Initialize i to start at 0 */
 	snek_code_add_number(0.0f);
 	snek_code_add_op_id(snek_op_assign, i);
+
+	/* Here's the top of the loop, which fetches the next element
+	 * of the list, terminating when done
+	 */
 	snek_code_add_op_offset(snek_op_in_step, 0);
 	compile_extend(sizeof(uint8_t), &for_depth);
 	compile_extend(sizeof(snek_id_t), &id);
 }
 
+/*
+ * Patch pending branch once the target instruction is known
+ */
 void
 snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t forward, snek_offset_t target)
 {
@@ -430,6 +446,9 @@ snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t 
 	}
 }
 
+/*
+ * Reset compiler state to mark the compiler buffer as empty
+ */
 void
 snek_code_reset(void)
 {
@@ -438,6 +457,9 @@ snek_code_reset(void)
 	snek_compile = NULL;
 }
 
+/*
+ * Construct a code object from the current bytecode buffer
+ */
 snek_code_t *
 snek_code_finish(void)
 {
@@ -456,6 +478,10 @@ snek_code_finish(void)
 	return code;
 }
 
+/*
+ * Find the first line in the specified code block. This is
+ * used when printing out function objects
+ */
 snek_offset_t
 snek_code_line(snek_code_t *code)
 {
@@ -473,12 +499,18 @@ snek_code_line(snek_code_t *code)
 	return line;
 }
 
-snek_offset_t 	snek_line;
-snek_poly_t	snek_stack[SNEK_STACK];
-snek_offset_t	snek_stackp;
-snek_poly_t 	snek_a = SNEK_NULL;
-snek_code_t	*snek_code;
+/*
+ * Execution state
+ */
+snek_offset_t 	snek_line;		/* current line number */
+snek_poly_t	snek_stack[SNEK_STACK];	/* value stack */
+snek_offset_t	snek_stackp;		/* value stack pointer  */
+snek_poly_t 	snek_a = SNEK_NULL;	/* accumulator */
+snek_code_t	*snek_code;		/* current code pointer */
 
+/*
+ * Return a float type, or raise an error if the value isn't a float
+ */
 float
 snek_poly_get_float(snek_poly_t a)
 {
@@ -488,12 +520,18 @@ snek_poly_get_float(snek_poly_t a)
 	return 0.0f;
 }
 
+/*
+ * Return an soffset, or raise an error if the value isn't a number
+ */
 snek_soffset_t
 snek_poly_get_soffset(snek_poly_t a)
 {
 	return (snek_soffset_t) snek_poly_get_float(a);
 }
 
+/*
+ * Push a value to the stack, raise an error if the stack overflows
+ */
 void
 snek_stack_push(snek_poly_t p)
 {
@@ -504,6 +542,9 @@ snek_stack_push(snek_poly_t p)
 	snek_stack[snek_stackp++] = p;
 }
 
+/*
+ * Pop a value from the stack
+ */
 snek_poly_t
 snek_stack_pop(void)
 {
@@ -514,6 +555,11 @@ snek_stack_pop(void)
 	return snek_stack[--snek_stackp];
 }
 
+/*
+ * Fetch a value from the middle of the stack.
+ * 'off' is the number of stack elements above the current
+ * top of stack
+ */
 snek_poly_t
 snek_stack_pick(snek_offset_t off)
 {
@@ -524,6 +570,9 @@ snek_stack_pick(snek_offset_t off)
 	return snek_stack[snek_stackp - off - 1];
 }
 
+/*
+ * Discard a number of elements from the stack
+ */
 void
 snek_stack_drop(snek_offset_t off)
 {
@@ -534,30 +583,42 @@ snek_stack_drop(snek_offset_t off)
 	snek_stackp -= off;
 }
 
+/*
+ * Pop a float from the stack. Raise an error if the
+ * value on  the top isn't a number
+ */
 float
 snek_stack_pop_float(void)
 {
 	return snek_poly_get_float(snek_stack_pop());
 }
 
+/*
+ * Pop an soffset from the stack. Raise an error if the
+ * value on  the top isn't a number
+ */
 snek_soffset_t
 snek_stack_pop_soffset(void)
 {
 	return (snek_soffset_t) snek_stack_pop_float();
 }
 
+/*
+ * Start a 'for i in range' statement
+ */
 static void
 snek_range_start(snek_offset_t ip)
 {
-	/* Fetch params from instruction */
-	snek_offset_t	nactual;
-	snek_id_t	id;
-	uint8_t		for_depth;
+	snek_offset_t	nactual;	/* number of actuals passed to 'range' */
+	snek_id_t	id;		/* variable used in the 'for' statement */
+	uint8_t		for_depth;	/* loop nesting depth (used to build temp var names) */
 
+	/* Fetch params from instruction */
 	memcpy(&nactual, &snek_code->code[ip], sizeof(snek_offset_t));
 	memcpy(&id, &snek_code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
 	memcpy(&for_depth, &snek_code->code[ip + sizeof(snek_offset_t)], sizeof (uint8_t));
 
+	/* Compute the loop parameters given the actuals provided to the range function */
 	float current = 0.0f;
 	float limit = 0.0f;
 	float step = 1.0f;
@@ -592,13 +653,13 @@ snek_range_start(snek_offset_t ip)
 		return;
 	*id_ref = snek_float_to_poly(current - step);
 
-	/* Save limit */
+	/* Save limit in tmp variable */
 	snek_poly_t	*limit_ref = snek_id_ref(snek_for_tmp(for_depth, 0), true);
 	if (!limit_ref)
 		return;
 	*limit_ref = snek_float_to_poly(limit);
 
-	/* Save step */
+	/* Save step in tmp variable */
 	snek_poly_t	*step_ref = snek_id_ref(snek_for_tmp(for_depth, 1), true);
 	if (!step_ref)
 		return;
@@ -607,15 +668,19 @@ snek_range_start(snek_offset_t ip)
 	return;
 }
 
+/*
+ * Next step in a 'for i in range' statement
+ */
 static bool
 snek_range_step(snek_offset_t ip)
 {
-	uint8_t		for_depth;
-	snek_id_t	id;
+	uint8_t		for_depth;	/* nesting depth of loop */
+	snek_id_t	id;		/* id of the 'for' variable */
 
 	memcpy(&for_depth, &snek_code->code[ip + sizeof(snek_offset_t)], sizeof (uint8_t));
 	memcpy(&id, &snek_code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
 
+	/* Go get refernences to all three variables */
 	snek_poly_t	*id_ref = snek_id_ref(id, false);
 	snek_poly_t	*limit_ref = snek_id_ref(snek_for_tmp(for_depth, 0), false);
 	snek_poly_t	*step_ref = snek_id_ref(snek_for_tmp(for_depth, 1), false);
@@ -623,22 +688,29 @@ snek_range_step(snek_offset_t ip)
 	if (!id_ref || !limit_ref || !step_ref)
 		return false;
 
+	/* Compute the next value in the sequence */
 	float step = snek_poly_get_float(*step_ref);
 	float value = snek_poly_get_float(*id_ref) + step;
 	*id_ref = snek_float_to_poly(value);
 
+	/* Check to see if we're done */
 	float limit = snek_poly_get_float(*limit_ref);
 	if (step > 0 ? value >= limit : value <= limit)
 		return false;
+
+	/* keep going */
 	return true;
 }
 
+/*
+ * Next step in a 'for i in expr' statement
+ */
 static bool
 snek_in_step(snek_offset_t ip)
 {
-	uint8_t	for_depth;
-	snek_id_t id;
-	snek_poly_t *ref;
+	uint8_t		for_depth;	/* nesting depth of loop */
+	snek_id_t	id;		/* id of the 'for' variable */
+	snek_poly_t	*ref;		/* reference to the 'for' variable storage */
 
 	memcpy(&for_depth, &snek_code->code[ip + sizeof(snek_offset_t)], sizeof(uint8_t));
 
@@ -655,6 +727,7 @@ snek_in_step(snek_offset_t ip)
 
 	snek_list_t *list;
 
+	/* Get the current value out of the object */
 	switch (snek_poly_type(array)) {
 	case snek_list:
 		list = snek_poly_to_list(array);
@@ -686,6 +759,10 @@ snek_in_step(snek_offset_t ip)
 	return true;
 }
 
+/*
+ * Cast a float to a 32-bit int, raising an exception if
+ * the value cannot be represented exactly
+ */
 static int32_t __attribute__((noinline))
 snek_float_to_int(float f)
 {
@@ -695,6 +772,14 @@ snek_float_to_int(float f)
 	return i;
 }
 
+/*
+ * Perform a binary operation.
+ *
+ * The 'inplace' parameter indicates whether this
+ * is an 'enhanced assignment' operator or a regular
+ * binary operator. This makes a difference for
+ * mutable values
+ */
 static snek_poly_t
 snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 {
@@ -705,6 +790,9 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	bool		found;
 	snek_poly_t	ret = SNEK_NULL;
 
+	/* Compare operators work between any two values
+	 * in snek, so no type checking needed here.
+	 */
 	if (op <= snek_op_is_not) {
 		int8_t cmp = snek_poly_cmp(a, b, op >= snek_op_is);
 		bool v;
@@ -734,6 +822,10 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 		return snek_bool_to_poly(v);
 	}
 
+	/* Now a bunch of random logic to
+	 * figure out how to combine the two types and operator
+	 */
+
 	snek_type_t	at = snek_poly_type(a);
 	snek_type_t	bt = snek_poly_type(b);
 
@@ -749,6 +841,9 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			break;
 		}
 	} else if (at == snek_float && bt == snek_float) {
+
+		/* two numbers and an operator */
+
 		af = snek_poly_to_float(a);
 		bf = snek_poly_to_float(b);
 		switch (op) {
@@ -793,6 +888,11 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 		}
 		ret = snek_float_to_poly(af);
 	} else {
+
+		/* The rest of the the operators; each operator has
+		 * it's own typechecking
+		 */
+
 		switch (op) {
 		case snek_op_in:
 		case snek_op_not_in:
@@ -857,6 +957,8 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			break;
 		}
 	}
+
+	/* If we haven't computed any return, raise an exception */
 	if (snek_is_null(ret))
 		return snek_error_type_2(a, b);
 	return ret;
@@ -867,13 +969,21 @@ soffset_sgn(snek_soffset_t s) {
 	return (s > 0) - (s < 0);
 }
 
+/*
+ * Slice operator
+ */
 static void
 snek_slice(uint8_t bits)
 {
-	snek_soffset_t	start = SNEK_SOFFSET_NONE;
-	snek_soffset_t	end = SNEK_SOFFSET_NONE;
-	snek_soffset_t	stride = 1;
-	snek_soffset_t	len;
+	/* Start and end are set to SNEK_OFFSET_NONE by default to let
+	 * the code select suitable defaults based on the stride
+	 */
+	snek_soffset_t	start = SNEK_SOFFSET_NONE;	/* Start of the slice */
+	snek_soffset_t	end = SNEK_SOFFSET_NONE;	/* End of the slice */
+	snek_soffset_t	stride = 1;			/* Stride within the slice */
+	snek_soffset_t	len;				/* Length of the composite object */
+
+	/* Pull out the values which were in the slice specification */
 
 	if (bits & SNEK_OP_SLICE_STRIDE)
 		stride = snek_stack_pop_soffset();
@@ -884,10 +994,12 @@ snek_slice(uint8_t bits)
 	if (bits & SNEK_OP_SLICE_START)
 		start = snek_stack_pop_soffset();
 
+	/* Get the composite value which is getting sliced */
 	snek_a = snek_stack_pop();
 
 	len = snek_poly_len(snek_a);
 
+	/* A stride of zero is illegal */
 	if (stride == 0) {
 		snek_error_step();
 		return;
@@ -900,6 +1012,9 @@ snek_slice(uint8_t bits)
 	if (end < 0)
 		end = len + end;
 
+	/* Select start and end values based on stride
+	 * if they weren't specified in the operation
+	 */
 	if (stride > 0) {
 		/* Use zero by default, or if negative */
 		if (start == SNEK_SOFFSET_NONE || start < 0)
@@ -919,6 +1034,7 @@ snek_slice(uint8_t bits)
 			end = -1;
 	}
 
+	/* Compute the snek_slice_t value */
 	snek_slice_t slice;
 
 	slice.pos = start;
@@ -932,6 +1048,7 @@ snek_slice(uint8_t bits)
 	slice.count = count;
 	slice.identity = start == 0 && count == len && stride == 1;
 
+	/* Slice the compound object based on the computed snek_slice_t */
 	switch (snek_poly_type(snek_a)) {
 	case snek_string:
 		snek_a = snek_string_to_poly(snek_string_slice(snek_poly_to_string(snek_a), &slice));
@@ -944,17 +1061,26 @@ snek_slice(uint8_t bits)
 	}
 }
 
+/*
+ * Raise an undefined name exception
+ */
 void
 snek_undefined(snek_id_t id)
 {
 	snek_error("undefined: %s", snek_name_string(id));
 }
 
+/*
+ * Perform assignment, both regular and enhanced (op=)
+ */
 static void
 snek_assign(snek_id_t id, snek_op_t op)
 {
 	snek_poly_t *ref;
 
+	/* For default formal values, don't override one
+	 * passed by the caller
+	 */
 	if (op == snek_op_assign_named) {
 		if (snek_id_is_local(id))
 			return;
@@ -964,6 +1090,7 @@ snek_assign(snek_id_t id, snek_op_t op)
 		bool is_pure_assign = op == snek_op_assign;
 
 		if (id != SNEK_ID_NONE) {
+			/* don't create locals for enhanced assignment operators */
 			if (!is_pure_assign && snek_frame && !snek_id_is_local(id))
 				ref = NULL;
 			else
@@ -973,11 +1100,15 @@ snek_assign(snek_id_t id, snek_op_t op)
 				return;
 			}
 		} else {
+			/* Array operator assignment (a[x] = expr) */
+
+			/* Fetch the index and list values off the stack */
 			snek_poly_t ip = snek_stack_pop();
 			snek_poly_t lp = snek_stack_pop();
 
 			snek_list_t	*l;
 
+			/* Make sure the array is a mutable list */
 			if (snek_poly_type(lp) != snek_list ||
 			    snek_list_readonly(l = snek_poly_to_list(lp)))
 			{
@@ -985,11 +1116,15 @@ snek_assign(snek_id_t id, snek_op_t op)
 				return;
 			}
 
+			/* Get a reference to the value location within the
+			 * list
+			 */
 			ref = snek_list_ref(l, ip, true);
 			if (!ref)
 				return;
 		}
 
+		/* For simple assignment, we're done now */
 		if (is_pure_assign)
 			break;
 
@@ -998,21 +1133,44 @@ snek_assign(snek_id_t id, snek_op_t op)
 		 */
 		if (id == SNEK_ID_NONE)
 			snek_stackp += 2;
+
+		/* Go perform the binary operation to compute the
+		 * final value. Note the conversion from enhanced
+		 * assignment operator to regular binary operator
+		 * here. This requires that the two sets of operators
+		 * be in the same order
+		 */
 		snek_a = snek_binary(*ref, op - (snek_op_assign_plus - snek_op_plus), snek_a, true);
+
+		/* Switch to a pure assignment now that the new value
+		 * is known, then go re-compute the reference before
+		 * storing (in case things have moved)
+		 */
 		op = snek_op_assign;
 	}
+
+	/* All done. Store the value at the computed location. */
 	*ref = snek_a;
 }
 
+/*
+ * Call a builtin function
+ */
 static void
 snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnamed)
 {
 	snek_poly_t *actuals = &snek_stack[snek_stackp - (nposition + (nnamed << 1))];
 	snek_soffset_t nformal = SNEK_BUILTIN_NFORMAL(builtin);
 
+	/* Varargs functions have nformal == -1 */
 	if (nformal < 0) {
 		snek_a = SNEK_BUILTIN_FUNCV(builtin)(nposition, nnamed, actuals);
 	} else if (nposition != nformal || nnamed) {
+
+		/* Otherwise, complain if the argument count doesn't
+		 * match. No builtins that have fixed arguments can be
+		 * used with named actuals
+		 */
 		snek_error_args(nformal, nposition);
 	} else {
 		switch (nformal) {
@@ -1039,6 +1197,11 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 	}
 }
 
+/*
+ * Execute code.
+ *
+ * This is the main entry point for the snek virtual machine
+ */
 snek_poly_t
 snek_code_run(snek_code_t *code_in)
 {
@@ -1049,14 +1212,26 @@ snek_code_run(snek_code_t *code_in)
 	snek_offset_t	ip = 0;
 	snek_offset_t	o;
 
+	/* Ending the top level code block will clear 'snek_code' to
+	 * indicate completion
+	 */
 	while (snek_code) {
+
+		/* Execute all of the instructions in the current code
+		 * block
+		 */
 		while (ip < snek_code->size) {
 #ifdef DEBUG_EXEC
 			snek_code_dump_instruction(snek_code, ip);
 #endif
+			/* Pull out the next op code, note whether the
+			 * 'push' flag is set and then figure out what
+			 * to do
+			 */
 			snek_op_t op = snek_code->code[ip++];
 			bool push = (op & snek_op_push) != 0;
 			op &= ~snek_op_push;
+
 			switch(op) {
 			case snek_op_eq:
 			case snek_op_ne:
@@ -1132,6 +1307,11 @@ snek_code_run(snek_code_t *code_in)
 				memcpy(&id, &snek_code->code[ip], sizeof(snek_id_t));
 				ip += sizeof (snek_id_t);
 				ref = snek_id_ref(id, false);
+
+				/* Allow re-definition of builtin names by looking
+				 * to see if there is a value in the frame before
+				 * checking for a builtin definition
+				 */
 				if (ref) {
 					snek_a = *ref;
 					break;
@@ -1152,28 +1332,52 @@ snek_code_run(snek_code_t *code_in)
 				snek_a = snek_float_to_poly(~(uint32_t) snek_float_to_int(snek_poly_get_float(snek_a)));
 				break;
 			case snek_op_call:
+
+				/* find out how many positional and named actuals were provided */
 				memcpy(&o, &snek_code->code[ip], sizeof (snek_offset_t));
 				snek_offset_t nposition = (o & 0xff);
 				snek_offset_t nnamed = (o >> 8);
+
+				/* Compute the number of stack values present; named
+				 * actuals take two values (one name, one value)
+				 */
 				snek_offset_t nstack = nposition + (nnamed<<1);
+
+				/* Go load the function value off the stack. snek_a isn't
+				 * used for function calls, so we can save it here
+				 */
 				snek_a = snek_stack_pick(nstack);
+
 				switch (snek_poly_type(snek_a)) {
 				case snek_func:
+
+					/* Arrange for the code in the function to run
+					 * by creating a new frame
+					 */
 					if (!snek_func_push(nposition, nnamed, ip - 1))
 						break;
 					snek_a = snek_stack_pop();	/* get function back */
+
+					/* Set our current code pointer and ip to point at the
+					 * function's code
+					 */
 					snek_code = snek_pool_addr(snek_poly_to_func(snek_a)->code);
 					ip = 0;
 					push = false;	/* will pick up push on return */
-					goto done_func;
+					goto done_func;	/* skip ip and stack adjustment */
 				case snek_builtin:
+
+					/* Call the builtin function */
 					snek_call_builtin(snek_poly_to_builtin(snek_a), nposition, nnamed);
 					break;
 				default:
 					snek_error_type_1(snek_a);
 					break;
 				}
+				/* Skip the parameter count in the bytecode */
 				ip += sizeof (snek_offset_t);
+
+				/* Drop all actuals */
 				snek_stack_drop(nstack + 1);
 			done_func:
 				break;
@@ -1189,7 +1393,10 @@ snek_code_run(snek_code_t *code_in)
 			case snek_op_del:
 				memcpy(&id, &snek_code->code[ip], sizeof (snek_id_t));
 				ip += sizeof (snek_id_t);
+
 				if (id == SNEK_ID_NONE) {
+
+					/* Delete an element from a list/dictionary */
 					snek_poly_t lp = snek_stack_pop();
 					if (snek_poly_type(lp) != snek_list) {
 						snek_error_type_1(lp);
@@ -1198,10 +1405,14 @@ snek_code_run(snek_code_t *code_in)
 						snek_a = SNEK_NULL;
 					}
 				} else {
+
+					/* Delete a name from the current scope */
 					snek_id_del(id);
 				}
 				break;
 			case snek_op_return:
+
+				/* jump to the end of the current code block */
 				ip = snek_code->size;
 				break;
 			case snek_op_assert:
@@ -1269,12 +1480,21 @@ snek_code_run(snek_code_t *code_in)
 			dbg("\n");
 #endif
 		}
+
+		/* Done with current code block. Pop the current frame and
+		 * use the ip value saved there
+		 */
 		ip = snek_frame_pop();
+
 		if (snek_code) {
+
+			/* If we have another frame, push the accumulator if desired
+			 * and step over the call instruction
+			 */
 			snek_op_t op = snek_code->code[ip];
-			ip += sizeof (snek_offset_t) + 1;
 			if ((op & snek_op_push) != 0)
 				snek_stack_push(snek_a);
+			ip += sizeof (snek_offset_t) + 1;
 		}
 	}
 abort:
