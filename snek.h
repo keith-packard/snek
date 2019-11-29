@@ -415,6 +415,12 @@ snek_code_add_op_id(snek_op_t op, snek_id_t id)
 	snek_code_add_op_offset(op, id);
 }
 
+static inline void
+snek_code_add_forward(snek_forward_t forward)
+{
+	snek_code_add_op_offset(snek_op_forward, (snek_offset_t) forward);
+}
+
 void
 snek_code_add_op_branch(snek_op_t op);
 
@@ -424,11 +430,14 @@ snek_code_add_forward(snek_forward_t forward);
 void
 snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t forward, snek_offset_t target);
 
-void
-snek_code_add_slice(uint8_t param);
+static inline void
+snek_code_add_slice(uint8_t param)
+{
+	snek_code_add_op_uint8(snek_op_slice, param);
+}
 
 void
-snek_code_add_in_range(snek_id_t id, snek_offset_t nactual, uint8_t for_depth);
+snek_code_add_in_range(snek_id_t id, uint8_t nactual, uint8_t for_depth);
 
 void
 snek_code_add_in_enum(snek_id_t id, uint8_t for_depth);

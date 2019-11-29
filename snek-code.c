@@ -361,33 +361,31 @@ snek_code_add_string(char *string)
 	memcpy(snek_compile + snek_compile_prev + 1, &s, sizeof (snek_offset_t));
 }
 
-void
-snek_code_add_forward(snek_forward_t forward)
-{
-	snek_code_add_op_offset(snek_op_forward, (snek_offset_t) forward);
-}
-
-void
-snek_code_add_slice(uint8_t param)
-{
-	snek_code_add_op_uint8(snek_op_slice, param);
-}
-
+/*
+ * Construct a temporary variable name to use in 'for' loops. These
+ * ids are taken from the very top of the id space to avoid
+ * conflicting with any actual names
+ */
 static snek_id_t
 snek_for_tmp(uint8_t for_depth, uint8_t i)
 {
 	return SNEK_OFFSET_NONE - 1 - (for_depth * 2 + i);
 }
 
+/*
+ * Add code for the start of a 'for i in range' loop
+ */
 void
-snek_code_add_in_range(snek_id_t id, snek_offset_t nactual, uint8_t for_depth)
+snek_code_add_in_range(snek_id_t id, uint8_t nactual, uint8_t for_depth)
 {
+	/* Initialize the range operation */
 	snek_code_add_op_offset(snek_op_range_start, nactual);
-	compile_extend(sizeof(uint8_t), &for_depth);
+	compile_extend(sizeof (uint8_t), &for_depth);
 	compile_extend(sizeof (snek_id_t), &id);
 
+	/* Build the range step */
 	snek_code_add_op_offset(snek_op_range_step, 0);
-	compile_extend(sizeof(uint8_t), &for_depth);
+	compile_extend(sizeof (uint8_t), &for_depth);
 	compile_extend(sizeof (snek_id_t), &id);
 }
 
