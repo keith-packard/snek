@@ -65,13 +65,14 @@ SNEK_EXT_BUILTINS = \
 
 SNEK_MOST_WARNINGS =  \
 	-Wall \
+	-Wcast-align \
 	-Wextra \
 	-Wpointer-arith \
 	-Wstrict-prototypes \
 	-Wmissing-prototypes \
 	-Wmissing-declarations \
 	-Wnested-externs \
-	-Warray-bounds \
+	-Warray-bounds=2 \
 	-Wshadow
 
 SNEK_WARNINGS = \
