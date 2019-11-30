@@ -75,7 +75,7 @@ snek_builtin_random_randrange(snek_poly_t a)
 	random_w += random_s;
 	random_x += random_w;
 	random_x = (random_x >> 32) | (random_x << 32);
-	return snek_float_to_poly(random_x % snek_poly_get_soffset(a));
+	return snek_float_to_poly((snek_soffset_t) (random_x % snek_poly_get_soffset(a)));
 }
 
 snek_poly_t
