@@ -47,6 +47,10 @@ static inline char snek_list_close(snek_list_type_t type)
 	}
 }
 
+#ifndef printf_float
+#define printf_float(x) ((double) (x))
+#endif
+
 void
 snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 {
@@ -79,7 +83,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	case 'G':
 		if (atype != snek_float)
 			break;
-		sprintf(tmp, format_string, snek_poly_to_float(a));
+		sprintf(tmp, format_string, printf_float(snek_poly_to_float(a)));
 		buf->put_s(tmp, closure);
 		return;
 	case 'c':
@@ -106,7 +110,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 		buf->put_s("None", closure);
 	else switch (atype) {
 	case snek_float:
-		sprintf_const(tmp, "%.7g", snek_poly_to_float(a));
+		sprintf_const(tmp, "%.7g", printf_float(snek_poly_to_float(a)));
 		buf->put_s(tmp, closure);
 		break;
 	case snek_string:
