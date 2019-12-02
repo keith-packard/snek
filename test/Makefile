@@ -48,7 +48,8 @@ SUCCESS_TESTS = \
 	scoping-local.py \
 	none.py \
 	args.py \
-	assert-success.py
+	assert-success.py \
+	interpolate-list.py
 
 FAIL_TESTS = \
 	scoping-no-decl.py \
