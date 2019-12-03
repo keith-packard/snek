@@ -21,7 +21,7 @@ SNEK_NATIVE?=$(SNEK_PORTS)/posix/snek
 SNEK_RISCV?=$(SNEK_PORTS)/qemu-riscv/snek-riscv
 SNEK_ARM?=$(SNEK_PORTS)/qemu-arm/snek-arm
 
-LANGS=python3 $(SNEK_NATIVE)
+LANGS=python3 $(SNEK_NATIVE) $(SNEK_ARM)
 
 SUCCESS_TESTS = \
 	andor.py \
