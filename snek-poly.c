@@ -131,3 +131,24 @@ snek_poly_len(snek_poly_t a)
 		return 0;
 	}
 }
+
+/*
+ * Return a float type, or raise an error if the value isn't a float
+ */
+float
+snek_poly_get_float(snek_poly_t a)
+{
+	if (snek_poly_type(a) == snek_float)
+		return snek_poly_to_float(a);
+	snek_error_type_1(a);
+	return 0.0f;
+}
+
+/*
+ * Return an soffset, or raise an error if the value isn't a number
+ */
+snek_soffset_t
+snek_poly_get_soffset(snek_poly_t a)
+{
+	return (snek_soffset_t) snek_poly_get_float(a);
+}

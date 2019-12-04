@@ -129,7 +129,7 @@ snek_error_syntax(char *where)
 void
 snek_panic(const char *message)
 {
-	snek_error(message);
+	snek_error("%s", message);
 	abort();
 }
 #endif

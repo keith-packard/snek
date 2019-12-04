@@ -18,6 +18,7 @@ SNEK_HOSTS = $(SNEK_ROOT)/hosts
 SNEK_SRC = \
 	snek-builtin.c \
 	snek-code.c \
+	snek-exec.c \
 	snek-error.c \
 	snek-frame.c \
 	snek-func.c \

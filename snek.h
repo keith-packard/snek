@@ -24,7 +24,9 @@
 
 #include "snek-builtin.h"
 
-// #define DEBUG_MEMORY
+// #define DEBUG_MEMORY         /* Debug meory allocation */
+// #define DEBUG_COMPILE        /* Dump code at compile time */
+// #define DEBUG_EXEC           /* Dump code and values at run time */
 
 #ifdef DEBUG_MEMORY
 #define debug_memory(fmt, args...) printf(fmt, ## args)
@@ -378,8 +380,6 @@ extern snek_token_val_t	snek_token_val;
 
 /* snek-code.c */
 
-extern const char * const snek_op_names[];
-
 extern uint8_t		*snek_compile;
 extern snek_offset_t	snek_compile_size;
 extern snek_offset_t	snek_compile_prev, snek_compile_prev_prev;
@@ -387,6 +387,17 @@ extern snek_offset_t	snek_compile_prev, snek_compile_prev_prev;
 #define SNEK_OP_SLICE_START	1
 #define SNEK_OP_SLICE_END	2
 #define SNEK_OP_SLICE_STRIDE	4
+
+/*
+ * Construct a temporary variable name to use in 'for' loops. These
+ * ids are taken from the very top of the id space to avoid
+ * conflicting with any actual names
+ */
+static inline snek_id_t
+snek_for_tmp(uint8_t for_depth, uint8_t i)
+{
+	return SNEK_OFFSET_NONE - 1 - (for_depth * 2 + i);
+}
 
 void
 snek_code_delete_prev(void);
@@ -457,11 +468,15 @@ snek_code_finish(void);
 snek_offset_t
 snek_code_line(snek_code_t *code);
 
-float
-snek_poly_get_float(snek_poly_t a);
+#if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
+snek_offset_t
+snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip);
+#endif
 
-snek_soffset_t
-snek_poly_get_soffset(snek_poly_t a);
+extern const snek_mem_t snek_code_mem;
+extern const snek_mem_t snek_compile_mem;
+
+/* snek-exec.c */
 
 snek_soffset_t
 snek_stack_pop_soffset(void);
@@ -481,20 +496,8 @@ snek_stack_pick(snek_offset_t off);
 void
 snek_stack_drop(snek_offset_t off);
 
-void
-snek_run_mark(void);
-
-void
-snek_run_move(void);
-
 snek_poly_t
-snek_code_run(snek_code_t *code);
-
-void
-snek_undefined(snek_id_t id);
-
-extern const snek_mem_t snek_code_mem;
-extern const snek_mem_t snek_compile_mem;
+snek_exec(snek_code_t *code);
 
 /* snek-error.c */
 
@@ -800,10 +803,16 @@ snek_poly_true(snek_poly_t a);
 snek_offset_t
 snek_poly_len(snek_poly_t a);
 
+float
+snek_poly_get_float(snek_poly_t a);
+
+snek_soffset_t
+snek_poly_get_soffset(snek_poly_t a);
+
+/* snek-print.c */
 void
 snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format);
 
-/* snek-print.c */
 void
 snek_print(snek_buf_t *buf, snek_poly_t poly);
 
