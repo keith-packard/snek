@@ -18,6 +18,7 @@ SNEK_LOCAL_SRC = \
 	snek-main.c \
 	snek-math.c \
 	snek-input.c \
+	snek-esp32.c \
 	snek-io.c
 
 SNEK_LOCAL_BUILTINS = \
