@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. ${ESP_IDF-$HOME/esp/esp-idf}/export.sh
+
+exec idf.py "$@"
