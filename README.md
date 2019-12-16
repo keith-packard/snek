@@ -110,6 +110,13 @@ Snek is also built to run natively on Linux, Mac OS X and
 Windows. When installed, you'll find it available in the regular
 system menu.
 
+## The Mu Editor
+
+[mu](https://codewith.mu/) is an IDE especially designed for new
+Python developers. It already has support for embedded boards running
+MicroPython and CircuitPython, and there are patches available for
+[Snek as well](https://github.com/keith-packard/mu).
+
 ## The Snek Development Environment
 
 Snekde is provided on all three platforms; you'll find it in the
