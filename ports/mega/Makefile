@@ -72,7 +72,7 @@ snek-mega-install: snek-mega-install.in
 load: $(HEX) snek-mega-install
 	./snek-mega-install -port $(PORT) -hex $(HEX)
 
-install: snek-mega-install $(HEX) snek-mega-install.1
+install: snek-mega-install $(HEX) $(USBSERIAL_HEX) snek-mega-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-mega-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)

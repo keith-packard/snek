@@ -59,6 +59,9 @@ $(LINUX_DIST): $(LINUX_FILES) $(LINUX_EXTRA)
 	cp -a $(LINUX_FILES) linux/Snek
 	tar cjf $@ -C linux Snek
 
+install:
+	echo install done
+
 upload: $(LINUX_SH)
 	rsync -avz $(LINUX_SH) $(SNEKDIST)
 

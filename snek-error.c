@@ -125,11 +125,11 @@ snek_error_syntax(char *where)
 	return snek_error("Syntax error at \"%s\".", where);
 }
 
-#if SNEK_DEBUG
+#if SNEK_DEBUG || defined(DEBUG_MEMORY)
 void
 snek_panic(const char *message)
 {
-	snek_error(message);
+	snek_error("%s", message);
 	abort();
 }
 #endif

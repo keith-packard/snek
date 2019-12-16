@@ -236,10 +236,10 @@ m1(math_sin, sinf)
 m1(math_tan, tanf)
 
 static float
-degreesf(float x) { return x * 180.0f / M_PI; }
+degreesf(float x) { return x * 180.0f / (float)  M_PI; }
 
 static float
-radiansf(float x) { return x * M_PI / 180.0f; }
+radiansf(float x) { return x * (float) M_PI / 180.0f; }
 
 m1(math_degrees, degreesf)
 m1(math_radians, radiansf)

@@ -12,4 +12,8 @@
 # General Public License for more details.
 #
 exit, 1
+random.seed, 1
+random.randrange, 1
+time.monotonic, 0
+time.sleep, 1
 #include <snek-qemu.h>

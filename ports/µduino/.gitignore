@@ -1,0 +1,5 @@
+snek-µduino-*.elf
+snek-µduino-*.hex
+snek-µduino-*.map
+snek-µduino-install
+ao-product.h

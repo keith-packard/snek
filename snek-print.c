@@ -47,6 +47,10 @@ static inline char snek_list_close(snek_list_type_t type)
 	}
 }
 
+#ifndef printf_float
+#define printf_float(x) ((double) (x))
+#endif
+
 void
 snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 {
@@ -79,7 +83,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	case 'G':
 		if (atype != snek_float)
 			break;
-		sprintf(tmp, format_string, snek_poly_to_float(a));
+		sprintf(tmp, format_string, printf_float(snek_poly_to_float(a)));
 		buf->put_s(tmp, closure);
 		return;
 	case 'c':
@@ -106,7 +110,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 		buf->put_s("None", closure);
 	else switch (atype) {
 	case snek_float:
-		sprintf_const(tmp, "%.7g", snek_poly_to_float(a));
+		sprintf_const(tmp, "%.7g", printf_float(snek_poly_to_float(a)));
 		buf->put_s(tmp, closure);
 		break;
 	case snek_string:
@@ -128,15 +132,20 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 	{
 		snek_list_t *list = snek_poly_to_list(a);
 		snek_list_type_t type = snek_list_type(list);
+		snek_offset_t size = list->size;
+
+		snek_stack_push_list(list);
 		buf->put_c(snek_list_open(type), closure);
-		snek_poly_t *data = snek_list_data(list);
-		for (snek_offset_t o = 0; o < list->size; o++) {
+		for (snek_offset_t o = 0; o < size; o++) {
 			if ((type == snek_list_dict) ? !(o & 1) : o)
 				buf->put_c(' ', closure);
-			snek_poly_format(buf, data[o], format);
-			if (o < list->size - 1 || (list->size == 1 && type == snek_list_tuple))
+			list = snek_stack_pop_list();
+			snek_stack_push_list(list);
+			snek_poly_format(buf, snek_list_data(list)[o], format);
+			if (o < size - 1 || (size == 1 && type == snek_list_tuple))
 				buf->put_c((type == snek_list_dict && !(o&1)) ? ':' : ',', closure);
 		}
+		list = snek_stack_pop_list();
 		if (type == snek_list_dict && list->size)
 			buf->put_c(' ', closure);
 		buf->put_c(snek_list_close(type), closure);

@@ -32,6 +32,7 @@ SNEK_ATMEGA_MATH_SRC = \
 SNEK_ATMEGA_SRC = \
 	snek-atmega-eeprom.c \
 	snek-io.c \
+	snek-strtof.c \
 	snek-atmega-serial.c
 
 SNEK_ATMEGA_MATH_INC = \

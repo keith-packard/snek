@@ -52,7 +52,7 @@ distclean:	clean
 clean::
 	rm -f *.o *.elf *.bin *.uf2 *.map ao-product.h
 
-install:
+install: $(UF2)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 

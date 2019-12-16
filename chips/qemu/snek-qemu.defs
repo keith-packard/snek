@@ -28,29 +28,16 @@ SNEK_LOCAL_BUILTINS = \
 
 SNEK_LOCAL_VPATH = $(SNEK_QEMU)
 
-PICOLIBC_PRINTF_CFLAGS =
+PICOLIBC_PRINTF_CFLAGS = -DPICOLIBC_FLOAT_PRINTF_SCANF
 
 PICOLIBC_CFLAGS= \
 	-specs=picolibc.specs \
 	$(PICOLIBC_PRINTF_CFLAGS)
 
-OPT=-O0 -g
-
-WARN_FLAGS=-Wall -Wextra -Wcast-align \
-	-Wpointer-arith \
-	-Wstrict-prototypes \
-	-Wmissing-prototypes \
-	-Wmissing-declarations \
-	-Wnested-externs \
-	-Wshadow \
-	-Warray-bounds=2\
-	-Wno-missing-prototypes\
-	-Wno-unused-parameter\
-	-Wno-strict-prototypes\
-	-Wno-missing-declarations
+OPT?=-Os
 
 CFLAGS=$(ARCH_CFLAGS) --semihost \
-	-std=gnu99 $(WARN_FLAGS) $(OPT) -g \
+	-std=gnu99 $(OPT) -g \
 	-I. -I$(SNEK_QEMU) -I$(SNEK_ROOT) $(PICOLIBC_CFLAGS) $(SNEK_CFLAGS)
 
 LDFLAGS=$(CFLAGS) -n

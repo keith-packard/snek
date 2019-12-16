@@ -33,15 +33,18 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
- * [Arduino Nano 33 IoT](https://store.arduino.cc/usa/nano-33-iot)
-   port.  This device uses the Atmel SAMD21 SoC, but can't run
-   Circuit Python because it doesn't have flash storage. The Snek port
-   can drive the GPIO pins in simple ways, but doesn't have drivers
-   for the other devices on the board.
+ * [µduino](https://www.crowdsupply.com/uduino/uduino) port. This is
+   essentially the same as the ItsyBitsy boards already
+   supported. This port changes the name and removes the SPI pins
+   which aren't available on this board.
 
- * QEMU, both ARM and RISC-V. This is the first RISC-V port of Snek,
-   but I've got plans for real hardware once I've done a bit more work
-   on the underlying SiFive freedom-metal system.
+ * [ESP32](https://www.espressif.com/en/products/hardware/esp32/overview)
+   port. This is a pretty basic port that only includes digital GPIO functions.
+
+ * [Continuous Testing](https://github.com/keith-packard/snek/actions).
+   This work was done by [Paulo Henri Silva](https://github.com/phsilva).
+   Each time code is pushed to the master branch, the build is
+   compiled *and tested* on x86 and embedded arm (using qemu).
 
 ## Build and Run!
 
@@ -109,6 +112,13 @@ found in the [Snek Manual](https://keithp.com/snek/snek.html).
 Snek is also built to run natively on Linux, Mac OS X and
 Windows. When installed, you'll find it available in the regular
 system menu.
+
+## The Mu Editor
+
+[mu](https://codewith.mu/) is an IDE especially designed for new
+Python developers. It already has support for embedded boards running
+MicroPython and CircuitPython, and there are patches available for
+[Snek as well](https://github.com/keith-packard/mu).
 
 ## The Snek Development Environment
 

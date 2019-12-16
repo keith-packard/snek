@@ -180,7 +180,12 @@ is_pull(uint8_t pin)
 static bool
 has_pwm(uint8_t p)
 {
-	return ((p) == 3 || (p) == 5 || (p) == 6 || (p) == 9 || (p) == 10 || (p) == 11);
+	const uint16_t pwm_pins = (1 << 3) | (1 << 5) | (1 << 6)
+				| (1 << 9) | (1 << 10) | (1 << 11);
+
+	p &= 15;
+
+	return pwm_pins & 1 << p;
 }
 
 static volatile uint8_t * const PROGMEM ocr_reg_addrs[] = {
@@ -457,5 +462,5 @@ snek_poly_t
 snek_builtin_random_randrange(snek_poly_t a)
 {
 	random_next = random_next * 1103515245L + 12345L;
-	return snek_float_to_poly(random_next % snek_poly_get_soffset(a));
+	return snek_float_to_poly((snek_soffset_t) (random_next % snek_poly_get_soffset(a)));
 }

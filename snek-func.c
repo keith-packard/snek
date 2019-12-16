@@ -34,22 +34,37 @@ snek_func_alloc(snek_code_t *code)
 	return func;
 }
 
+/*
+ * Assign a function formal from an actual value.
+ *
+ * Check to make sure there aren't duplicate assignments,
+ * e.g. a positional actual and named actual that end up
+ * naming the same formal.
+ */
 static bool __attribute__((noinline))
 snek_func_actual(snek_id_t id, snek_poly_t value, uint8_t pos)
 {
 	snek_variable_t *existing = &snek_frame->variables[snek_frame->nvariables-1];
 	snek_variable_t *insert = &snek_frame->variables[pos];
 
+	/* Check existing formals to see if we're duplicating one of
+	 * those
+	 */
 	while (existing > insert) {
 		if (existing->id == id)
 			return false;
 		existing--;
 	}
+
+	/* All good, assign the name and value in the frame */
 	existing->id = id;
 	existing->value = value;
 	return true;
 }
 
+/*
+ * Make sure a named actual matches a known formal
+ */
 static bool
 snek_func_check_formal(snek_id_t id, snek_func_t *func)
 {
@@ -59,18 +74,27 @@ snek_func_check_formal(snek_id_t id, snek_func_t *func)
 	return false;
 }
 
+/*
+ * Create a new frame holding all of the actuals
+ */
 bool
 snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip)
 {
+	/* Allocate the frame first so that
+	 * nothing moves during the rest of the function
+	 */
 	uint8_t nparam = nposition + nnamed;
 	if (!snek_frame_push(ip, nparam))
 		return false;
 
 	snek_func_t *func = snek_poly_to_func(snek_a);
 
+	/* Check to make sure we don't pass more actuals by position
+	 * than there are formals in the function
+	 */
 	if (nposition > func->nformal) {
 		snek_error_args(func->nformal, nposition);
-		return false;
+		goto fail_frame;
 	}
 
 	uint8_t pos = nparam;
@@ -78,28 +102,29 @@ snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip)
 	snek_poly_t value;
 	snek_id_t id;
 
-	/* Pop the named actuals off the stack, assigning by name */
-	while (pos > nposition) {
-		pos--;
-		value = snek_stack_pop();
-		id = snek_stack_pop_soffset();
-		if (!snek_func_check_formal(id, func))
-			goto fail;
-
-		if (!snek_func_actual(id, value, pos))
-			goto fail;
-	}
-
-	/* Pop the positional actuals off the stack, assigning in reverse order */
+	/* Assign formals from actuals */
 	while (pos) {
 		pos--;
 		value = snek_stack_pop();
-		id = func->formals[pos];
 
+		if (pos >= nposition) {
+			/* named actuals come last */
+			id = snek_stack_pop_soffset();
+
+			/* Make sure the actual matches a formal */
+			if (!snek_func_check_formal(id, func))
+				goto fail;
+		} else {
+			/* positional actuals come first */
+			id = func->formals[pos];
+		}
+
+		/* Insert into the frame, checking for duplicates */
 		if (!snek_func_actual(id, value, pos))
 			goto fail;
 	}
 
+	/* Make sure all required formals were given values */
 	for (pos = 0; pos < func->nrequired; pos++)
 		if (!snek_frame->variables[pos].id) {
 			id = func->formals[pos];
@@ -108,8 +133,12 @@ snek_func_push(uint8_t nposition, uint8_t nnamed, snek_offset_t ip)
 
 	return true;
 fail:
+	/* Restore stack and complain about the invalid actual */
 	snek_stackp = save_stackp;
 	snek_error_arg(id);
+fail_frame:
+	/* Remove the invalid frame */
+	(void) snek_frame_pop();
 	return false;
 }
 

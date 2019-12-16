@@ -115,9 +115,9 @@ def check(model, impl, mess):
 
 # Test lots of combinations of ranges
 
-for start in range(-10,10):
-    for end in range(-10, 10):
-        for step in range(-10,10):
+for start in range(-5,5):
+    for end in range(-5, 5):
+        for step in range(-5,5):
             if step == 0:
                 continue
 
@@ -170,6 +170,3 @@ for start in range(-10,10):
             check (slice_tuple(t, (), end, step), t[:end:step], "[:%d:%d]" % (end, step))
 
             check (slice_tuple(t, start, end, step), t[start:end:step], "[%d:%d:%d]" % (start, end, step))
-
-
-

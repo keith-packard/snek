@@ -503,7 +503,7 @@ snek_poly_t
 snek_builtin_random_randrange(snek_poly_t a)
 {
 	random_next = random_next * 31421 + 6927;
-	return snek_float_to_poly(random_next % snek_poly_get_soffset(a));
+	return snek_float_to_poly((snek_soffset_t) (random_next % snek_poly_get_soffset(a)));
 }
 
 extern char __snek_data_start__, __snek_data_end__;

@@ -21,11 +21,12 @@
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
-#include <assert.h>
 
 #include "snek-builtin.h"
 
-// #define DEBUG_MEMORY
+// #define DEBUG_MEMORY         /* Debug meory allocation */
+// #define DEBUG_COMPILE        /* Dump code at compile time */
+// #define DEBUG_EXEC           /* Dump code and values at run time */
 
 #ifdef DEBUG_MEMORY
 #define debug_memory(fmt, args...) printf(fmt, ## args)
@@ -147,6 +148,7 @@ typedef enum {
 	snek_op_range_start,
 	snek_op_range_step,
 	snek_op_in_step,
+	snek_op_return,
 
 	snek_op_line,
 
@@ -158,7 +160,6 @@ typedef enum {
 } __attribute__((packed)) snek_op_t;
 
 typedef enum {
-	snek_forward_return,
 	snek_forward_break,
 	snek_forward_continue,
 	snek_forward_if,
@@ -379,8 +380,6 @@ extern snek_token_val_t	snek_token_val;
 
 /* snek-code.c */
 
-extern const char * const snek_op_names[];
-
 extern uint8_t		*snek_compile;
 extern snek_offset_t	snek_compile_size;
 extern snek_offset_t	snek_compile_prev, snek_compile_prev_prev;
@@ -388,6 +387,17 @@ extern snek_offset_t	snek_compile_prev, snek_compile_prev_prev;
 #define SNEK_OP_SLICE_START	1
 #define SNEK_OP_SLICE_END	2
 #define SNEK_OP_SLICE_STRIDE	4
+
+/*
+ * Construct a temporary variable name to use in 'for' loops. These
+ * ids are taken from the very top of the id space to avoid
+ * conflicting with any actual names
+ */
+static inline snek_id_t
+snek_for_tmp(uint8_t for_depth, uint8_t i)
+{
+	return SNEK_OFFSET_NONE - 1 - (for_depth * 2 + i);
+}
 
 void
 snek_code_delete_prev(void);
@@ -407,10 +417,19 @@ snek_code_add_string(char *string);
 void
 snek_code_add_op_offset(snek_op_t op, snek_offset_t offset);
 
+void
+snek_code_add_op_uint8(snek_op_t op, uint8_t u8);
+
 static inline void
 snek_code_add_op_id(snek_op_t op, snek_id_t id)
 {
 	snek_code_add_op_offset(op, id);
+}
+
+static inline void
+snek_code_add_forward(snek_forward_t forward)
+{
+	snek_code_add_op_offset(snek_op_forward, (snek_offset_t) forward);
 }
 
 void
@@ -422,17 +441,23 @@ snek_code_add_forward(snek_forward_t forward);
 void
 snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t forward, snek_offset_t target);
 
-void
-snek_code_add_slice(uint8_t param);
+static inline void
+snek_code_add_slice(uint8_t param)
+{
+	snek_code_add_op_uint8(snek_op_slice, param);
+}
 
 void
-snek_code_add_in_range(snek_id_t id, snek_offset_t nactual, uint8_t for_depth);
+snek_code_add_in_range(snek_id_t id, uint8_t nactual, uint8_t for_depth);
 
 void
 snek_code_add_in_enum(snek_id_t id, uint8_t for_depth);
 
-void
-snek_code_patch_branch(snek_offset_t branch, snek_offset_t target);
+static inline void
+snek_code_patch_branch(snek_offset_t branch, snek_offset_t target)
+{
+	memcpy(snek_compile + branch + 1, &target, sizeof (snek_offset_t));
+}
 
 void
 snek_code_reset(void);
@@ -443,11 +468,15 @@ snek_code_finish(void);
 snek_offset_t
 snek_code_line(snek_code_t *code);
 
-float
-snek_poly_get_float(snek_poly_t a);
+#if defined(DEBUG_COMPILE) || defined(DEBUG_EXEC)
+snek_offset_t
+snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip);
+#endif
 
-snek_soffset_t
-snek_poly_get_soffset(snek_poly_t a);
+extern const snek_mem_t snek_code_mem;
+extern const snek_mem_t snek_compile_mem;
+
+/* snek-exec.c */
 
 snek_soffset_t
 snek_stack_pop_soffset(void);
@@ -467,20 +496,8 @@ snek_stack_pick(snek_offset_t off);
 void
 snek_stack_drop(snek_offset_t off);
 
-void
-snek_run_mark(void);
-
-void
-snek_run_move(void);
-
 snek_poly_t
-snek_code_run(snek_code_t *code);
-
-void
-snek_undefined(snek_id_t id);
-
-extern const snek_mem_t snek_code_mem;
-extern const snek_mem_t snek_compile_mem;
+snek_exec(snek_code_t *code);
 
 /* snek-error.c */
 
@@ -516,7 +533,7 @@ snek_error_arg(snek_id_t bad);
 snek_poly_t
 snek_error_syntax(char *where);
 
-#if defined(SNEK_DEBUG) || defined(DEBUG_MEMORY)
+#if SNEK_DEBUG || defined(DEBUG_MEMORY)
 void
 snek_panic(const char *message);
 #endif
@@ -786,10 +803,16 @@ snek_poly_true(snek_poly_t a);
 snek_offset_t
 snek_poly_len(snek_poly_t a);
 
+float
+snek_poly_get_float(snek_poly_t a);
+
+snek_soffset_t
+snek_poly_get_soffset(snek_poly_t a);
+
+/* snek-print.c */
 void
 snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format);
 
-/* snek-print.c */
 void
 snek_print(snek_buf_t *buf, snek_poly_t poly);
 

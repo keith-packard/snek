@@ -18,7 +18,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 			@{
 				snek_code_t *code = snek_code_finish();
 				SNEK_CODE_HOOK_START
-				snek_poly_t p = snek_code_run(code);
+				snek_poly_t p = snek_exec(code);
 				SNEK_CODE_HOOK_STOP
 				if (snek_abort)
 					return parse_return_error;
@@ -38,7 +38,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 	 		}@
 		  OP opt-formals CP COLON suite
 			@{
-				if (snek_compile[snek_compile_prev] == snek_op_forward)
+				if (snek_compile[snek_compile_prev] == snek_op_return)
 					snek_code_delete_prev();
 				else
 					snek_code_add_op(snek_op_null);
@@ -99,7 +99,7 @@ small-stats-p	: SEMI small-stat small-stats-p
 		;
 small-stat	: assign-expr
 		| RETURN ret-expr
-			@{ snek_code_add_forward(snek_forward_return); }@
+			@{ snek_code_add_op(snek_op_return); }@
 		| BREAK
 			@{ snek_code_add_forward(snek_forward_break); }@
 		| CONTINUE

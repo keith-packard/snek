@@ -19,6 +19,10 @@
 #define RX_LINEBUF	132
 #define SNEK_POOL	(32 * 1024)
 
-#define SNEK_GETC()		snek_io_getc(stdin)
+extern int snek_qemu_getc(void);
+
+#define abort() exit(1)
+
+#define SNEK_GETC()		snek_qemu_getc()
 
 #define SNEK_IO_GETC(file)	getc(stdin)

@@ -25,8 +25,6 @@ void samd21_ignore_isr(void)
 {
 }
 
-const void *samd21_interrupt_vector[];
-
 uint32_t
 samd21_flash_size(void)
 {
@@ -35,17 +33,6 @@ samd21_flash_size(void)
 
 	/* page size is 2**(3 + psz) */
 	return nvmp << (3 + psz);
-}
-
-void
-_init(void);
-
-void
-_init(void)
-{
-	/* Turn on sysctrl */
-	samd21_pm.apbamask |= (1 << SAMD21_PM_APBAMASK_SYSCTRL);
-	samd21_scb.vtor = (uint32_t) &samd21_interrupt_vector;
 }
 
 #define STRINGIFY(x) #x
@@ -107,8 +94,8 @@ extern char __stack[];
 void _start(void);
 
 __attribute__ ((section(".interrupt")))
-const void *samd21_interrupt_vector[] __attribute((aligned(128))) = {
-	[0] = __stack,
+void (*const samd21_interrupt_vector[])(void) __attribute((aligned(128))) = {
+	[0] = (void *) __stack,
 	[1] = _start,
 	i(0x08, nmi),
 	i(0x0c, hardfault),
@@ -148,3 +135,14 @@ const void *samd21_interrupt_vector[] __attribute((aligned(128))) = {
 	i(0xb0, ac1),
 	i(0xb4, tcc3),
 };
+
+void
+_init(void);
+
+void
+_init(void)
+{
+	/* Turn on sysctrl */
+	samd21_pm.apbamask |= (1 << SAMD21_PM_APBAMASK_SYSCTRL);
+	samd21_scb.vtor = (uint32_t) &samd21_interrupt_vector;
+}

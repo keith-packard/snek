@@ -1,0 +1,20 @@
+name: snek
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: phsilva/snek:latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - run: make
+      - run: make check PREFIX=
+      - name: prepare artifacts
+        run: make DESTDIR=`pwd`/artifacts PREFIX= install
+      - uses: actions/upload-artifact@v1
+        with:
+          name: snek
+          path: artifacts

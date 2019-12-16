@@ -63,25 +63,16 @@ SNEK_SAMD21_BUILTINS = \
 	snek-math.builtin \
 	snek-input.builtin
 
-PICOLIBC_PRINTF_CFLAGS =
+PICOLIBC_PRINTF_CFLAGS = -DPICOLIBC_FLOAT_PRINTF_SCANF
 
 PICOLIBC_CFLAGS= \
 	-specs=picolibc.specs \
 	$(PICOLIBC_PRINTF_CFLAGS)
 
-OPT=-Os
-
-WARN_FLAGS=-Wall -Wextra -Werror -Wcast-align \
-	-Wpointer-arith \
-	-Wstrict-prototypes \
-	-Wmissing-prototypes \
-	-Wmissing-declarations \
-	-Wnested-externs \
-	-Wshadow \
-	-Warray-bounds=2
+OPT?=-Os
 
 AO_CFLAGS=\
-	-std=gnu99 $(WARN_FLAGS) $(OPT) -g
+	-std=gnu99 $(OPT) -g
 
 SAMD21_CFLAGS=-mlittle-endian -mcpu=cortex-m0 -mthumb\
 	-I$(SNEK_SAMD21) -I$(SNEK_AO) -I$(SNEK_ROOT) -I. $(AO_CFLAGS) $(PICOLIBC_CFLAGS)

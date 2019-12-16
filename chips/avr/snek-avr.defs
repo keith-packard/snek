@@ -25,7 +25,7 @@ SNEK_AVR_SRC = \
 	ao-notask.c \
 	ao-product.c \
 	ao-panic.c \
-	strtod.c
+	snek-strtof.c
 
 SNEK_AVR_INC = \
 	ao.h \

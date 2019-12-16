@@ -32,4 +32,4 @@ EXAMPLES = \
 
 install:
 	install -d "$(DESTDIR)$(EXAMPLEDIR)"
-	for example in $(EXAMPLES); do install -m 0644 "$$example" "$(DESTDIR)$(EXAMPLEDIR)"; done
+	for example in $(EXAMPLES); do install -m 0644 "$$example" "$(DESTDIR)$(EXAMPLEDIR)" || exit 1; done

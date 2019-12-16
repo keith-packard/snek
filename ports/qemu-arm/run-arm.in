@@ -1,5 +1,0 @@
-qemu=qemu-system-arm
-elf=snek-qemu-arm-@SNEK_VERSION@.elf
-machine=mps2-an385
-cpu=cortex-m3
-$qemu -chardev stdio,mux=on,id=stdio0 -serial none -semihosting-config enable=on,chardev=stdio0 -mon chardev=stdio0,mode=readline -m size=512k -machine $machine -cpu $cpu -kernel $elf -nographic "$@"

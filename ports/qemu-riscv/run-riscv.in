@@ -1,6 +1,0 @@
-#!/bin/sh
-qemu=qemu-system-riscv32
-elf=snek-qemu-riscv-@SNEK_VERSION@.elf
-machine=spike
-cpu=sifive-e31
-$qemu -chardev stdio,mux=on,id=stdio0 -serial none -semihosting-config enable=on,chardev=stdio0 -mon chardev=stdio0,mode=readline -machine $machine -cpu $cpu -kernel $elf -nographic "$@"

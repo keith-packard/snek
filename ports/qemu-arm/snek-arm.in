@@ -1,0 +1,23 @@
+#!/bin/sh
+here=`dirname $0`
+args="arg='snek'"
+extra=""
+for i in "$@"; do
+    case "$i" in
+	-*)
+	    extra="$extra $i"
+	    ;;
+	*)
+	    args="$args,arg=$i"
+	    ;;
+    esac
+done
+qemu=qemu-system-arm
+elf="$here/snek-qemu-arm-@SNEK_VERSION@.elf"
+machine=mps2-an385
+cpu=cortex-m3
+chardev="-chardev stdio,mux=on,id=stdio0"
+serial="-serial none"
+mon="-monitor none"
+semihost="-semihosting-config enable=on,chardev=stdio0,$args"
+$qemu $chardev $serial $mon $semihost -machine $machine -cpu $cpu -kernel $elf -nographic $extra

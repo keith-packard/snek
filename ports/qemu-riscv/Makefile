@@ -27,19 +27,20 @@ include $(SNEK_ROOT)/snek-install.defs
 SRC=$(SNEK_SRC)
 OBJ=$(SRC:.c=.o)
 
-all: $(PROG) run-riscv
+all: $(PROG) snek-riscv
 
 $(PROG): Makefile $(OBJ)
 	$(call quiet,CC) $(LDFLAGS) -Wl,-Tsnek-qemu-riscv.ld -Wl,-M=$(MAP) -o $@ $(OBJ) $(LIBS)
 
 $(OBJ): $(SNEK_INC)
 
-install: $(PROG)
-	install -d $(DESTDIR)$(SHAREDIR)
-	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
-
-run-riscv: run-riscv.in
+snek-riscv: snek-riscv.in
 	$(SNEK_SED) $^ > $@
 	chmod +x $@
+
+install: $(PROG) snek-riscv
+	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
+	install snek-riscv $(DESTDIR)$(SHAREDIR)
 
 uninstall:
