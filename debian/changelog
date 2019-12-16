@@ -1,3 +1,13 @@
+snek (1.3-1) unstable; urgency=medium
+
+  * Upstream release 1.3
+  * Ports to ESP32 and µduino
+  * Bug fix in string interpolation
+  * Code refactoring and other size reductions
+  * Test on embedded ARM processor using QEMU
+
+ -- Keith Packard <keithp@keithp.com>  Sun, 15 Dec 2019 23:02:31 -0800
+
 snek (1.2-2) unstable; urgency=medium
 
   * Expose compiler flags in build log
