@@ -4,9 +4,9 @@ Priority: optional
 Maintainer: Keith Packard <keithp@keithp.com>
 Homepage: https://keithp.com
 Build-Depends: debhelper (>= 12), libreadline-dev, avr-libc, gcc-avr,
- binutils-arm-none-eabi, gcc-arm-none-eabi, picolibc-arm-none-eabi (>= 1.1),
- binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.1),
- python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf, ruby-coderay
+ binutils-arm-none-eabi, gcc-arm-none-eabi, picolibc-arm-none-eabi (>= 1.2),
+ binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.2),
+ python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf, ruby-coderay, qemu-system-arm
 Standards-Version: 4.4.0
 
 Package: snek
