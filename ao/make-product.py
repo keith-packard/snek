@@ -16,7 +16,7 @@ def write_ucs2(a, description):
         if 0x20 <= ord(c) and ord(c) < 128:
             print(" '%c', 0" % c, end='')
         else:
-            print(" LE_WORD(0x%04x)," % c, end='')
+            print(" LE_WORD(0x%04x)" % ord(c), end='')
     print("\n")
 
 def write_string(a,description):
