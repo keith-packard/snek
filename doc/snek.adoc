@@ -2392,9 +2392,9 @@ usual USB boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
 On Linux, the Snek installation includes shell scripts,
-snek-itsybitsy-install and snek-µduino-install which install the
+snek-itsybitsy-install and snek-uduino-install which install the
 binary using 'avrdude'. Read the snek-itsybitsy-install or
-snek-µduino-install manual (also included in the installation) for
+snek-uduino-install manual (also included in the installation) for
 more information.
 
 The µduino programming wires are only available while the device is

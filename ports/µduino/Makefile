@@ -34,13 +34,13 @@ SNEK_LOCAL_BUILTINS = \
 
 include $(SNEK_ROOT)/snek-install.defs
 
-all: $(ELF) $(HEX) snek-µduino-install
+all: $(ELF) $(HEX) snek-uduino-install
 
 $(PROG): Makefile $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
 	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
-snek-µduino-install: snek-µduino-install.in
+snek-uduino-install: snek-uduino-install.in
 	$(SNEK_SED) $^ > $@
 	chmod +x $@
 
@@ -48,14 +48,14 @@ install:: $(HEX)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 
-install:: snek-µduino-install snek-µduino-install.1
+install:: snek-uduino-install snek-uduino-install.1
 	install -d $(DESTDIR)$(BINDIR)
-	install snek-µduino-install $(DESTDIR)$(BINDIR)
+	install snek-uduino-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
-	install -m 0644 snek-µduino-install.1 $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-uduino-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f snek-µduino-install
+	rm -f snek-uduino-install
 	rm -f *.hex *.elf *.map
 	rm -f ao-product.h
 
@@ -63,5 +63,5 @@ uninstall::
 
 ISP=avrisp2
 
-load: $(HEX) snek-µduino-install
-	./snek-µduino-install -quick -isp $(ISP) -hex $(HEX) load
+load: $(HEX) snek-uduino-install
+	./snek-uduino-install -quick -isp $(ISP) -hex $(HEX) load
