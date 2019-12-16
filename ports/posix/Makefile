@@ -22,13 +22,14 @@ SNEK_LOCAL_SRC = \
 	snek-input.c
 
 SNEK_LOCAL_INC = snek-posix.h
+SNEK_LOCAL_CFLAGS = 
 SNEK_LOCAL_BUILTINS = snek-posix.builtin $(SNEK_ROOT)/snek-math.builtin $(SNEK_ROOT)/snek-input.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
 OPT?=-O3
 
-CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
+CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS) $(CFLAGS_POSIX)
 
 LIBS=-lreadline -lm
 
