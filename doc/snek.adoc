@@ -2361,12 +2361,12 @@ $ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duemilanove-{version}.h
 
 [%nonfacing]
 [appendix]
-= Snek on Adafruit ItsyBitsy (both 3v and 5v boards)
+= Snek on Adafruit ItsyBitsy and the Crowd Supply µduino
 
-Snek for the Adafruit ItsyBitsy includes the Common System, GPIO
+Snek for the ItsyBitsy and µduino includes the Common System, GPIO
 (without the `neopixel` function), and EEPROM
 functions. Snek for the itsybitsy provides pre-defined
-variables for all of the the GPIO pins:(((ItsyBitsy)))
+variables for all of the the GPIO pins:(((ItsyBitsy)))(((µduino)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2384,16 +2384,22 @@ an indeterminate value. Change this using `pullnone`, `pullup` or
 `pulldown` functions.
 
 MISO, MOSI, SCK::
-Additional digital input and output pins. These work just like D0-D13.
+Additional digital input and output pins. These work just like
+D0-D13. These are not present on the µduino board.
 
 Snek fills the ATMega 32u4 flash completely leaving no space for the
 usual USB boot loader, so installing Snek requires a programming
 puck, such as the USBTiny device.
 
-On Linux, the Snek installation includes a shell script,
-snek-itsybitsy-install, to install the binary using 'avrdude'. Read the
-snek-itsybitsy-install manual (also included in the installation) for more
-information.
+On Linux, the Snek installation includes shell scripts,
+snek-itsybitsy-install and snek-µduino-install which install the
+binary using 'avrdude'. Read the snek-itsybitsy-install or
+snek-µduino-install manual (also included in the installation) for
+more information.
+
+The µduino programming wires are only available while the device is
+still connected to the carrier board. Normally the µduino has been
+broken off of that during manufacturing.
 
 On other hosts, you'll need to install 'avrdude'. Once you've done that, there
 are two steps to getting Snek installed on the device.
@@ -2407,7 +2413,7 @@ are two steps to getting Snek installed on the device.
 [source]
 $ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
 +
- 2. Install the Snek binary. Pick the right voltage for your board as that
+ 2. Install the Snek binary. Pick the version for your board as that
     also sets the right clock speed. For 5v boards, install the 5v binary:
 +
 [source,subs="attributes+"]
@@ -2417,6 +2423,11 @@ for 3v boards, use the 3v binary.
 +
 [source,subs="attributes+"]
 $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-itsybitsy3v-{version}.hex
++
+for µduino boards, use the µduino binary.
++
+[source,subs="attributes+"]
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-µduino-{version}.hex
 
 [%nonfacing]
 [appendix]
