@@ -4,7 +4,7 @@
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 export SNEK_OTHEROS=0
 export PREFIX=/usr
-export OPT=$(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get LDFLAGS)
+export CFLAGS_POSIX=$(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get LDFLAGS)
 export V=1
 
 # Uncomment this to turn on verbose mode.
