@@ -15,8 +15,8 @@
 SNEK_ROOT = ../..
 SNEK_AVR = $(SNEK_ROOT)/chips/avr
 
-PROGNAME=snek-µduino
-PRODUCT_NAME=snek-µduino
+PROGNAME=snek-uduino
+PRODUCT_NAME=snek-uduino
 
 AVR_CLOCK=16000000UL
 
@@ -30,7 +30,7 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_AVR_BUILTINS) \
-	snek-µduino.builtin
+	snek-uduino.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 

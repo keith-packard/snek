@@ -27,7 +27,7 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/qemu-arm/snek-qemu-arm-$(SNEK_VERSION).elf \
 	$(SNEK_PORTS)/qemu-riscv/snek-qemu-riscv-$(SNEK_VERSION).elf \
 	$(SNEK_PORTS)/snekboard/snek-board-$(SNEK_VERSION).uf2 \
-	$(SNEK_PORTS)/µduino/snek-µduino-$(SNEK_VERSION).hex
+	$(SNEK_PORTS)/uduino/snek-uduino-$(SNEK_VERSION).hex
 
 USBFIRMWARE ?= \
 	$(SNEK_PORTS)/mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex \

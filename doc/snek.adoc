@@ -2427,7 +2427,7 @@ $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-itsybitsy3v-{version}.hex
 for µduino boards, use the µduino binary.
 +
 [source,subs="attributes+"]
-$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-µduino-{version}.hex
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-uduino-{version}.hex
 
 [%nonfacing]
 [appendix]
