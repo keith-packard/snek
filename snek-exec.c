@@ -282,7 +282,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	float		af;
 	float		bf;
 	bool		found;
-	snek_poly_t	ret = SNEK_NULL;
+	snek_poly_t	ret = SNEK_INVALID;
 
 	/* Compare operators work between any two values
 	 * in snek, so no type checking needed here.
@@ -470,7 +470,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	}
 
 	/* If we haven't computed any return, raise an exception */
-	if (snek_is_null(ret))
+	if (snek_is_invalid(ret))
 		return snek_error_type_2(a, b);
 	return ret;
 }
