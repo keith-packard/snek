@@ -12,6 +12,14 @@ MANDIR ?= $(PREFIX)/share/man
 SNEKLIB ?= $(PREFIX)/share/snek
 SNEKDIST ?= keithp.com:/var/www/snek/dist
 SNEKDOC ?= keithp.com:/var/www/snek
+SNEK_HIFIVE1REVB ?= 0
+ifneq "$(SNEK_HIFIVE1REVB)" "0"
+SNEK_PORTS_HIFIVE1REVB=$(SNEK_PORTS)/hifive1revb/snek-hifive1revb-$(SNEK_VERSION).hex
+endif
+SNEK_ESP32 ?= 0
+ifneq "$(SNEK_ESP32)" "0"
+SNEK_PORTS_ESP32=$(SNEK_PORTS)/esp32/snek-esp32-$(SNEK_VERSION).hex
+endif
 #SNEKMAC ?= imac-remote:build/snek
 FIRMWARE ?= \
 	$(SNEK_PORTS)/crickit/snek-crickit-$(SNEK_VERSION).uf2 \
@@ -27,7 +35,8 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/qemu-arm/snek-qemu-arm-$(SNEK_VERSION).elf \
 	$(SNEK_PORTS)/qemu-riscv/snek-qemu-riscv-$(SNEK_VERSION).elf \
 	$(SNEK_PORTS)/snekboard/snek-board-$(SNEK_VERSION).uf2 \
-	$(SNEK_PORTS)/uduino/snek-uduino-$(SNEK_VERSION).hex
+	$(SNEK_PORTS)/uduino/snek-uduino-$(SNEK_VERSION).hex \
+	$(SNEK_PORTS_HIFIVE1REVB) $(SNEK_PORTS_ESP32)
 
 USBFIRMWARE ?= \
 	$(SNEK_PORTS)/mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex \
