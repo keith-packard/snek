@@ -29,3 +29,4 @@ stdscr.getch, 0
 random.seed, 1
 random.randrange, 1
 #include <snek-posix.h>
+#define SNEK_POOL 262144
