@@ -26,9 +26,14 @@ snek_string_make(char c)
 snek_poly_t
 snek_string_get(char *string, snek_poly_t p, bool report_error)
 {
-	snek_soffset_t o = snek_poly_get_soffset(p);
+	snek_soffset_t so = snek_poly_get_soffset(p);
+	snek_offset_t len = strlen(string);
+	snek_offset_t o;
 
-	if (o < 0 || strlen(string) <= (snek_offset_t) o) {
+	o = (snek_offset_t) so;
+	if (so < 0)
+		o = len - (-so);
+	if (len <= o) {
 		if (report_error)
 			snek_error_value(p);
 		return SNEK_NULL;
