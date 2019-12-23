@@ -191,7 +191,7 @@ _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 		snek_soffset_t so = snek_poly_get_soffset(p);
 		o = so;
 		if (so < 0)
-			o = list->size + so;
+			o = list->size - (snek_offset_t) (-so);
 		if (list->size <= o)
 			goto fail;
 	}
