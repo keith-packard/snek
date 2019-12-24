@@ -50,7 +50,8 @@ SUCCESS_TESTS = \
 	args.py \
 	assert-success.py \
 	interpolate-list.py \
-	get.py
+	get.py \
+	interpolate-str.py
 
 FAIL_TESTS = \
 	scoping-no-decl.py \
