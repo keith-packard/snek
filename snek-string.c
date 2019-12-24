@@ -180,9 +180,11 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 			char format = a[percent];
 			if (format)
 				percent++;
-			if (format == '%')
-				snek_buf_sprintc('%', &buf);
-			else {
+			snek_stack_push(poly);
+			snek_stack_push_string(a);
+			if (format == '%') {
+				snek_buf_sprintc('%', &result);
+			} else {
 				snek_poly_t	*data = &poly;
 				snek_offset_t	size = 1;
 				if (snek_poly_type(poly) == snek_list) {
@@ -193,12 +195,10 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 				snek_poly_t v = SNEK_ZERO;
 				if (o < size)
 					v = data[o++];
-				snek_stack_push(poly);
-				snek_stack_push_string(a);
 				snek_poly_format(&buf, v, format);
-				a = snek_stack_pop_string(a);
-				poly = snek_stack_pop();
 			}
+			a = snek_stack_pop_string(a);
+			poly = snek_stack_pop();
 		}
 	}
 	return result;
