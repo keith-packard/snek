@@ -64,7 +64,10 @@ FAIL_TESTS = \
 	arg-dup1.py \
 	arg-dup2.py \
 	arg-unknown.py \
-	assert-fail.py
+	assert-fail.py \
+	interpolate-missing.py \
+	interpolate-extra.py \
+	interpolate-badformat.py
 
 check:
 	@exit=0; \
