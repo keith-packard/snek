@@ -22,3 +22,4 @@ assert '%g' % 3.1 == '3.1'
 assert '%e' % 3.1 == '3.100000e+00'
 assert '%s' % 'hello' == 'hello'
 assert '%r' % 'hello' == "'hello'"
+assert ('%d' + 'x' * 300 + '%d') % (12, 34) == '12xxxxxxxxxx' + 'xx' * 140 + 'xxxxxxxxxx34'
