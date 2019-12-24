@@ -95,7 +95,7 @@ snek_list_append(snek_list_t *list, snek_list_t *append)
 		append = list;
 
 	if (list)
-		memcpy((snek_poly_t *) snek_list_data(list) + oldsize,
+		memcpy(snek_list_data(list) + oldsize,
 		       snek_list_data(append),
 		       append_size * sizeof(snek_poly_t));
 	return list;
