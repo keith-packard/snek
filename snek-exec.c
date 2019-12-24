@@ -462,7 +462,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			break;
 		case snek_op_mod:
 			if (at == snek_string)
-				ret = snek_string_to_poly(snek_string_interpolate(snek_poly_to_string(a), b));
+				ret = snek_string_interpolate(snek_poly_to_string(a), b);
 			break;
 		default:
 			break;

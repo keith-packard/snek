@@ -841,7 +841,7 @@ snek_string_times(char *a, snek_soffset_t b);
 char *
 snek_string_slice(char *a, snek_slice_t *slice);
 
-char *
+snek_poly_t
 snek_string_interpolate(char *a, snek_poly_t poly);
 
 snek_offset_t
