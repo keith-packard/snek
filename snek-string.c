@@ -100,7 +100,7 @@ snek_string_times(char *a, snek_soffset_t b)
 	return snek_string_to_poly(s);
 }
 
-static uint8_t
+static snek_offset_t
 snek_next_format(char *a)
 {
 	char *percent = strchr(a, '%');
@@ -157,7 +157,7 @@ snek_buf_sprints(const char *s, void *closure)
 char *
 snek_string_interpolate(char *a, snek_poly_t poly)
 {
-	uint8_t percent = 0;
+	snek_offset_t percent = 0;
 	char *result = NULL;
 	snek_offset_t o = 0;
 	snek_buf_t buf = {
@@ -167,7 +167,7 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 	};
 
 	while (a[percent]) {
-		uint8_t next = snek_next_format(a + percent) + percent;
+		snek_offset_t next = snek_next_format(a + percent) + percent;
 		snek_stack_push(poly);
 		snek_stack_push_string(a);
 		result = snek_string_catn(result, 0, result ? strlen(result) : 0,
