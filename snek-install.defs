@@ -18,7 +18,7 @@ SNEK_PORTS_HIFIVE1REVB=$(SNEK_PORTS)/hifive1revb/snek-hifive1revb-$(SNEK_VERSION
 endif
 SNEK_ESP32 ?= 0
 ifneq "$(SNEK_ESP32)" "0"
-SNEK_PORTS_ESP32=$(SNEK_PORTS)/esp32/snek-esp32-$(SNEK_VERSION).hex
+SNEK_PORTS_ESP32=$(SNEK_PORTS)/esp32/snek-esp32-$(SNEK_VERSION).bin
 endif
 #SNEKMAC ?= imac-remote:build/snek
 FIRMWARE ?= \
