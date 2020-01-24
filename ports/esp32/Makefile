@@ -30,7 +30,7 @@ build/$(TARGET_DASH):
 
 clean::
 	$(ESP32_IDF) clean
-	make -C main clean
+	+make -C main clean
 
 load:
 	$(ESP32_IDF) -p /dev/ttyUSB1 flash
