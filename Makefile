@@ -19,7 +19,7 @@ include snek-install.defs
 
 SNEK_OTHEROS?=1
 ifeq ($(SNEK_OTHEROS),1)
-SNEK_OTHEROS_DIR=$(SNEK_HOSTS)/linux $(SNEK_HOSTS)/windows $(SNEK_HOSTS)/macosx
+SNEK_OTHEROS_DIR=$(SNEK_HOSTS)/linux $(SNEK_HOSTS)/windows $(SNEK_HOSTS)/macosx $(SNEK_HOSTS)/zip
 endif
 
 SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
