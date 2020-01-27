@@ -17,6 +17,13 @@ font:
       italic: DejaVuSansMono-Oblique.ttf
       bold: DejaVuSansMono-Bold.ttf
       bold_italic: DejaVuSansMono-BoldOblique.ttf
+    Lato:
+      normal: Lato-Medium.ttf
+      italic: Lato-Medium.ttf
+      bold: Lato-Medium.ttf
+      bold_italic: Lato-Medium.ttf
+  fallbacks:
+  - Lato
 title_page:
   align: right
   logo:
@@ -77,3 +84,6 @@ literal:
 code:
   font_family: DejaVu Sans Mono
   font_size: 11
+ulist:
+  marker:
+    font_family: Lato
