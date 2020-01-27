@@ -1,0 +1,366 @@
+= Snekboard: Control LEGO Robots with Snek 
+Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
+:version: 0.0
+:title-logo-image: image:snekboard.png[]
+:revnumber: v{version}
+:revdate: 1 Jan 1970
+:experimental:
+:icons:
+:icontype: svg
+:copyright: Keith Packard 2020
+:doctype: article
+:numbered:
+:stylesheet: snek.css
+:linkcss:
+:toc:
+:pdf-stylesdir: ..
+:pdf-fontsdir: ../fonts
+:source-highlighter: coderay
+:media: prepress
+
+ifndef::backend-pdf[]
+[#logo]
+[link=https://keithp.com/snek]
+image::snek.svg[Snek]
+endif::[]
+
+[colophon]
+[%nonfacing]
+== License
+
+Copyright © 2020 {authors}
+
+This document is released under the terms of the link:https://www.gnu.org/licenses/gpl-3.0.en.html[GNU General Public License, Version 3 or later]
+
+[dedication]
+[%nonfacing]
+== Acknowledgments
+
+Thanks to
+
+[verse]
+{author}
+{email}
+https://keithp.com
+
+== Overview
+
+Snekboard is a small computer with integrated peripherals designed to
+work with LEGO components enabling the construction of small
+autonomous robots. Snekboard supports three different programming environments:
+
+ * Snek. This small Python-inspired language is ideal for people new
+   to robotics and programming.
+
+ * Circuit Python. A larger Python compatible language with more
+   sophisticated control over the system and a more complete
+   implementation of the Python language.
+
+ * Arduino. This C++ based development environment offers full access
+   to the hardware at a primitive level. It is more challenging to
+   learn and use, but offers the highest performance.
+
+== First Look at Snekboard
+
+image::snekboard-label.jpg[width=800]
+
+Snekboard has:
+
+ * A lithium-polymer (LiPo) battery so it can run with no USB connection.
+
+ * A green LED that is lit when the board is on.
+
+ * A blue LED that is lit while a Snek program is running.
+
+ * A USB LED that is:
+
+    ** Unlit when there is no power connection.
+    ** Red when charging.
+    ** Green when the battery is charged.
+
+ * A reset button to restart the snekboard (starting the program in
+   memory).
+
+ * 8 analog inputs A1 through A8 that return values from 0 to 1.
+
+ * 4 outputs M1 thought M4, each with two directions (left or right)
+   and power from 0 to 1.
+
+ * 2 NeoPixels that combine a red, green, and blue LED each of which
+   can be lit with a power from 0 to 1.
+
+Here is what it looks like when in its Lego case:
+
+.Snekboard in Enclosure
+image::snekboard-in-enclosure.jpg[width=800]
+
+== Snekboard Cables and Sensors
+
+.Cables and Sensors
+image::snekboard-sensors.jpg[width=800]
+
+Notice that:
+
+ * There are two kinds of snek output cables. Light gray connectors
+   have power functions on top and brick underneath. Dark gray
+   connectors have power functions on top and bottom. Connect the red
+   connectors to the M1..M4 output ports so that the cables
+   immediately exit the board.
+
+ * The light sensors are in red 1x4 Bricks. The white 1x4 brick is an
+   LED, not a sensor, and has no white or yellow sensor signal wire.
+
+ * There are two kinds of distance sensors. The long range sensor
+   (150cm or about 5 feet) is larger, and the short range one is
+   smaller. The cables are the same for both.
+
+ * The touch sensor needs a special cable that has a brick connector
+   on one end and (at least) two pins on the other. If it has only two
+   pins, you need to pull up or pull down the signal line in software
+   (depending on how it is connected) for proper function. See
+   the section on Switches.
+
+ * The sensors have either 2 or 3 colored wires. With 3-wire sensors,
+   be careful to connect sensor pins to an analog input column so the
+   colors match the labels of the photo on page 1.
+
+Here is a well connected Snekboard:
+
+.Wired Snekboard
+image::snekboard-wired.jpg[width=800]
+
+== Snekboard Outputs
+
+Outputs on Snekboard
+
+ * Are used to drive or control actuators. Actuators are devices that
+   physically act in the world, like motors, servos, lights, and
+   speakers.
+
+ * Use ports M1 to M4 and NEOPIXEL.
+
+ * Use these functions to control output ports M1 to M4:
+
+   ** talkto(M#): Remembers output port # for other output commands.
+   ** setpower(P): Sets the output power to P with 0 <= P <= 1.
+   ** setleft(): Sets the output power to flow left-wise through port #.
+   ** setright(): Sets the output power to flow right-wise through port #.
+   ** on(): Turns the power to port # on.
+   ** onfor(S): Turns the power to port # on for S seconds (approximately).
+   ** off(): Turns the power to port # off.
+
+ * The neopixel LEDs work a bit differently. See the snek manual.
+
+== Snekboard Inputs
+
+ * Are used to read sensors. Sensors are devices sense or measure
+   physical conditions in the world such as light intensity, distance
+   (as reflected by IR light), and touch.
+
+ * Use analog input ports A1 to A8 to provide values that range from 0
+   to 1. “Analog” indicates that the values provided represent
+   continuous values.
+
+ * Use the read function to get values from ports A1 to A8:
+
+   ** read(A#): Gives the value (between 0 and 1) of port #.
+
+   ** Advanced Topic: A 2-wire touch sensor needs pullup(A#) or
+      pulldown(A#). More on this later. A 3-wire touch sensor does
+      not.
+
+== Hooking Things Together
+
+Now we'll write a Snek program to show how to use a distance sensor to
+control the speed of a motor.
+
+ 1. Connect a motor to Snekboard output M1
+ 2. Connect a distance sensor to Snekboard input A1
+
+We can test the distance sensor and the motor with some Snek
+commands. Use the Mu Serial pane to enter the text in *`bold`*
+below. The text in a `normal` face is what Snek writes back to you:
+
+[source,subs="verbatim,quotes"]
+----
+> *read(A1)*
+0.3484738
+----
+
+Your Snekboard will probably show a different value. If you like, you
+can experiment with how the distance sensor reacts when you move
+things in front of it:
+
+[source,subs="verbatim,quotes"]
+----
+> *while True:*
++    *print(read(A1))*
++    *time.sleep(1)*
++
+0.3484738
+0.3829738
+0.2694738
+0.4214738
+0.6064738
+0.4194738
+0.3469738
+0.4659738
+0.3039738
+0.3074738
+*Ctrl+C*
+----
+
+You'll need to hit kbd:[Enter] after *time.sleep(1)* to get the
+program to run. Hit kbd:[Ctrl+C] when you're done testing to stop the
+program.
+
+Now we'll test the motor:
+
+[source,subs="verbatim,quotes"]
+----
+> *talkto(M1)*
+> *on()*
+----
+
+This turns the motor on at full speed. To reduce the speed, try:
+
+[source,subs="verbatim,quotes"]
+----
+> *setpower(0.5)*
+----
+
+Now let's hook the input sensor up to the motor:
+
+[source,subs="verbatim,quotes"]
+----
+> *talkto(M1)*
+> *on()*
+> *while True*
++   *setpower(read(A1))*
++
+----
+
+Experiment with moving things in front of the distance sensor to see
+how the motor responds.
+
+== Switches
+
+Using switches as inputs to Snekboard is slightly tricky. That's
+because Snekboard inputs are normally set to read sensors that produce
+a range of values, like distance and light sensors. These kinds of
+input devices are called _analog sensors_. We want to switches to
+either be 1 or 0, which is called a _digital sensor_.
+
+Here's what you you can get if you hook a switch up to Snekboard.
+
+ 1. Connect a switch to Snekboard Input A1 between `A` and `+` 
+
+[source,subs="verbatim,quotes"]
+----
+> *read(A1)*
+0.08229548
+> *read(A1)*
+0.9997558
+----
+
+The first value was read with the switch *off*. The value is very nearly
+0, but not quite. It has to be exactly 0 for Snek to treat it as
+False. The second value was read with the switch *on*. This value is
+very nearly 1, but again, not quite.
+
+When a switch is *on*, the two leads are connected together. When the
+switch is *off*, the two leads are not. Let's explore how this works
+by connecting the switch differently.
+
+ 1. Connect a switch to Snekboard Input A1 between `A` and `-` 
+
+[source,subs="verbatim,quotes"]
+----
+> *read(A1)*
+0.1269841
+> *read(A1)*
+0.0007326007
+----
+
+This time, *both* values are small, but neither is exactly zero. What
+happened here? When the switch is *off*, the A lead isn't connected to
+anything, so Snekboard isn't being given a value and it makes one up
+on its own. In this case, the value isn't terribly useful.
+
+You can tell Snekboard how to fix this by using either of two new Snek
+functions, `pulldown(I)` or `pullup(I)`. These functions tug the input
+line gently to either 0 or 1 when the switch is *off*. When the switch
+is *on*, it pulls strongly to whichever value you've connected the
+other lead to (+ pulls to 1, - pulls to 0). When you use either of
+these functions, you also tell Snekboard that you're using a _digital
+sensor_, making the output be either 0 or 1, depending on which is
+closest.
+
+ 1. Connect a switch to Snekboard Input A1 between `A` and `+` 
+
+[source,subs="verbatim,quotes"]
+----
+> *pulldown(A1)*
+> *read(A1)*
+0
+> *read(A1)*
+1
+----
+
+You can try pullup too by changing the switch connections again:
+
+ 1. Connect a switch to Snekboard Input A1 between `A` and `-` 
+
+[source,subs="verbatim,quotes"]
+----
+> *pullup(A1)*
+> *read(A1)*
+1
+> *read(A1)*
+0
+----
+
+To get A1 back to normal mode, just use the `pullnone` function:
+
+[source,subs="verbatim,quotes"]
+----
+> *pullnone(A1)*
+----
+
+== Servos
+
+Snekboard can also control a LEGO™ Power Functions Servo Motors. These
+work differently from regular motors; they don't rotate continuously,
+but rather can be told to rotate to a specific position. This is done
+by controlling both the power and direction. The power setting
+controls how far the servo rotates while the direction setting
+controls which way, either clockwise or counter clockwise, from the
+center position.
+
+ 1. Connect a servo to Snekboard output M1
+
+The servo should reset to the center position. Let's move it all the
+way to the left:
+
+[source,subs="verbatim,quotes"]
+----
+> *talkto(M1)*
+> *setleft()*
+> *on()*
+----
+
+Now we can switch the direction and move it all the way to the right:
+
+[source,subs="verbatim,quotes"]
+----
+> *setright()*
+----
+
+Finally, we can move halfway between center and right:
+
+[source,subs="verbatim,quotes"]
+----
+> *setpower(0.5)*
+----
+
+image::snek.svg[align="center"]
