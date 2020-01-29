@@ -245,11 +245,12 @@ how the motor responds.
 
 == Switches
 
-Using switches as inputs to Snekboard is slightly tricky. That's
-because Snekboard inputs are normally set to read sensors that produce
-a range of values, like distance and light sensors. These kinds of
-input devices are called _analog sensors_. We want to switches to
-either be 1 or 0, which is called a _digital sensor_.
+Using switches (also known as “touch sensors”) with Snekboard is
+slightly tricky. That's because Snekboard inputs are normally set to
+read sensors that produce a range of values, like distance and light
+sensors. These kinds of input devices are called _analog sensors_. We
+want to switches to either be 1 or 0, which is called a _digital
+sensor_.
 
 Here's what you you can get if you hook a switch up to Snekboard.
 
