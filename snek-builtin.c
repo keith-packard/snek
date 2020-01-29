@@ -72,3 +72,9 @@ snek_builtin_math_sqrt(snek_poly_t a)
 {
 	return snek_float_to_poly(sqrtf(snek_poly_get_float(a)));
 }
+
+snek_poly_t
+snek_builtin_abs(snek_poly_t a)
+{
+	return snek_float_to_poly(fabs(snek_poly_get_float(a)));
+}
