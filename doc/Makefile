@@ -12,7 +12,7 @@ HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css coderay-asciidoctor.css
 IMAGE_FILES=../snek.svg
 
-all: $(HTML_FILES) $(PDF_FILES)
+all: $(HTML_FILES) $(PDF_FILES) all-lessons
 
 BOOK_FILES=snek-book.pdf snek-cover.pdf snek-book-book.pdf snek-cover-book.pdf
 
@@ -30,7 +30,7 @@ ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSIO
 
 $(PDF_FILES): snek-theme.yml $(IMAGE_FILES)
 
-DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES)
+DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) $(IMAGE_FILES)
 
 install: $(DOCFILES)
 	install -d $(DESTDIR)$(DOCDIR)
@@ -48,10 +48,19 @@ snek-cover.pdf: snek-cover.svg
 snek-cover-book.pdf: snek-cover.svg
 	rsvg-convert -d 69.05 -p 69.94 -f pdf -o $@ $^
 
-upload: $(DOCFILES)
+upload: $(DOCFILES) upload-lessons
 	rsync -avz $(DOCFILES) fonts $(SNEKDOC)
 
 coderay-asciidoctor.css: $(HTML_FILES)
 
-clean::
+clean:: clean-lessons
 	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES) coderay-asciidoctor.css
+
+all-lessons:
+	+for i in lessons/*; do make -C $$i all; done
+
+clean-lessons:
+	+for i in lessons/*; do make -C $$i clean; done
+
+upload-lessons:
+	+for i in lessons/*; do make -C $$i upload; done
