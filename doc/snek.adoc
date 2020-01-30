@@ -19,7 +19,7 @@ Keith Packard <keithp@keithp.com>
 
 ifndef::backend-pdf[]
 [#logo]
-[link=https://keithp.com/snek]
+[link=https://sneklang.org]
 image::snek.svg[Snek]
 endif::[]
 

@@ -10,8 +10,8 @@ APPDIR ?= $(PREFIX)/share/applications
 ICONDIR ?= $(PREFIX)/share/icons/hicolor/scalable/apps
 MANDIR ?= $(PREFIX)/share/man
 SNEKLIB ?= $(PREFIX)/share/snek
-SNEKDIST ?= keithp.com:/var/www/snek/dist
-SNEKDOC ?= keithp.com:/var/www/snek
+SNEKDIST ?= keithp.com:/var/local/sneklang/www/dist
+SNEKDOC ?= keithp.com:/var/local/sneklang/www/doc
 SNEK_HIFIVE1REVB ?= 0
 ifneq "$(SNEK_HIFIVE1REVB)" "0"
 SNEK_PORTS_HIFIVE1REVB=$(SNEK_PORTS)/hifive1revb/snek-hifive1revb-$(SNEK_VERSION).hex
