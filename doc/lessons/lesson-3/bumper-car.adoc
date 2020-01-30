@@ -1,4 +1,4 @@
-= Snek Project #2: The Bumper Car
+= Lesson #3: The Bumper Car
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
 :title-logo-image: image:bumper-car.jpg[]

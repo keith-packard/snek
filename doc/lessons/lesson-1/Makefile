@@ -1,5 +1,5 @@
 SNEK_NO_BUILD_TARGETS = 1
-SNEK_ROOT=../..
+SNEK_ROOT=../../..
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -18,7 +18,7 @@ IMAGE_FILES=\
 	snekboard-sensors.jpg \
 	snekboard-wired.jpg
 
-THEME_FILE=$(SNEK_ROOT)/doc/snek-theme.yml
+THEME_FILE=snek-theme.yml
 
 all: $(HTML_FILES) $(PDF_FILES)
 
@@ -42,7 +42,7 @@ install: $(DOCFILES)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
 
 upload: $(DOCFILES)
-	rsync -avz $(DOCFILES) ../fonts $(SNEKDOC)/snekboard
+	rsync -avz $(DOCFILES) $(SNEK_ROOT)/doc/fonts $(SNEKDOC)/lessons/lesson-1
 
 snek.css: $(SNEK_ROOT)/doc/snek.css
 	cp $^ $@
@@ -50,9 +50,12 @@ snek.css: $(SNEK_ROOT)/doc/snek.css
 snek.svg: $(SNEK_ROOT)/snek.svg
 	cp $^ $@
 
+snek-theme.yml: $(SNEK_ROOT)/doc/snek-theme.yml
+	cp $^ $@
+
 coderay-asciidoctor.css: $(HTML_FILES)
 
 clean::
 	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES)
 	rm -f snek.css coderay-asciidoctor.css
-	rm -f snek.svg
+	rm -f snek.svg snek-theme.yml

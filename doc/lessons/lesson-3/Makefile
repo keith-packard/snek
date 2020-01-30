@@ -5,7 +5,10 @@ include $(SNEK_ROOT)/snek-install.defs
 
 .SUFFIXES: .adoc .pdf .html
 
-ADOC_FILES=snek-line-bug.adoc
+ADOC_FILES=bumper-car.adoc
+
+LESSON_1=$(SNEK_ROOT)/doc/lessons/lesson-1
+LESSON_2=$(SNEK_ROOT)/doc/lessons/lesson-2
 
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
@@ -13,36 +16,34 @@ CSS_FILES=snek.css  coderay-asciidoctor.css
 IMAGE_FILES=\
 	21980.dat.png \
 	22253c02.dat.png \
+	2431dm9.dat.png \
 	2654.dat.png \
 	3001.dat.png \
 	32073.dat.png \
 	3647.dat.png \
 	3648b.dat.png \
+	3703.dat.png \
 	3713.dat.png \
 	3738.dat.png \
-	3895.dat.png \
-	3956.dat.png \
 	4459.dat.png \
 	4519.dat.png \
 	6590.dat.png \
-	Line-Bug-01.png \
-	Line-Bug-02.png \
-	Line-Bug-03.png \
-	Line-Bug-04.png \
-	Line-Bug-05.png \
-	Line-Bug-06.png \
-	Line-Bug-07.png \
-	Line-Bug-08.png \
-	Line-Bug-09.png \
-	Line-Bug-10.png \
-	Line-Bug-11.png \
-	Line-Bug-12.png \
-	Line-Bug-13.png \
-	Line-Bug-14.png \
-	Line-Bug-15.png \
-	Line-Bug-16.png \
-	left-turn.svg \
-	right-turn.svg
+	Bumper-Car-01.png \
+	Bumper-Car-02.png \
+	Bumper-Car-03.png \
+	Bumper-Car-04.png \
+	Bumper-Car-05.png \
+	Bumper-Car-06.png \
+	Bumper-Car-07.png \
+	Bumper-Car-08.png \
+	Bumper-Car-09.png \
+	Bumper-Car-10.png \
+	Bumper-Car-11.png \
+	Bumper-Car-12.png \
+	Bumper-Car-13.png \
+	Bumper-Car-14.png \
+	Bumper-Car-15.png \
+	Bumper-Car-16.png
 
 INC_FILES=steps.adoc
 
@@ -57,7 +58,7 @@ ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSIO
 .adoc.pdf:
 	asciidoctor-pdf -B$(SNEK_ROOT) -B. $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
 
-$(PDF_FILES): ../../snek-theme.yml $(IMAGE_FILES) $(INC_FILES) ../../../snek.svg
+$(PDF_FILES): snek-theme.yml $(IMAGE_FILES) $(INC_FILES) snek.svg
 
 DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) snek.svg $(IMAGE_FILES)
 
@@ -68,20 +69,23 @@ install: $(DOCFILES)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
 
 upload: $(DOCFILES)
-	rsync -avz $(DOCFILES) ../../fonts $(SNEKDOC)/line-bug
+	rsync -avz $(DOCFILES) ../../fonts $(SNEKDOC)/lessons/lesson-3
 
-steps.adoc: make-step make-steps
-	./make-steps Line-Bug-??.html > $@
+steps.adoc: $(LESSON_2)/make-step $(LESSON_2)/make-steps
+	$(LESSON_2)/make-steps Bumper-Car-??.html > $@
 
-snek.css: ../../snek.css
+snek.css: $(LESSON_1)/snek.css
 	cp $^ $@
 
-snek.svg: ../../../snek.svg
+snek.svg: $(LESSON_1)/snek.svg
+	cp $^ $@
+
+snek-theme.yml: $(SNEK_ROOT)/doc/snek-theme.yml
 	cp $^ $@
 
 coderay-asciidoctor.css: $(HTML_FILES)
 
 clean::
 	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES) coderay-asciidoctor.css
-	rm -f Line-Bug-??.adoc steps.adoc
-	rm -f snek.css snek.svg
+	rm -f Bumper-Car-??.adoc steps.adoc
+	rm -f snek.css snek.svg snek-theme.yml

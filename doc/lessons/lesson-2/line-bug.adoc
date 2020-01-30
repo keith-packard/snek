@@ -1,4 +1,4 @@
-= Snek Project #1: The Line Bug
+= Snek Lesson #2: The Line Bug
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
 :title-logo-image: image:line-bug.jpg[]
@@ -13,7 +13,7 @@ Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :stylesheet: snek.css
 :linkcss:
 :toc:
-:pdf-stylesdir: ../..
+:pdf-stylesdir: .
 :pdf-fontsdir: ../../fonts
 :source-highlighter: coderay
 :media: prepress

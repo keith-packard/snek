@@ -1,4 +1,4 @@
-= Snekboard: Control LEGO Robots with Snek 
+= Snek Lesson #1: Use Snekboard to Control LEGO Robots with Snek 
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
 :title-logo-image: image:snekboard.png[]
@@ -13,15 +13,15 @@ Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :stylesheet: snek.css
 :linkcss:
 :toc:
-:pdf-stylesdir: ..
-:pdf-fontsdir: ../fonts
+:pdf-stylesdir: .
+:pdf-fontsdir: ../../fonts
 :source-highlighter: coderay
 :media: prepress
 
 ifndef::backend-pdf[]
 [#logo]
 [link=https://keithp.com/snek]
-image::snek.svg[Snek]
+image::snek.svg[Snek,align=center]
 endif::[]
 
 [colophon]
@@ -62,7 +62,7 @@ autonomous robots. Snekboard supports three different programming environments:
 
 == First Look at Snekboard
 
-image::snekboard-label.jpg[width=800]
+image::snekboard-label.jpg[width=600,align=center]
 
 Snekboard has:
 
@@ -92,12 +92,12 @@ Snekboard has:
 Here is what it looks like when in its Lego case:
 
 .Snekboard in Enclosure
-image::snekboard-in-enclosure.jpg[width=800]
+image::snekboard-in-enclosure.jpg[width=300,align=center]
 
 == Snekboard Cables and Sensors
 
 .Cables and Sensors
-image::snekboard-sensors.jpg[width=800]
+image::snekboard-sensors.jpg[width=600,align=center]
 
 Notice that:
 
@@ -127,7 +127,7 @@ Notice that:
 Here is a well connected Snekboard:
 
 .Wired Snekboard
-image::snekboard-wired.jpg[width=800]
+image::snekboard-wired.jpg[width=500,align=center]
 
 == Snekboard Outputs
 
@@ -363,5 +363,11 @@ Finally, we can move halfway between center and right:
 ----
 > *setpower(0.5)*
 ----
+
+== Next Steps
+
+After this lesson, you can go on to the Line Bug, Washing Machine or
+Bumper Car. Those are designed to be done in any order. Have fun
+making Robots!
 
 image::snek.svg[align="center"]
