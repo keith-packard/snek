@@ -55,6 +55,7 @@ tools and other dependencies installed.
 To build Snek you need these dependencies:
 
   * [Lola](https://keithp.com/cgit/lola.git/)
+  * [gawk](https://www.gnu.org/software/gawk/)
   * [gcc-avr](https://ccrma.stanford.edu/~juanig/articles/wiriavrlib/AVR_GCC.html)
   * [avr-libc](https://www.nongnu.org/avr-libc/)
   * [gcc-arm-none-eabi](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)

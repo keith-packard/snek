@@ -38,7 +38,7 @@ all: $(ELF) $(HEX) snek-uduino-install
 
 $(PROG): Makefile $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
-	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-uduino-install: snek-uduino-install.in
 	$(SNEK_SED) $^ > $@

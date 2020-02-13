@@ -84,7 +84,7 @@ $(HEX): $(ELF)
 
 $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-duemilanove-install: snek-duemilanove-install.in
 	$(SNEK_SED) $^ > $@
