@@ -101,6 +101,8 @@ main (int argc, char **argv)
 
 	if (snek_windows_input == stdin)
 		printf("\n");
+	else
+		fclose(snek_windows_input);
 	return ret ? 0 : 1;
 }
 
