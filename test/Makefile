@@ -78,7 +78,7 @@ check:
 			if $$lang $$TEST; then \
 				echo "    pass $$baselang"; \
 			else \
-				echo "    ***************** $baselang fail *********************"; \
+				echo "    ***************** $$baselang fail *********************"; \
 				exit=1;\
 			fi; \
 		done; \
@@ -91,7 +91,7 @@ check:
 			if [ $$? -eq 1 ]; then \
 				echo "    pass $$baselang"; \
 			else \
-				echo "    ***************** $baselang fail *********************"; \
+				echo "    ***************** $$baselang fail *********************"; \
 				exit=1;\
 			fi; \
 		done; \
