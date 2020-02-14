@@ -14,10 +14,10 @@ for i in "$@"; do
 done
 qemu=qemu-system-arm
 elf="$here/snek-qemu-arm-@SNEK_VERSION@.elf"
-machine=mps2-an385
+machine=mps2-an385,accel=tcg
 cpu=cortex-m3
 chardev="-chardev stdio,mux=on,id=stdio0"
 serial="-serial none"
 mon="-monitor none"
 semihost="-semihosting-config enable=on,chardev=stdio0,$args"
-$qemu $chardev $serial $mon $semihost -machine $machine -cpu $cpu -kernel $elf -nographic $extra
+$qemu $chardev $serial $mon $semihost -machine $machine -cpu $cpu -kernel $elf -nographic -bios none $extra
