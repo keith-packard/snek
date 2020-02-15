@@ -882,10 +882,10 @@ separating out names and keywords from operators and other syntax.
 
         :       ;       ,       (       )       [       ]       {
         }       +       -       *       **      /       //      %
-        &       |       ~       !       ^       <<      >>      =
-        +=      -=      *=      **=     /=      //=     %=      &=
-        |=      ~=      ^=      <<=     >>=     >       !=      <
-        <=      ==      >=      >       
+        &       |       ~       ^       <<      >>      =      +=
+	-=      *=      **=     /=      //=     %=      &=     |=
+	~=      ^=      <<=     >>=     >       !=      <      <=
+	==      >=      >       
 
 === White Space (Spaces and Newlines)
 
@@ -1142,11 +1142,11 @@ The Left Shift operator does bit-wise left shift on integers.(((<<)))
 _value_ ``>>`` _value_::
 The Right Shift operator does bit-wise left shift on integers.(((>>)))
 
-``!`` _value_::
+``not`` _value_::
 The Not operator performs a Boolean negation operation on its right
 operand. That is, if the operand is one of the True values, then Not returns
 `False` (which is 0), and if the operand is a `False` value, then Not
-returns `True` (which is 1).(((!)))
+returns `True` (which is 1).(((not)))
 
 ``~`` _value_::
 The Logical Not operator performs a bit-wise NOT operation on its
