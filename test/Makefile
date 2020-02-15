@@ -67,7 +67,8 @@ FAIL_TESTS = \
 	assert-fail.py \
 	interpolate-missing.py \
 	interpolate-extra.py \
-	interpolate-badformat.py
+	interpolate-badformat.py \
+	lex-bang.py
 
 check:
 	@exit=0; \
