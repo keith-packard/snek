@@ -1,6 +1,6 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #
-# Copyright © 2019 Keith Packard <keithp@keithp.com>
+# Copyright © 2019–2020 Keith Packard <keithp@keithp.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,17 +13,16 @@
 # General Public License for more details.
 #
 
-import sys
 import argparse
-import time
 import curses
-import threading
 import serial
 import serial.tools.list_ports
-
-from pathlib import Path, PurePath
+import sys
+import threading
+import time
 
 from curses import ascii
+from pathlib import Path, PurePath
 
 stdscr = 0
 
@@ -1041,7 +1040,7 @@ def screen_paint():
     stdscr.addstr(mid_y, device_col, device_name, curses.A_REVERSE)
     if device_col >= 6:
         stdscr.addstr(mid_y, device_col - 6, "      ", curses.A_REVERSE)
-    for col in range(0,device_col - 6,5):
+    for col in range(0, device_col - 6, 5):
         stdscr.addstr(mid_y, col, "snek ", curses.A_REVERSE)
     stdscr.refresh()
     
