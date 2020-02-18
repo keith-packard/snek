@@ -11,6 +11,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-def foo(x,y=1): return x+y
-print(foo(y=1,12))
+def foo(x, y=1):
+    return x + y
+
+
+print(foo(y=1, 12))
 exit(0)

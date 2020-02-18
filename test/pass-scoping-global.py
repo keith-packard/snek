@@ -22,13 +22,17 @@
 
 i = 1
 
+
 def fail(which):
     print("fail %s" % which)
     exit(1)
+
 
 def global_decl():
     global i
     i += 1
     return i
 
-if not global_decl() == 2: fail("global_decl() == 2")
+
+if not global_decl() == 2:
+    fail("global_decl() == 2")

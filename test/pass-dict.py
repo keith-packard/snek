@@ -12,21 +12,24 @@
 # General Public License for more details.
 #
 
+
 def fail(which):
     print("fail %s" % which)
     exit(1)
 
-def check(expect,got,which):
+
+def check(expect, got, which):
     if expect != got:
         fail("%s: %r != %r" % (which, got, expect))
 
-a = { 1:2, 3:4 }
-b = { "a":"b", "c":"d" }
-c = { 1:2, 1:3 }
 
-check({3:4, 1:2}, a, "a == {3:4, 1:2}")
-check({1:3}, c, "c == {1:3}")
-check({"c":"d", "a":"b"}, b, 'b = {"c":"d", "a":"b"}')
+a = {1: 2, 3: 4}
+b = {"a": "b", "c": "d"}
+c = {1: 2, 1: 3}
+
+check({3: 4, 1: 2}, a, "a == {3:4, 1:2}")
+check({1: 3}, c, "c == {1:3}")
+check({"c": "d", "a": "b"}, b, 'b = {"c":"d", "a":"b"}')
 
 check(True, 1 in a, "1 in a")
 check(False, 2 in a, "2 not in a")
@@ -71,7 +74,7 @@ check(7, a[6], "a[6] == 7")
 check("g", b["f"], "b['f'] == 'g'")
 
 del a[1]
-del b['c']
+del b["c"]
 
-check({3:4, 6:7}, a, "a = {3:4, 6:7}")
-check({'a': 'e', 'f': 'g'}, b, "b = {'a': 'e', 'f': 'g'}")
+check({3: 4, 6: 7}, a, "a = {3:4, 6:7}")
+check({"a": "e", "f": "g"}, b, "b = {'a': 'e', 'f': 'g'}")

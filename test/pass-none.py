@@ -13,11 +13,16 @@
 #
 
 a = None
-if a is not None: exit(1)
+if a is not None:
+    exit(1)
 
-def foo(): pass
+
+def foo():
+    pass
+
 
 b = foo()
-if b is not None: exit(1)
+if b is not None:
+    exit(1)
 
 exit(0)

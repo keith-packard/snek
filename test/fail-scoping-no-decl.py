@@ -22,9 +22,11 @@
 
 i = 1
 
+
 def no_decl():
     i += 1
     return i
+
 
 no_decl()
 exit(0)

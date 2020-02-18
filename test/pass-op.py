@@ -17,20 +17,37 @@
 
 import math
 
-if 2 + 3 != 5: exit(1)
-if 3 + 2 != 5: exit(1)
-if 2 - 3 != -1: exit(1)
-if 3 - 2 != +1: exit(1)
-if 2 * 3 != 6: exit(1)
-if 2 * (3 + 4) != 14: exit(1)
-if (2 * 3) + 4 != 10: exit(1)
-if 2 * 3 + 4 != 10: exit(1)
-if 2 ** 3 ** 4 == 4096: exit(1)
-if (2 ** 3) ** 4 != 4096: exit(1)
-if 7.8 // 2.2 != 3.0: exit(1)
-if 8.7 // 2.2 != 3.0: exit(1)
-if 8.8 // 2.2 != 4.0: exit(1)
-if -6.7 // 2.2 != -4.0: exit(1)
-if -6.6 // 2.2 != -3.0: exit(1)
-if not math.isclose(7.8 % 2.2, 1.2): exit(1)
-if not math.isclose(-7.8 % 2.2, 1.0): exit(1)
+if 2 + 3 != 5:
+    exit(1)
+if 3 + 2 != 5:
+    exit(1)
+if 2 - 3 != -1:
+    exit(1)
+if 3 - 2 != +1:
+    exit(1)
+if 2 * 3 != 6:
+    exit(1)
+if 2 * (3 + 4) != 14:
+    exit(1)
+if (2 * 3) + 4 != 10:
+    exit(1)
+if 2 * 3 + 4 != 10:
+    exit(1)
+if 2 ** 3 ** 4 == 4096:
+    exit(1)
+if (2 ** 3) ** 4 != 4096:
+    exit(1)
+if 7.8 // 2.2 != 3.0:
+    exit(1)
+if 8.7 // 2.2 != 3.0:
+    exit(1)
+if 8.8 // 2.2 != 4.0:
+    exit(1)
+if -6.7 // 2.2 != -4.0:
+    exit(1)
+if -6.6 // 2.2 != -3.0:
+    exit(1)
+if not math.isclose(7.8 % 2.2, 1.2):
+    exit(1)
+if not math.isclose(-7.8 % 2.2, 1.0):
+    exit(1)

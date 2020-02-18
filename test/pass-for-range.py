@@ -11,9 +11,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-product=1
+product = 1
 
-for i in range(1,10,1):
+for i in range(1, 10, 1):
     product *= i
 
-if product != 362880: exit(1)
+if product != 362880:
+    exit(1)

@@ -13,6 +13,7 @@
 # General Public License for more details.
 #
 
+
 def test():
     matches = 0
     for y in range(2):
@@ -24,4 +25,6 @@ def test():
             break
     return matches
 
-if test() != 2: exit(1)
+
+if test() != 2:
+    exit(1)

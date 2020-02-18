@@ -11,8 +11,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-result=""
+result = ""
 
-for c in "abc": result = c + result
+for c in "abc":
+    result = c + result
 
-if result != "cba": exit(1)
+if result != "cba":
+    exit(1)

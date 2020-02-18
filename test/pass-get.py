@@ -12,20 +12,20 @@
 # General Public License for more details.
 #
 
-tuple = (1,2,3,4,5)
-list = [6,7,8,9,10]
-string = 'abcde'
+tuple = (1, 2, 3, 4, 5)
+list = [6, 7, 8, 9, 10]
+string = "abcde"
 
 #
 # Test fetching from ordered objects
 #
 
-for i in range(1,5):
-    assert tuple[i-1] == i
-    assert tuple[-i] == 6-i
+for i in range(1, 5):
+    assert tuple[i - 1] == i
+    assert tuple[-i] == 6 - i
 
-    assert list[i-1] == 5+i
-    assert list[-i] == 11-i
+    assert list[i - 1] == 5 + i
+    assert list[-i] == 11 - i
 
-    assert string[i-1] == chr(ord('a') + i-1)
-    assert string[-i] == chr(ord('f') - i)
+    assert string[i - 1] == chr(ord("a") + i - 1)
+    assert string[-i] == chr(ord("f") - i)

@@ -14,10 +14,12 @@
 n = 0
 m = 3
 
+
 def g():
     global n
     n = 1
     m = 2
+
 
 g()
 

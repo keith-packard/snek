@@ -14,13 +14,16 @@
 
 # so many options to pick here; just do a few simple tests
 
-assert '%d' % 3 == '3'
-assert '%d %%' % 3 == '3 %'
-assert '%d' % 3.1 == '3'
-assert '%f' % 3.1 == '3.100000'
-assert '%g' % 3.1 == '3.1'
-assert '%e' % 3.1 == '3.100000e+00'
-assert '%s' % 'hello' == 'hello'
-assert '%r' % 'hello' == "'hello'"
-assert ('%d' + 'x' * 300 + '%d') % (12, 34) == '12xxxxxxxxxx' + 'xx' * 140 + 'xxxxxxxxxx34'
-assert '%r' % { 1: 'hello', 2: 'world' } == "{1: 'hello', 2: 'world'}"
+assert "%d" % 3 == "3"
+assert "%d %%" % 3 == "3 %"
+assert "%d" % 3.1 == "3"
+assert "%f" % 3.1 == "3.100000"
+assert "%g" % 3.1 == "3.1"
+assert "%e" % 3.1 == "3.100000e+00"
+assert "%s" % "hello" == "hello"
+assert "%r" % "hello" == "'hello'"
+assert ("%d" + "x" * 300 + "%d") % (
+    12,
+    34,
+) == "12xxxxxxxxxx" + "xx" * 140 + "xxxxxxxxxx34"
+assert "%r" % {1: "hello", 2: "world"} == "{1: 'hello', 2: 'world'}"

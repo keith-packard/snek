@@ -11,8 +11,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-sum=0
-for i in [1,2,3]:
+sum = 0
+for i in [1, 2, 3]:
     sum += i
 
-if sum != 6: exit(1)
+if sum != 6:
+    exit(1)

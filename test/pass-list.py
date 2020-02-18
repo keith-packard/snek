@@ -18,10 +18,12 @@
 
 a = ()
 b = a
-a += (1,2)
+a += (1, 2)
 
-if a != (1,2): exit(1)
-if b != (): exit(1)
+if a != (1, 2):
+    exit(1)
+if b != ():
+    exit(1)
 
 #
 # lists have in-place operation,
@@ -31,15 +33,21 @@ if b != (): exit(1)
 
 a = []
 b = a
-c = a + [1,2]
-a += [1,2]
+c = a + [1, 2]
+a += [1, 2]
 
-if a != [1,2]: exit(1)
-if b != [1,2]: exit(1)
-if c != [1,2]: exit(1)
+if a != [1, 2]:
+    exit(1)
+if b != [1, 2]:
+    exit(1)
+if c != [1, 2]:
+    exit(1)
 
 a[0] = 3
 
-if a != [3,2]: exit(1)
-if b != [3,2]: exit(1)
-if c != [1,2]: exit(1)
+if a != [3, 2]:
+    exit(1)
+if b != [3, 2]:
+    exit(1)
+if c != [1, 2]:
+    exit(1)

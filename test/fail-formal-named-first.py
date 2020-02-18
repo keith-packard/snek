@@ -11,5 +11,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-def foo(x=1,y): return x+y
+
+
+def foo(x=1, y):
+    return x + y
+
+
 exit(0)

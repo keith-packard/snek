@@ -22,13 +22,17 @@
 
 i = 1
 
+
 def fail(which):
     print("fail %s" % which)
     exit(1)
+
 
 def local_decl():
     i = 0
     i += 1
     return i
 
-if not local_decl() == 1: fail("local_decl() == 1")
+
+if not local_decl() == 1:
+    fail("local_decl() == 1")

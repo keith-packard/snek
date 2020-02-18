@@ -12,4 +12,4 @@
 # General Public License for more details.
 #
 
-print('%d %' % (1,))
+print("%d %" % (1,))

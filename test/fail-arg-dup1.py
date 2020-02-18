@@ -12,7 +12,10 @@
 # General Public License for more details.
 #
 
-def req(x): return x
 
-req(1,x=2)
+def req(x):
+    return x
+
+
+req(1, x=2)
 exit(0)

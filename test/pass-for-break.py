@@ -13,6 +13,7 @@
 #
 #!/usr/bin/python3
 
+
 def test():
     val = 5
     tries = 0
@@ -26,4 +27,6 @@ def test():
             break
     return tries
 
-if test() != 2: exit(1)
+
+if test() != 2:
+    exit(1)
