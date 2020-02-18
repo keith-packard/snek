@@ -24,51 +24,54 @@ SNEK_ARM?=$(SNEK_PORTS)/qemu-arm/snek-arm
 LANGS=python3 $(SNEK_NATIVE) $(SNEK_ARM)
 
 SUCCESS_TESTS = \
-	andor.py \
-	list.py \
-	dict.py \
-	equal_is.py \
-	float.py \
-	for-array.py \
-	for-range.py \
-	for-string.py \
-	for-break.py \
-	for-nested.py \
-	global.py \
-	if.py \
-	int.py \
-	math.py \
-	op.py \
-	range.py \
-	slice.py \
-	while.py \
-	while-break.py \
-	while-else.py \
-	scoping-global.py \
-	scoping-local.py \
-	none.py \
-	args.py \
-	assert-success.py \
-	interpolate-list.py \
-	get.py \
-	interpolate-str.py
+	pass-andor.py \
+	pass-list.py \
+	pass-dict.py \
+	pass-equal_is.py \
+	pass-float.py \
+	pass-for-array.py \
+	pass-for-range.py \
+	pass-for-string.py \
+	pass-for-break.py \
+	pass-for-nested.py \
+	pass-global.py \
+	pass-if.py \
+	pass-int.py \
+	pass-math.py \
+	pass-op.py \
+	pass-range.py \
+	pass-slice.py \
+	pass-while.py \
+	pass-while-break.py \
+	pass-while-else.py \
+	pass-scoping-global.py \
+	pass-scoping-local.py \
+	pass-none.py \
+	pass-args.py \
+	pass-assert-success.py \
+	pass-interpolate-list.py \
+	pass-get.py \
+	pass-interpolate-str.py
+
+SYNTAX_TESTS = \
+	fail-syntax-lex-bang.py \
+	fail-syntax-list-named.py \
+	fail-syntax-tuple-named.py
 
 FAIL_TESTS = \
-	scoping-no-decl.py \
-	list-named.py \
-	tuple-named.py \
-	range-named.py \
-	formal-named-first.py \
-	actual-named-first.py \
-	args-missing.py \
-	arg-dup1.py \
-	arg-dup2.py \
-	arg-unknown.py \
-	assert-fail.py \
-	interpolate-missing.py \
-	interpolate-extra.py \
-	interpolate-badformat.py \
-	lex-bang.py
+	fail-scoping-no-decl.py \
+	fail-range-named.py \
+	fail-formal-named-first.py \
+	fail-actual-named-first.py \
+	fail-args-missing.py \
+	fail-arg-dup1.py \
+	fail-arg-dup2.py \
+	fail-arg-unknown.py \
+	fail-assert-fail.py \
+	fail-interpolate-missing.py \
+	fail-interpolate-extra.py \
+	fail-interpolate-badformat.py \
+	$(SYNTAX_TESTS)
 
 check:
 	@exit=0; \
