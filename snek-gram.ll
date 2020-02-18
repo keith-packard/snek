@@ -614,7 +614,10 @@ actuals-end	: expr actual-p actuals-p
 opt-dict-ents	: dict-ent dict-ents-p
 		|
 		;
-dict-ents-p	: COMMA dict-ent dict-ents-p
+dict-ents-p	: COMMA dict-ents-end
+		|
+		;
+dict-ents-end	: dict-ent dict-ents-p
 		|
 		;
 dict-ent	: expr
