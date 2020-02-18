@@ -27,7 +27,7 @@ SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
 SNEKS = $(SNEK_PORTS)/posix/snek $(FIRMWARE)
 
 all: $(SNEKS)
-	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done
+	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)) || exit 1; done
 
 $(SNEKS): FORCE
 	+cd `dirname $@` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)
