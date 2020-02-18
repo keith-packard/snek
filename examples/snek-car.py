@@ -46,7 +46,8 @@ def forw():
     setpower(f_speed)
     setleft()
     on()
-    
+
+
 # Move straight back
 def back():
     talkto(mr)
@@ -57,7 +58,8 @@ def back():
     setpower(r_speed)
     setright()
     on()
-    
+
+
 # Rotate left
 def left():
     talkto(mr)
@@ -68,7 +70,8 @@ def left():
     setpower(t_speed_f)
     setright()
     on()
-    
+
+
 # Rotate right
 def right():
     talkto(mr)
@@ -79,7 +82,8 @@ def right():
     setpower(t_speed_f)
     setleft()
     on()
-    
+
+
 # Stop
 def stop():
     talkto(ml)
@@ -88,20 +92,23 @@ def stop():
     talkto(mr)
     setpower(0)
     off()
-    
+
+
 # Move forward until we approach something
 def go_forw():
     forw()
-    while read(pf) < .25:
+    while read(pf) < 0.25:
         pass
     stop()
+
 
 # Move backwards until we approach something
 def go_back():
     back()
-    while read(pr) < .25:
+    while read(pr) < 0.25:
         pass
     stop()
+
 
 # Hook the functions together in a simple
 # way to demonstrate how they work
@@ -117,5 +124,6 @@ def bumper():
         go_forw()
         go_back()
         go_forw()
+
 
 bumper()

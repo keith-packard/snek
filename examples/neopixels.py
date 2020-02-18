@@ -19,14 +19,15 @@
 # Rotate a rainbow through a set of pixels
 #
 
-DOWN=BUTTONA
-UP=BUTTONB
+DOWN = BUTTONA
+UP = BUTTONB
 
 num_pixels = 10
 bright = 0.05
 pixels = [0] * num_pixels
 for i in range(num_pixels):
-    pixels[i] = [0,0,0]
+    pixels[i] = [0, 0, 0]
+
 
 def wheel(i, pos):
     global bright
@@ -35,7 +36,7 @@ def wheel(i, pos):
         g = 0
         b = 0
     elif pos < 85:
-        r = pos/85
+        r = pos / 85
         g = 1 - r
         b = 0
     elif pos < 170:
@@ -49,6 +50,7 @@ def wheel(i, pos):
     pixels[i][0] = r * bright
     pixels[i][1] = g * bright
     pixels[i][2] = b * bright
+
 
 def rainbow_cycle(wait):
     global bright
@@ -67,9 +69,11 @@ def rainbow_cycle(wait):
                 print(bright)
         time.sleep(wait)
 
+
 def cycles():
     talkto(NEOPIXEL)
     while True:
         rainbow_cycle(0.001)
+
 
 cycles()

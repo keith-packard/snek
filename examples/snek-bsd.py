@@ -41,62 +41,84 @@ import random
 import curses
 import math
 
+
 def cashvalue():
     global loot
     global penalty
-    return chunk*(loot-penalty)/25
+    return chunk * (loot - penalty) / 25
 
-def _x(p): return p % 256 - 128
-def _y(p): return p // 256 - 128
-def _p(x,y): return (x + 128) + (y + 128) * 256
 
-PENALTY = 10            # % penalty for invoking spacewarp
+def _x(p):
+    return p % 256 - 128
 
-ME = 'I'
-SNAKEHEAD = 'S'
-SNAKETAIL = 's'
-TREASURE = '$'
-GOAL = '#'
+
+def _y(p):
+    return p // 256 - 128
+
+
+def _p(x, y):
+    return (x + 128) + (y + 128) * 256
+
+
+PENALTY = 10  # % penalty for invoking spacewarp
+
+ME = "I"
+SNAKEHEAD = "S"
+SNAKETAIL = "s"
+TREASURE = "$"
+GOAL = "#"
 LINES = 0
 COLS = 0
 
-def MIN(a,b):
+
+def MIN(a, b):
     if a < b:
         return a
     return b
 
+
 stdscr = 0
+
 
 def erase():
     stdscr.erase()
 
+
 def refresh():
     stdscr.refresh()
+
 
 def getch():
     return stdscr.getch()
 
-def move(x,y):
-    stdscr.move(x,y)
+
+def move(x, y):
+    stdscr.move(x, y)
+
 
 def mvaddstr(y, x, str):
     stdscr.addstr(y, x, str)
 
+
 def pchar(s, str):
     stdscr.addstr(_y(s) + 1, _x(s) + 1, str)
     refresh()
+
 
 def endwin():
     curses.nocbreak()
     curses.echo()
     curses.endwin()
 
-def delay(t): time.sleep(t * 0.05)
 
-you = _p(0,0)
-money = _p(0,0)
-finish = _p(0,0)
-snake = [_p(0,0)] * 6
+def delay(t):
+    time.sleep(t * 0.05)
+
+
+you = _p(0, 0)
+money = _p(0, 0)
+finish = _p(0, 0)
+snake = [_p(0, 0)] * 6
 
 loot = 0
 penalty = 0
@@ -108,9 +130,11 @@ ccnt = 80
 
 chunk = 0
 
+
 def error(s):
     print(s)
     exit(1)
+
 
 def main():
     global penalty, loot, finish, you, money, snake, chunk
@@ -121,7 +145,7 @@ def main():
     i = MIN(lcnt, ccnt)
     if i < 4:
         error("screen too small for a fair game.")
-    # 
+    #
     #  chunk is the amount of money the user gets for each $.
     #  The formula below tries to be fair for various screen sizes.
     #  We only pay attention to the smaller of the 2 edges, since
@@ -135,25 +159,26 @@ def main():
     #  an infinite amount of money.
     #
     if i < 12:
-        i = 12          # otherwise it isn't fair
-    # 
+        i = 12  # otherwise it isn't fair
+    #
     #  Compensate for border.  This really changes the game since
     #  the screen is two squares smaller but we want the default
     #  to be $25, and the high scores on small screens were a bit
     #  much anyway.
     # /
     i += 2
-    chunk = (675.0 / (i + 6)) + 2.5    #  min screen edge
+    chunk = (675.0 / (i + 6)) + 2.5  #  min screen edge
     finish = snrand()
     you = snrand()
     money = snrand()
     snake[0] = snrand()
-    for i in range(1,6):
+    for i in range(1, 6):
         if i < 6:
-            snake[i] = chase(snake[i-1])
+            snake[i] = chase(snake[i - 1])
     setup()
     mainloop()
     exit(0)
+
 
 # Main command loop
 def mainloop():
@@ -165,78 +190,78 @@ def mainloop():
         move(_y(you) + 1, _x(you) + 1)
         refresh()
         c = getch()
-        if c <= ord('9') and c >= ord('0'):
-            repeat = c - ord('0')
+        if c <= ord("9") and c >= ord("0"):
+            repeat = c - ord("0")
             while True:
                 c = getch()
-                if c < ord('0') or ord('9') < c:
+                if c < ord("0") or ord("9") < c:
                     break
-                repeat = 10 * repeat + ord(c) - ord('0')
-        elif c != ord('.'):
+                repeat = 10 * repeat + ord(c) - ord("0")
+        elif c != ord("."):
             repeat = 1
-        if c == ord('.'):
+        if c == ord("."):
             c = lastc
         lastc = c
-        if c == ord('x'):
+        if c == ord("x"):
             endwin()
             length(moves)
             exit(0)
-        elif c == ord('p') or c == ord('d'):
+        elif c == ord("p") or c == ord("d"):
             snap()
             continue
-        elif c == ord('w'):
+        elif c == ord("w"):
             spacewarp(0)
             continue
-        elif c == ord('A'):
+        elif c == ord("A"):
             repeat = _x(you)
-            c = ord('h')
-        elif c == ord('H') or c == ord('S'):
+            c = ord("h")
+        elif c == ord("H") or c == ord("S"):
             repeat = _x(you) - _x(money)
-            c = ord('h')
-        elif c == ord('T'):
+            c = ord("h")
+        elif c == ord("T"):
             repeat = _y(you)
-            c = ord('k')
-        elif c == ord('K') or c == ord('E'):
+            c = ord("k")
+        elif c == ord("K") or c == ord("E"):
             repeat = _y(you) - _y(money)
-            c = ord('k')
-        elif c == ord('P'):
+            c = ord("k")
+        elif c == ord("P"):
             repeat = ccnt - 1 - _y(you)
-            c = ord('l')
-        elif c == ord('L') or c == ord('F'):
+            c = ord("l")
+        elif c == ord("L") or c == ord("F"):
             repeat = _x(money) - _x(you)
-            c = ord('l')
-        elif c == ord('B'):
+            c = ord("l")
+        elif c == ord("B"):
             repeat = lcnt - 1 - _y(you)
-            c = ord('j')
-        elif c == ord('J') or c == ord('C'):
+            c = ord("j")
+        elif c == ord("J") or c == ord("C"):
             repeat = _y(money) - _y(you)
-            c = ord('j')
+            c = ord("j")
         for k in range(1, repeat + 1):
             moves += 1
-            if c == ord('s') or c == ord('h') or c == ord('\b'):
+            if c == ord("s") or c == ord("h") or c == ord("\b"):
                 if _x(you) > 0:
-                    pchar(you, ' ')
+                    pchar(you, " ")
                     you = _p(_x(you) - 1, _y(you))
                     pchar(you, ME)
-            elif c == ord('f') or c == ord('l') or c == ord(' '):
+            elif c == ord("f") or c == ord("l") or c == ord(" "):
                 if _x(you) < ccnt - 1:
-                    pchar(you, ' ')
+                    pchar(you, " ")
                     you = _p(_x(you) + 1, _y(you))
                     pchar(you, ME)
-            elif c == ord('e') or c == ord('k') or c == ord('i'):
+            elif c == ord("e") or c == ord("k") or c == ord("i"):
                 if _y(you) > 0:
-                    pchar(you, ' ')
+                    pchar(you, " ")
                     you = _p(_x(you), _y(you) - 1)
                     pchar(you, ME)
-            elif c == ord('c') or c == ord('j') or c == ord('\n') or c == ord('m'):
+            elif c == ord("c") or c == ord("j") or c == ord("\n") or c == ord("m"):
                 if _y(you) + 1 < lcnt:
-                    pchar(you, ' ')
+                    pchar(you, " ")
                     you = _p(_x(you), _y(you) + 1)
                     pchar(you, ME)
             if you == money:
                 loot += 25
                 if k < repeat:
-                    pchar(you, ' ')
+                    pchar(you, " ")
                 while True:
                     money = snrand()
                     if money == finish:
@@ -259,6 +284,7 @@ def mainloop():
                 print("pushsnake true")
                 break
 
+
 def initscr():
     global stdscr, lcnt, ccnt
     stdscr = curses.initscr()
@@ -270,26 +296,30 @@ def initscr():
     ccnt = COLS - 2
     erase()
 
+
 #
 # setup the board
 #
+
 
 def setup():
     pchar(you, ME)
     pchar(finish, GOAL)
     pchar(money, TREASURE)
-    for i in range(1,6):
+    for i in range(1, 6):
         pchar(snake[i], SNAKETAIL)
     pchar(snake[0], SNAKEHEAD)
     drawbox()
 
+
 def drawbox():
-    for i in range(1,ccnt+1):
-        mvaddstr(0, i, '-')
-        mvaddstr(lcnt + 1, i, '-')
-    for i in range(0, lcnt+2):
-        mvaddstr(i, 0, '|')
-        mvaddstr(i, ccnt + 1, '|')
+    for i in range(1, ccnt + 1):
+        mvaddstr(0, i, "-")
+        mvaddstr(lcnt + 1, i, "-")
+    for i in range(0, lcnt + 2):
+        mvaddstr(i, 0, "|")
+        mvaddstr(i, ccnt + 1, "|")
+
 
 def snrand():
     while True:
@@ -310,17 +340,19 @@ def snrand():
             break
     return p
 
+
 dirs = ("N ", "NE", "E ", "SE", "S ", "SW", "W ", "NW")
 mx = (0, 1, 1, 1, 0, -1, -1, -1)
 my = (-1, -1, 0, 1, 1, 1, 0, -1)
 absv = (1, 1.4, 1, 1.4, 1, 1.4, 1, 1.4)
 oldw = 0
 
+
 def chase(sp):
     global oldw, loot
     # this algorithm has bugs; otherwise the snake would get too good
-    d =_p(_x(you) - _x(sp), _y(you) - _y(sp))
-    v1 = math.sqrt(_x(d) **2 + _y(d) ** 2)
+    d = _p(_x(you) - _x(sp), _y(you) - _y(sp))
+    v1 = math.sqrt(_x(d) ** 2 + _y(d) ** 2)
     w = 0
     max = 0
     wt = [0] * 8
@@ -376,6 +408,7 @@ def chase(sp):
     oldw = w
     return _p(_x(sp) + mx[w], _y(sp) + my[w])
 
+
 def spacewarp(w):
     global loot
     you = snrand()
@@ -395,42 +428,45 @@ def spacewarp(w):
         erase()
         refresh()
         delay(5)
-        pchar(_p(_x(p)+1, _y(p)+1), str)
+        pchar(_p(_x(p) + 1, _y(p) + 1), str)
         refresh()
         delay(10)
     setup()
     winnings(cashvalue())
 
+
 def snap():
     if not stretch(money):
         if not stretch(finish):
-            pchar(you, '?')
+            pchar(you, "?")
             refresh()
             delay(10)
             pchar(you, ME)
     refresh()
+
 
 def abs(x):
     if x < 0:
         return -x
     return x
 
+
 def stretch(ps):
     p = you
     if abs(_x(ps) - _x(you)) < (ccnt / 12) and (_y(you) != _y(ps)):
         if _y(you) < _y(ps):
-            for l in range (_y(you) + 1, _y(ps) + 1):
+            for l in range(_y(you) + 1, _y(ps) + 1):
                 p = _p(_x(p), l)
-                pchar(p, 'v')
+                pchar(p, "v")
             refresh()
             delay(10)
             while _y(p) > _y(you):
                 chk(p)
-                p = _p(_x(p), _y(p)-1)
+                p = _p(_x(p), _y(p) - 1)
         else:
-            p = _p(_x(p), _y(you)-1)
+            p = _p(_x(p), _y(you) - 1)
             while _y(p) >= _y(ps):
-                pchar(p, '^')
+                pchar(p, "^")
                 p = _p(_x(p), _y(p) - 1)
             refresh()
             delay(10)
@@ -439,12 +475,12 @@ def stretch(ps):
                 p = _p(_x(p), _y(p) + 1)
         return 1
     else:
-        if abs(_y(ps) - _y(you)) < lcnt/7 and _x(you) != _x(ps):
+        if abs(_y(ps) - _y(you)) < lcnt / 7 and _x(you) != _x(ps):
             p = _p(_x(p), _y(you))
             if _x(you) < _x(ps):
                 p = _p(_x(you) + 1, _y(p))
                 while _x(p) <= _x(ps):
-                    pchar(p, '>')
+                    pchar(p, ">")
                     p = _p(_x(p) + 1, _y(p))
                 refresh()
                 delay(10)
@@ -454,7 +490,7 @@ def stretch(ps):
             else:
                 p = _p(_x(you) - 1, _y(p))
                 while _x(p) >= _x(ps):
-                    pchar(p, '<')
+                    pchar(p, "<")
                     p = _p(_x(p) - 1, _y(p))
                 refresh()
                 delay(10)
@@ -463,6 +499,7 @@ def stretch(ps):
                     p = _p(_x(p) + 1, _y(p))
             return 1
     return 0
+
 
 def surround(ps):
     if _x(ps) == 0:
@@ -477,10 +514,10 @@ def surround(ps):
     mvaddstr(_y(ps) + 1, _x(ps), "* *")
     mvaddstr(_y(ps) + 2, _x(ps), "\\*/")
     for j in range(20):
-        pchar(ps, '@')
+        pchar(ps, "@")
         refresh()
         delay(1)
-        pchar(ps, ' ')
+        pchar(ps, " ")
         refresh()
         delay(1)
     mvaddstr(_y(ps), _x(ps), "   ")
@@ -499,25 +536,27 @@ def surround(ps):
     refresh()
     delay(6)
 
+
 def win(ps):
-        boxsize = 10
-        x = ps
-        for j in range(1, boxsize):
-            for k in range(j):
-                pchar(x, '#')
-                x = _p(_x(x), _y(x) - 1)
-            for k in range(j):
-                pchar(x, '#')
-                x = _p(_x(x)+1, _y(x))
-            j += 1
-            for k in range(j):
-                pchar(x, '#')
-                x = _p(_x(x), _y(x) + 1)
-            for k in range(j):
-                pchar(x, '#')
-                x = _p(_x(x) - 1, _y(x))
-            refresh()
-            delay(1)
+    boxsize = 10
+    x = ps
+    for j in range(1, boxsize):
+        for k in range(j):
+            pchar(x, "#")
+            x = _p(_x(x), _y(x) - 1)
+        for k in range(j):
+            pchar(x, "#")
+            x = _p(_x(x) + 1, _y(x))
+        j += 1
+        for k in range(j):
+            pchar(x, "#")
+            x = _p(_x(x), _y(x) + 1)
+        for k in range(j):
+            pchar(x, "#")
+            x = _p(_x(x) - 1, _y(x))
+        refresh()
+        delay(1)
+
 
 def pushsnake():
     global loot
@@ -528,14 +567,14 @@ def pushsnake():
     # So I have taken the call to times out.
     #
     issame = 0
-    for i in range(4,-1,-1):
+    for i in range(4, -1, -1):
         if snake[i] == snake[5]:
             issame += 1
     if issame == 0:
-        pchar(snake[5], ' ')
+        pchar(snake[5], " ")
     # Need the following to catch you if you step on the snake's tail
     tmp = snake[5]
-    for i in range(4,-1,-1):
+    for i in range(4, -1, -1):
         snake[i + 1] = snake[i]
     snake[0] = chase(snake[1])
     pchar(snake[1], SNAKETAIL)
@@ -560,6 +599,7 @@ def pushsnake():
             exit(0)
     return 0
 
+
 def chk(sp):
     if sp == money:
         pchar(sp, TREASURE)
@@ -570,7 +610,7 @@ def chk(sp):
     if sp == snake[0]:
         pchar(sp, SNAKEHEAD)
         return 4
-    for j in range(1,6):
+    for j in range(1, 6):
         if sp == snake[j]:
             pchar(sp, SNAKETAIL)
             return 4
@@ -582,14 +622,17 @@ def chk(sp):
     if sp == you:
         pchar(sp, ME)
         return 1
-    pchar(sp, ' ')
+    pchar(sp, " ")
     return 0
+
 
 def winnings(won):
     if won > 0:
-        pchar(_p(0,0), "$%d" % won)
+        pchar(_p(0, 0), "$%d" % won)
+
 
 def length(num):
     print("You made %d moves.\n" % num)
+
 
 main()

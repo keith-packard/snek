@@ -18,6 +18,7 @@
 
 bright = 0.1
 
+
 def rainbow(pos):
     if pos < 1:
         r = pos
@@ -31,14 +32,15 @@ def rainbow(pos):
         g = pos - 2
         r = 0
         b = 1 - g
-    neopixel(((bright*r,bright*g,bright*b),))
+    neopixel(((bright * r, bright * g, bright * b),))
+
 
 def blink():
     talkto(NEOPIXEL)
     while True:
-        for pos in range(0,3,0.01):
+        for pos in range(0, 3, 0.01):
             rainbow(pos)
             time.sleep(0.003)
 
-blink()
 
+blink()
