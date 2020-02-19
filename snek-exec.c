@@ -722,6 +722,7 @@ snek_exec(snek_code_t *code_in)
 	snek_id_t	id;
 	snek_offset_t	ip = 0;
 	snek_offset_t	o;
+	snek_offset_t	saved_stackp = snek_stackp;
 
 	/* Ending the top level code block will clear 'snek_code' to
 	 * indicate completion
@@ -1013,7 +1014,7 @@ abort:
 	/* Clear references to run objects */
 	snek_code = NULL;
 	snek_frame = NULL;
-	snek_stackp = 0;
+	snek_stackp = saved_stackp;
 	snek_poly_t ret = snek_a;
 	snek_a = SNEK_NULL;
 	return ret;
