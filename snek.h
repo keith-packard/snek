@@ -829,6 +829,11 @@ snek_print(snek_buf_t *buf, snek_poly_t poly);
 snek_poly_t
 snek_string_make(char c);
 
+#ifdef SNEK_STRING_BUILD
+snek_poly_t
+snek_string_build(const char *s);
+#endif
+
 snek_poly_t
 snek_string_get(char *string, snek_poly_t p, bool report_error);
 

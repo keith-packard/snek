@@ -151,11 +151,14 @@ def dump_headers(fp):
 
 def dump_init(fp):
     use_list_build = False
+    use_string_build = False
     fprint("#define snek_init() {\\", file=fp)
     for name in sorted(builtins):
         if name.is_init():
             if "snek_list_build" in name.init:
                 use_list_build = True
+            if "snek_string_build" in name.init:
+                use_string_build = True
             fprint("    {\\", file=fp)
             fprint("        snek_stack_push((%s));\\" % name.init, file=fp)
             fprint(
@@ -167,6 +170,8 @@ def dump_init(fp):
     fprint("}", file=fp)
     if use_list_build:
         fprint("#define SNEK_LIST_BUILD", file=fp)
+    if use_string_build:
+        fprint("#define SNEK_STRING_BUILD", file=fp)
 
 
 def dump_max_len(fp):

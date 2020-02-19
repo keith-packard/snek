@@ -23,6 +23,17 @@ snek_string_make(char c)
 	return snek_string_to_poly(new);
 }
 
+#ifdef SNEK_STRING_BUILD
+snek_poly_t
+snek_string_build(const char *s)
+{
+	char *new = snek_alloc(strlen(s) + 1);
+	if (new)
+		strcpy(new, s);
+	return snek_string_to_poly(new);
+}
+#endif
+
 snek_poly_t
 snek_string_get(char *string, snek_poly_t p, bool report_error)
 {
