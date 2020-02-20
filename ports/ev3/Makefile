@@ -12,6 +12,8 @@
 # General Public License for more details.
 #
 
+vpath snek-posix.c ../posix
+
 SNEK_ROOT=../..
 
 CC=arm-linux-gnueabi-gcc
@@ -20,7 +22,7 @@ PROG=$(PROGNAME)-$(SNEK_VERSION)
 
 SNEK_LOCAL_SRC = \
 	snek-main.c \
-	../posix/snek-posix.c \
+	snek-posix.c \
 	snek-math.c \
 	snek-input.c
 
