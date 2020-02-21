@@ -2754,6 +2754,30 @@ Onec the board is showing a file system on your computer, find the
 `snek-nano33iot-{version}.uf2` file included in the Snek package for
 your machine and copy it to the file system.
 
+[%nonfacing]
+[appendix]
+= Snek on Lego EV3
+
+Snek for Lego EV3 runs under link:https://www.ev3dev.org/[ev3dev].
+
+The following sensors are supported:
+
+- link:https://education.lego.com/en-us/products/ev3-touch-sensor/45507[Lego EV3
+  Touch Sensor],
+- link:https://education.lego.com/en-us/products/ev3-color-sensor/45506[Lego EV3
+  Color Sensor], named "light sensor" in Snek,
+- link:https://education.lego.com/en-us/products/ev3-ultrasonic-sensor/45504[
+  Lego EV3 Ultrasonic Sensor], named "distance sensor" in Snek.
+
+Input ports are named 1-4, matching the markings on EV3 body.
+
+To run Snek on EV3:
+
+- link:https://www.ev3dev.org/docs/getting-started/[boot ev3dev],
+- link:https://www.ev3dev.org/docs/tutorials/[connect it to the host],
+- Copy `snek-ev3-{version}` to EV3 via `scp`.
+- link:https://www.ev3dev.org/docs/tutorials/connecting-to-ev3dev-with-ssh/[SSH to EV3] and run `./snek-ev3-{version}`.
+
 ifdef::backend-pdf[]
 [index]
 = Index
