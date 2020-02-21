@@ -2762,14 +2762,37 @@ Snek for Lego EV3 runs under link:https://www.ev3dev.org/[ev3dev].
 
 The following sensors are supported:
 
-- link:https://education.lego.com/en-us/products/ev3-touch-sensor/45507[Lego EV3
+* link:https://education.lego.com/en-us/products/ev3-touch-sensor/45507[Lego EV3
   Touch Sensor],
-- link:https://education.lego.com/en-us/products/ev3-color-sensor/45506[Lego EV3
++
+True and False are reported when `read()`.
++
+* link:https://education.lego.com/en-us/products/ev3-color-sensor/45506[Lego EV3
   Color Sensor], named "light sensor" in Snek,
-- link:https://education.lego.com/en-us/products/ev3-ultrasonic-sensor/45504[
-  Lego EV3 Ultrasonic Sensor], named "distance sensor" in Snek.
++
+The sensor can be configured by calling `light_reflected`, `light_ambient`,
+`light_color` and `light_rgb` functions.
++
+** In `light_reflected` mode the sensor returns intensity of reflected LED
+  light, range 0..1. This is the default mode.
+** In `light_ambient` mode the sensor returns intensity of ambient light, range
+  0..1.
+** In `light_color` mode the sensor returns a detected color name, one of
+  `'black'`, `'blue'`, `'green'`, `'yellow'`, `'white'`, `'brown'`, or None if
+  no object is detected.
+** In `light_rgb` mode the sensor returns RGB color tuple of 3 elements, each
+component in range 0..1.
 
-Input ports are named 1-4, matching the markings on EV3 body.
+* link:https://education.lego.com/en-us/products/ev3-ultrasonic-sensor/45504[
+  Lego EV3 Ultrasonic Sensor], named "distance sensor" in Snek.
++
+A distance to the object in front of sensor in centimeters is returned, or `Inf`
+if no object is detected.
+
+Sensor ports are named 1-4, matching the markings on EV3 body.
+
+Sensors are detected automatically, so they can be plugged/unplugged while Snek
+is running.
 
 To run Snek on EV3:
 
