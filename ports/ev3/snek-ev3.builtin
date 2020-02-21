@@ -17,5 +17,14 @@ time.monotonic, 0
 random.seed, 1
 random.randrange, 1
 
+# light sensor mode
+light_reflected, 1
+light_ambient, 1
+light_color, 1
+light_rgb, 1
+
+# sensor values
+read, 1
+
 #include "snek-ev3.h"
 #define SNEK_POOL 262144
