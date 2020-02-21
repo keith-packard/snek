@@ -14,6 +14,7 @@
 
 #include "snek.h"
 #include <getopt.h>
+#include "sensors.h"
 
 static FILE *snek_posix_input;
 
@@ -86,6 +87,8 @@ main(int argc, char **argv)
 			break;
 		}
 	}
+
+	snek_ev3_init_colors();
 
 	snek_init();
 

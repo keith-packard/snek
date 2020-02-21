@@ -13,6 +13,7 @@
  */
 #include "snek.h"
 #include "utils.h"
+#include "sensors.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -59,6 +60,8 @@ static const char *COLORS[] = {
 };
 
 #define COLORS_NUM (sizeof(COLORS) / sizeof(COLORS[0]))
+
+static int colors_stack_pos[COLORS_NUM];
 
 #define RGB_MAX 1020
 
@@ -356,18 +359,16 @@ light_read_intensity(int fd)
 	return snek_float_to_poly(((float) val) / INTENSITY_MAX);
 }
 
-/* TODO: avoid allocations if possible */
-static snek_poly_t
-sm(const char *s)
+void
+snek_ev3_init_colors(void)
 {
-	size_t len = strlen(s);
-
-	char *new = snek_alloc(len + 1);
-	if (new == NULL)
-		return SNEK_NULL;
-
-	memcpy(new, s, len + 1);
-	return snek_string_to_poly(new);
+	for (unsigned long i = 1; i < COLORS_NUM; i++) {
+		size_t len = strlen(COLORS[i]);
+		char * p = snek_alloc(len + 1);
+		memcpy(p, COLORS[i], len + 1);
+		colors_stack_pos[i] = snek_stackp;
+		snek_stack_push_string(p);
+	}
 }
 
 static snek_poly_t
@@ -382,7 +383,7 @@ light_read_color_name(int fd)
 	if (val == 0)
 		return SNEK_NULL;
 
-	return sm(COLORS[val]);
+	return snek_stack[colors_stack_pos[val]];
 }
 
 static snek_poly_t
