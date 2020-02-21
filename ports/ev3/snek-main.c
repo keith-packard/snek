@@ -48,7 +48,7 @@ snek_getc_interactive(void)
 			return EOF;
 	}
 	c = (*line++) & 0xff;
-	if (!c) {
+	if (!c || c == '\n') {
 		c = '\n';
 		line = 0;
 	}
