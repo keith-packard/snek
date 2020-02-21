@@ -42,7 +42,7 @@ snek_getc_interactive(void)
 		char *prompt = "> ";
 		if (snek_parse_middle)
 			prompt = "+ ";
-		puts(prompt);
+		fputs(prompt, stdout);
 		line = fgets(line_base, 4096, stdin);
 		if (!line)
 			return EOF;
