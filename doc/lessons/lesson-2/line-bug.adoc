@@ -342,7 +342,9 @@ not rub on the 8-tooth gears.
 
 include::steps.adoc[]
 
-=== Wiring The Line Bug
+== Wiring The Line Bug
+
+Attach the Snekboard to the top of the line bug.
 
 Connect the motor driving the left wheel to M3 and the motor driving
 the right wheel to M1. If you connect things differently, you'll need
@@ -353,3 +355,10 @@ the right way, with the black wire towards the center of the snekboard
 and the yellow or white wire towards the edge. Use hot glue to attach
 the light sensor to a 4x2 brick and then attach the light sensor to
 the front of the line-bug using the Light Gray 2 x 2 Bracket.
+
+[appendix]
+== The Line Bug Program
+
+```
+include::line-bug.py[]
+```

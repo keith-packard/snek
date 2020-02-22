@@ -51,7 +51,7 @@ INC_FILES=steps.adoc
 
 THEME_FILE=snek-theme.yml
 
-all: $(HTML_FILES) $(PDF_FILES)
+all: $(HTML_FILES) $(PDF_FILES) $(CSS_FILES) snek.svg snek.css
 
 LETTER_ATTRIBUTES=--attribute='pdf-style=snek' 
 ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
