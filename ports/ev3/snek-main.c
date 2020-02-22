@@ -15,6 +15,7 @@
 #include "snek.h"
 #include <getopt.h>
 #include "sensors.h"
+#include "motors.h"
 
 static FILE *snek_posix_input;
 
@@ -128,6 +129,8 @@ snek_builtin_read(snek_poly_t port)
 	switch (snek_poly_type(port)) {
 	case snek_float:
 		return snek_ev3_sensors_read(port);
+	case snek_string:
+		return snek_ev3_motors_read(port);
 	default:
 		snek_error_type_1(port);
 		return SNEK_NULL;
