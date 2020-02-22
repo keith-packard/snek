@@ -44,4 +44,10 @@ USBFIRMWARE ?= \
 	$(SNEK_PORTS)/nano33iot/update-bootloader-nano33iot.ino \
 	$(SNEK_PORTS)/snekboard/bootloader-snekboard-v3.7.0.bin
 
+LESSON_PDF ?= $(shell echo $(SNEK_DOC)/lessons/lesson-*/lesson-*.pdf)
+
+PDF ?= \
+	$(SNEK_DOC)/snek.pdf \
+	$(LESSON_PDF)
+
 include $(SNEK_ROOT)/snek.defs

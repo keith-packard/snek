@@ -34,7 +34,7 @@ endif
 
 MACOSX_INSTALL = install-macosx
 
-MACOSX_DOCS = $(SNEK_ROOT)/doc/snek.pdf $(SNEK_ROOT)/COPYING ReadMe-Mac.rtf
+MACOSX_DOCS = $(PDF) $(SNEK_ROOT)/COPYING ReadMe-Mac.rtf
 
 MACOSX_FILES=$(SNEKDE_FILES) $(SNEK_FILES) serial $(MACOSX_ICON) $(MACOSX_SCRIPTS) $(MACOSX_INSTALL) $(MACOSX_DOCS) $(SNEK_ROOT)/examples/*.py
 
