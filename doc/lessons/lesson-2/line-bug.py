@@ -17,7 +17,7 @@ def StartLeftTurn():
     talkto(LeftWheel)
     off()
     talkto(RightWheel)
-    setleft()
+    setright()
     setpower(Speed)
     on()
 
@@ -26,7 +26,7 @@ def StartRightTurn():
     talkto(RightWheel)
     off()
     talkto(LeftWheel)
-    setright()
+    setleft()
     setpower(Speed)
     on()
 

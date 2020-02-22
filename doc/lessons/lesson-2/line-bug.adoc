@@ -118,40 +118,40 @@ Values for the white board are around 0.05, values for the black tape
 are near 0.87 A reasonable threshold would be about halfway between, or
 0.45. Code to detect the difference could be as simple as this:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	if read(A1) < 0.45:
-		print(“board”)
-	else:
-		print(“tape”)
+if read(A1) < 0.45:
+    print(“board”)
+else:
+    print(“tape”)
 ----
 
 On the other hand, for code that others (including your future self)
 can more easily understand, test, and tweak, create names for values
 at the beginning of the program:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	LightSensor = A1
-	TapeThreshold = 0.45
+LightSensor = A1
+TapeThreshold = 0.45
 ----
 
 Then, define a well-named function to use them:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	def OnTape():
-		return(read(LightSensor) > TapeThreshold) 
+def OnTape():
+    return(read(LightSensor) > TapeThreshold) 
 ----
 
 and use it in later code like this:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	if OnTape():
-		print(“tape”)
-	else:
-		print(“board”)
+if OnTape():
+    print(“tape”)
+else:
+    print(“board”)
 ----
 
 === Moving The Bug
@@ -170,15 +170,15 @@ you find the line just stop the bug and take a look and think about
 it. Or brainstorm with someone. Your test code might look something
 like this:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	talkto(M1)
-	setright()
-	setpower(1)
-	on()
-	while not OnTape():
-		pass
-	off() 
+talkto(M1)
+setright()
+setpower(1)
+on()
+while not OnTape():
+    pass
+off() 
 ----
 
 If you want to proceed this way, I suggest that you make it easier to
@@ -187,27 +187,27 @@ section. Use two functions, one to turn the bug left, the other to
 turn it right, and get them to work so that each turn moves the bug
 toward the sensor:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	RightWheel = M1
-	LeftWheel = M3
-	Speed = 1
-	
-	def StartLeftTurn():
-		talkto(LeftWheel)
-		off()
-		talkto(RightWheel)
-		setright()
-		setpower(Speed)
-		on()
-	
-	def StartRightTurn():
-		talkto(RightWheel)
-		off()
-		talkto(LeftWheel)
-		setleft()
-		setpower(Speed)
-		on()
+RightWheel = M1
+LeftWheel = M3
+Speed = 1
+
+def StartLeftTurn():
+    talkto(LeftWheel)
+    off()
+    talkto(RightWheel)
+    setright()
+    setpower(Speed)
+    on()
+
+def StartRightTurn():
+    talkto(RightWheel)
+    off()
+    talkto(LeftWheel)
+    setleft()
+    setpower(Speed)
+    on()
 ----
 
 .Left Turn
@@ -221,28 +221,28 @@ to test), control the bug with them at the command line. To stop a
 turn, just type `off()`. Experiment with a sequence like this that uses
 the sensor to both start the turn, and complete it:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	while OnTape():
-		StartLeftTurn()
-	else:
-		off()
+while OnTape():
+    StartLeftTurn()
+else:
+    off()
 ----
 
 Give them a try. As long as both turns move the bug in the sensor
 direction, eventually you’ll come across the working strategy of
 alternating the turns *and* alternating the condition:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	while OnTape():
-		StartLeftTurn()
-	else:
-		off()
-	while not OnTape():
-		StartRightTurn()
-	else:
-		off()
+while OnTape():
+    StartLeftTurn()
+else:
+    off()
+while not OnTape():
+    StartRightTurn()
+else:
+    off()
 ----
 
 .Right Turn
@@ -252,15 +252,15 @@ The first stage solution can be had by doing this over and over again
 (and since the turn functions turn off the other motor we leave that
 part out):
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	def LineBug():
-		while True:
-			while OnTape():
-				StartLeftTurn()
+def LineBug():
+    while True:
+	while OnTape():
+	    StartLeftTurn()
 
-			while not OnTape():
-				StartRightTurn()
+	while not OnTape():
+	    StartRightTurn()
 ----
 
 Once you have defined this function, you can test it at the command
@@ -299,17 +299,17 @@ against what you think it should be doing)! The basic idea is to print
 out what the code is doing at strategic points (often printing out key
 values as well):
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	def LineBug():
-		while True:
-			print(“Turn left while on tape.”)
-			while OnTape():
-				StartLeftTurn()
+def LineBug():
+    while True:
+	print(“Turn left while on tape.”)
+	while OnTape():
+	    StartLeftTurn()
 
-			print(“Turn right while off tape.”)
-			while not OnTape():
-				StartRightTurn()
+	print(“Turn right while off tape.”)
+	while not OnTape():
+	    StartRightTurn()
 ----
 
 Until you start writing code based on ideas not easily visible from
@@ -320,17 +320,17 @@ wrong. Nevertheless, we’ll use a few comments (once you get your line
 bug working) and keep them around for both description and future
 debugging:
 
-[source,subs="verbatim,quotes"]
+[source,python,subs="verbatim,quotes"]
 ----
-	def LineBug():
-		while True:
-			#print(“Turn left while on tape.”)
-			while OnTape():
-				StartLeftTurn()
+def LineBug():
+    while True:
+	#print(“Turn left while on tape.”)
+	while OnTape():
+	    StartLeftTurn()
 
-			#print(“Turn right while off tape.”)
-			while not OnTape():
-				StartRightTurn()
+	#print(“Turn right while off tape.”)
+	while not OnTape():
+	    StartRightTurn()
 ----
 
 ifdef::backend-pdf[<<<]
@@ -359,6 +359,8 @@ the front of the line-bug using the Light Gray 2 x 2 Bracket.
 [appendix]
 == The Line Bug Program
 
-```
+
+[source,python,subs="verbatim,quotes"]
+----
 include::line-bug.py[]
-```
+----
