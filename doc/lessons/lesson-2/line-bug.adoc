@@ -359,8 +359,9 @@ the front of the line-bug using the Light Gray 2 x 2 Bracket.
 [appendix]
 == The Line Bug Program
 
-
 [source,python,subs="verbatim,quotes"]
 ----
 include::line-bug.py[]
 ----
+
+image::snek.svg[align="center"]
