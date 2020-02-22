@@ -5,7 +5,7 @@ include $(SNEK_ROOT)/snek-install.defs
 
 .SUFFIXES: .adoc .pdf .html
 
-ADOC_FILES=snekboard.adoc
+ADOC_FILES=lesson-1-snekboard.adoc
 
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)

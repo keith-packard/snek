@@ -5,9 +5,7 @@ include $(SNEK_ROOT)/snek-install.defs
 
 .SUFFIXES: .adoc .pdf .html
 
-ADOC_FILES=line-bug.adoc
-
-LESSON_1=$(SNEK_ROOT)/doc/lessons/lesson-1
+ADOC_FILES=lesson-2-line-bug.adoc
 
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
@@ -62,7 +60,7 @@ ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSIO
 .adoc.pdf:
 	asciidoctor-pdf -B$(SNEK_ROOT) -B. $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
 
-$(PDF_FILES): $(THEME_FILE) $(IMAGE_FILES) $(INC_FILES) ../../../snek.svg
+$(PDF_FILES): $(THEME_FILE) $(IMAGE_FILES) $(INC_FILES) snek.svg
 
 DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) snek.svg $(IMAGE_FILES)
 
@@ -78,10 +76,10 @@ upload: $(DOCFILES)
 steps.adoc: make-step make-steps
 	./make-steps Line-Bug-??.html > $@
 
-snek.css: $(LESSON_1)/snek.css
+snek.css: $(SNEK_ROOT)/doc/snek.css
 	cp $^ $@
 
-snek.svg: $(LESSON_1)/snek.svg
+snek.svg: $(SNEK_ROOT)/snek.svg
 	cp $^ $@
 
 snek-theme.yml: $(SNEK_ROOT)/doc/snek-theme.yml
