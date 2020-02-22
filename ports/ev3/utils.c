@@ -26,7 +26,7 @@ cutprefix(const char *s, const char *prefix, int prefixlen)
 	return s + prefixlen;
 }
 
-void
+static void
 close_noerrno(int fd)
 {
 	int saved_errno = errno;

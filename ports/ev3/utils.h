@@ -25,12 +25,6 @@ const char *
 cutprefix(const char *s, const char *prefix, int prefixlen);
 
 /*
- * Closes fd, preserves errno.
- */
-void
-close_noerrno(int fd);
-
-/*
  * Reads up to bufsize bytes of data from sysfs file filename in directory dirfd
  * and places it into bufffer buf.
  *
