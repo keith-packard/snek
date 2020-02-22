@@ -1,7 +1,7 @@
 = Snek Lesson #1: Use Snekboard to Control LEGO Robots with Snek 
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
-:title-logo-image: image:snekboard.png[]
+:title-logo-image: image:snekboard.svg[]
 :revnumber: v{version}
 :revdate: 1 Jan 1970
 :experimental:
@@ -36,12 +36,13 @@ This document is released under the terms of the link:https://www.gnu.org/licens
 [%nonfacing]
 == Acknowledgments
 
-Thanks to
+Thanks to Jane Kenney-Norberg's students for helping develop the
+material in this lesson.
 
 [verse]
 {author}
 {email}
-https://keithp.com
+https://sneklang.org
 
 == Overview
 
@@ -93,6 +94,84 @@ Here is what it looks like when in its Lego case:
 
 .Snekboard in Enclosure
 image::snekboard-in-enclosure.jpg[width=300,align=center]
+
+== Mu Editor (mu-editor)
+
+Find the Mu Editor icon on your desktop or in the system menu on your
+laptop. Launch the application and wait patiently for it to
+start. Depending on the speed of the machine, this can take a few
+moments.
+
+When ready, your screen should look something like this:
+
+.Mu Editor Startup
+image::mu-editor.png[width=600,align=center]
+
+At this point the interface is not connected to the snekboard yet. To
+connect to the snekboard:
+
+ 1. Connect the snekboard to the computer with a micro USB to USB
+    cable.  (The USB LED should light.)
+
+ 2. Slide the snekboard power switch so that the snekboard On LED is
+    lit.  (Be ready for the program saved on the snekboard to run!)
+
+ 3. Click the Serial button. The editor will search for a snekboard
+    connection and connect to it.
+
+If all goes well, the editor will transform the bottom portion of the
+window into a interpreter terminal that runs commands on the
+snekboard:
+
+.Mu Editor with Serial Pane
+image::mu-editor-serial.png[width=600,align=center]
+
+You can type commands into interpreter to execute immediately or click
+in the program frame to edit the snek program. The editor knows about
+snek and will automatically highlight keywords, pop-up menus to help
+you complete names, pop-up info windows to help you complete function
+calls, and automatically indent when you hit the enter key (use tab to
+indent more, and backspace to indent less). The editor provides lots
+of (online) help and can be used to develop python programs for
+hardware other than the snekboard as well.
+
+A typical development sequence might look like this:
+
+ 1. Start the mu-editor and connect to a snekboard as described above.
+ 2. Click in the program editor frame and write some code:
+
+ .. Change the comment to something useful.
+
+ .. Define a function to perform some action. (Write a function
+       named Hello to print a message).
+
+ .. Be sure to have a blank line at the end of the code!
+
+ 3. Click on the Save button to save it to a file. (Notice the tab
+    changes to the name of the file.)
+
+ 4. Click on the Put button to transfer it to the snekboard. (Notice
+    the “Welcome” message to indicate the transfer and the “>” prompt
+    indicating successful reboot and running of the program on the
+    snekboard. Problematic programs generate an error message and a
+    “+” prompt that can require pressing the kbd:[Enter] key several times)
+
+ 5. Click in the interpreter terminal and run the newly defined
+    function.  (In this case the result is just the “Hello World!”
+    message, but functions that run motors, flash lights, and/or read
+    sensors would do their thing).
+
+.Mu Editor with Program
+image::mu-editor-hello.png[width=600,align=center]
+
+To run run the function when the snekboard boots (including after
+Put), add the function call at the end of the program code (don’t
+forget a blank line after it).  Notice that using snek will consist
+primarily of:
+
+ 1. Writing and testing expressions and commands in the interpreter.
+ 2. Defining functions in the program editor.
+ 3. Figuring out how to get expressions, commands, and functions to work.
 
 == Snekboard Cables and Sensors
 

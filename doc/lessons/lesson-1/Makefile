@@ -12,9 +12,12 @@ HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css coderay-asciidoctor.css
 IMAGE_FILES=\
 	snek.svg \
+	mu-editor.png \
+	mu-editor-serial.png \
+	mu-editor-hello.png \
 	snekboard-in-enclosure.jpg \
 	snekboard-label.jpg \
-	snekboard.png \
+	snekboard.svg \
 	snekboard-sensors.jpg \
 	snekboard-wired.jpg
 
