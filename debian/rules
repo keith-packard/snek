@@ -14,7 +14,10 @@ export V=1
 	dh $@
 
 override_dh_strip:
-	dh_strip -X.elf
+	dh_strip -X.elf -Xsnek-ev3
 
 override_dh_dwz:
-	dh_dwz -X.elf
+	dh_dwz -X.elf -Xsnek-ev3
+
+override_dh_shlibdeps:
+	dh_shlibdeps -X.elf -Xsnek-ev3
