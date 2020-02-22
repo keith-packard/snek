@@ -7,8 +7,9 @@ Rules-Requires-Root: no
 Build-Depends: debhelper-compat (= 12), libreadline-dev, avr-libc, gcc-avr,
  binutils-arm-none-eabi, gcc-arm-none-eabi, picolibc-arm-none-eabi (>= 1.2),
  binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.2),
- python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf, ruby-coderay, qemu-system-arm
-Standards-Version: 4.4.1
+ python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf, ruby-coderay, qemu-system-arm,
+ gcc-arm-linux-gnueabi
+Standards-Version: 4.5.0
 
 Package: snek
 Architecture: all
@@ -18,9 +19,8 @@ Description: Embedded system programming language
  Snek is a small python-like language designed for embedded
  computers. It can run on systems as small as an Arduino Duemilanove
  board, which is an ATmega 328 processor with 32kB of flash and 2kB of
- ram. This package includes a binary for that target, the
- snek-duino-install tool for installing Snek on Arduino boards, the
- snekde integrated development environment
+ ram. This package includes binaries and installation tools for many
+ targets along with the snekde integrated development environment.
 
 Package: snek-bin
 Architecture: any
