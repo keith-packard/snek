@@ -23,13 +23,13 @@ light_ambient, 1
 light_color, 1
 light_rgb, 1
 
-# sensor values, motor speed in rotations per second, 0..3
+# sensor values, motor speed in rotations per second, -3..3
 read, 1
 
 # select the motor to talk to
 talkto, 1
 
-# set motor speed (power), in rotations per second, 0..3
+# set motor speed (power), in rotations per second, -3..3
 setpower, 1
 
 # motors: direction

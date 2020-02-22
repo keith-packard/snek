@@ -2794,6 +2794,49 @@ Sensor ports are named 1-4, matching the markings on EV3 body.
 Sensors are detected automatically, so they can be plugged/unplugged while Snek
 is running.
 
+The following motors are supported:
+
+* link:https://www.lego.com/en-us/product/ev3-large-servo-motor-45502[Lego EV3 Large Servo Motor]
+* link:https://www.lego.com/en-us/product/ev3-medium-servo-motor-45503[Lego EV3 Medium Servo Motor]
+
+Servo motors have two-way communication with the host, so current speed (either
+from applicaiton of power or from manual rotation) and current position of the
+motor can be queried:
+
+* `read` reads the current speed of the motor (-3 to 3 rotations per second),
+* `position` reads the current position of the motor (rotations from reset).
+
+Servo motors remember the initial position after reset, so the `position` can
+become arbitrarily big.
+
+Current motor to control is selected by using `talkto` with port names
+`'A'` to `'D'`.
+
+The following operations are available on the selected motor:
+
+- `setpower` sets the motor speed, from -3 to 3 rotations per second.
+- `setleft` makes the motor rotate counterclockwise when positive speed is requested.
+- `setright` makes the motor rotate clockwise when positive speed is requested.
+- `on` starts the motor
+- `off` stops the motor
+- `onfor` starts the motor for specified amount of seconds. This function returns
+  immediately.
+- `setposition` starts the motor it running until it reaches the given position
+  (measured in rotations). This function returns immediately.
+- `ramp_up` sets the ramp-up time. The argument specifies duration in seconds
+  from 0 to maximum speed. If a speed smaller than maximum is requested, ramp-up
+  time is shortened proportionally.
+- `ramp_down` sets the ramp-down time in the same manner.
+
+Servo motors have several modes for stopping, select them using the following functions:
+
+- `coast`. Once the desired position is reached, remove the power. The motor
+  coasts to stop. This is the default mode.
+- `brake`. Once the desired position is reached, remove the power and apply
+  passive load on the motor. Motor stops quicker than when coasting.
+- `hold`. Once the desired position is reached, actively hold the position by
+  turning the motor to the desired position.
+
 To run Snek on EV3:
 
 - link:https://www.ev3dev.org/docs/getting-started/[boot ev3dev],
