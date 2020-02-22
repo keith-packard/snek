@@ -221,7 +221,7 @@ Outputs on Snekboard
  * Use these functions to control output ports M1 to M4:
 
    ** talkto(M#): Remembers output port # for other output commands.
-   ** setpower(P): Sets the output power to P with 0 <= P <= 1.
+   ** setpower(P): Sets the output power to P with 0 ≤ P ≤ 1.
    ** setleft(): Sets the output power to flow left-wise through port #.
    ** setright(): Sets the output power to flow right-wise through port #.
    ** on(): Turns the power to port # on.
