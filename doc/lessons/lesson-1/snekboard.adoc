@@ -1,7 +1,7 @@
 = Snek Lesson #1: Use Snekboard to Control LEGO Robots with Snek 
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
-:title-logo-image: image:snekboard.svg[]
+:title-logo-image: image:snekboard.svg[width="600",align="center"]
 :revnumber: v{version}
 :revdate: 1 Jan 1970
 :experimental:
@@ -260,7 +260,7 @@ We can test the distance sensor and the motor with some Snek
 commands. Use the Mu Serial pane to enter the text in *`bold`*
 below. The text in a `normal` face is what Snek writes back to you:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *read(A1)*
 0.3484738
@@ -270,7 +270,7 @@ Your Snekboard will probably show a different value. If you like, you
 can experiment with how the distance sensor reacts when you move
 things in front of it:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *while True:*
 +    *print(read(A1))*
@@ -295,7 +295,7 @@ program.
 
 Now we'll test the motor:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(M1)*
 > *on()*
@@ -303,14 +303,14 @@ Now we'll test the motor:
 
 This turns the motor on at full speed. To reduce the speed, try:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *setpower(0.5)*
 ----
 
 Now let's hook the input sensor up to the motor:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(M1)*
 > *on()*
@@ -335,7 +335,7 @@ Here's what you you can get if you hook a switch up to Snekboard.
 
  1. Connect a switch to Snekboard Input A1 between `A` and `+` 
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *read(A1)*
 0.08229548
@@ -354,7 +354,7 @@ by connecting the switch differently.
 
  1. Connect a switch to Snekboard Input A1 between `A` and `-` 
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *read(A1)*
 0.1269841
@@ -378,7 +378,7 @@ closest.
 
  1. Connect a switch to Snekboard Input A1 between `A` and `+` 
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *pulldown(A1)*
 > *read(A1)*
@@ -391,7 +391,7 @@ You can try pullup too by changing the switch connections again:
 
  1. Connect a switch to Snekboard Input A1 between `A` and `-` 
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *pullup(A1)*
 > *read(A1)*
@@ -402,7 +402,7 @@ You can try pullup too by changing the switch connections again:
 
 To get A1 back to normal mode, just use the `pullnone` function:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *pullnone(A1)*
 ----
@@ -422,7 +422,7 @@ center position.
 The servo should reset to the center position. Let's move it all the
 way to the left:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(M1)*
 > *setleft()*
@@ -431,14 +431,14 @@ way to the left:
 
 Now we can switch the direction and move it all the way to the right:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *setright()*
 ----
 
 Finally, we can move halfway between center and right:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *setpower(0.5)*
 ----
