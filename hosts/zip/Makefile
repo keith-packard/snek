@@ -28,7 +28,7 @@ EXAMPLES=$(SNEK_ROOT)/examples
 ICONS=$(SNEK_ROOT)/snek.svg
 
 DOC= \
-	$(SNEK_ROOT)/doc/snek.pdf \
+	$(PDF) \
 	$(SNEK_ROOT)/COPYING
 
 ZIP_FILES=$(PROGS) $(FIRMWARE) $(USBFIRMWARE) $(ICONS) $(DOC) $(EXAMPLES)

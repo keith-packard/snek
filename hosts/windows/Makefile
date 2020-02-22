@@ -22,7 +22,7 @@ SNEK_LOCAL_INC = snek-windows.h
 SNEK_LOCAL_BUILTINS = snek-windows.builtin $(SNEK_ROOT)/snek-math.builtin
 
 INF=altusmetrum.inf
-WINDOWS_FILES=snek.exe snek.ico snekde.py $(SNEK_ROOT)/doc/snek.pdf $(SNEK_ROOT)/examples $(SNEK_ROOT)/COPYING $(FIRMWARE) $(USBFIRMWARE) $(INF)
+WINDOWS_FILES=snek.exe snek.ico snekde.py $(PDF) $(SNEK_ROOT)/examples $(SNEK_ROOT)/COPYING $(FIRMWARE) $(USBFIRMWARE) $(INF)
 
 include $(SNEK_ROOT)/snek-install.defs
 

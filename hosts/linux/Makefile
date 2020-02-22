@@ -34,7 +34,7 @@ EXAMPLES=$(SNEK_ROOT)/examples
 ICONS=$(SNEK_ROOT)/snek.svg
 
 DOC= \
-	$(SNEK_ROOT)/doc/snek.pdf \
+	$(PDF) \
 	$(SNEK_ROOT)/snekde/snekde.1 \
 	$(SNEK_ROOT)/COPYING \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-install.1 \

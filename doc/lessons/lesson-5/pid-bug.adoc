@@ -1,0 +1,8 @@
+
+== Advanced Topics: PID controller
+
+The version of the line bug shown above is sometimes called a
+“bang-bang” robot as it turns the motors either on or off as it
+wiggles back and forth across the edge of the line. We can do better
+than that by using a more advanced algorithm called a
+proportional-integral-derivative (PID) controller.
