@@ -13,6 +13,7 @@ PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css  coderay-asciidoctor.css
 IMAGE_FILES=\
+	line-bug.svg \
 	21980.dat.png \
 	22253c02.dat.png \
 	2654.dat.png \

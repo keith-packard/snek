@@ -1,7 +1,7 @@
 = Snek Lesson #2: The Line Bug
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
-:title-logo-image: image:line-bug.jpg[]
+:title-logo-image: image:line-bug.svg[width="600",align="center"]
 :revnumber: v{version}
 :revdate: 1 Jan 1970
 :experimental:
@@ -56,8 +56,7 @@ image::line-bug.jpg[width=600]
 Important features:
 
  * Two motors to move the bug, one for each wheel.
- * One light level sensor: the red 1x4 brick.
- * One LED (always on) to illuminate the line so it can be sensed.
+ * One IR light sensor: glued to the blue brick
  * Skid plates on the bottom mean the surface must be flat!
 
 There are various strategies for solving the challenge of getting the
@@ -87,8 +86,8 @@ Consider:
 
  * Sensor values will depend on light reflected from the surfaces
    (which depends on how much light there is in the area). To make
-   your program less sensitive to this, shine consistent light with
-   the LED.
+   your program less sensitive to this, the IR light sensor has its
+   own built-in IR light source.
 
  * Sensor values will vary. Read a number of different values for the
    line and use a typical or average value. Do the same for the
@@ -103,24 +102,25 @@ Consider:
 
 You might get values like these:
 
-[options="header,autowidth"]
+.Light Sensor Sample Values
+[options="header",width="50%",align="center",halign="center"]
 |====
 |White Board	|Black Tape
-
-|  0.9106227	|  0.3006105
-|  0.9103785	|  0.3094017
-|  0.9020757	|  0.3103785
-|  0.9108669	|  0.3098901
-|  0.8984127	|  0.3064713
+|  0.05225885  | 0.8752137
+|  0.05177045  | 0.8742369
+|  0.05299145  | 0.8739927
+|  0.05299145  | 0.8727717
+|  0.05201465  | 0.8737485
+|  0.05225885  | 0.8735043
 |====
 
-Values for the white board are around 0.9, values for the black tape
-are near 0.3. A reasonable threshold would be about halfway between, or
-0.6. Code to detect the difference could be as simple as this:
+Values for the white board are around 0.05, values for the black tape
+are near 0.87 A reasonable threshold would be about halfway between, or
+0.45. Code to detect the difference could be as simple as this:
 
 [source,subs="verbatim,quotes"]
 ----
-	if read(A1) > 0.6:
+	if read(A1) < 0.45:
 		print(“board”)
 	else:
 		print(“tape”)
@@ -133,7 +133,7 @@ at the beginning of the program:
 [source,subs="verbatim,quotes"]
 ----
 	LightSensor = A1
-	TapeThreshold = 0.6
+	TapeThreshold = 0.45
 ----
 
 Then, define a well-named function to use them:
@@ -141,7 +141,7 @@ Then, define a well-named function to use them:
 [source,subs="verbatim,quotes"]
 ----
 	def OnTape():
-		return(read(LightSensor) < TapeThreshold) 
+		return(read(LightSensor) > TapeThreshold) 
 ----
 
 and use it in later code like this:
@@ -348,8 +348,8 @@ Connect the motor driving the left wheel to M3 and the motor driving
 the right wheel to M1. If you connect things differently, you'll need
 to adjust the values in the program.
 
-Connect the light sensor to A1 and the light to A8. Make sure you
-insert the connectors the right way, with the black wire towards the
-center of the snekboard and the yellow or white wire towards the edge.
-Attach the light sensor and light to the front of the line-bug using
-the Light Gray 2 x 2 Bracket.
+Connect the light sensor to A1. Make sure you insert the connectors
+the right way, with the black wire towards the center of the snekboard
+and the yellow or white wire towards the edge. Use hot glue to attach
+the light sensor to a 4x2 brick and then attach the light sensor to
+the front of the line-bug using the Light Gray 2 x 2 Bracket.
