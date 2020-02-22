@@ -121,3 +121,15 @@ main(int argc, char **argv)
 		printf("\n");
 	return ret ? 0 : 1;
 }
+
+snek_poly_t
+snek_builtin_read(snek_poly_t port)
+{
+	switch (snek_poly_type(port)) {
+	case snek_float:
+		return snek_ev3_sensors_read(port);
+	default:
+		snek_error_type_1(port);
+		return SNEK_NULL;
+	}
+}

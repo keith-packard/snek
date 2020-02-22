@@ -14,8 +14,14 @@
 #ifndef _SNEK_EV3_SENSORS_H_
 #define _SNEK_EV3_SENSORS_H_
 
+#include "snek.h"
+
 /* Initializes constants for EV3 light sensor */
 void
 snek_ev3_init_colors(void);
+
+/* read() implementation for sensors */
+snek_poly_t
+snek_ev3_sensors_read(snek_poly_t port);
 
 #endif /* _SNEK_EV3_SENSORS_H_ */
