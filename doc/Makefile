@@ -57,10 +57,10 @@ clean:: clean-lessons
 	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES) coderay-asciidoctor.css
 
 all-lessons:
-	+for i in lessons/*; do make -C $$i all; done
+	+for i in lessons/lesson-*; do make -C $$i all; done
 
 clean-lessons:
-	+for i in lessons/*; do make -C $$i clean; done
+	+for i in lessons/lesson-*; do make -C $$i clean; done
 
 upload-lessons:
-	+for i in lessons/*; do make -C $$i upload; done
+	+for i in lessons/lesson-*; do make -C $$i upload; done
