@@ -5,7 +5,7 @@ include $(SNEK_ROOT)/snek-install.defs
 
 .SUFFIXES: .adoc .pdf .html
 
-ADOC_FILES=bumper-car.adoc
+ADOC_FILES=lesson-3-bumper-car.adoc
 
 LESSON_1=$(SNEK_ROOT)/doc/lessons/lesson-1
 LESSON_2=$(SNEK_ROOT)/doc/lessons/lesson-2
@@ -71,16 +71,16 @@ install: $(DOCFILES)
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) ../../fonts $(SNEKDOC)/lessons/lesson-3
 
-steps.adoc: $(LESSON_2)/make-step $(LESSON_2)/make-steps
-	$(LESSON_2)/make-steps Bumper-Car-??.html > $@
+steps.adoc: $(SNEK_DOC_UTIL)/make-step $(SNEK_DOC_UTIL)/make-steps
+	$(SNEK_DOC_UTIL)/make-steps Bumper-Car-??.html > $@
 
-snek.css: $(LESSON_1)/snek.css
+snek.css: $(SNEK_DOC)/snek.css
 	cp $^ $@
 
-snek.svg: $(LESSON_1)/snek.svg
+snek.svg: $(SNEK_ROOT)/snek.svg
 	cp $^ $@
 
-snek-theme.yml: $(SNEK_ROOT)/doc/snek-theme.yml
+snek-theme.yml: $(SNEK_DOC)/snek-theme.yml
 	cp $^ $@
 
 coderay-asciidoctor.css: $(HTML_FILES)
