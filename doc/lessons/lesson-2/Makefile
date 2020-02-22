@@ -73,10 +73,10 @@ install: $(DOCFILES)
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) $(SNEK_ROOT)/doc/fonts $(SNEKDOC)/lessons/lesson-2/
 
-steps.adoc: make-step make-steps
-	./make-steps Line-Bug-??.html > $@
+steps.adoc: $(SNEK_DOC_UTIL)/make-step $(SNEK_DOC_UTIL)/make-steps
+	$(SNEK_DOC_UTIL)/make-steps Line-Bug-??.html > $@
 
-snek.css: $(SNEK_ROOT)/doc/snek.css
+snek.css: $(SNEK_DOC)/snek.css
 	cp $^ $@
 
 snek.svg: $(SNEK_ROOT)/snek.svg
