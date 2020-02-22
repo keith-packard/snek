@@ -95,7 +95,7 @@ static uint8_t	*snek_busy;
 static struct snek_chunk *snek_chunk;
 static snek_offset_t	SNEK_NCHUNK;
 
-typedef snek_soffset_t snek_chunk_t;
+typedef snek_offset_t snek_chunk_t;
 
 bool
 snek_mem_alloc(snek_poly_t pool_size)
@@ -359,7 +359,7 @@ static void dump_busy(void)
 snek_offset_t
 snek_collect(uint8_t style)
 {
-	snek_soffset_t	c;
+	snek_chunk_t	c;
 	snek_offset_t	top;
 
 	debug_memory("Collect...\n");

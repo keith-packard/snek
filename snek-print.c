@@ -137,17 +137,15 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 		snek_stack_push_list(list);
 		buf->put_c(snek_list_open(type), closure);
 		for (snek_offset_t o = 0; o < size; o++) {
-			if ((type == snek_list_dict) ? !(o & 1) : o)
-				buf->put_c(' ', closure);
 			list = snek_stack_pop_list();
 			snek_stack_push_list(list);
 			snek_poly_format(buf, snek_list_data(list)[o], format);
-			if (o < size - 1 || (size == 1 && type == snek_list_tuple))
+			if (o < size - 1 || (size == 1 && type == snek_list_tuple)) {
 				buf->put_c((type == snek_list_dict && !(o&1)) ? ':' : ',', closure);
+				buf->put_c(' ', closure);
+			}
 		}
 		list = snek_stack_pop_list();
-		if (type == snek_list_dict && list->size)
-			buf->put_c(' ', closure);
 		buf->put_c(snek_list_close(type), closure);
 		break;
 	}

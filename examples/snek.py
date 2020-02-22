@@ -26,18 +26,27 @@ cols = 40
 dx = 0
 dy = 0
 
-HEAD = '@'
-TAIL = '+'
-SNAK = '$'
+HEAD = "@"
+TAIL = "+"
+SNAK = "$"
 
-def _x(p): return p % cols
-def _y(p): return p // cols
-def _p(x,y): return x + y * cols
+
+def _x(p):
+    return p % cols
+
+
+def _y(p):
+    return p // cols
+
+
+def _p(x, y):
+    return x + y * cols
+
 
 def put_snak():
     global snek, snak
     while True:
-        snak = _p(random.randrange(cols-2)+1, random.randrange(lines-2)+1)
+        snak = _p(random.randrange(cols - 2) + 1, random.randrange(lines - 2) + 1)
         for s in snek:
             if snak == s:
                 break
@@ -45,31 +54,35 @@ def put_snak():
             break
     showp(snak, SNAK)
 
+
 def showxy(x, y, str):
     stdscr.addstr(y, x, str)
 
+
 def showp(pos, str):
     showxy(_x(pos), _y(pos), str)
+
 
 miss = 0
 hit_wall = 1
 hit_snek = 2
 hit_snak = 3
 
+
 def move_snek():
     global snek, grow
     global dx, dy
     if dx or dy:
-        old = snek[len(snek)-1]
+        old = snek[len(snek) - 1]
         sp = snek[0]
         nx = _x(sp) + dx
         ny = _y(sp) + dy
-        if nx < 1 or nx >= cols-1 or ny < 1 or ny >= lines-1:
+        if nx < 1 or nx >= cols - 1 or ny < 1 or ny >= lines - 1:
             return hit_wall
         new = _p(nx, ny)
         if grow > 0:
             tail = snek
-            showxy(0,0,"Score %d---" % (len(snek) + 1))
+            showxy(0, 0, "Score %d---" % (len(snek) + 1))
             grow -= 1
         else:
             tail = snek[:-1]
@@ -77,7 +90,7 @@ def move_snek():
             if new == t:
                 return hit_snek
         snek = [new] + tail
-        showp(old, ' ')
+        showp(old, " ")
         if tail:
             showp(tail[0], TAIL)
         showp(new, HEAD)
@@ -85,8 +98,9 @@ def move_snek():
             return hit_snak
     return miss
 
+
 def done(msg):
-    stdscr.move(lines-1, 0)
+    stdscr.move(lines - 1, 0)
     stdscr.refresh()
     stdscr.nodelay(False)
     curses.nocbreak()
@@ -95,8 +109,10 @@ def done(msg):
     print("You %s. Score %d" % (msg, len(snek)))
     exit(0)
 
+
 def getch():
     return chr(stdscr.getch())
+
 
 def main():
     global snek, dx, dy, snak, grow
@@ -107,39 +123,39 @@ def main():
     stdscr.nodelay(True)
     stdscr.erase()
     random.seed(time.monotonic())
-    snek = [_p(1,1)]
+    snek = [_p(1, 1)]
     put_snak()
-    for x in range(1,cols-1):
-        showxy(x, 0, '-')
-        showxy(x, lines-1, '-')
-    for y in range(1,lines-1):
-        showxy(0, y, '|')
-        showxy(cols-1, y, '|')
+    for x in range(1, cols - 1):
+        showxy(x, 0, "-")
+        showxy(x, lines - 1, "-")
+    for y in range(1, lines - 1):
+        showxy(0, y, "|")
+        showxy(cols - 1, y, "|")
     showp(snek[0], HEAD)
     while True:
         stdscr.move(_y(snek[0]), _x(snek[0]))
         stdscr.refresh()
-        time.sleep(.1)
+        time.sleep(0.1)
         c = getch()
         ndx = dx
         ndy = dy
-        if c == 'h':
+        if c == "h":
             ndx = -1
             ndy = 0
-        elif c == 'j':
+        elif c == "j":
             ndx = 0
             ndy = 1
-        elif c == 'k':
+        elif c == "k":
             ndx = 0
             ndy = -1
-        elif c == 'l':
+        elif c == "l":
             ndx = 1
             ndy = 0
-        elif c == 'q' or c == 'x':
+        elif c == "q" or c == "x":
             done("quit")
-        elif c == 'p':
-            while getch() != 'p':
-                time.sleep(.1)
+        elif c == "p":
+            while getch() != "p":
+                time.sleep(0.1)
         if ndx != -dx or ndy != -dy:
             dx = ndx
             dy = ndy
@@ -151,5 +167,6 @@ def main():
         if hit == hit_snak:
             grow = 5
             put_snak()
+
 
 main()

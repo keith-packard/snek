@@ -55,6 +55,7 @@ tools and other dependencies installed.
 To build Snek you need these dependencies:
 
   * [Lola](https://keithp.com/cgit/lola.git/)
+  * [gawk](https://www.gnu.org/software/gawk/)
   * [gcc-avr](https://ccrma.stanford.edu/~juanig/articles/wiriavrlib/AVR_GCC.html)
   * [avr-libc](https://www.nongnu.org/avr-libc/)
   * [gcc-arm-none-eabi](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
@@ -63,10 +64,11 @@ To build Snek you need these dependencies:
   * [python3](https://www.python.org/)
   * [pyserial](https://github.com/pyserial/)
   * [python curses](https://docs.python.org/3/library/curses.html)
+  * [readline](https://www.gnu.org/software/readline/)
 
 On Debian, you can get everything other than picolibc from the main archive:
 
-	# apt install lola gcc-avr avr-libc python3-serial gcc-arm-none-eabi gcc-riscv64-unknown 
+	# apt install lola gcc-avr avr-libc python3-serial gcc-arm-none-eabi gcc-riscv64-unknown libreadline-dev
 
 To install picolibc, download the source and install it. Instructions
 for building and installing that are included in the picolibc project:

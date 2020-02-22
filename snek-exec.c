@@ -282,7 +282,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	float		af;
 	float		bf;
 	bool		found;
-	snek_poly_t	ret = SNEK_NULL;
+	snek_poly_t	ret = SNEK_INVALID;
 
 	/* Compare operators work between any two values
 	 * in snek, so no type checking needed here.
@@ -462,7 +462,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			break;
 		case snek_op_mod:
 			if (at == snek_string)
-				ret = snek_string_to_poly(snek_string_interpolate(snek_poly_to_string(a), b));
+				ret = snek_string_interpolate(snek_poly_to_string(a), b);
 			break;
 		default:
 			break;
@@ -470,7 +470,7 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	}
 
 	/* If we haven't computed any return, raise an exception */
-	if (snek_is_null(ret))
+	if (snek_is_invalid(ret))
 		return snek_error_type_2(a, b);
 	return ret;
 }
@@ -722,6 +722,7 @@ snek_exec(snek_code_t *code_in)
 	snek_id_t	id;
 	snek_offset_t	ip = 0;
 	snek_offset_t	o;
+	snek_offset_t	saved_stackp = snek_stackp;
 
 	/* Ending the top level code block will clear 'snek_code' to
 	 * indicate completion
@@ -1013,7 +1014,7 @@ abort:
 	/* Clear references to run objects */
 	snek_code = NULL;
 	snek_frame = NULL;
-	snek_stackp = 0;
+	snek_stackp = saved_stackp;
 	snek_poly_t ret = snek_a;
 	snek_a = SNEK_NULL;
 	return ret;

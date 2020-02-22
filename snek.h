@@ -311,6 +311,8 @@ extern const snek_builtin_t snek_builtins[];
 #define SNEK_NULL	((snek_poly_t) { .u = SNEK_NULL_U })
 #define SNEK_GLOBAL_U	0xfffffff8u
 #define SNEK_GLOBAL	((snek_poly_t) { .u = SNEK_GLOBAL_U })
+#define SNEK_INVALID_U	0xfffffff4u
+#define SNEK_INVALID	((snek_poly_t) { .u = SNEK_INVALID_U })
 #define SNEK_ZERO	((snek_poly_t) { .f = 0.0f })
 #define SNEK_ONE	((snek_poly_t) { .f = 1.0f })
 
@@ -332,6 +334,12 @@ static inline bool
 snek_is_null(snek_poly_t p)
 {
 	return p.u == SNEK_NULL_U;
+}
+
+static inline bool
+snek_is_invalid(snek_poly_t p)
+{
+	return p.u == SNEK_INVALID_U;
 }
 
 static inline bool
@@ -821,6 +829,11 @@ snek_print(snek_buf_t *buf, snek_poly_t poly);
 snek_poly_t
 snek_string_make(char c);
 
+#ifdef SNEK_STRING_BUILD
+snek_poly_t
+snek_string_build(const char *s);
+#endif
+
 snek_poly_t
 snek_string_get(char *string, snek_poly_t p, bool report_error);
 
@@ -833,7 +846,7 @@ snek_string_times(char *a, snek_soffset_t b);
 char *
 snek_string_slice(char *a, snek_slice_t *slice);
 
-char *
+snek_poly_t
 snek_string_interpolate(char *a, snek_poly_t poly);
 
 snek_offset_t

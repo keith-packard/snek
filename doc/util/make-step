@@ -1,0 +1,109 @@
+#!/usr/bin/python3
+#
+# Copyright © 2020 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+#
+# Convert HTML output from leocad to asciidoctor
+#
+
+import sys
+import re
+
+def get_step(lines):
+        for line in lines:
+                if line.startswith('<TITLE'):
+                        m = re.match(r'.*Step ([0-9]+)', line)
+                        return m.group(1)
+
+def get_image(lines):
+        for line in lines:
+                if line.startswith('<IMG SRC'):
+                        m = re.match(r'<IMG SRC="([^"]*)"', line)
+                        return m.group(1)
+        return None
+
+def get_colors(lines):
+        colors = []
+        i = 0
+        while i < len(lines):
+                if lines[i].startswith('<br><table'):
+                        break
+                i += 1
+        i += 1
+        while i < len(lines):
+                if not lines[i].startswith('<td><center>'):
+                        break
+                m = re.match('<td><center>([^<]*)</center', lines[i])
+                colors += [m.group(1)]
+                i += 1
+        return colors
+
+def get_parts(lines, colors):
+        parts=[]
+        coloring = False
+        image = None
+        descr = None
+        color = 0
+        for line in lines:
+                if coloring:
+                        if line.startswith('<td><center>'):
+                                m = re.match(r'<td><center>([0-9]*)</center>', line)
+                                if m:
+                                        part=(image, descr, colors[color], int(m.group(1)))
+                                        parts += [part]
+                                color += 1
+                        else:
+                                coloring = False
+                if line.startswith('<tr><td><IMG SRC'):
+                        m = re.match(r'.*SRC="([^"]*)" ALT="([^"]*)".*', line)
+                        image = m.group(1)
+                        descr = m.group(2)
+                        color = 0
+                        coloring = True
+        return parts
+
+def make_parts(parts):
+        print('[options="header",cols="1a,3,1,1"]')
+        print('|====')
+        print('|Part')
+        print('|Description')
+        print('|Color')
+        print('|Count')
+        print('')
+        for part in parts:
+                print('|image::%s[width=50]' % part[0])
+                print('|%s' % part[1])
+                print('|%s' % part[2])
+                print('|%d' % part[3])
+                print('')
+        print('|====')
+
+lines = sys.stdin.readlines()
+
+step = get_step(lines)
+image = get_image(lines)
+colors = get_colors(lines)
+parts = get_parts(lines, colors)
+
+print('=== Step %s' % step)
+
+make_parts(parts)
+
+print('image::%s[width=600]' % image)
+print('ifdef::backend-pdf[<<<]')
+

@@ -48,6 +48,10 @@ static uint8_t ungetcount;
 
 #define SNEK_EOF	0x00
 
+#ifndef TOKEN_INVALID
+#define TOKEN_INVALID FIRST_NON_TERMINAL
+#endif
+
 static char
 lexchar(void)
 {
@@ -189,7 +193,7 @@ number(char c)
 	start_token();
 	for (;;) {
 		if (t != c_underscore && !add_token(c))
-			RETURN(TOKEN_NONE);
+			RETURN(TOKEN_INVALID);
 		c = lexchar();
 		t = cclass(c);
 		switch (n) {
@@ -260,7 +264,7 @@ string(char q)
 		if (c == q) {
 			char *ret = snek_alloc(snek_lex_len + 1);
 			if (!ret)
-				RETURN(TOKEN_NONE);
+				RETURN(TOKEN_INVALID);
 			strcpy(ret, snek_lex_text);
 			snek_token_val.string = ret;
 			RETURN(STRING);
@@ -285,7 +289,7 @@ string(char q)
 				t = hex(lexchar()) << 4;
 				t |= hex(lexchar());
 				if (t < 0)
-					RETURN(TOKEN_NONE);
+					RETURN(TOKEN_INVALID);
 				c = t;
 				break;
 			default:
@@ -293,7 +297,7 @@ string(char q)
 			}
 		}
 		if (!add_token(c))
-			RETURN(TOKEN_NONE);
+			RETURN(TOKEN_INVALID);
 	}
 }
 
@@ -512,12 +516,12 @@ snek_lex(void)
 			return number(c);
 
 		if (!is_name(c, true))
-			RETURN(TOKEN_NONE);
+			RETURN(TOKEN_INVALID);
 
 		start_token();
 		do {
 			if (!add_token(c))
-				RETURN(TOKEN_NONE);
+				RETURN(TOKEN_INVALID);
 			c = lexchar();
 		} while (is_name(c, false));
 		unlexchar(c);

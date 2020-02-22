@@ -39,5 +39,8 @@ snekde: snekde.py
 	cp $^ $@
 	chmod +x $@
 
+check:
+	black --check snekde.py
+
 clean::
 	rm -f snekde snekde.desktop

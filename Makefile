@@ -17,9 +17,9 @@ SNEK_ROOT = .
 
 include snek-install.defs
 
-SNEK_OTHEROS?=1
+SNEK_OTHEROS?=0
 ifeq ($(SNEK_OTHEROS),1)
-SNEK_OTHEROS_DIR=$(SNEK_HOSTS)/linux $(SNEK_HOSTS)/windows $(SNEK_HOSTS)/macosx
+SNEK_OTHEROS_DIR=$(SNEK_HOSTS)/linux $(SNEK_HOSTS)/windows $(SNEK_HOSTS)/macosx $(SNEK_HOSTS)/zip
 endif
 
 SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
@@ -27,7 +27,7 @@ SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
 SNEKS = $(SNEK_PORTS)/posix/snek $(FIRMWARE)
 
 all: $(SNEKS)
-	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)); done
+	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)) || exit 1; done
 
 $(SNEKS): FORCE
 	+cd `dirname $@` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR)
@@ -36,6 +36,7 @@ FORCE:
 
 check: all
 	+cd test && make $@
+	+black --check --exclude 'fail-syntax-.*\.py' .
 
 SHAREFILES = \
 	snek.defs \

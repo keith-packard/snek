@@ -19,5 +19,6 @@ False, -2, 0
 True, -2, 1
 ord, 1
 chr, 1
+abs, 1
 math.sqrt, 1
 None, -2, SNEK_NULL

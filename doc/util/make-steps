@@ -1,0 +1,7 @@
+#!/bin/sh
+dir=`dirname $0`
+for i in "$@"; do
+	step=`basename "$i" .html`.adoc
+	"$dir"/make-step < "$i" > "$step"
+	echo "include::$step"'[]'
+done

@@ -1,0 +1,5 @@
+snek-uduino-*.elf
+snek-uduino-*.hex
+snek-uduino-*.map
+snek-uduino-install
+ao-product.h

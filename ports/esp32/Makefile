@@ -12,16 +12,28 @@
 # General Public License for more details.
 #
 
-all:
-	make -C main all
-	./esp32-idf build
+include ../../snek.defs
 
-clean:
-	./esp32-idf clean
-	make -C main clean
+ESP32_IDF ?= ./esp32-idf
+
+TARGET=snek-esp32-$(SNEK_VERSION).bin
+TARGET_DASH=snek-esp32-$(SNEK_VERSION_DASH).bin
+
+all: $(TARGET)
+
+$(TARGET): build/$(TARGET_DASH)
+	cp $^ $@
+
+build/$(TARGET_DASH):
+	make -C main all
+	SNEK_VERSION_DASH=$(SNEK_VERSION_DASH) $(ESP32_IDF) build
+
+clean::
+	$(ESP32_IDF) clean
+	+make -C main clean
 
 load:
-	./esp32-idf -p /dev/ttyUSB1 flash
+	$(ESP32_IDF) -p /dev/ttyUSB1 flash
 
 connect:
 	minicom -D /dev/ttyUSB1 -b 115200

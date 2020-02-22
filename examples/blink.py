@@ -14,6 +14,7 @@
 
 led = D13
 
+
 def blink():
     talkto(led)
     while True:
@@ -22,5 +23,5 @@ def blink():
         off()
         time.sleep(0.5)
 
-blink()
 
+blink()

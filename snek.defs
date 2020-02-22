@@ -14,6 +14,9 @@ SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
 SNEK_PORTS = $(SNEK_ROOT)/ports
 SNEK_HOSTS = $(SNEK_ROOT)/hosts
+SNEK_DOC = $(SNEK_ROOT)/doc
+SNEK_LESSONS = $(SNEK_DOC)/lessons
+SNEK_DOC_UTIL = $(SNEK_DOC)/util
 
 SNEK_SRC = \
 	snek-builtin.c \

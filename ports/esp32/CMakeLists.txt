@@ -3,4 +3,4 @@
 cmake_minimum_required(VERSION 3.5)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(hello-world)
+project(snek-esp32-$ENV{SNEK_VERSION_DASH})

@@ -121,5 +121,7 @@ main (int argc, char **argv)
 
 	if (snek_posix_input == stdin)
 		printf("\n");
+	else
+		fclose(snek_posix_input);
 	return ret ? 0 : 1;
 }

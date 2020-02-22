@@ -14,10 +14,10 @@ for i in "$@"; do
 done
 qemu=qemu-system-riscv32
 elf="$here/snek-qemu-riscv-@SNEK_VERSION@.elf"
-machine=spike
+machine=virt,accel=tcg
 cpu=sifive-e31
 chardev="-chardev stdio,mux=on,id=stdio0"
 serial="-serial none"
 mon="-monitor none"
 semihost="-semihosting-config enable=on,chardev=stdio0,$args"
-$qemu $chardev $serial $mon $semihost -machine $machine -cpu $cpu -kernel $elf -nographic $extra
+$qemu $chardev $serial $mon $semihost -machine $machine -cpu $cpu -kernel $elf -nographic -bios none $extra

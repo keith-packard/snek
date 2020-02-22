@@ -19,7 +19,7 @@ Keith Packard <keithp@keithp.com>
 
 ifndef::backend-pdf[]
 [#logo]
-[link=https://keithp.com/snek]
+[link=https://sneklang.org]
 image::snek.svg[Snek]
 endif::[]
 
@@ -660,7 +660,7 @@ no longer less than 100.
 
 === If
 
-"If" statements provide a way of selecting one of many paths of
+`If` statements provide a way of selecting one of many paths of
 execution. Each block of statements is preceded by an expression: if
 the expression evaluates to `True`, then the following statements are
 executed. Otherwise, the next test is tried until the end of the
@@ -832,7 +832,7 @@ Floating point values (represented internally in IEEE 854
 `1.70141e+38`. There is 1 sign bit, 8 bits of exponent and 23
 stored/24 effective bits of significand (often referred to
 as the mantissa). There are two values of infinity (positive and
-negative) and a "Not a Number" (NaN) value indicating a
+negative) and a “Not a Number” (NaN) value indicating a
 failed computation. Computations using integer
 values will generate an error for values which cannot be
 represented as a 24-bit integer. That includes values that
@@ -882,10 +882,10 @@ separating out names and keywords from operators and other syntax.
 
         :       ;       ,       (       )       [       ]       {
         }       +       -       *       **      /       //      %
-        &       |       ~       !       ^       <<      >>      =
-        +=      -=      *=      **=     /=      //=     %=      &=
-        |=      ~=      ^=      <<=     >>=     >       !=      <
-        <=      ==      >=      >       
+        &       |       ~       ^       <<      >>      =      +=
+	-=      *=      **=     /=      //=     %=      &=     |=
+	~=      ^=      <<=     >>=     >       !=      <      <=
+	==      >=      >       
 
 === White Space (Spaces and Newlines)
 
@@ -1111,12 +1111,12 @@ _value_ ``/`` _value_::
 The Divide operator performs division on numbers.(((/)))
 
 _value_ ``//`` _value_::
-The Div operator performs "integer division" on numbers, producing a
+The Div operator performs “integer division” on numbers, producing a
 result such that `x // y == floor(x / y)` for all numbers
 `x` and `y`.(((//)))
 
 _value_ ``%`` _value_::
-The Modulus operator gives the "remainder after division"
+The Modulus operator gives the “remainder after division”
 of its arguments, such that `x == y * (x // y) + x % y` for
 all numbers `x` and `y`.
 If the left operand is a string, it performs “interpolation”
@@ -1128,13 +1128,13 @@ _value_ *&#42;&#42;* _value_::
 The Power operator performs exponentiation on numbers.(((**)))
 
 _value_ ``&`` _value_::
-The Logical And operator performs bit-wise AND on integers.(((&)))
+The Binary And operator performs bit-wise AND on integers.(((&)))
 
 _value_ ``|`` _value_::
-The Logical Or operator performs bit-wise OR on integers.(((|)))
+The Binary Or operator performs bit-wise OR on integers.(((|)))
 
 _value_ ``^`` _value_::
-The Logical Xor operator performs bit-wise XOR on integers.(((^)))
+The Binary Xor operator performs bit-wise XOR on integers.(((^)))
 
 _value_ ``<<`` _value_::
 The Left Shift operator does bit-wise left shift on integers.(((<<)))
@@ -1142,14 +1142,37 @@ The Left Shift operator does bit-wise left shift on integers.(((<<)))
 _value_ ``>>`` _value_::
 The Right Shift operator does bit-wise left shift on integers.(((>>)))
 
-``!`` _value_::
-The Not operator performs a Boolean negation operation on its right
-operand. That is, if the operand is one of the True values, then Not returns
-`False` (which is 0), and if the operand is a `False` value, then Not
-returns `True` (which is 1).(((!)))
+``not`` _value_::
+The Boolean Not operator yields True if its argument is False, False
+otherwise. That is, if the operand is one of the True values, then Not
+returns `False` (which is 0), and if the operand is a `False` value,
+then Not returns `True` (which is 1).(((not)))
+
+_a_ ``and`` _b_::
+The Boolean And operator first evalutes _a_. If that is False, then its
+value is returned. Otherwise, the value of _b_ is returned.(((and)))
+
+_a_ ``or`` _b_::
+The Boolean And operator first evalutes _a_. If that is True, then its
+value is returned. Otherwise, the value of _b_ is returned.(((or)))
+
+_a_ ``is`` _b_::
+True if _a_ and _b_ are the same object.(((is)))
+
+_a_ ``is not`` _b_::
+True if _a_ and _b_ are not the same object.(((is not)))
+
+_a_ ``in`` _b_::
+True if _a_ is contained in _b_. For strings, this means that _a_ is a
+substring of _b_. If _b_ is a tuple or list, this means that _a_ is
+one of the elements of _b_. If _b_ is a dictionary, this means
+that _a_ is one of the keys of _b_.(((in)))
+
+_a_ ``not in`` _b_::
+This is the same as ``not (a in b)``.(((not in)))
 
 ``~`` _value_::
-The Logical Not operator performs a bit-wise NOT operation on its
+The Binary Not operator performs a bit-wise NOT operation on its
 integer operand.(((~)))
 
 ``–`` _value_::
@@ -2211,7 +2234,7 @@ command, press and release Esc, then press and release '1'.
 Between the two panes is a separator line. At the end of that line is
 the name of the currently connected Snek device, such as `/dev/ttyUSB0`
 on Linux or `COM12` on Windows. If there isn't a device connected, it
-will say "<no device>".
+will say “<no device>”.
 
 The cursor shows which pane you are currently working with. To switch
 between the editor and console panes, use the F7 key. If you don't
@@ -2427,7 +2450,7 @@ $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-itsybitsy3v-{version}.hex
 for µduino boards, use the µduino binary.
 +
 [source,subs="attributes+"]
-$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-µduino-{version}.hex
+$ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-uduino-{version}.hex
 
 [%nonfacing]
 [appendix]
@@ -2730,6 +2753,53 @@ the reset button twice in quick succession.
 Onec the board is showing a file system on your computer, find the
 `snek-nano33iot-{version}.uf2` file included in the Snek package for
 your machine and copy it to the file system.
+
+[%nonfacing]
+[appendix]
+= Snek on Lego EV3
+
+Snek for Lego EV3 runs under link:https://www.ev3dev.org/[ev3dev].
+
+The following sensors are supported:
+
+* link:https://education.lego.com/en-us/products/ev3-touch-sensor/45507[Lego EV3
+  Touch Sensor],
++
+True and False are reported when `read()`.
++
+* link:https://education.lego.com/en-us/products/ev3-color-sensor/45506[Lego EV3
+  Color Sensor], named "light sensor" in Snek,
++
+The sensor can be configured by calling `light_reflected`, `light_ambient`,
+`light_color` and `light_rgb` functions.
++
+** In `light_reflected` mode the sensor returns intensity of reflected LED
+  light, range 0..1. This is the default mode.
+** In `light_ambient` mode the sensor returns intensity of ambient light, range
+  0..1.
+** In `light_color` mode the sensor returns a detected color name, one of
+  `'black'`, `'blue'`, `'green'`, `'yellow'`, `'white'`, `'brown'`, or None if
+  no object is detected.
+** In `light_rgb` mode the sensor returns RGB color tuple of 3 elements, each
+component in range 0..1.
+
+* link:https://education.lego.com/en-us/products/ev3-ultrasonic-sensor/45504[
+  Lego EV3 Ultrasonic Sensor], named "distance sensor" in Snek.
++
+A distance to the object in front of sensor in centimeters is returned, or `Inf`
+if no object is detected.
+
+Sensor ports are named 1-4, matching the markings on EV3 body.
+
+Sensors are detected automatically, so they can be plugged/unplugged while Snek
+is running.
+
+To run Snek on EV3:
+
+- link:https://www.ev3dev.org/docs/getting-started/[boot ev3dev],
+- link:https://www.ev3dev.org/docs/tutorials/[connect it to the host],
+- Copy `snek-ev3-{version}` to EV3 via `scp`.
+- link:https://www.ev3dev.org/docs/tutorials/connecting-to-ev3dev-with-ssh/[SSH to EV3] and run `./snek-ev3-{version}`.
 
 ifdef::backend-pdf[]
 [index]

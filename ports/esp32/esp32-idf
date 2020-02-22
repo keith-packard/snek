@@ -1,5 +1,11 @@
 #!/bin/bash
 
-. ${ESP_IDF-$HOME/esp/esp-idf}/export.sh
+if [ -d $HOME/src/esp/esp-idf ]; then
+    ESP_IDF_DEFAULT=$HOME/src/esp/esp-idf
+else
+    ESP_IDF_DEFAULT=$HOME/esp/esp-idf
+fi
+
+. ${ESP_IDF-$ESP_IDF_DEFAULT}/export.sh
 
 exec idf.py "$@"

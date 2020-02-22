@@ -23,12 +23,28 @@ snek_string_make(char c)
 	return snek_string_to_poly(new);
 }
 
+#ifdef SNEK_STRING_BUILD
+snek_poly_t
+snek_string_build(const char *s)
+{
+	char *new = snek_alloc(strlen(s) + 1);
+	if (new)
+		strcpy(new, s);
+	return snek_string_to_poly(new);
+}
+#endif
+
 snek_poly_t
 snek_string_get(char *string, snek_poly_t p, bool report_error)
 {
-	snek_soffset_t o = snek_poly_get_soffset(p);
+	snek_soffset_t so = snek_poly_get_soffset(p);
+	snek_offset_t len = strlen(string);
+	snek_offset_t o;
 
-	if (o < 0 || strlen(string) <= (snek_offset_t) o) {
+	o = (snek_offset_t) so;
+	if (so < 0)
+		o = len - (-so);
+	if (len <= o) {
 		if (report_error)
 			snek_error_value(p);
 		return SNEK_NULL;
@@ -95,7 +111,7 @@ snek_string_times(char *a, snek_soffset_t b)
 	return snek_string_to_poly(s);
 }
 
-static uint8_t
+static snek_offset_t
 snek_next_format(char *a)
 {
 	char *percent = strchr(a, '%');
@@ -149,20 +165,32 @@ snek_buf_sprints(const char *s, void *closure)
 	return 0;
 }
 
-char *
+snek_poly_t
 snek_string_interpolate(char *a, snek_poly_t poly)
 {
-	uint8_t percent = 0;
+	snek_offset_t percent = 0;
 	char *result = NULL;
 	snek_offset_t o = 0;
+	bool is_list;
+	snek_offset_t size;
 	snek_buf_t buf = {
 		.put_c = snek_buf_sprintc,
 		.put_s = snek_buf_sprints,
 		.closure = &result
 	};
 
+	size = 1;
+	is_list = false;
+	if (snek_poly_type(poly) == snek_list) {
+		snek_list_t *list = snek_poly_to_list(poly);
+		if (snek_list_type(list) != snek_list_dict) {
+			is_list = true;
+			size = list->size;
+		}
+	}
+
 	while (a[percent]) {
-		uint8_t next = snek_next_format(a + percent) + percent;
+		snek_offset_t next = snek_next_format(a + percent) + percent;
 		snek_stack_push(poly);
 		snek_stack_push_string(a);
 		result = snek_string_catn(result, 0, result ? strlen(result) : 0,
@@ -173,30 +201,32 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 		if (a[percent] == '%') {
 			percent++;
 			char format = a[percent];
-			if (format)
+			snek_stack_push(poly);
+			snek_stack_push_string(a);
+			if (format == '\0') {
+				o = size + 1;
+			} else {
 				percent++;
-			if (format == '%')
-				snek_buf_sprintc('%', &buf);
-			else {
-				snek_poly_t	*data = &poly;
-				snek_offset_t	size = 1;
-				if (snek_poly_type(poly) == snek_list) {
-					snek_list_t *list = snek_poly_to_list(poly);
-					data = snek_list_data(list);
-					size = list->size;
+				if (format == '%') {
+					snek_buf_sprintc('%', &result);
+				} else {
+					snek_poly_t	*data = &poly;
+
+					if (is_list)
+						data = snek_list_data(snek_poly_to_list(poly));
+					if (o >= size)
+						o = size + 1;
+					else
+						snek_poly_format(&buf, data[o++], format);
 				}
-				snek_poly_t v = SNEK_ZERO;
-				if (o < size)
-					v = data[o++];
-				snek_stack_push(poly);
-				snek_stack_push_string(a);
-				snek_poly_format(&buf, v, format);
-				a = snek_stack_pop_string(a);
-				poly = snek_stack_pop();
 			}
+			a = snek_stack_pop_string(a);
+			poly = snek_stack_pop();
 		}
 	}
-	return result;
+	if (o != size)
+		return SNEK_INVALID;
+	return snek_string_to_poly(result);
 }
 
 void

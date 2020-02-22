@@ -605,13 +605,19 @@ actual-p	: ASSIGN
 				snek_code_set_push(snek_code_prev_insn());
 			}@
 		;
-actuals-p	: COMMA expr actual-p actuals-p
+actuals-p	: COMMA actuals-end
+		|
+		;
+actuals-end	: expr actual-p actuals-p
 		|
 		;
 opt-dict-ents	: dict-ent dict-ents-p
 		|
 		;
-dict-ents-p	: COMMA dict-ent dict-ents-p
+dict-ents-p	: COMMA dict-ents-end
+		|
+		;
+dict-ents-end	: dict-ent dict-ents-p
 		|
 		;
 dict-ent	: expr

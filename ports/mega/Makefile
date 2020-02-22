@@ -63,7 +63,7 @@ $(HEX): $(ELF)
 
 $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-mega-install: snek-mega-install.in
 	$(SNEK_SED) $^ > $@

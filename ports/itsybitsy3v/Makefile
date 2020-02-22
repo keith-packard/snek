@@ -38,7 +38,7 @@ all: $(ELF) $(HEX)
 
 $(PROG): Makefile $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
-	@awk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 $(SNEK_OBJ): $(SNEK_INC)
 
