@@ -305,3 +305,6 @@ insert the connectors the right way, with the black wire towards the
 center of the snekboard and the yellow or white wire towards the edge.
 Hot glue the distance sensors to 1x4 tiles and attach them at either
 end of the bumper car.
+
+
+image::snek.svg[align="center"]
