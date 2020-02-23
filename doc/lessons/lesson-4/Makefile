@@ -11,6 +11,7 @@ PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css  coderay-asciidoctor.css
 IMAGE_FILES=\
+	washing-machine.svg \
 	washing-machine.jpg \
 	21980.dat.png \
 	3003.dat.png \
