@@ -20,7 +20,7 @@ Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 
 ifndef::backend-pdf[]
 [#logo]
-[link=https://keithp.com/snek]
+[link=https://sneklang.org]
 image::snek.svg[Snek]
 endif::[]
 

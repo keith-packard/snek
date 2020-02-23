@@ -9,12 +9,12 @@ too small to run [MicroPython](https://micropython.org/).
 
 ## Documentation
 
- * The [Snek Home Page](https://keithp.com/snek) provides more information
+ * The [Snek Home Page](https://sneklang.org) provides more information
    about the language and community.
 
- * [Snek Manual in HTML format](https://keithp.com/snek/snek.html)
+ * [Snek Manual in HTML format](https://sneklang.org/snek.html)
 
- * [Snek Manual in PDF format](https://keithp.com/snek/snek.pdf)
+ * [Snek Manual in PDF format](https://sneklang.org/snek.pdf)
 
 ## Downloads
 
@@ -22,7 +22,7 @@ too small to run [MicroPython](https://micropython.org/).
 
  * Packages for Linux, including older versions of Debian, Mac OS X
    and Windows are available in the
-   [Snek Dist directory](http://keithp.com/snek/dist)
+   [Snek Dist directory](http://sneklang.org/dist)
 
 ## To Do list
 
@@ -107,7 +107,7 @@ Snek is designed to run on small embedded devices with 32kB or more of
 flash and 2kB or more of RAM. Snek has been ported to a variety of
 embedded devices, providing access to pins as GPIOs as well as some
 built-in peripherals. Documentation about the supported boards can be
-found in the [Snek Manual](https://keithp.com/snek/snek.html).
+found in the [Snek Manual](https://sneklang.org/snek.html).
 
 ## Running on Linux, Mac OS X Windows
 
