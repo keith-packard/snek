@@ -7,9 +7,6 @@ include $(SNEK_ROOT)/snek-install.defs
 
 ADOC_FILES=lesson-3-bumper-car.adoc
 
-LESSON_1=$(SNEK_ROOT)/doc/lessons/lesson-1
-LESSON_2=$(SNEK_ROOT)/doc/lessons/lesson-2
-
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css  coderay-asciidoctor.css
