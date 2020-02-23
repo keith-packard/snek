@@ -1,4 +1,4 @@
-= Snek Project #3: The Washing Machine
+= Snek Lesson #3: The Washing Machine
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
 :title-logo-image: image:washing-machine.jpg[]
