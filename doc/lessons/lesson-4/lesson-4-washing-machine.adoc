@@ -1,7 +1,7 @@
-= Snek Lesson #3: The Washing Machine
+= Snek Lesson #4: The Washing Machine
 Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :version: 0.0
-:title-logo-image: image:washing-machine.jpg[]
+:title-logo-image: image:washing-machine.svg[width="600",align="center"]
 :revnumber: v{version}
 :revdate: 1 Jan 1970
 :experimental:
@@ -45,84 +45,83 @@ https://keithp.com
 
 == The Washing Machine
 
-This lesson contains instructions for building and programming a
-“Washing Machine”, a simulated household appliance.
+Both the line bug and bumper car only had to react to the
+environment. They did not have to remember or follow a sequence of
+actions (beyond controlling the motor). This project, requires
+stepping through a prescribed set of states to act like a simple
+washing machine.
 
-ifdef::backend-pdf[<<<]
-== Building The Washing Machine
-
-Follow the next few pages to complete the construction of your washing
-machine.  For the wheels, you can use any that will fit on the axles and
-not rub on the rest of the model.
+.Washing Machine
+image::washing-machine.jpg[width=600,align="center"]
 
 Important features:
 
- * One motor driving the drum
- * Two touch sensors, one to detect when the door is close
-   and another to start the machine
- * Two lights to help tell what the machine is doing
+ * One motor to rotate the washer drum (the blobby disc of clothes 😉.
 
-=== Sensing Touch
+ * Two touch sensors: one for control and one for the door.  The
+   red=power and white=signal wires mean the switch will be high when
+   pressed and pulldown() should be used before reading it.
 
-You might want to review the *Switches* section from the Snekboard
-lesson because we're going to need to use the `pulldown` function
-here.
+ * Two LEDs to indicate the machine state.
 
-=== Waiting For A Switch Press
+The goals of this lesson are to build a model which does the
+following:
 
-Our washing machine shouldn't start the cycle until the door is
-closed. To wait for that, we'll need to wait for our door switch to be
-_on_. If we use the `pulldown` function, when the switch is pressed,
-the value on the port will be 1 (or True). To wait for that to happen,
-we'll use a `while` loop, testing the door switch (A1) over and over
-again, but doing nothing in the meantime:
+ * Before starting, the door needs to be closed
 
-[source,subs="verbatim,quotes"]
-----
-	pulldown(A1)
-	while not read(A1):
-		pass
-----
+ * The control button starts a wash.
 
+ * To wash: rock back and forth for a while
 
-=== Simulating the Wash Cycle
+ * To spin: rotate fast
 
-For this, we want the drum to slosh back and forth several
-times. Probably not as long as a real washing machine; that can take
-half an hour or more. We don't need it to go as fast as
-possible, so we'll use a lower speed setting. Here's how to make it
-slosh back and forth once:
+ * Use the lights to indicate what's going on
 
-[source,subs="verbatim,quotes"]
-----
-	> *talkto(M1)*
-	> *setpower(0.5)*
-	> *setleft()*
-	> *onfor(0.5)*
-	> *setright()*
-	> *onfor(0.5)*
-----
+Unlike the Line Bug and Bumper Car, which respond immediately to their
+environment this model runs through a sequence of fairly complicated
+operations.
 
-This makes it go one direction for a short amount of time, and then
-switch around and go the other way.
+Rather than try to write the program in complete detail on the first
+attempt, we’ll start by writing pieces of the program and then put
+them together at the end.
 
-To make it do this several times, we could just copy that code as many
-times as we want it to repeat. Or, we could ask the robot to repeat
-this a few times with a `for` loop.
+=== Washing Clothes
 
-==== The For Loop
+If you've ever watched a washing machine at work, you'll see it slosh
+the clothes back and forth though sudsy water.  We'll simulate that by
+slowly rocking the “drum” several times, alternating first in one
+direction and then the other.
 
-The `for` loop asks snek to count, and then do something each
-time. It will count using numbers by using the `range` function. That
-tells snek how far to count. Snek starts counting at 0 and stops
-counting just before it reaches the value given to `range`. If you
-give range the value 10, then Snek will count 0, 1, 2, 3, 4, 5, 6, 7,
-8 and finally 9. This is ten different numbers, so range(10) means to
-count ten times starting at 0.
+To go in one direction and then the other means using `setright` and
+`setleft` before turning the motor on for a short time. We'll use a
+lower power setting so that the drum doesn't appear to go too
+fast. That might look something like this:
 
 [source,subs="verbatim,quotes"]
 ----
-	> *for i in range(10):*
+def Slosh():
+    talkto(M1)
+    setpower(0.5)
+    setleft()
+    onfor(1)
+    setright()
+    onfor(1)
+----
+
+.The For Loop
+****
+
+The `for` loop asks snek to count, and then do something each time. It
+will count using numbers by using the `range` function. That tells
+snek how far to count. Snek starts counting at 0 and stops counting
+just before it reaches the value given to `range`. If you give range
+the value 5, then Snek will count 0, 1, 2, 3, and finally 4. This is
+five different numbers, so range(5) means to count five times starting
+at 0.
+
+[source,subs="verbatim,quotes"]
+----
+	> *for i in range(5):*
 	+	*print(i)*
 	+
 	0
@@ -130,40 +129,126 @@ count ten times starting at 0.
 	2
 	3
 	4
-	5
-	6
-	7
-	8
-	9
 	>
 ----
+****
 
-==== Washing Many Times
-
-We can now use a `for` loop to slosh back and forth as many times as
-we like, without needing to copy the slosh bits that many times.
+We need to `Slosh` several times in a row. We'll do that with a `for`
+loop. Let's write a Wash function that runs the `Slosh` function ten
+times:
 
 [source,subs="verbatim,quotes"]
 ----
-	def wash():
-		talkto(M1)
-		setpower(0.5)
-		for i in range(10):
-			setleft()
-			onfor(0.5)
-			setright()
-			onfor(0.5)
+def Wash():
+    for i in range(10):
+        Slosh()
 ----
 
-=== Simulating the Spin Cycle
+You can adjust the number of times it sloshes, the speed of sloshing
+and the length of time it sloshes in each direction by changing the
+numbers in these two functions.
 
-go fast.
+=== Spinning To Wring Out the Water
 
-=== Adding Lights
+After washing the clothes, the washing machine needs to get as much of
+the water out as possible. Otherwise, your clothes would take a lot
+longer to dry. It does this by using centrifugal force. By spinning
+the drum quickly, much of the water in the clothes is drawn out
+through holes in the drum and drained away.
 
-blink.
+We'll simulate that by running our motor at high speed for a
+while like this:
 
-=== Building The Washing Machine
+[source,subs="verbatim,quotes"]
+----
+def Spin():
+    talkto(M1)
+    setpower(1)
+    setright()
+    onfor(5)
+----
+
+This time, we make the motor go as fast as it can for five
+seconds. You can make it go longer, switch directions or whatever else
+you like by changing this function.
+
+=== Waiting For Switches
+
+We want our washing machine to wait until the door is closed and the
+start button is pressed before washing the clothes. For each switch,
+we'll want to keep checking to see if it has been pressed using a
+`while` loop. Recalling what we learned in lesson 1 about switches, we
+need to use the `pulldown` function so that our on/off switches work
+correctly. Putting those together, we might create a WaitSwitch
+function like this:
+
+[source,subs="verbatim,quotes"]
+----
+def WaitSwitch(switch):
+    pulldown(switch)
+    while not read(switch):
+        pass
+----
+
+=== Putting The Program Together
+
+Now that we've got most of the pieces of our washing machine ready, we
+can assemble them together by writing a master function, `WashCycle`
+that does the steps in the order we defined above:
+
+ * Door closed
+ * Start button pushed
+ * Wash
+ * Spin
+ * Done
+
+That program might look like this:
+
+[source,subs="verbatim,quotes"]
+----
+def WashCycle():
+
+    # Wait for door to be closed
+    WaitSwitch(A1)
+
+    # Wait for start button
+    WaitSwitch(A8)
+
+    # Wash the clothes
+    Wash()
+
+    # Spin them to wring out some water
+    Spin()
+   
+    # All done!
+----
+
+=== Indicator Lights
+
+We've stuck a couple of lights on our washing machine to tell the user
+what is happening. Let's add a couple of functions to turn them on
+and off:
+
+[source,subs="verbatim,quotes"]
+----
+def LightOn(light):
+    talkto(light)
+    setpower(1)
+    on()
+
+def LightOff(light):
+    talkto(light)
+    off()
+----
+
+We can use these wherever we like. One option is to turn one light on
+during the wash cycle and the other during the spin cycle. Another
+idea is to turn one light on when the door is closed, the other while
+the cycle is going, then turn the first off when the door is opened
+again.
+
+[appendix]
+== Building The Washing Machine
 
 Follow the next few pages to complete the construction of your washing
 machine.
@@ -184,3 +269,5 @@ robot.
     towards the edge.
 
  3. Connect the lights to M2 and M3.
+
+image::snek.svg[align="center"]
