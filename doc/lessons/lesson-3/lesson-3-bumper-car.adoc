@@ -169,9 +169,7 @@ def WaitUntilCloseOneDir():
 def WaitUntilCloseOtherDir():
     while read(A7) < 0.4:
 	pass
-
-
-
+----
 
 The rest of the program might then
 look like this:
