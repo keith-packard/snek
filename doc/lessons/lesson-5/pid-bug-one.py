@@ -50,10 +50,10 @@ def process():
 def set_speed(m, val):
     talkto(m)
     if val < 0:
-        setleft()
+        setright()
         setpower(-val)
     else:
-        setright()
+        setleft()
         setpower(val)
 
 
