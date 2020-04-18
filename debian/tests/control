@@ -1,1 +1,2 @@
-Test-Command: make SNEK=snek -C test check
+Test-Command: make SNEK_NATIVE=/usr/bin/snek SNEK_ARM=/usr/share/snek/snek-arm SNEK_RISCV=/usr/share/snek/snek-riscv -C test check
+Depends: @, qemu-system-arm, qemu-system-misc
