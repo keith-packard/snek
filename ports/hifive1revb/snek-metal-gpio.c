@@ -115,8 +115,6 @@ set_out(uint8_t p)
 
 	uint8_t pin = pin_map[p];
 
-	printf("set_pin %d %d\n", pin, pow != 0);
-
 	metal_gpio_set_pin(gpio, pin, pow != 0);
 
 	return SNEK_NULL;
