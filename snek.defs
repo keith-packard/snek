@@ -41,7 +41,10 @@ SNEK_EXT_SRC = \
 	snek-input.c \
 	snek-temperature.c
 
-SNEK_OBJ=$(SNEK_SRC:.c=.o)
+SNEK_SRC_S = \
+	$(SNEK_LOCAL_SRC_S)
+
+SNEK_OBJ=$(notdir $(SNEK_SRC:.c=.o)) $(notdir $(SNEK_SRC_S:.S=.o))
 
 SNEK_RAW_INC = \
 	$(SNEK_ROOT)/snek.h
