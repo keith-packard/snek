@@ -4,9 +4,9 @@ SHAREDIR="@SHAREDIR@"
 
 SNEKDUINO="$SHAREDIR/snek-duemilanove-@SNEK_VERSION@.hex"
 
-action="fuseload"
+action="default"
 
-ISP=usbtiny
+ISP=optiboot
 
 ISPPORT=""
 
@@ -29,7 +29,7 @@ for i in "$@"; do
 		    mode=port
 		    ;;
 		*)
-		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-isp arduinoisp} {-hex snek-duemilanove.hex} {-port /dev/ttyUSB0} {fuseload|load|fuse}" 1>&2
+		      echo "Usage: $0 {-isp optiboot} {-isp usbtiny} {-isp avrisp2} {-isp arduinoisp} {-hex snek-duemilanove.hex} {-port /dev/ttyUSB0} {fuseload|load|fuse}" 1>&2
 		      exit 1
 		      ;;
 	    esac
@@ -51,6 +51,20 @@ done
 FUSES="-U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m"
 
 case "$ISP" in
+    optiboot)
+    # For optiboot, use arduino at 115200 baud
+    [ "$ISPPORT" ] || ISPPORT="-P /dev/ttyUSB0"
+    AVRDUDE="avrdude $ISPPORT -c arduino -b 115200 -p ATMEGA328P"
+    case "$action" in
+	fuse|fuseload)
+	    echo "$0: optiboot can't set fuses" 1>&2
+	    exit 1
+	    ;;
+	default)
+	    action="load"
+	    ;;
+    esac
+    ;;
     arduinoisp)
     # For ArdinoISP, use avrisp + 19200 baud...
     [ "$ISPPORT" ] || ISPPORT="-P /dev/ttyUSB0"
@@ -66,7 +80,7 @@ case "$action" in
     fuse)
 	$AVRDUDE -V -u $FUSES
 	;;
-    fuseload)
+    default|fuseload)
 	$AVRDUDE -V -u $FUSES && $AVRDUDE -U flash:w:"${SNEKDUINO}"
 	;;
     load)
