@@ -23,6 +23,14 @@ MEMORY {
 	stack (!w) : ORIGIN = 0x20000000 + 32K - 2K, LENGTH = 2K
 }
 
+PHDRS
+{
+	rom PT_LOAD;
+	ram PT_LOAD;
+	ram_init PT_LOAD;
+	tls PT_TLS;
+}
+
 SECTIONS {
 	/*
 	 * Rom contents
@@ -33,16 +41,26 @@ SECTIONS {
 
 		KEEP(*(.interrupt))	/* interrupt vectors */
 
-		*(.text*)	/* Executable code */
-	} > rom
+		*(.text.unlikely .text.unlikely.*)
+		*(.text.startup .text.startup.*)
+		*(.text .text.*)
+		*(.gnu.linkonce.t.*)
+	} > rom :rom
 
 	.ARM.exidx : {
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-	} > rom
+	} > rom :rom
 
 	.rodata : {
-		*(.rodata*)	/* Constants */
-	} > rom
+		*(.rodata .rodata.*)
+		*(.gnu.linkonce.r.*)
+		. = ALIGN(8);
+		*(.srodata.cst16)
+		*(.srodata.cst8)
+		*(.srodata.cst4)
+		*(.srodata.cst2)
+		*(.srodata .srodata.*)
+	} > rom :rom
 
 	. = ALIGN(8);
 
@@ -53,16 +71,18 @@ SECTIONS {
 	.textram : ALIGN_WITH_INPUT {
 		PROVIDE(__data_start = .);
 		*(.ramtext)
-	} >ram AT>rom
+	} >ram AT>rom :ram_init
 	PROVIDE(__data_source = LOADADDR(.textram));
 
 	/* Data -- relocated to RAM, but written to ROM */
 	.data : ALIGN_WITH_INPUT {
 		PROVIDE(__snek_data_start = .);
-		snek*(.data)
+		snek*(.data .data.*)
 		__snek_data_end = .;
-		*(.data)	/* initialized data */
-	} >ram AT>rom
+		*(.data .data.*)
+		*(.sdata .sdata.* .sdata2.*)
+		*(.gnu.linkonce.s.*)
+	} >ram AT>rom :ram_init
 	PROVIDE(__snek_data_source = LOADADDR(.data));
 	PROVIDE(__snek_data_size = __snek_data_end - __snek_data_start);
 
@@ -80,9 +100,14 @@ SECTIONS {
 		PROVIDE(__tls_base = .);
 		*(.tdata .tdata.* .gnu.linkonce.td.*)
 		__data_end = .;
-	} >ram AT>rom
+	} >ram AT>rom :tls :ram_init
+
 	PROVIDE(__tdata_source = LOADADDR(.tdata));
 	PROVIDE(__tdata_size = SIZEOF(.tdata));
+
+	PROVIDE( __edata = __data_end );
+	PROVIDE( _edata = __data_end );
+	PROVIDE( edata = __data_end );
 	PROVIDE(__data_size = __data_end - __data_start);
 
 	/* Assign .tbss symbols addresses in rom so that they have the
@@ -97,9 +122,9 @@ SECTIONS {
 		*( .tbss .tbss.* .gnu.linkonce.tb.* )
 		*( .tcommon .tcommon.* )
 		PROVIDE(__tls_end = .);
-	} >ram
+	} >ram AT>ram :tls :ram
 	PROVIDE(__tbss_size = SIZEOF(.tbss));
-	__tls_size = __tls_end - __tls_base;
+	PROVIDE(__tls_size = __tls_end - __tls_base);
 
 	/*
 	 * The linker special cases .tbss segments which are
@@ -112,7 +137,7 @@ SECTIONS {
 	 */
 	.tbss_space : {
 		. = . + __tbss_size;
-	} >ram
+	} >ram AT>ram :ram
 
 	.bss : {
 		PROVIDE(__snek_bss_start = .);
@@ -123,7 +148,12 @@ SECTIONS {
 		*(COMMON)
 		__bss_end = .;
 		PROVIDE(end = .);
-	} >ram
+	} >ram AT>ram :ram
+	PROVIDE( __end = __bss_end );
+	PROVIDE( _end = __bss_end );
+	PROVIDE( end = __bss_end );
+	PROVIDE( __bss_size = __bss_end - __bss_start );
+
 	PROVIDE(__snek_bss_size = (__snek_bss_end - __snek_bss_start));
 	PROVIDE(__bss_size = __bss_end - __bss_start);
 
