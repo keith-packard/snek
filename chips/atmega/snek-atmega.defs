@@ -33,7 +33,8 @@ SNEK_ATMEGA_SRC = \
 	snek-atmega-eeprom.c \
 	snek-io.c \
 	snek-strtof.c \
-	snek-atmega-serial.c
+	snek-atmega-serial.c \
+	snek-atmega-time.c
 
 SNEK_ATMEGA_MATH_INC = \
 	$(SNEK_ATMEGA)/snek-atmega-math.h \

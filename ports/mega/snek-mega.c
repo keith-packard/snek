@@ -34,42 +34,6 @@ static inline uint8_t pin_bit(uint8_t p)
 	return (p & 7);
 }
 
-#define clockCyclesPerMicrosecond	(F_CPU / 1000000L)
-#define clockCyclesToMicroseconds(a)	((a) / clockCyclesPerMicrosecond)
-
-// the prescaler is set so that timer0 ticks every 64 clock cycles, and the
-// the overflow handler is called every 256 ticks.
-#define MICROSECONDS_PER_TIMER0_OVERFLOW (clockCyclesToMicroseconds(64 * 256))
-
-// the whole number of milliseconds per timer0 overflow
-#define MILLIS_INC (MICROSECONDS_PER_TIMER0_OVERFLOW / 1000)
-
-// the fractional number of milliseconds per timer0 overflow. we shift right
-// by three to fit these numbers into a byte. (for the clock speeds we care
-// about - 8 and 16 MHz - this doesn't lose precision.)
-#define FRACT_INC ((MICROSECONDS_PER_TIMER0_OVERFLOW % 1000) >> 3)
-#define FRACT_MAX (1000 >> 3)
-
-volatile uint32_t timer0_millis = 0;
-static uint8_t timer0_fract = 0;
-
-ISR(TIMER0_OVF_vect)
-{
-	// copy these to local variables so they can be stored in registers
-	// (volatile variables must be read from memory on every access)
-	uint32_t m = timer0_millis;
-	uint8_t f = timer0_fract;
-
-	m += MILLIS_INC;
-	f += FRACT_INC;
-	if (f >= FRACT_MAX) {
-		f -= FRACT_MAX;
-		m += 1;
-	}
-	timer0_fract = f;
-	timer0_millis = m;
-}
-
 static void
 port_init(void)
 {
@@ -691,32 +655,6 @@ snek_builtin_stopall(void)
 			set_out(p);
 		}
 	return SNEK_NULL;
-}
-
-static uint32_t
-snek_millis(void)
-{
-	uint32_t	millis;
-
-	cli();
-	millis = timer0_millis;
-	sei();
-	return millis;
-}
-
-snek_poly_t
-snek_builtin_time_sleep(snek_poly_t a)
-{
-	uint32_t	expire = snek_millis() + (snek_poly_get_float(a) * 1000.0f + 0.5f);
-	while (!snek_abort && (int32_t) (expire - snek_millis()) > 0)
-	       ;
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_time_monotonic(void)
-{
-	return snek_float_to_poly(snek_millis() / 1000.0f);
 }
 
 static uint32_t random_next;
