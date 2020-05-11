@@ -87,7 +87,7 @@ SNEK_WARNINGS = \
 	-Wimplicit-fallthrough
 
 SNEK_BASE_CFLAGS = \
-	-ffunction-sections -fdata-sections -Wl,--gc-sections \
+	-Wl,--gc-sections \
 	-D_DEFAULT_SOURCE \
 	-I$(SNEK_ROOT) $(SNEK_LOCAL_CFLAGS) \
 	-DSNEK_VERSION='"$(SNEK_VERSION)"'
