@@ -66,9 +66,9 @@ DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) snek.svg $(IMAGE_FILES)
 
 $(HTML_FILES): $(INC_FILES)
 
-install: $(DOCFILES)
-	install -d $(DESTDIR)$(DOCDIR)
-	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
+install: $(PDF_FILES)
+	install -d $(DESTDIR)$(DOCDIR)/lessons
+	for i in $(PDF_FILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR)/lessons || exit 1; done
 
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) $(SNEK_ROOT)/doc/fonts $(SNEKDOC)/lessons/lesson-2/
