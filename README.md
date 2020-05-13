@@ -48,6 +48,11 @@ Here's some places that have seen recent work
    with step-by-step construction information, and then explore
    programming on a Snekboard.
 
+ * Improved time.sleep precision. time.sleep is now accurate to the
+   resolution of the timer. On a Duemilanove, that's
+   4µs. time.monotonic still returns a float, so the longer
+   the board has been running, the lower the precision...
+
 ## Build and Run!
 
 If you want to build Snek yourself, you'll need to have the build
