@@ -57,11 +57,9 @@ snek-board-install: snek-board-install.in
 	$(SNEK_SED) $^ > $@
 	chmod +x $@
 
-echo:
-	echo PROG is $(PROG)
-
-install: $(UF2) $(BOOTLOADER_BIN) snek-board-install snek-board-install.1
+install: $(PROG) $(UF2) $(BOOTLOADER_BIN) snek-board-install snek-board-install.1
 	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(BOOTLOADER_BIN) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(BINDIR)
