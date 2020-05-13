@@ -1,0 +1,4 @@
+#!/bin/bash
+snek-board-install
+sleep 2
+python3 ./snek-board-test.py
