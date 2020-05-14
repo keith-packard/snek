@@ -242,6 +242,9 @@
 #define AO_SNEK_CHANNEL_22	0
 #define AO_SNEK_ADC_22		0xff
 
+#define NEOPIXEL_RESET		1
+#define NEOPIXEL_RESET_POWER_PIN	22
+
 #define AO_SNEK_NUM_PIN		23
 
 #define LED_0_PORT		(&samd21_port_a)

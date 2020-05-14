@@ -246,6 +246,10 @@
 #define AO_SNEK_CHANNEL_16	0
 #define AO_SNEK_ADC_16		0xff
 
+#define NEOPIXEL_RESET	2
+#define NEOPIXEL_RESET_POWER_PIN	16
+#define NEOPIXEL_RESET_DIR_PIN		16
+
 #define AO_SNEK_NUM_PIN		17
 
 #define LED_0_PORT		(&samd21_port_a)

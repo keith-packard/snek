@@ -20,7 +20,7 @@
 #include <ao-snek.h>
 
 void
-ao_snek_neopixel_write(void *gpio, uint8_t pin, int npixel, struct snek_neopixel *pixels)
+ao_snek_neopixel_write(void *gpio, uint8_t pin, int npixel, const struct snek_neopixel *pixels)
 {
 	volatile uint32_t *outtgl = &(((struct samd21_port *) gpio)->outtgl);
 	uint32_t value = ((uint32_t) 1 << pin);

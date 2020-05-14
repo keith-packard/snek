@@ -96,7 +96,7 @@ extern struct snek_neopixel	*snek_neopixels;
 #define SNEK_MEM_CACHE_0	snek_neopixels
 
 void
-ao_snek_neopixel_write(void *port, uint8_t pin, int npixel, struct snek_neopixel *pixels);
+ao_snek_neopixel_write(void *port, uint8_t pin, int npixel, const struct snek_neopixel *pixels);
 
 void
 ao_snek_apa102_write(void *gpio_d, uint8_t pin_d,

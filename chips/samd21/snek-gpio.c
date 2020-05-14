@@ -228,6 +228,25 @@ static const struct ao_snek_pin ao_snek_pin[AO_SNEK_NUM_PIN] = {
 };
 
 
+#ifdef NEOPIXEL_RESET
+static void
+set_dir(uint8_t pin, uint8_t d);
+
+static const struct snek_neopixel reset_neopixels[NEOPIXEL_RESET];
+
+#ifndef NEOPIXEL_RESET_DIR_PIN
+#define NEOPIXEL_RESET_DIR_PIN NEOPIXEL_RESET_POWER_PIN
+#endif
+
+static void
+neopixel_reset_delay(void)
+{
+	uint32_t	i;
+	for (i = 0; i < 1000; i++)
+		ao_arch_nop();
+}
+#endif
+
 void
 ao_snek_port_init(void)
 {
@@ -243,6 +262,29 @@ ao_snek_port_init(void)
 	}
 
 	memset(power, 0xff, sizeof(power));
+#ifdef NEOPIXEL_RESET
+#if NEOPIXEL_RESET_POWER_PIN == NEOPIXEL_RESET_DIR_PIN
+	set_dir(NEOPIXEL_RESET_POWER_PIN, 1);
+	neopixel_reset_delay();
+	ao_snek_neopixel_write(ao_snek_pin[NEOPIXEL_RESET_POWER_PIN].gpio,
+			       ao_snek_pin[NEOPIXEL_RESET_POWER_PIN].pin,
+			       NEOPIXEL_RESET, reset_neopixels);
+	neopixel_reset_delay();
+	set_dir(NEOPIXEL_RESET_POWER_PIN, 0);
+#else
+	set_dir(NEOPIXEL_RESET_POWER_PIN, 1);
+	set_dir(NEOPIXEL_RESET_DIR_PIN, 1);
+	neopixel_reset_delay();
+	ao_snek_apa102_write(ao_snek_pin[NEOPIXEL_RESET_POWER_PIN].gpio,
+			     ao_snek_pin[NEOPIXEL_RESET_POWER_PIN].pin,
+			     ao_snek_pin[NEOPIXEL_RESET_DIR_PIN].gpio,
+			     ao_snek_pin[NEOPIXEL_RESET_DIR_PIN].pin,
+			     NEOPIXEL_RESET, reset_neopixels);
+	neopixel_reset_delay();
+	set_dir(NEOPIXEL_RESET_POWER_PIN, 0);
+	set_dir(NEOPIXEL_RESET_DIR_PIN, 0);
+#endif
+#endif
 }
 
 static void
@@ -662,3 +704,4 @@ snek_builtin_neopixel(snek_poly_t pixels)
 				     pixels_list->size, snek_neopixels);
 	return SNEK_NULL;
 }
+

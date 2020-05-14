@@ -154,10 +154,14 @@
 #define AO_SNEK_TIMER_7		(&samd21_tcc0)
 #define AO_SNEK_CHANNEL_7	AO_SNEK_TIMER_CH(7 & 3, AO_SNEK_TIMER_FUNC_F, AO_SNEK_TIMER_DEV_TCC)
 
+/* NEOPIXEL */
 #define AO_SNEK_GPIO_8		(&samd21_port_a)		/* arduino D8 */
 #define AO_SNEK_PIN_8		6
 #define AO_SNEK_TIMER_8		(&samd21_tcc1)
 #define AO_SNEK_CHANNEL_8	AO_SNEK_TIMER_CH(0, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TCC)
+
+#define NEOPIXEL_RESET		1
+#define NEOPIXEL_RESET_POWER_PIN	8
 
 #define AO_SNEK_GPIO_9		(&samd21_port_a)		/* arduino D9 */
 #define AO_SNEK_PIN_9		7
