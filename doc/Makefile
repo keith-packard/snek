@@ -65,5 +65,5 @@ clean-lessons:
 upload-lessons:
 	+for i in lessons/lesson-*; do make -C $$i upload; done
 
-install-lessons: install
+install-lessons:
 	+for i in lessons/lesson-*; do make -C $$i DESTDIR=$(DESTDIR) DOCDIR=$(DOCDIR) install; done
