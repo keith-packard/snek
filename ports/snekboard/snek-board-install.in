@@ -43,6 +43,7 @@ openocd -f interface/stlink.cfg \
 	-f target/at91samdXX.cfg \
 	-c init \
 	-c 'reset halt' \
+	-c 'at91samd bootloader 0' \
 	-c "flash write_image erase unlock $BOOT_FILE" \
 	-c "flash write_image erase unlock $SNEK_FILE" \
 	-c 'reset init' \
