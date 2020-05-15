@@ -24,8 +24,6 @@ jobs:
       - name: 'Build snek'
         run: |
           docker run --rm \
-            -e 'SNEK_RISCV=' \
-            -e 'SNEK_ARM=' \
             --mount type=bind,source=`pwd`/artifacts,destination=/artifacts \
             snek \
             make DESTDIR=/artifacts PREFIX=/opt/snek check install
