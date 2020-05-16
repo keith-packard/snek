@@ -21,7 +21,7 @@ PRODUCT_NAME=snekboard
 IDPRODUCT=0x804D
 IDVENDOR=0x239A
 
-BOOTLOADER_BIN=bootloader-snekboard-v3.9.0.bin
+BOOTLOADER_BIN=bootloader-snekboard.bin
 
 include $(SNEK_SAMD21)/snek-samd21.defs
 
