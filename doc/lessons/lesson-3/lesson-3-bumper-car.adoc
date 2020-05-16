@@ -20,7 +20,7 @@ Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 
 ifndef::backend-pdf[]
 [#logo]
-[link=https://keithp.com/snek]
+[link=https://sneklang.org]
 image::snek.svg[Snek]
 endif::[]
 
@@ -57,7 +57,7 @@ two analog IR distance sensors, and replaces attraction with
 avoidance.
 
 .Bumper Car
-image::bumper-car-annotated.svg[width=600,align="center"]
+image::bumper-car-annotated.svg[width=600,align=center]
 
 Important features:
 
@@ -76,6 +76,8 @@ The basic ideas are:
 
  * Now apply these rules over and over.
 
+=== Planning the Bumper Car Program
+
 It is always a good idea to identify (and write out) what it is you
 want a program to do. This helps us identify and think about key
 actions and behaviors. Some of the components that result from this
@@ -93,10 +95,13 @@ here are:
    refinement is: Determining when something gets too close in the
    direction of motion.
 
+=== Moving in One Direction
+
 Once we enter interactive commands to try running the motors (turning
 them on and off, setting direction and power) we figure out that
 rotating them in opposite directions moves in the direction of a
-sensor. Lets do this at ½ speed:
+sensor. We can write two functions to move in opposite directions. For
+now, lets do this at ½ speed:
 
 [source,python,subs="verbatim,quotes"]
 ----
@@ -109,7 +114,22 @@ def MoveOneDir():
     setpower(0.5)
     setright()
     on()
+
+def MoveOtherDir():
+    talkto(M2)
+    setpower(0.5)
+    setright()
+    on()
+    talkto(M3)
+    setpower(0.5)
+    setleft()
+    on()
 ----
+
+The difference between these two functions is that `MoveOneDir` calls
+`setleft` for `M2` and `setright` for `M3` while
+
+=== The Distance Sensor
 
 We can test the sensor with the interpreter, using our hand for
 distance:
@@ -134,22 +154,14 @@ distance:
 kbd:[Ctrl+C]
 ----
 
+=== Wait Until We're Close
+
 We figure out that A8 is sensing in this direction, and 0.4 works as a
-threshold between close and far. The rest of the program might then
-look like this:
+threshold between close and far. Let's write a couple of functions
+that wait until we're closer than that
 
 [source,python,subs="verbatim,quotes"]
 ----
-def MoveOtherDir():
-    talkto(M2)
-    setpower(0.5)
-    setright()
-    on()
-    talkto(M3)
-    setpower(0.5)
-    setleft()
-    on()
-
 def WaitUntilCloseOneDir():
     while read(A8) < 0.4:
 	pass
@@ -157,6 +169,13 @@ def WaitUntilCloseOneDir():
 def WaitUntilCloseOtherDir():
     while read(A7) < 0.4:
 	pass
+----
+
+The rest of the program might then
+look like this:
+
+[source,python,subs="verbatim,quotes"]
+----
 
 def BumperCar():
     while True:
@@ -305,3 +324,6 @@ insert the connectors the right way, with the black wire towards the
 center of the snekboard and the yellow or white wire towards the edge.
 Hot glue the distance sensors to 1x4 tiles and attach them at either
 end of the bumper car.
+
+
+image::snek.svg[align="center"]

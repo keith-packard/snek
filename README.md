@@ -9,12 +9,12 @@ too small to run [MicroPython](https://micropython.org/).
 
 ## Documentation
 
- * The [Snek Home Page](https://keithp.com/snek) provides more information
+ * The [Snek Home Page](https://sneklang.org) provides more information
    about the language and community.
 
- * [Snek Manual in HTML format](https://keithp.com/snek/snek.html)
+ * [Snek Manual in HTML format](https://sneklang.org/snek.html)
 
- * [Snek Manual in PDF format](https://keithp.com/snek/snek.pdf)
+ * [Snek Manual in PDF format](https://sneklang.org/snek.pdf)
 
 ## Downloads
 
@@ -22,7 +22,7 @@ too small to run [MicroPython](https://micropython.org/).
 
  * Packages for Linux, including older versions of Debian, Mac OS X
    and Windows are available in the
-   [Snek Dist directory](http://keithp.com/snek/dist)
+   [Snek Dist directory](http://sneklang.org/dist)
 
 ## To Do list
 
@@ -33,18 +33,25 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
- * [µduino](https://www.crowdsupply.com/uduino/uduino) port. This is
-   essentially the same as the ItsyBitsy boards already
-   supported. This port changes the name and removes the SPI pins
-   which aren't available on this board.
+ * [EV3](https://education.lego.com/en-us/products/lego-mindstorms-education-ev3-core-set/5003400) port.
+   This port, done by Mikhail Gusarov, includes custom functions for
+   the motors and sensors.
 
- * [ESP32](https://www.espressif.com/en/products/hardware/esp32/overview)
-   port. This is a pretty basic port that only includes digital GPIO functions.
+ * [HiFive1 Rev B](https://www.sifive.com/boards/hifive1-rev-b) port.
+   This uses a bunch of code from [freedom-e-sdk](https://github.com/sifive/freedom-e-sdk)
+   for all of the core and device support.
+ 
+ * Lots of bugs fixed in string interpolation
 
- * [Continuous Testing](https://github.com/keith-packard/snek/actions).
-   This work was done by [Paulo Henri Silva](https://github.com/phsilva).
-   Each time code is pushed to the master branch, the build is
-   compiled *and tested* on x86 and embedded arm (using qemu).
+ * [Lessons using LEGO with Snekboard](https://sneklang.org/docs/).
+   There are four lessons that show you how to build a simple robot
+   with step-by-step construction information, and then explore
+   programming on a Snekboard.
+
+ * Improved time.sleep precision. time.sleep is now accurate to the
+   resolution of the timer. On a Duemilanove, that's
+   4µs. time.monotonic still returns a float, so the longer
+   the board has been running, the lower the precision...
 
 ## Build and Run!
 
@@ -107,7 +114,7 @@ Snek is designed to run on small embedded devices with 32kB or more of
 flash and 2kB or more of RAM. Snek has been ported to a variety of
 embedded devices, providing access to pins as GPIOs as well as some
 built-in peripherals. Documentation about the supported boards can be
-found in the [Snek Manual](https://keithp.com/snek/snek.html).
+found in the [Snek Manual](https://sneklang.org/snek.html).
 
 ## Running on Linux, Mac OS X Windows
 

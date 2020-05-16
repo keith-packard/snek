@@ -9,7 +9,7 @@ ADOC_FILES=lesson-1-snekboard.adoc
 
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
-CSS_FILES=snek.css coderay-asciidoctor.css
+CSS_FILES=snek.css
 IMAGE_FILES=\
 	snek.svg \
 	mu-editor.png \
@@ -40,9 +40,9 @@ $(HTML_FILES): snek.css
 
 DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) $(IMAGE_FILES)
 
-install: $(DOCFILES)
-	install -d $(DESTDIR)$(DOCDIR)
-	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
+install: $(PDF_FILES)
+	install -d $(DESTDIR)$(DOCDIR)/lessons
+	for i in $(PDF_FILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR)/lessons || exit 1; done
 
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) $(SNEK_ROOT)/doc/fonts $(SNEKDOC)/lessons/lesson-1
@@ -56,9 +56,7 @@ snek.svg: $(SNEK_ROOT)/snek.svg
 snek-theme.yml: $(SNEK_ROOT)/doc/snek-theme.yml
 	cp $^ $@
 
-coderay-asciidoctor.css: $(HTML_FILES)
-
 clean::
 	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES)
-	rm -f snek.css coderay-asciidoctor.css
+	rm -f snek.css
 	rm -f snek.svg snek-theme.yml

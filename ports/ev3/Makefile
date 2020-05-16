@@ -26,9 +26,10 @@ SNEK_LOCAL_SRC = \
 	snek-math.c \
 	snek-input.c \
 	sensors.c \
+	motors.c \
 	utils.c
 
-SNEK_LOCAL_INC = snek-ev3.h utils.h sensors.h
+SNEK_LOCAL_INC = snek-ev3.h utils.h sensors.h motors.h
 SNEK_LOCAL_CFLAGS = -DSNEK_USE_GLIBC_2_4_MATH
 SNEK_LOCAL_BUILTINS = \
 	snek-ev3.builtin \

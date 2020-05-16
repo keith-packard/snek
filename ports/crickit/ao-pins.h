@@ -258,6 +258,9 @@
 #define AO_SNEK_CHANNEL_24	0
 #define AO_SNEK_ADC_24		0xff
 
+#define NEOPIXEL_RESET			1
+#define NEOPIXEL_RESET_POWER_PIN	24
+
 /* off-board neopixel */
 #define AO_SNEK_GPIO_25		(&samd21_port_a)
 #define AO_SNEK_PIN_25		20

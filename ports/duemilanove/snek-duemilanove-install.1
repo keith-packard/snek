@@ -23,12 +23,19 @@ Duemilanove board.
 .SH OPTIONS
 .TP
 \-isp <ISP model>
-Specifies the programmer to use, common options are 'usbtiny'
-and 'avrisp2'. The default is 'usbtiny'.
+Specifies the programmer to use, common options are 'optiboot', 
+'usbtiny', and 'avrisp2'. The default is 'optiboot'.
 .TP
 \-hex <snek.hex>
 Specifies the hex file to load to the board. The default is the
 currently installed version of Snek.
+.SH OPTIBOOT
+If you have optiboot installed on your device, you can use that to
+install snek without needing a separate programming device. Use the
+-isp optiboot option, along with the -port option to select the right
+device. If you don't, it's probably best to install that first
+and use it to install snek so that you don't have to dig up your
+programming dongle for snek updates.
 .SH COMMANDS
 .TP
 fuseload

@@ -17,9 +17,10 @@
 /*
  * Stable ev3dev version is based on Debian stretch, with glibc 2.24.
  *
- * glibc 2.27 has changed[1] the version of several libm symbols due to an
- * optimization, so binaries linked against glibc >= 2.27 (e.g. in Debian buster
- * and later) fail to load on ev3dev with
+ * glibc 2.27 has changed[1] the version of several libm symbols due to dropped
+ * error handling compatibility with System V release 4, so binaries linked
+ * against glibc >= 2.27 (e.g. in Debian buster and later) fail to load on
+ * ev3dev with
  *
  *   /lib/arm-linux-gnueabi/libm.so.6:
  *   version `GLIBC_2.27' not found (required by ./snek-ev3-1.3)
@@ -27,7 +28,7 @@
  * Force using older versions of these symbols to allow linking against newer
  * glibc and hence simplify build setup.
  *
- * [1] https://sourceware.org/ml/libc-announce/2018/msg00000.html
+ * [1] https://sourceware.org/git/?p=glibc.git;a=commit;h=f5f0f5265162fe6f4f238abcd3086985f7c38d6d
  */
 #if defined(SNEK_USE_GLIBC_2_4_MATH)
 __asm__(".symver expf,expf@GLIBC_2.4");

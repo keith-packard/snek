@@ -5,12 +5,14 @@ include $(SNEK_ROOT)/snek-install.defs
 
 .SUFFIXES: .adoc .pdf .html
 
-ADOC_FILES=snek-washing-machine.adoc
+ADOC_FILES=lesson-4-washing-machine.adoc
 
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css  coderay-asciidoctor.css
 IMAGE_FILES=\
+	washing-machine.svg \
+	washing-machine.jpg \
 	21980.dat.png \
 	3003.dat.png \
 	3022.dat.png \
@@ -70,26 +72,29 @@ ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSIO
 .adoc.pdf:
 	asciidoctor-pdf -B$(SNEK_ROOT) -B. $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
 
-$(PDF_FILES): ../../snek-theme.yml $(IMAGE_FILES) $(INC_FILES) ../../../snek.svg
+$(PDF_FILES): snek-theme.yml $(IMAGE_FILES) $(INC_FILES) snek.svg
 
 DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) snek.svg $(IMAGE_FILES)
 
 $(HTML_FILES): $(INC_FILES)
 
-install: $(DOCFILES)
-	install -d $(DESTDIR)$(DOCDIR)
-	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
+install: $(PDF_FILES)
+	install -d $(DESTDIR)$(DOCDIR)/lessons
+	for i in $(PDF_FILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR)/lessons || exit 1; done
 
 upload: $(DOCFILES)
-	rsync -avz $(DOCFILES) ../../fonts $(SNEKDOC)/washing-machine
+	rsync -avz $(DOCFILES) ../../fonts $(SNEKDOC)/lessons/lesson-4
 
-steps.adoc: ../line-bug/make-step ../line-bug/make-steps
-	../line-bug/make-steps washing-machine-??.html > $@
+steps.adoc: $(SNEK_DOC_UTIL)/make-step $(SNEK_DOC_UTIL)/make-steps
+	$(SNEK_DOC_UTIL)/make-steps washing-machine-??.html > $@
 
-snek.css: ../../snek.css
+snek.css: $(SNEK_DOC)/snek.css
 	cp $^ $@
 
-snek.svg: ../../../snek.svg
+snek.svg: $(SNEK_ROOT)/snek.svg
+	cp $^ $@
+
+snek-theme.yml: $(SNEK_DOC)/snek-theme.yml
 	cp $^ $@
 
 coderay-asciidoctor.css: $(HTML_FILES)
@@ -97,4 +102,4 @@ coderay-asciidoctor.css: $(HTML_FILES)
 clean::
 	rm -f $(PDF_FILES) $(HTML_FILES) $(BOOK_FILES) coderay-asciidoctor.css
 	rm -f washing-machine-??.adoc steps.adoc
-	rm -f snek.css snek.svg
+	rm -f snek.css snek.svg snek-theme.yml

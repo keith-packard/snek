@@ -2,9 +2,7 @@
 
 SHAREDIR="@SHAREDIR@"
 
-BOOT_VERSION=3.7.0
-
-BOOT_FILE=$SHAREDIR/bootloader-snekboard-v${BOOT_VERSION}.bin
+BOOT_FILE=$SHAREDIR/bootloader-snekboard.bin
 SNEK_FILE=$SHAREDIR/snek-board-@SNEK_VERSION@.elf
 
 mode=arg
@@ -20,7 +18,7 @@ for i in "$@"; do
 		    mode=boot
 		    ;;
 		*)
-		    echo "Usage: $0 {-elf snek-board-@SNEK_VERSION@.elf} {-boot bootloader-snekboard-v${BOOT_VERSION}.bin" 1>&2
+		    echo "Usage: $0 {-elf snek-board-@SNEK_VERSION@.elf} {-boot bootloader-snekboard.bin" 1>&2
 		    exit 1
 		    ;;
 	    esac
@@ -43,6 +41,7 @@ openocd -f interface/stlink.cfg \
 	-f target/at91samdXX.cfg \
 	-c init \
 	-c 'reset halt' \
+	-c 'at91samd bootloader 0' \
 	-c "flash write_image erase unlock $BOOT_FILE" \
 	-c "flash write_image erase unlock $SNEK_FILE" \
 	-c 'reset init' \

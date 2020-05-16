@@ -247,8 +247,8 @@ typedef struct snek_name {
 } snek_name_t;
 
 typedef struct snek_variable {
-	snek_id_t	id;
 	snek_poly_t	value;
+	snek_id_t	id;
 } snek_variable_t;
 
 typedef struct snek_frame {

@@ -31,6 +31,7 @@ extern __inline__ int __metal_driver_cpu_hartid(struct metal_cpu *cpu);
 extern __inline__ int __metal_driver_cpu_timebase(struct metal_cpu *cpu);
 extern __inline__ struct metal_interrupt * __metal_driver_cpu_interrupt_controller(struct metal_cpu *cpu);
 extern __inline__ int __metal_driver_cpu_num_pmp_regions(struct metal_cpu *cpu);
+extern __inline__ struct metal_buserror * __metal_driver_cpu_buserror(struct metal_cpu *cpu);
 
 
 /* --------------------- sifive_plic0 ------------ */
@@ -41,6 +42,9 @@ extern __inline__ int __metal_driver_sifive_plic0_max_priority(struct metal_inte
 extern __inline__ struct metal_interrupt * __metal_driver_sifive_plic0_interrupt_parents(struct metal_interrupt *controller, int idx);
 extern __inline__ int __metal_driver_sifive_plic0_interrupt_lines(struct metal_interrupt *controller, int idx);
 extern __inline__ int __metal_driver_sifive_plic0_context_ids(int hartid);
+
+
+/* --------------------- sifive_buserror0 ------------ */
 
 
 /* --------------------- sifive_ccache0 ------------ */
@@ -85,6 +89,20 @@ extern __inline__ struct metal_clock * __metal_driver_sifive_i2c0_clock(struct m
 extern __inline__ struct __metal_driver_sifive_gpio0 * __metal_driver_sifive_i2c0_pinmux(struct metal_i2c *i2c);
 extern __inline__ unsigned long __metal_driver_sifive_i2c0_pinmux_output_selector(struct metal_i2c *i2c);
 extern __inline__ unsigned long __metal_driver_sifive_i2c0_pinmux_source_selector(struct metal_i2c *i2c);
+
+
+/* --------------------- sifive_pwm0 ------------ */
+extern __inline__ unsigned long __metal_driver_sifive_pwm0_control_base(struct metal_pwm *pwm);
+extern __inline__ unsigned long __metal_driver_sifive_pwm0_control_size(struct metal_pwm *pwm);
+extern __inline__ int __metal_driver_sifive_pwm0_num_interrupts(struct metal_pwm *pwm);
+extern __inline__ struct metal_interrupt * __metal_driver_sifive_pwm0_interrupt_parent(struct metal_pwm *pwm);
+extern __inline__ int __metal_driver_sifive_pwm0_interrupt_lines(struct metal_pwm *pwm, int idx);
+extern __inline__ struct metal_clock * __metal_driver_sifive_pwm0_clock(struct metal_pwm *pwm);
+extern __inline__ struct __metal_driver_sifive_gpio0 * __metal_driver_sifive_pwm0_pinmux(struct metal_pwm *pwm);
+extern __inline__ unsigned long __metal_driver_sifive_pwm0_pinmux_output_selector(struct metal_pwm *pwm);
+extern __inline__ unsigned long __metal_driver_sifive_pwm0_pinmux_source_selector(struct metal_pwm *pwm);
+extern __inline__ int __metal_driver_sifive_pwm0_compare_width(struct metal_pwm *pwm);
+extern __inline__ int __metal_driver_sifive_pwm0_comparator_count(struct metal_pwm *pwm);
 
 
 /* --------------------- sifive_rtc0 ------------ */
@@ -266,24 +284,39 @@ struct __metal_driver_sifive_gpio0 __metal_dt_gpio_10012000 = {
     .gpio.vtable = &__metal_driver_vtable_sifive_gpio0.gpio,
 };
 
-/* From led@0red */
-struct __metal_driver_sifive_gpio_led __metal_dt_led_0red = {
+/* From led@0 */
+struct __metal_driver_sifive_gpio_led __metal_dt_led_0 = {
     .led.vtable = &__metal_driver_vtable_sifive_led.led_vtable,
 };
 
-/* From led@0green */
-struct __metal_driver_sifive_gpio_led __metal_dt_led_0green = {
+/* From led@1 */
+struct __metal_driver_sifive_gpio_led __metal_dt_led_1 = {
     .led.vtable = &__metal_driver_vtable_sifive_led.led_vtable,
 };
 
-/* From led@0blue */
-struct __metal_driver_sifive_gpio_led __metal_dt_led_0blue = {
+/* From led@2 */
+struct __metal_driver_sifive_gpio_led __metal_dt_led_2 = {
     .led.vtable = &__metal_driver_vtable_sifive_led.led_vtable,
 };
 
 /* From i2c@10016000 */
 struct __metal_driver_sifive_i2c0 __metal_dt_i2c_10016000 = {
     .i2c.vtable = &__metal_driver_vtable_sifive_i2c0.i2c,
+};
+
+/* From pwm@10015000 */
+struct __metal_driver_sifive_pwm0 __metal_dt_pwm_10015000 = {
+    .pwm.vtable = &__metal_driver_vtable_sifive_pwm0.pwm,
+};
+
+/* From pwm@10025000 */
+struct __metal_driver_sifive_pwm0 __metal_dt_pwm_10025000 = {
+    .pwm.vtable = &__metal_driver_vtable_sifive_pwm0.pwm,
+};
+
+/* From pwm@10035000 */
+struct __metal_driver_sifive_pwm0 __metal_dt_pwm_10035000 = {
+    .pwm.vtable = &__metal_driver_vtable_sifive_pwm0.pwm,
 };
 
 /* From aon@10000000 */

@@ -21,7 +21,7 @@ PRODUCT_NAME=snekboard
 IDPRODUCT=0x804D
 IDVENDOR=0x239A
 
-BOOTLOADER_BIN=bootloader-snekboard-v3.7.0.bin
+BOOTLOADER_BIN=bootloader-snekboard.bin
 
 include $(SNEK_SAMD21)/snek-samd21.defs
 
@@ -57,11 +57,9 @@ snek-board-install: snek-board-install.in
 	$(SNEK_SED) $^ > $@
 	chmod +x $@
 
-echo:
-	echo PROG is $(PROG)
-
-install: $(UF2) $(BOOTLOADER_BIN) snek-board-install snek-board-install.1
+install: $(PROG) $(UF2) $(BOOTLOADER_BIN) snek-board-install snek-board-install.1
 	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(PROG) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(UF2) $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(BOOTLOADER_BIN) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(BINDIR)

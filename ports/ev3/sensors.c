@@ -445,9 +445,8 @@ light(int fd)
 }
 
 snek_poly_t
-snek_builtin_read(snek_poly_t port)
+snek_ev3_sensors_read(snek_poly_t port)
 {
-	/* TODO: dispatch read() to actuators if a string is passed */
 	int fd = get_sensor(port);
 	if (fd == -1)
 		return SNEK_NULL;

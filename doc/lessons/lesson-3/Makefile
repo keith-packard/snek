@@ -7,13 +7,12 @@ include $(SNEK_ROOT)/snek-install.defs
 
 ADOC_FILES=lesson-3-bumper-car.adoc
 
-LESSON_1=$(SNEK_ROOT)/doc/lessons/lesson-1
-LESSON_2=$(SNEK_ROOT)/doc/lessons/lesson-2
-
 PDF_FILES=$(ADOC_FILES:.adoc=.pdf)
 HTML_FILES=$(ADOC_FILES:.adoc=.html)
 CSS_FILES=snek.css  coderay-asciidoctor.css
 IMAGE_FILES=\
+	bumper-car-annotated.svg \
+	bumper-car.svg \
 	21980.dat.png \
 	22253c02.dat.png \
 	2431dm9.dat.png \
@@ -64,9 +63,9 @@ DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) snek.svg $(IMAGE_FILES)
 
 $(HTML_FILES): $(INC_FILES)
 
-install: $(DOCFILES)
-	install -d $(DESTDIR)$(DOCDIR)
-	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
+install: $(PDF_FILES)
+	install -d $(DESTDIR)$(DOCDIR)/lessons
+	for i in $(PDF_FILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR)/lessons || exit 1; done
 
 upload: $(DOCFILES)
 	rsync -avz $(DOCFILES) ../../fonts $(SNEKDOC)/lessons/lesson-3

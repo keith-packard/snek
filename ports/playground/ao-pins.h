@@ -213,6 +213,9 @@
 #define AO_SNEK_CHANNEL_16	0
 #define AO_SNEK_ADC_16		0xff
 
+#define NEOPIXEL_RESET		10
+#define NEOPIXEL_RESET_POWER_PIN	16
+
 /* LISIRQ */
 #define AO_SNEK_GPIO_17		(&samd21_port_a)
 #define AO_SNEK_PIN_17		13

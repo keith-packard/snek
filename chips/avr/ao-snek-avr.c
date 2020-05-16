@@ -16,25 +16,6 @@
 #include "snek.h"
 #include <snek-io.h>
 
-#define clockCyclesPerMicrosecond	(F_CPU / 1000000L)
-#define clockCyclesToMicroseconds(a)	((a) / clockCyclesPerMicrosecond)
-
-// the prescaler is set so that timer0 ticks every 64 clock cycles, and the
-// the overflow handler is called every 256 ticks.
-#define MICROSECONDS_PER_TIMER0_OVERFLOW (clockCyclesToMicroseconds(64 * 256))
-
-// the whole number of milliseconds per timer0 overflow
-#define MILLIS_INC (MICROSECONDS_PER_TIMER0_OVERFLOW / 1000)
-
-// the fractional number of milliseconds per timer0 overflow. we shift right
-// by three to fit these numbers into a byte. (for the clock speeds we care
-// about - 8 and 16 MHz - this doesn't lose precision.)
-#define FRACT_INC ((MICROSECONDS_PER_TIMER0_OVERFLOW % 1000) >> 3)
-#define FRACT_MAX (1000 >> 3)
-
-volatile uint32_t timer0_millis = 0;
-static uint8_t timer0_fract = 0;
-
 #define PB	0
 #define PC	1
 #define PD	2
@@ -93,21 +74,21 @@ static uint8_t	pull[NUM_PIN] = {
 	1, 1
 };
 
+/*
+ * TIMER0 is running at 1/64 F_CPU, and the overflow hits ever 256
+ * clocks. We can measure down to the timer resolution by reading
+ * the 'tocks' value (number of overflows) and adding in the current
+ * timer count
+ */
+
+#define TICKS_PER_SECOND	(F_CPU / 64.0f)
+#define SECONDS_PER_TICK	(64.0f / F_CPU)
+
+volatile uint32_t timer0_tocks = 0;
+
 ISR(TIMER0_OVF_vect)
 {
-	// copy these to local variables so they can be stored in registers
-	// (volatile variables must be read from memory on every access)
-	uint32_t m = timer0_millis;
-	uint8_t f = timer0_fract;
-
-	m += MILLIS_INC;
-	f += FRACT_INC;
-	if (f >= FRACT_MAX) {
-		f -= FRACT_MAX;
-		m += 1;
-	}
-	timer0_fract = f;
-	timer0_millis = m;
+	timer0_tocks++;
 }
 
 static void
@@ -463,31 +444,46 @@ snek_builtin_stopall(void)
 }
 
 static uint32_t
-snek_millis(void)
+snek_ticks(void)
 {
-	uint32_t	millis;
+	uint32_t	tocks_before, tocks_after;
+	uint8_t		ticks;
 
-	cli();
-	millis = timer0_millis;
-	ao_arch_nop();
-	sei();
-	ao_arch_nop();
-	return millis;
+	/* Read the 'tocks' value twice to make sure
+	 * we don't hit right across an interrupt
+	 */
+	do {
+		cli();
+		tocks_before = timer0_tocks;
+		sei();
+		ticks = TCNT0;
+		cli();
+		tocks_after = timer0_tocks;
+		sei();
+	} while (tocks_before != tocks_after);
+	return (tocks_before << 8) | ticks;
+}
+
+static inline uint32_t
+snek_sec_to_ticks(float sec)
+{
+	return (uint32_t) (sec * TICKS_PER_SECOND + 0.5f);
 }
 
 snek_poly_t
 snek_builtin_time_sleep(snek_poly_t a)
 {
-	uint32_t	expire = snek_millis() + (snek_poly_get_float(a) * 1000.0f + 0.5f);
-	while (!snek_abort && (int32_t) (expire - snek_millis()) > 0)
-		ao_arch_nop();
+	uint32_t then = snek_ticks() + snek_sec_to_ticks(snek_poly_get_float(a));
+
+	while (!snek_abort && (int32_t) (then - snek_ticks()) > 0)
+	       ;
 	return SNEK_NULL;
 }
 
 snek_poly_t
 snek_builtin_time_monotonic(void)
 {
-	return snek_float_to_poly(snek_millis() / 1000.0f);
+	return snek_float_to_poly((float) snek_ticks() * SECONDS_PER_TICK);
 }
 
 static uint16_t random_next;

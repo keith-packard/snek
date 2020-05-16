@@ -42,7 +42,7 @@ FIRMWARE ?= \
 USBFIRMWARE ?= \
 	$(SNEK_PORTS)/mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex \
 	$(SNEK_PORTS)/nano33iot/update-bootloader-nano33iot.ino \
-	$(SNEK_PORTS)/snekboard/bootloader-snekboard-v3.7.0.bin
+	$(SNEK_PORTS)/snekboard/bootloader-snekboard.bin
 
 LESSON_PDF ?= $(shell echo $(SNEK_DOC)/lessons/lesson-*/lesson-*.pdf)
 

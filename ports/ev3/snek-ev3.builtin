@@ -23,8 +23,40 @@ light_ambient, 1
 light_color, 1
 light_rgb, 1
 
-# sensor values
+# sensor values, motor speed in rotations per second, -3..3
 read, 1
+
+# select the motor to talk to
+talkto, 1
+
+# set motor speed (power), in rotations per second, -3..3
+setpower, 1
+
+# motors: direction
+setleft, 0
+setright, 0
+
+# motors: start/stop
+on, 0
+off, 0
+onfor, 1
+
+# motors: rotate until the position (in rotations) is reached
+setposition, 1
+position, 0
+
+# tacho motors: what to do when the position is reached?
+# - stop applying force and coast to stop
+coast, 0
+# - brake to get to the expact position
+brake, 0
+# - brake and hold the position
+hold, 0
+
+# set ramp up/down time, in seconds
+ramp_up, 1
+ramp_down, 1
+
 
 #include "snek-ev3.h"
 #define SNEK_POOL 262144

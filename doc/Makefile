@@ -32,7 +32,7 @@ $(PDF_FILES): snek-theme.yml $(IMAGE_FILES)
 
 DOCFILES=$(PDF_FILES) $(HTML_FILES) $(CSS_FILES) $(IMAGE_FILES)
 
-install: $(DOCFILES)
+install: $(DOCFILES) install-lessons
 	install -d $(DESTDIR)$(DOCDIR)
 	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
 
@@ -64,3 +64,6 @@ clean-lessons:
 
 upload-lessons:
 	+for i in lessons/lesson-*; do make -C $$i upload; done
+
+install-lessons:
+	+for i in lessons/lesson-*; do make -C $$i DESTDIR=$(DESTDIR) DOCDIR=$(DOCDIR) install; done

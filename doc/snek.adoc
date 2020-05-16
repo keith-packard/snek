@@ -207,7 +207,7 @@ Welcome to Snek version {revnumber}
 
 At this `> ` prompt, Snek will print anything you type to it:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *'hello, world'*
 'hello, world'
@@ -219,7 +219,7 @@ useful if you want to include single quote marks in them. Snek always
 prints strings using single quotes, so the output here is the same as
 before.
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *"hello, world"*
 'hello, world'
@@ -235,7 +235,7 @@ Stepping up a notch, instead of inputting *```'hello, world'```*
 directly, we can write a more complicated expression which computes
 it:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *'hello,' + ' world'*
 'hello, world'
@@ -245,7 +245,7 @@ At this point, we're using the feature of the interactive environment
 which prints out the value of expressions entered. Let's try using the
 print function instead:(((print)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *print('hello, world')*
 hello, world
@@ -273,7 +273,7 @@ name, like `moss` or `tree`, and each variable can hold one. You set
 (or “assign”) the value of a variable using the `=` operator, and you
 get the value by using the name elsewhere:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *moss = 'hello, world'*
 > *moss*
@@ -289,7 +289,7 @@ Let's define a function which uses `print` to print `hello world`
 and call it. To define a new function in Snek, we use the `def`
 keyword like this:(((def)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def hello():*
 +     *print('hello, world')*
@@ -325,7 +325,7 @@ the next line. That's because the print function has a named parameter
 called `end` which is set to a newline (`'\n'`) by default. You can change it
 to whatever you like, as in:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def hello():*
 +     *print('hello', end=',')*
@@ -352,7 +352,7 @@ ____
 Snek can't use the ° sign in variable names, so we'll just use C and
 F:(((return)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *# Convert from Fahrenheit to Celsius*
 > *def f_to_c(F):*
@@ -371,7 +371,7 @@ parentheses when you call `f_to_c`. In this example, we're
 calling `f_to_c` with the value 38. Snek gets the value 38 from `F`
 whenever Snek finds it in the function:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 +     *return (5/9) * (F - 32)*
 ⇒
@@ -388,7 +388,7 @@ function computes a value that should be given back to the caller.
 Numbers in Snek may be written using `_` as a separator, which is
 especially useful when writing large numbers.
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > # you can write
 > c = 299_792_458
@@ -401,7 +401,7 @@ especially useful when writing large numbers.
 Now that we have a function to do this conversion, we can print a
 handy reference table for offline use:(((for)))(((in)))(((range)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *# Print a handy conversion table*
 > *def f_to_c_table():*
@@ -460,7 +460,7 @@ can be modified after creation while Tuples cannot. We call Lists
 by commas and enclosed in square brackets, Tuples are input as objects
 separated by commas and enclosed in parentheses:(((List)))(((Tuple)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *[ 'hello,', ' world' ]*
 ['hello,', ' world']
@@ -470,7 +470,7 @@ separated by commas and enclosed in parentheses:(((List)))(((Tuple)))
 
 Let's assign these to variables so we can explore them in more detail:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *l = [ 'hello,', ' world' ]*
 > *t = ( 'hello,', ' world' )*
@@ -480,7 +480,7 @@ As mentioned earlier, <<lists_and_tuples_tutorial>> are ordered. That means that
 element in a List or Tuple can be referenced by number. This number is
 called the index of the element, in Snek, indices start at 0:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *l[0]*
 'hello,'
@@ -490,7 +490,7 @@ called the index of the element, in Snek, indices start at 0:
 
 Lists can be modified, Tuples cannot:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *l[0] = 'goodbye,'*
 > *l*
@@ -506,7 +506,7 @@ That last output is Snek telling us that the value
 We can use another form of the `for` statement to iterate over the
 values in a List or Tuple:(((for)))(((in)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def print_list(list):*
 +     *for e in list:*
@@ -529,7 +529,7 @@ of the list in turn and evaluates the statements within it.
 Lists and Tuples can be concatenated (joined into a single
 thing) with the `+` operator:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *['hello,'] + [' world']*
 ['hello,', ' world']
@@ -539,7 +539,7 @@ Tuples of one element have a slightly odd syntax, to
 distinguish them from expressions enclosed in parentheses: the value
 within the Tuple is followed by a comma:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *( 'hello' , ) + ( 'world' , )*
 ('hello', 'world')
@@ -560,7 +560,7 @@ The indexing value in a Dictionary is called the “key”, the indexed
 value is called the “value”. Dictionaries are input by enclosing
 key/value pairs, separated by commas, inside curly braces:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *{ 1:2, 'hello,' : ' world' }*
 { 'hello,':' world', 1:2 }
@@ -575,7 +575,7 @@ the last value will occur in the resulting Dictionary.
 
 Let's assign our Dictionary to a variable and play with it a bit:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *d = { 1:2, 'hello,' : ' world' }*
 > *d[1]*
@@ -599,7 +599,7 @@ error message.
 You can also iterate over the keys in a Dictionary using the same ``for``
 <<for_list,syntax used above>>. Let's try our print_list function on `d`:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *print_list(d)*
 goodnight
@@ -609,7 +609,7 @@ hello,
 
 You can test to see if an element is in a Dictionary using the `in` operator:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *if 1 in d:*
 +     *print('yup')*
@@ -632,7 +632,7 @@ values. Sometimes we want to use more general control flow. We can
 rewrite our temperature conversion chart program using a while loop
 as follows:(((while)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def f_to_c_table():*
 +   *F = 0*
@@ -668,7 +668,7 @@ executed. Otherwise, the next test is tried until the end of the
 upper case letters,
 lower case letters and digits are in a string:(((if)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def count_chars(s):*
 +     *d = 0*
@@ -718,7 +718,7 @@ standard Arduino pin numbers, for these examples.(((GPIO)))
 Let's start by turning on the LED which is usually available on
 Digital pin 13:(((talkto)))(((on)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(D13)*
 > *on()*
@@ -726,7 +726,7 @@ Digital pin 13:(((talkto)))(((on)))
 
 Let's get a bit fancier and blink it:(((time.sleep)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(D13)*
 > *while True:*
@@ -739,7 +739,7 @@ Let's get a bit fancier and blink it:(((time.sleep)))
 Find a bit of wire to connect from Digital pin 1 to GND and let's
 control the LED with this primitive switch:(((read)))(((off)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(D13)*
 > *while True:*
@@ -763,7 +763,7 @@ changes.
 If you've got a light sensor or potentiometer, you can hook that up to
 Analog pin 0 and make the LED track the sensor:(((read)))(((onfor)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(D13)*
 > *while True:*
@@ -781,7 +781,7 @@ controller hooked to your board with pin 3 as power and pin
 2 as direction you can run the motor at half power and have it alternate
 directions with:(((setpower)))(((setleft)))(((setright)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto((3,2))*
 > *setpower(0.5)*
@@ -990,7 +990,7 @@ You can include entries with duplicate keys: the resulting Dictionary
 will contain only the last entry. The order of the entries does not
 matter otherwise: the resulting dictionary will always be the same:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *{ 1:2, 3:4 } == { 3:4, 1:2 }*
 1
@@ -1058,7 +1058,7 @@ The ``+=`` operator works a bit different on Lists than any other
 type — it appends to the existing list rather than creating a new
 list. This can be seen in the following example:(((+=)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *a = [1,2]*
 > *b = a*
@@ -1072,7 +1072,7 @@ appended to. In this example, ``b`` retains the original Tuple value.
 ``a`` gets a new Tuple consisting of ``(3,)`` appended to the original
 value.
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *a = (1,2)*
 > *b = a*
@@ -1236,7 +1236,7 @@ element in _value_ (which is ``len(``_value_``) – 1``) and the default
 value for _bound_ is ``–1``. A slice with a single colon is taken
 as indicating _base_ and _bound_. Here are some examples:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *# initialize a to a*
 > *# Tuple of characters*
@@ -1321,7 +1321,7 @@ then ``%r`` will be used instead.
 
 Here are some examples of String interpolation:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *print('hello %s' % 'world')*
 hello world
@@ -1344,7 +1344,7 @@ star is *
 And here are a couple of examples showing why a single value may need
 to be enclosed in a Tuple:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *a = (1,2,3)*
 > *print('a is %r' % a)*
@@ -1477,7 +1477,7 @@ _name_ gets _step_ added at each iteration. _Start_ is optional; if
 not present, 0 will be used. _Step_ is also optional; if not present,
 1 will be used.
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *for x in (1,2,3):*
 +     *print(x)*
@@ -1522,7 +1522,7 @@ statements) is optional.(((break)))
 The Return statement causes the currently executing function 
 immediately evaluate to _value_ in the enclosing context.(((return)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def r():*
 +     *return 1*
@@ -1540,7 +1540,7 @@ The Break statement causes the closest enclosing `while` or `for` statement to
 terminate. Any optional `else:` clause associated with the `while` or `for`
 statement is skipped when the `break` is executed.(((break)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *for x in (1,2):*
 +     *if x == 2:*
@@ -1553,7 +1553,7 @@ statement is skipped when the `break` is executed.(((break)))
 ----
 
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *for x in (1,2):*
 +     *if x == 3:*
@@ -1578,7 +1578,7 @@ termination condition. In `while` statements, that is where the
 _while_value_ is evaluated. In `for` statements, that is where
 the next value in the sequence is computed.(((continue)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *vowels = 0*
 > *other = 0*
@@ -1601,7 +1601,7 @@ otherwise `other` would be `12`.
 The `pass` statement is a place-holder that does nothing and can
 be used any place a statement is needed when no execution is desired.(((pass)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *if 1 != 2:*
 +     *pass*
@@ -1620,7 +1620,7 @@ through the `pass` statement.
 The Import statement is ignored and is part of Snek so that Snek programs can
 be run using Python.(((import)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *import curses*
 ----
@@ -1630,7 +1630,7 @@ be run using Python.(((import)))
 The Global statement marks the names as non-local; assignment to them
 will not cause a new variable to be created.(((global)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *g = 0*
 > *def set_local(v):*
@@ -1697,7 +1697,7 @@ function is executing.
 
 Here's an example of a function with two parameters:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def subtract(a,b):*
 +     *return a - b*
@@ -1709,7 +1709,7 @@ Here's an example of a function with two parameters:
 And here's a function with one positional parameter and two named
 parameters:
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *def step(value, times=1, plus=0):*
 +     *return value * times + plus*
@@ -1737,7 +1737,7 @@ implementations.
 Len returns the number of characters for a String or the number of
 elements in a Tuple, List or Dictionary(((len)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *len('hello, world')*
 12
@@ -1755,7 +1755,7 @@ Print writes all of its positional parameters to the console
 separated by spaces (`' '`) followed by the `end` named
 parameter (default: `'\n'`).(((print)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *print('hello world', end='.')*
 hello world.> 
@@ -1773,9 +1773,9 @@ Flush output to the console, in case there is buffering somewhere.
 
 Converts the first character in a string to its ASCII value.(((ord)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
->ord('A')
+> *ord('A')*
 65
 ----
 
@@ -1783,7 +1783,7 @@ Converts the first character in a string to its ASCII value.(((ord)))
 
 Converts an ASCII value to a one character string.(((chr)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *chr(65)*
 'A'
@@ -1792,7 +1792,7 @@ Converts an ASCII value to a one character string.(((chr)))
 === `math.sqrt(` _number_ `)`
 Compute the square root of its numeric argument.(((math.sqrt)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *math.sqrt(2)*
 1.414214
@@ -1816,7 +1816,7 @@ non-zero indicating failure.(((exit)))
 Pause for the specified amount of time (which can include a fractional
 part).(((time.sleep)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *time.sleep(1)*
 > 
@@ -1831,7 +1831,7 @@ floating point values for all numbers, the reference point will be
 close to the starting time of the Snek system, so values may be quite
 small.(((time.monotonic)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *time.monotonic()*
 6.859814
@@ -1843,7 +1843,7 @@ Re-seeds the random number generator with `seed`. The random number
 generator will always generate the same sequence of numbers if started
 with the same `seed`.(((random.seed)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *random.seed(time.monotonic())*
 > 
@@ -1853,7 +1853,7 @@ with the same `seed`.(((random.seed)))
 
 Generates a random integer between 0 and max-1 inclusive.(((random.randrange)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *random.randrange(10)*
 3
@@ -2086,7 +2086,7 @@ different). _pixels_ is a list or tuple, each element of which is a
 list or tuple of three numbers ranging from 0 to 1 for the desired
 red, green and blue intensity of the target neopixel.(((neopixel)))
 
-[source,subs="verbatim,quotes"]
+[subs="verbatim,quotes"]
 ----
 > *talkto(NEOPIXEL)*
 > *pixels = [(0.33, 0, 0), (0, 0.66, 0), (0, 0, 1)]*
@@ -2793,6 +2793,49 @@ Sensor ports are named 1-4, matching the markings on EV3 body.
 
 Sensors are detected automatically, so they can be plugged/unplugged while Snek
 is running.
+
+The following motors are supported:
+
+* link:https://www.lego.com/en-us/product/ev3-large-servo-motor-45502[Lego EV3 Large Servo Motor]
+* link:https://www.lego.com/en-us/product/ev3-medium-servo-motor-45503[Lego EV3 Medium Servo Motor]
+
+Servo motors have two-way communication with the host, so current speed (either
+from applicaiton of power or from manual rotation) and current position of the
+motor can be queried:
+
+* `read` reads the current speed of the motor (-3 to 3 rotations per second),
+* `position` reads the current position of the motor (rotations from reset).
+
+Servo motors remember the initial position after reset, so the `position` can
+become arbitrarily big.
+
+Current motor to control is selected by using `talkto` with port names
+`'A'` to `'D'`.
+
+The following operations are available on the selected motor:
+
+- `setpower` sets the motor speed, from -3 to 3 rotations per second.
+- `setleft` makes the motor rotate counterclockwise when positive speed is requested.
+- `setright` makes the motor rotate clockwise when positive speed is requested.
+- `on` starts the motor
+- `off` stops the motor
+- `onfor` starts the motor for specified amount of seconds. This function returns
+  immediately.
+- `setposition` starts the motor it running until it reaches the given position
+  (measured in rotations). This function returns immediately.
+- `ramp_up` sets the ramp-up time. The argument specifies duration in seconds
+  from 0 to maximum speed. If a speed smaller than maximum is requested, ramp-up
+  time is shortened proportionally.
+- `ramp_down` sets the ramp-down time in the same manner.
+
+Servo motors have several modes for stopping, select them using the following functions:
+
+- `coast`. Once the desired position is reached, remove the power. The motor
+  coasts to stop. This is the default mode.
+- `brake`. Once the desired position is reached, remove the power and apply
+  passive load on the motor. Motor stops quicker than when coasting.
+- `hold`. Once the desired position is reached, actively hold the position by
+  turning the motor to the desired position.
 
 To run Snek on EV3:
 

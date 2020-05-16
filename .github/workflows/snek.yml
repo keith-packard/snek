@@ -3,18 +3,33 @@ name: snek
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    container:
-      image: phsilva/snek:latest
-
     steps:
-      - uses: actions/checkout@v1
-      - run: make
-      - run: make check PREFIX=
-      - name: prepare artifacts
-        run: make DESTDIR=`pwd`/artifacts PREFIX= install
-      - uses: actions/upload-artifact@v1
+      - name: 'Clone snek'
+        uses: actions/checkout@v2
+        with:
+          path: snek
+
+      - name: 'Build snek container'
+        run: |
+          docker build -t snek \
+            -f snek/.github/Dockerfile \
+            snek
+
+      - name: 'Create install destinationn'
+        run: |
+          mkdir `pwd`/artifacts
+
+      - name: 'Build snek'
+        run: |
+          docker run --rm \
+            --mount type=bind,source=`pwd`/artifacts,destination=/artifacts \
+            snek \
+            make DESTDIR=/artifacts PREFIX=/opt/snek check install
+
+      - name: 'Upload results'
+        uses: actions/upload-artifact@v2
         with:
           name: snek
           path: artifacts

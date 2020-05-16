@@ -115,8 +115,6 @@ set_out(uint8_t p)
 
 	uint8_t pin = pin_map[p];
 
-	printf("set_pin %d %d\n", pin, pow != 0);
-
 	metal_gpio_set_pin(gpio, pin, pow != 0);
 
 	return SNEK_NULL;
@@ -227,7 +225,9 @@ snek_builtin_read(snek_poly_t a)
 snek_poly_t
 snek_builtin_onfor(snek_poly_t a)
 {
-	return SNEK_NULL;
+	snek_builtin_on();
+	snek_builtin_time_sleep(a);
+	return snek_builtin_off();
 }
 
 snek_poly_t

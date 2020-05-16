@@ -17,7 +17,7 @@ SNEK_ROOT = ../..
 SNEK_QEMU = $(SNEK_ROOT)/chips/qemu
 
 ARCH = riscv64-unknown-elf
-ARCH_CFLAGS = -march=rv32imac -mabi=ilp32
+ARCH_CFLAGS = -march=rv32imac -mabi=ilp32 -msave-restore
 PROGNAME = snek-qemu-riscv
 
 include $(SNEK_QEMU)/snek-qemu.defs

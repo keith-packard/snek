@@ -16,17 +16,13 @@
 #include <ao-snek.h>
 #include <snek.h>
 
-static uint32_t
-snek_millis(void)
-{
-	return ao_time_ns() / 1000000;
-}
-
 snek_poly_t
 snek_builtin_time_sleep(snek_poly_t a)
 {
-	uint32_t	expire = snek_millis() + (snek_poly_get_float(a) * 1000.0f + 0.5f);
-	while (!snek_abort && (int32_t) (expire - snek_millis()) > 0)
+	uint64_t	ticks = (snek_poly_get_float(a) * 1e9f + 0.5f);
+	uint64_t	expire = ao_time_ns() + ticks;
+
+	while (!snek_abort && (int64_t) (expire - ao_time_ns()) > 0)
 		;
 	return SNEK_NULL;
 }
@@ -34,7 +30,7 @@ snek_builtin_time_sleep(snek_poly_t a)
 snek_poly_t
 snek_builtin_time_monotonic(void)
 {
-	return snek_float_to_poly(snek_millis() / 1000.0f);
+	return snek_float_to_poly(ao_time_ns() / 1e9f);
 }
 
 static uint64_t random_x, random_w;
