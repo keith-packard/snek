@@ -64,7 +64,7 @@ snek-bits: $(SNEK_FILES) macosx
 	cp -p $(SNEK_SCRIPTS) macosx/snek.app/Contents/MacOS/
 endif
 
-$(MACOSX_DIST): $(MACOSX_FILES) macosx
+$(MACOSX_DIST): $(MACOSX_FILES) macosx snek-bits
 	rm -f $@
 	cp -a $(MACOSX_DOCS) macosx
 	cp -a $(MACOSX_INSTALL) macosx

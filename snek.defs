@@ -12,6 +12,8 @@ SNEK_DATE = 2020-05-13
 
 SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
+SNEK_CLANG = $(shell if $(CC) --version | grep -q -i llvm; then echo yes; else echo no; fi)
+
 SNEK_PORTS = $(SNEK_ROOT)/ports
 SNEK_HOSTS = $(SNEK_ROOT)/hosts
 SNEK_DOC = $(SNEK_ROOT)/doc
@@ -79,18 +81,24 @@ SNEK_MOST_WARNINGS =  \
 	-Wmissing-prototypes \
 	-Wmissing-declarations \
 	-Wnested-externs \
-	-Warray-bounds=2 \
 	-Wshadow
+
+ifeq ($(SNEK_CLANG),yes)
+SNEK_MOST_WARNINGS += -Warray-bounds
+else
+SNEK_MOST_WARNINGS += -Warray-bounds=2
+endif
 
 SNEK_WARNINGS = \
 	$(SNEK_MOST_WARNINGS) \
 	-Wimplicit-fallthrough
 
 SNEK_BASE_CFLAGS = \
-	-Wl,--gc-sections \
 	-D_DEFAULT_SOURCE \
 	-I$(SNEK_ROOT) $(SNEK_LOCAL_CFLAGS) \
 	-DSNEK_VERSION='"$(SNEK_VERSION)"'
+
+SNEK_LDFLAGS = -Wl,--gc-sections 
 
 SNEK_CFLAGS ?= $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)
 
