@@ -12,7 +12,8 @@
 # General Public License for more details.
 #
 
-include ../../snek.defs
+SNEK_ROOT = ../..
+include ../../snek-install.defs
 
 ESP32_IDF ?= ./esp32-idf
 
@@ -37,3 +38,7 @@ load:
 
 connect:
 	minicom -D /dev/ttyUSB1 -b 115200
+
+install: $(TARGET)
+	install -d $(DESTDIR)$(SHAREDIR)
+	install -m 0644 $(TARGET) $(DESTDIR)$(SHAREDIR)
