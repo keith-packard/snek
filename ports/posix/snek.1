@@ -15,14 +15,29 @@
 .SH NAME
 snek \- Snek Programming Language
 .SH SYNOPSIS
-.B "snek" {program.py}
+.B "snek" [--version|-v] [--help|-?] [--interactive|-i] [program.py]
 .SH DESCRIPTION
 .I snek
 is a small Python-derivative suitable for embedded computers. This
 host version is largely designed to help test the Snek system and
 applications on larger machines
+.SH COMMAND LINE OPTIONS
+.TP
+\--version or \-v
+Reports the version number to stdout and then exits.
+.TP
+\--help or \-?
+Prints usage information to stdout and then exits.
+.TP
+\--interactive or \-i
+When a program is specified on the command line, enter interactive
+mode after executing that program.
 .SH USAGE
-If you specify a program file on the command line, snek will load and
-execute this instead of reading from the command line.
+When a program is specified on the command line, snek runs it. Then,
+if the --interactive flag is passed, it enters interactive
+mode. Otherwise, it exits.
+.P
+When no program is specified on the command line, snek enters
+interactive mode.
 .SH AUTHOR
 Keith Packard

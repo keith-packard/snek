@@ -21,7 +21,7 @@ FILE	*snek_posix_input;
 
 static const struct option options[] = {
 	{ .name = "version", .has_arg = 0, .val = 'v' },
-	{ .name = "file", .has_arg = 1, .val = 'f' },
+	{ .name = "interactive", .has_arg = 0, .val = 'i' },
 	{ .name = "help", .has_arg = 0, .val = '?' },
 	{ .name = NULL, .has_arg = 0, .val = 0 },
 };
@@ -29,7 +29,7 @@ static const struct option options[] = {
 static void
 usage (char *program, int val)
 {
-	fprintf(stderr, "usage: %s [--version] [--help] [--file <file.py>] <program.py>\n", program);
+	fprintf(stderr, "usage: %s [--version] [--help] [--interactive] <program.py>\n", program);
 	exit(val);
 }
 
@@ -71,16 +71,17 @@ int
 main (int argc, char **argv)
 {
 	int c;
-	char *file = NULL;
+	bool do_interactive = true;
+	bool interactive_flag = false;
 
-	while ((c = getopt_long(argc, argv, "v?f:", options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "v?i", options, NULL)) != -1) {
 		switch (c) {
 		case 'v':
 			printf("%s version %s\n", argv[0], SNEK_VERSION);
 			exit(0);
 			break;
-		case 'f':
-			file = optarg;
+		case 'i':
+			interactive_flag = true;
 			break;
 		case '?':
 			usage(argv[0], 0);
@@ -93,15 +94,7 @@ main (int argc, char **argv)
 
 	snek_init();
 
-	if (file) {
-		snek_file = file;
-		snek_posix_input = fopen(snek_file, "r");
-		if (!snek_posix_input) {
-			perror(snek_file);
-			exit(1);
-		}
-		snek_parse();
-	}
+	bool ret = true;
 
 	if (argv[optind]) {
 		snek_file = argv[optind];
@@ -110,18 +103,21 @@ main (int argc, char **argv)
 			perror(snek_file);
 			exit(1);
 		}
-	} else {
+		if (snek_parse() != snek_parse_success)
+			ret = false;
+		fclose(snek_posix_input);
+		do_interactive = interactive_flag;
+	}
+
+	if (do_interactive) {
+		printf("Welcome to Snek version %s\n", SNEK_VERSION);
 		snek_file = "<stdin>";
 		snek_posix_input = stdin;
 		snek_interactive = true;
-		printf("Welcome to Snek version %s\n", SNEK_VERSION);
+		if (snek_parse() != snek_parse_success)
+			ret = false;
+		printf("\n");
 	}
 
-	bool ret = snek_parse() == snek_parse_success;
-
-	if (snek_posix_input == stdin)
-		printf("\n");
-	else
-		fclose(snek_posix_input);
 	return ret ? 0 : 1;
 }
