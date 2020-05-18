@@ -36,7 +36,7 @@ FORCE:
 
 check: all
 	+cd test && make $@
-	+black --check --exclude 'fail-syntax-.*\.py' .
+	+black --check --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
 
 SHAREFILES = \
 	snek.defs \
