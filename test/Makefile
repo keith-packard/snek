@@ -72,6 +72,7 @@ FAIL_TESTS = \
 	fail-interpolate-missing.py \
 	fail-interpolate-extra.py \
 	fail-interpolate-badformat.py \
+	fail-dictionary-mutable.py \
 	$(SYNTAX_TESTS)
 
 check:
