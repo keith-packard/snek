@@ -26,7 +26,7 @@ jobs:
           docker run --rm \
             --mount type=bind,source=`pwd`/artifacts,destination=/artifacts \
             snek \
-            make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_TEST_RISCV=1 check install
+            make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_RISCV_TEST=1 check install
 
       - name: 'Upload results'
         uses: actions/upload-artifact@v2
