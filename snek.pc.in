@@ -1,6 +1,0 @@
-sneklib=@SNEKLIB@
-
-Name: snek
-Description: Snek. A tiny python-esque language
-Version: @SNEK_VERSION@
-Cflags: -I${sneklib}
