@@ -1,3 +1,9 @@
+snek (1.4.1-3) unstable; urgency=medium
+
+  * Move qemu-system-arm to Build-Depends-Indep
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 22 May 2020 15:12:38 -0700
+
 snek (1.4.1-2) unstable; urgency=medium
 
   * Split out Build-Depends-Indep so -arch builds don't pull in toolchains
