@@ -18,10 +18,14 @@ include $(SNEK_ROOT)/snek.defs
 
 PYTHON3?=python3
 SNEK_NATIVE?=$(SNEK_PORTS)/posix/snek
+ifdef SNEK_RISCV_TEST
 SNEK_RISCV?=$(SNEK_PORTS)/qemu-riscv/snek-riscv
+else
+SNEK_RISCV=
+endif
 SNEK_ARM?=$(SNEK_PORTS)/qemu-arm/snek-arm
 
-LANGS=python3 $(SNEK_NATIVE) $(SNEK_ARM)
+LANGS=python3 $(SNEK_NATIVE) $(SNEK_ARM) $(SNEK_RISCV)
 
 SUCCESS_TESTS = \
 	pass-andor.py \
@@ -72,6 +76,7 @@ FAIL_TESTS = \
 	fail-interpolate-missing.py \
 	fail-interpolate-extra.py \
 	fail-interpolate-badformat.py \
+	fail-dictionary-mutable.py \
 	$(SYNTAX_TESTS)
 
 check:

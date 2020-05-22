@@ -63,7 +63,7 @@ HIFIVE1REVB_CFLAGS=-march=rv32imac -mabi=ilp32 \
 
 CFLAGS = $(HIFIVE1REVB_CFLAGS) $(SNEK_CFLAGS) $(AO_CFLAGS)
 
-LDFLAGS=$(CFLAGS) -n -Wl,--gc-sections
+LDFLAGS=$(SNEK_LDFLAGS) $(CFLAGS) -n
 
 LIBS=-lm
 

@@ -40,7 +40,7 @@ CFLAGS=$(ARCH_CFLAGS) --oslib=semihost \
 	-std=gnu99 $(OPT) -g \
 	-I. -I$(SNEK_QEMU) -I$(SNEK_ROOT) $(PICOLIBC_CFLAGS) $(SNEK_CFLAGS)
 
-LDFLAGS=$(CFLAGS) -n
+LDFLAGS=$(SNEK_LDFLAGS) $(CFLAGS) -n
 
 LIBS=-lm
 

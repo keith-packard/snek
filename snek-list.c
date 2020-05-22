@@ -280,7 +280,7 @@ snek_list_imm(snek_offset_t size, snek_list_type_t type)
 			s -= 2;
 			snek_poly_t key = snek_stack_pick(s+1);
 			snek_poly_t value = snek_stack_pick(s);
-			snek_poly_t *ref = _snek_list_ref(list, key, false, true);
+			snek_poly_t *ref = _snek_list_ref(list, key, true, true);
 			if (ref)
 				*ref = value;
 		}

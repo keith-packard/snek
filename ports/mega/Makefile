@@ -48,7 +48,8 @@ HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega2560 -I. -I$(SNEK_LOCAL_VPATH) -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert
-LDFLAGS=-Wl,-uvfprintf -lprintf_flt -lm \
+LDFLAGS=$(SNEK_LDFLAGS) \
+	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x3e000 \
 	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x1e00 \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x1000 \

@@ -81,7 +81,7 @@ CFLAGS = $(SAMD21_CFLAGS) $(SNEK_CFLAGS)
 
 LDSCRIPT=$(SNEK_SAMD21)/snek-samd21.ld
 
-LDFLAGS=$(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -T$(LDSCRIPT)  -n
+LDFLAGS=$(SNEK_LDFLAGS) $(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -T$(LDSCRIPT)  -n
 
 LIBS=-lm
 

@@ -28,12 +28,13 @@ esac
 
 build="$1"
 builddir=`echo $build | sed 's/^[^:]*://'`
+buildhost=`echo $build | sed 's/:.*$//'`
 echo builddir "$builddir"
 
 target="$2"
 
 rsync -Ravz --delete `git ls-files` "$build"
 
-ssh imac-remote "cd '$builddir'/ports/posix && make"
+ssh $buildhost "cd '$builddir'/ports/posix && make"
 
 rsync -avz "$build"/ports/posix/snek "$curdir"/"$target"

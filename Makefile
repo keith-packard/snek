@@ -36,35 +36,9 @@ FORCE:
 
 check: all
 	+cd test && make $@
-	+black --check --exclude 'fail-syntax-.*\.py' .
+	+black --check --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
 
-SHAREFILES = \
-	snek.defs \
-	$(SNEK_SRC) \
-	$(SNEK_EXT_SRC) \
-	$(SNEK_RAW_INC) \
-	$(SNEK_EXT_INC) \
-	$(SNEK_BUILTINS) \
-	$(SNEK_EXT_BUILTINS) \
-	$(SNEK_ROOT)/snek-gram.ll \
-	$(SNEK_ROOT)/snek-builtin.py
-
-IMAGEFILES = \
-	snek.svg
-
-DOCFILES = \
-	$(IMAGEFILES)
-
-PKGFILES = \
-	snek.pc
-
-install: $(SHAREFILES) $(PKGFILES) $(DOCFILES)
-	install -d $(DESTDIR)$(SHAREDIR)
-	for i in $(SHAREFILES); do install --mode=644 "$$i" $(DESTDIR)$(SHAREDIR) || exit 1; done
-	install -d $(DESTDIR)$(PKGCONFIG)
-	for i in $(PKGFILES); do install --mode=644 "$$i" $(DESTDIR)$(PKGCONFIG) || exit 1; done
-	install -d $(DESTDIR)$(DOCDIR)
-	for i in $(DOCFILES); do install --mode=644 "$$i" $(DESTDIR)$(DOCDIR) || exit 1; done
+install:
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@) || exit 1; done
 	+for snek in $(SNEKS); do (cd `dirname $$snek` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@) || exit 1; done
 
@@ -76,9 +50,6 @@ otheros: $(SNEKS)
 	+cd doc && make
 	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make); done
 
-snek.pc: snek.pc.in
-	$(SNEK_SED) $^ > $@
-
 snek-mu.py:
 	find . -name '*.builtin' -print0 | xargs -0 python3 ./snek-builtin.py --mu -o $@
 
@@ -86,6 +57,5 @@ docker:
 	docker build -t phsilva/snek .
 
 clean:
-	rm -f snek.pc
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
 	+for snek in $(SNEKS); do (cd `dirname $$snek` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@); done
