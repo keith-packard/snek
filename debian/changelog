@@ -1,3 +1,9 @@
+snek (1.4.1-2) unstable; urgency=medium
+
+  * Split out Build-Depends-Indep so -arch builds don't pull in toolchains
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 22 May 2020 14:44:14 -0700
+
 snek (1.4.1-1) unstable; urgency=medium
 
   * Bug fix for string compare on aarch64
