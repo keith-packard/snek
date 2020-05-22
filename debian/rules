@@ -21,3 +21,12 @@ override_dh_dwz:
 
 override_dh_shlibdeps:
 	dh_shlibdeps -X.elf -Xsnek-ev3
+
+override_dh_auto_build-arch:
+	dh_auto_build -- FIRMWARE=
+
+override_dh_auto_test-arch:
+	dh_auto_test -- FIRMWARE= SNEK_RISCV= SNEK_ARM=
+
+override_dh_auto_install-arch:
+	dh_auto_install -- FIRMWARE=
