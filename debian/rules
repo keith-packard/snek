@@ -7,6 +7,20 @@ export PREFIX=/usr
 export CFLAGS_POSIX=$(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get LDFLAGS)
 export V=1
 
+BUILDDIR = $(shell pwd)
+
+SNEK_MOST_WARNINGS =  \
+	-fdebug-prefix-map=$(BUILDDIR)=. \
+	-Wall \
+	-Wcast-align \
+	-Wextra \
+	-Wpointer-arith \
+	-Wstrict-prototypes \
+	-Wmissing-prototypes \
+	-Wmissing-declarations \
+	-Wnested-externs \
+	-Wshadow
+
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
@@ -22,8 +36,11 @@ override_dh_dwz:
 override_dh_shlibdeps:
 	dh_shlibdeps -X.elf -Xsnek-ev3
 
+override_dh_auto_build-indep:
+	dh_auto_build -- "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)"
+
 override_dh_auto_build-arch:
-	dh_auto_build -- FIRMWARE=
+	dh_auto_build -- FIRMWARE= "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)"
 
 override_dh_auto_test-arch:
 	dh_auto_test -- FIRMWARE= SNEK_RISCV= SNEK_ARM=
