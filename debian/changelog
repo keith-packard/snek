@@ -1,3 +1,9 @@
+snek (1.4-3) unstable; urgency=medium
+
+  * Skip building firmware in binary-arch target
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 22 May 2020 02:42:30 -0700
+
 snek (1.4-2) unstable; urgency=medium
 
   * Prepare source upload Closes: #951306.
