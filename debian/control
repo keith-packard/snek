@@ -26,7 +26,7 @@ Description: Embedded system programming language
 
 Package: snek-bin
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, snek
 Description: Host binary version of Snek programming language
  Snek is a small python-like language designed for embedded
  computers. It can run on systems as small as an Arduino Duemilanove
