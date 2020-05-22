@@ -84,11 +84,13 @@ snek_poly_cmp(snek_poly_t a, snek_poly_t b, bool is)
 	int8_t tdiff = atype - btype;
 	if (tdiff)
 		return tdiff;
+	int sdiff;
 	switch (atype) {
 	case snek_float:
 		return (b.f < a.f) - (a.f < b.f);
 	case snek_string:
-		return strcmp(snek_poly_to_string(a), snek_poly_to_string(b));
+		sdiff = strcmp(snek_poly_to_string(a), snek_poly_to_string(b));
+		return (sdiff > 0) - (sdiff < 0);
 	case snek_list:
 		if (!is)
 			return snek_list_cmp(snek_poly_to_list(a), snek_poly_to_list(b));
