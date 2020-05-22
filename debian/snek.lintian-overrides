@@ -1,4 +1,3 @@
-snek: pkg-config-unavailable-for-cross-compilation usr/lib/pkgconfig/snek.pc
 snek: arch-independent-package-contains-binary-or-object usr/share/snek/snek-*
 snek: arch-dependent-file-in-usr-share usr/share/snek/snek-*
 snek: unstripped-binary-or-object usr/share/snek/snek-*

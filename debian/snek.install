@@ -1,6 +1,5 @@
 usr/bin/snek-*-install
 usr/bin/snekde
-usr/lib/pkgconfig/*
 usr/share/applications/snekde.desktop
 usr/share/doc
 usr/share/icons
