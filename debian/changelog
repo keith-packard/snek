@@ -1,3 +1,10 @@
+snek (1.4.1-5) unstable; urgency=medium
+
+  * Require fewer dependencies for -arch packages
+  * Don't test risc-v binaries as QEMU doesn't support that yet
+
+ -- Keith Packard <keithp@keithp.com>  Sat, 23 May 2020 09:13:34 -0700
+
 snek (1.4.1-4) unstable; urgency=medium
 
   * Add dependency from snek-bin to snek to get desktop icon
