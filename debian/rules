@@ -40,10 +40,10 @@ override_dh_auto_build-indep:
 	dh_auto_build -- "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)"
 
 override_dh_auto_build-arch:
-	dh_auto_build -- FIRMWARE= "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)"
+	dh_auto_build -- -C ports/posix SUBDIRS= FIRMWARE= "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)"
 
 override_dh_auto_test-arch:
-	dh_auto_test -- FIRMWARE= SNEK_RISCV= SNEK_ARM=
+	dh_auto_test -- -C test FIRMWARE= SNEK_RISCV= SNEK_ARM=
 
 override_dh_auto_install-arch:
-	dh_auto_install -- FIRMWARE=
+	dh_auto_install -- -C ports/posix

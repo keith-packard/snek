@@ -4,13 +4,13 @@ Priority: optional
 Maintainer: Keith Packard <keithp@keithp.com>
 Homepage: https://keithp.com
 Rules-Requires-Root: no
-Build-Depends: debhelper-compat (= 13), libreadline-dev,
- python3, lola, gawk, asciidoctor, ruby-asciidoctor-pdf, ruby-coderay,
- black
+Build-Depends: debhelper-compat (= 13), libreadline-dev, python3, lola, gawk
 Build-Depends-Indep: avr-libc, gcc-avr,
  binutils-arm-none-eabi, gcc-arm-none-eabi, picolibc-arm-none-eabi (>= 1.4), qemu-system-arm,
  binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.4),
- gcc-arm-linux-gnueabi, libc6-dev-armel-cross
+ gcc-arm-linux-gnueabi, libc6-dev-armel-cross,
+ asciidoctor, ruby-asciidoctor-pdf, ruby-coderay,
+ black
 Standards-Version: 4.5.0
 
 Package: snek
