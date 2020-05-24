@@ -1,3 +1,9 @@
+snek (1.4.1-6) unstable; urgency=medium
+
+  * Add gcc as autopkgtest dependency
+
+ -- Keith Packard <keithp@keithp.com>  Sat, 23 May 2020 19:41:39 -0700
+
 snek (1.4.1-5) unstable; urgency=medium
 
   * Require fewer dependencies for -arch packages
