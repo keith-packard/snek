@@ -2,7 +2,6 @@ Source: snek
 Section: interpreters
 Priority: optional
 Maintainer: Keith Packard <keithp@keithp.com>
-Homepage: https://keithp.com
 Rules-Requires-Root: no
 Build-Depends: debhelper-compat (= 13), libreadline-dev, python3, lola, gawk
 Build-Depends-Indep: avr-libc, gcc-avr,
@@ -12,6 +11,9 @@ Build-Depends-Indep: avr-libc, gcc-avr,
  asciidoctor, ruby-asciidoctor-pdf, ruby-coderay,
  black
 Standards-Version: 4.5.0
+HomePage: https://sneklang.org
+Vcs-Git: git://sneklang.org/git/snek.git
+Vcs-Browser: https://sneklang.org/cgit/snek.git
 
 Package: snek
 Architecture: all
