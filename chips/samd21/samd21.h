@@ -1343,7 +1343,7 @@ extern struct samd21_sercom samd21_sercom5;
 #define SAMD21_SERCOM_CTRLA_CPOL	29
 #define SAMD21_SERCOM_CTRLA_DORD	30
 
-/* I2C master mode */
+/* I2C controller mode */
 #define SAMD21_SERCOM_CTRLA_PINOUT	16
 #define SAMD21_SERCOM_CTRLA_SDAHOLD	20
 #define  SAMD21_SERCOM_CTRLA_SDAHOLD_DIS	0

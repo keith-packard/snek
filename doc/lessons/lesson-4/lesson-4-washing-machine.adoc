@@ -193,7 +193,7 @@ def WaitSwitch(switch):
 === Putting The Program Together
 
 Now that we've got most of the pieces of our washing machine ready, we
-can assemble them together by writing a master function, `WashCycle`
+can assemble them together by writing a main function, `WashCycle`
 that does the steps in the order we defined above:
 
  * Door closed
