@@ -44,3 +44,6 @@ install: $(PROG) snek-riscv
 	install snek-riscv $(DESTDIR)$(SHAREDIR)
 
 uninstall:
+
+clean::
+	rm -f snek-riscv
