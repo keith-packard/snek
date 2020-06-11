@@ -849,11 +849,14 @@ extern struct samd21_tc samd21_tc4;
 extern struct samd21_tc samd21_tc5;
 #define samd21_tc5 (*(struct samd21_tc *) 0x42003400)
 
+#ifdef ATSAMD21J
+/* Present on all of the samd21j parts and the samd21g16l */
 extern struct samd21_tc samd21_tc6;
 #define samd21_tc6 (*(struct samd21_tc *) 0x42003800)
 
 extern struct samd21_tc samd21_tc7;
 #define samd21_tc7 (*(struct samd21_tc *) 0x42003c00)
+#endif
 
 #define SAMD21_TC_CTRLA_SWRST		0
 #define SAMD21_TC_CTRLA_ENABLE		1
@@ -957,8 +960,11 @@ extern struct samd21_tcc samd21_tcc1;
 extern struct samd21_tcc samd21_tcc2;
 #define samd21_tcc2 (*(struct samd21_tcc *) 0x42002800)
 
+#ifdef SAMD21E17D
+/* only on the samd21e17d */
 extern struct samd21_tcc samd21_tcc3;
 #define samd21_tcc3 (*(struct samd21_tcc *) 0x42006000)
+#endif
 
 #define SAMD21_TCC_CTRLA_SWRST		0
 #define SAMD21_TCC_CTRLA_ENABLE		1
