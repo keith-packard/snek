@@ -47,25 +47,26 @@
 /*
  *	Available:
  *
- *	tcc0, tcc3	0-7 (4-7 overlay 0-3)
+ *	tcc0		0-7 (4-7 overlay 0-3)
  *	tcc1		0-3 (2-3 overlay 0-1)
  *	tcc2		0-1
- *	TC6-7 not available
+ *	TC3		0-1
+ *	TC4		0-1
+ *	TC5		0-1
  *
- *	
  *	Names		Pin	E	F	Arduino		Snek
  *
- *	A0/SPEAKER	PA02		TCC2.0	none		TCC2.0	F
- *	A1/D6		PA05	TCC0.1	TCC3.3	TCC0.1		TCC0.1	E
- *	A2/D9		PA06	TCC1.0	TCC3.4	TCC1.0		TCC1.0	E
- *	A3/D10		PA07	TCC1.1	TCC3.5	TCC1.1		TCC1.1	E
- *	A4/D3/SCL	PB03	TC6.1	TCC3.3	none		TCC3.3	F
- *	A5/D2/SDA	PB02	TC6.0	TCC3.2	none		TCC3.2	F
- *	A6/D0/RX	PB09	TC4.1	TCC3.7	TC4.1		TC4.1	E
- *	A7/D1/TX	PB08	TC4.0	TCC3.6	TC4.0		TC4.0	E
+ *	A0/SPEAKER	PA02		tcc3.0	none		none
+ *	A1/D6		PA05	TCC0.1	tcc3.3	TCC0.1		TCC0.1	E
+ *	A2/D9		PA06	TCC1.0	tcc3.4	TCC1.0		TCC1.0	E
+ *	A3/D10		PA07	TCC1.1	tcc3.5	TCC1.1		TCC1.1	E
+ *	A4/D3/SCL	PB03	tc6.1	tcc3.3	none		none
+ *	A5/D2/SDA	PB02	tc6.0	tcc3.2	none		none
+ *	A6/D0/RX	PB09	TC4.1	tcc3.7	TC4.1		TC4.1	E
+ *	A7/D1/TX	PB08	TC4.0	tcc3.6	TC4.0		TC4.0	E
  *	A8/LIGHT	PA11	TCC1.1	TCC0.3	none		none
- *	A9/TEMPSENSE	PA09	TCC0.1	TCC1.3	none		TCC1.3	F
- *	D4/BUTTONA	PA28		TCC3.7	none		none
+ *	A9/TEMPSENSE	PA09	TCC0.1	TCC1.3	none		none
+ *	D4/BUTTONA	PA28		tcc3.7	none		none
  *	D5/BUTTONB	PA14	TC3.0	TCC0.4	none		none
  *	D7/SWITCH	PA15	TC3.1	TCC0.5	TC3.1		none
  *	D8/NEOPIXEL	PB23			none		none
@@ -76,7 +77,7 @@
  *	D32/FLASHMISO	PA16	TCC2.0	TCC0.6	none		none
  *	D33/FLASHSCK	PA21		TCC0.7	none		none
  *	D34/FLASHMOSI	PA20		TCC0.6	TCC0.6		none
- *	D35/FLASHCS	PB22		TCC3.0	none		none
+ *	D35/FLASHCS	PB22		tcc3.0	none		none
  *	I2SCK		PA10	TCC1.0	TCC0.3	none		none
  *	I2SDO		PA08	TCC0.0	TCC1.2	TCC0.0		none
  *	LISSDA		PA00			none		none
@@ -89,8 +90,8 @@
 /* A0/SPEAKER */
 #define AO_SNEK_GPIO_0		(&samd21_port_a)
 #define AO_SNEK_PIN_0		2
-#define AO_SNEK_TIMER_0		(&samd21_tcc2)
-#define AO_SNEK_CHANNEL_0	AO_SNEK_TIMER_CH(0, AO_SNEK_TIMER_FUNC_F, AO_SNEK_TIMER_DEV_TCC)
+#define AO_SNEK_TIMER_0		NULL
+#define AO_SNEK_CHANNEL_0	0
 #define AO_SNEK_ADC_0		0
 
 /* A1/D6 */
@@ -117,15 +118,15 @@
 /* A4 */
 #define AO_SNEK_GPIO_4		(&samd21_port_b)
 #define AO_SNEK_PIN_4		3
-#define AO_SNEK_TIMER_4		(&samd21_tc6)
-#define AO_SNEK_CHANNEL_4	AO_SNEK_TIMER_CH(1, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TC)
+#define AO_SNEK_TIMER_4		NULL
+#define AO_SNEK_CHANNEL_4	0
 #define AO_SNEK_ADC_4		11
 
 /* A5 */
 #define AO_SNEK_GPIO_5		(&samd21_port_b)
 #define AO_SNEK_PIN_5		2
-#define AO_SNEK_TIMER_5		(&samd21_tc6)
-#define AO_SNEK_CHANNEL_5	AO_SNEK_TIMER_CH(0, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TC)
+#define AO_SNEK_TIMER_5		NULL
+#define AO_SNEK_CHANNEL_5	0
 #define AO_SNEK_ADC_5		10
 
 /* A6 */
@@ -145,15 +146,15 @@
 /* A8 */
 #define AO_SNEK_GPIO_8		(&samd21_port_a)
 #define AO_SNEK_PIN_8		11
-#define AO_SNEK_TIMER_8		(&samd21_tcc1)
-#define AO_SNEK_CHANNEL_8	AO_SNEK_TIMER_CH(1, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TCC)
+#define AO_SNEK_TIMER_8		NULL
+#define AO_SNEK_CHANNEL_8	0
 #define AO_SNEK_ADC_8		19
 
 /* A9/TEMP */
 #define AO_SNEK_GPIO_9		(&samd21_port_a)
 #define AO_SNEK_PIN_9		9
-#define AO_SNEK_TIMER_9		(&samd21_tcc0)
-#define AO_SNEK_CHANNEL_9	AO_SNEK_TIMER_CH(1, AO_SNEK_TIMER_FUNC_E, AO_SNEK_TIMER_DEV_TCC)
+#define AO_SNEK_TIMER_9		NULL
+#define AO_SNEK_CHANNEL_9	0
 #define AO_SNEK_ADC_9		17
 
 #define SNEK_THERM_R_DIVIDE	10000.0f
