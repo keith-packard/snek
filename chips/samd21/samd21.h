@@ -538,6 +538,9 @@ struct samd21_dmac_desc {
 #define SAMD21_DMAC_DESC_BTCTRL_EVOSEL		1
 #define SAMD21_DMAC_DESC_BTCTRL_BLOCKACT	3
 #define SAMD21_DMAC_DESC_BTCTRL_BEATSIZE	8
+#define  SAMD21_DMAC_DESC_BTCTRL_BEATSIZE_BYTE		0
+#define  SAMD21_DMAC_DESC_BTCTRL_BEATSIZE_HWORD		1
+#define  SAMD21_DMAC_DESC_BTCTRL_BEATSIZE_WORD		2
 #define SAMD21_DMAC_DESC_BTCTRL_SRCINC		10
 #define SAMD21_DMAC_DESC_BTCTRL_DSTINC		11
 #define SAMD21_DMAC_DESC_BTCTRL_STEPSEL		12
@@ -799,6 +802,58 @@ struct samd21_adc {
 extern struct samd21_adc samd21_adc;
 
 #define samd21_adc (*(struct samd21_adc *) 0x42004000)
+
+struct samd21_dac {
+	vuint8_t	ctrla;
+	vuint8_t	ctrlb;
+	vuint8_t	evctrl;
+	uint8_t		reserved_03;
+
+	vuint8_t	intenclr;
+	vuint8_t	intenset;
+	vuint8_t	intflag;
+	vuint8_t	status;
+
+	vuint16_t	data;
+	uint16_t	reserved_0a;
+
+	vuint16_t	databuf;
+};
+
+#define SAMD21_DAC_CTRLA_SWRST		0
+#define SAMD21_DAC_CTRLA_ENABLE		1
+#define SAMD21_DAC_CTRLA_RUNSTDBY	2
+
+#define SAMD21_DAC_CTRLB_EOEN		0
+#define SAMD21_DAC_CTRLB_IOEN		1
+#define SAMD21_DAC_CTRLB_LEFTADJ	2
+#define SAMD21_DAC_CTRLB_VPD		3
+#define SAMD21_DAC_CTRLB_BDWP		4
+#define SAMD21_DAC_CTRLB_REFSEL		6
+#define  SAMD21_DAC_CTRLB_REFSEL_INTREF		0
+#define  SAMD21_DAC_CTRLB_REFSEL_VDDANA		1
+#define  SAMD21_DAC_CTRLB_REFSEL_VREFA		2
+#define  SAMD21_DAC_CTRLB_REFSEL_MASK		3
+
+#define SAMD21_DAC_EVCTRL_STARTEI	0
+#define SAMD21_DAC_EVCTRL_EMPTYEO	1
+
+#define SAMD21_DAC_INTENCLR_UNDERRUN	0
+#define SAMD21_DAC_INTENCLR_EMPTY	1
+#define SAMD21_DAC_INTENCLR_SYNCRDY	2
+
+#define SAMD21_DAC_INTENSET_UNDERRUN	0
+#define SAMD21_DAC_INTENSET_EMPTY	1
+#define SAMD21_DAC_INTENSET_SYNCRDY	2
+
+#define SAMD21_DAC_INTFLAG_UNDERRUN	0
+#define SAMD21_DAC_INTFLAG_EMPTY	1
+#define SAMD21_DAC_INTFLAG_SYNCRDY	2
+
+#define SAMD21_DAC_STATUS_SYNCBUSY	7
+
+extern struct samd21_dac samd21_dac;
+#define samd21_dac (*(struct samd21_dac *) 0x42004800)
 
 /* TC */
 struct samd21_tc {

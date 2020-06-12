@@ -19,20 +19,23 @@
 #ifndef _AO_DMA_SAM21_H_
 #define _AO_DMA_SAM21_H_
 
-extern uint8_t	ao_dma_done[SAMD21_DMAC_NCHAN];
-
 void
 ao_dma_init(void);
 
 void
-ao_dma_start_transfer(uint8_t		id,
-		      void		*src,
-		      void		*dst,
-		      uint16_t		count,
-		      uint32_t		chctrlb,
-		      uint16_t		btctrl);
+_ao_dma_start_transfer(uint8_t		id,
+		       void		*src,
+		       void		*dst,
+		       uint16_t		count,
+		       uint32_t		chctrlb,
+		       uint16_t		btctrl,
+		       void		(*callback)(uint8_t id, void *closure),
+		       void		*closure);
 
 void
-ao_dma_done_transfer(uint8_t id);
+_ao_dma_done_transfer(uint8_t id);
+
+void
+ao_dma_dump(char *where);
 
 #endif /* _AO_DMA_SAM21_H_ */
