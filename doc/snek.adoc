@@ -2100,6 +2100,61 @@ devices connected, they will not be modified. If there are fewer
 devices connected than the data provided, the extra values will be
 ignored.
 
+=== `tone(` _frequency_ `)`
+
+On devices with an audio output, this sets the output of that pin to a
+sine wave at _frequency_ Hertz. The amplitude is controlled by the
+power setting for the pin and whether the pin is turned `on`.(((tone)))
+
+[subs="verbatim,quotes"]
+----
+> *talkto(A0)*
+> *on()*
+> *tone(tone.A)*
+----
+
+=== `tonefor(` _frequency_ `,` _seconds_ `)`
+
+Sets the audio tone to _frequency_, turns the current Power pin *on*,
+delays for _seconds_ and then turns the current Power pin
+*off*.(((tonefor)))
+
+[subs="verbatim,quotes"]
+----
+> *talkto(A0)*
+> *tonefor(tone.C, 1)*
+----
+
+=== Musical note constants
+
+These provide frequencies commonly used in music, starting with middle
+C:
+
+.Musical note constants
+[options="header",cols="2,1,4"]
+|====
+| Name		| Note	| Frequency
+
+| `tone.C`	| C	|  261.6255653
+| `tone.Csharp`	| C♯	|  277.1826310
+| `tone.Dflat`	| D♭	|  277.1826310
+| `tone.D`	| D	|  293.6647679
+| `tone.Dsharp`	| D♯	|  311.1269837
+| `tone.Eflat`	| E♭	|  311.1269837
+| `tone.E`	| E	|  329.6275569
+| `tone.F`	| F	|  349.2282314
+| `tone.Fsharp`	| F♯	|  369.9944227
+| `tone.Gflat`	| G♭	|  369.9944227
+| `tone.G`	| G	|  391.9954360
+| `tone.Gsharp`	| G♯	|  415.3046976
+| `tone.Aflat`	| A♭	|  415.3046976
+| `tone.A`	| A	|  440.0000000
+| `tone.Asharp`	| A♯	|  466.1637615
+| `tone.Bflat`	| B♭	|  466.1637615
+| `tone.B`	| B	|  493.8833013
+|====
+
+
 == EEPROM built-in functions
 
 Snek on embedded devices may include persistent storage for source
@@ -2469,7 +2524,16 @@ functions.  D5 on the ItsyBitsy M0 is hooked to a 3.3V to 5V converter
 so that it can drive 5V devices. This means it cannot be used as an
 input pin.
 
-A0 - A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V.  By default, when used as input pins, Snek does not apply
@@ -2554,7 +2618,16 @@ Snek applies a pull-up resistor to the pin so that a disconnected pin
 will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
 functions.
 
-A0 - A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V. By default, when used as input pins, Snek does not apply
@@ -2593,7 +2666,16 @@ Snek applies a pull-up resistor to the pin so that a disconnected pin
 will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
 functions.
 
-A0 - A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V. By default, when used as input pins, Snek does not apply
@@ -2644,7 +2726,11 @@ Digital pins with PWM output
 CAP1 - CAP4::
 Digital pins labeled “Capacitive Touch” on the Crickit board.
 
-SIGNAL1 - SIGNAL8::
+SIGNAL1::
+The first Signal pin. This provides analog input and output. This pin
+has a digital-to-analog converter (DAC).
+
+SIGNAL2 - SIGNAL8::
 The Signal pins. These provide digital output and analog
 input. SIGNAL5 - SIGNAL8 also provide PWM output
 
@@ -2669,12 +2755,27 @@ Crickit file system.
 = Snek on Adafruit Circuit Playground Express
 
 Snek for the Circuit Playground Express includes the Common System,
-Math, GPIO (including the `neopixel` function), Temperature and EEPROM
-functions. Snek for the Playground provides names for all of the external
-connections as well as the built-in devices:
+Math, GPIO (including the `neopixel`, `tone` and `tonefor` functions),
+Temperature and EEPROM functions. Snek for the Playground provides
+names for all of the external connections as well as the built-in
+devices:
 
-A0 - A7::
-External GPIO connections, labeled around the perimeter of the board.
+A0::
+Analog input and output connection. This pin has a digital-to-analog
+converter (DAC) and can be used with the `tone` and `tonefor`
+functions. When used as inputs, Snek will return a value from 0-1
+indicating the ratio of the voltage to 3.3V.  By default, when used as
+inputs, Snek does not apply either a pull-up or pull-down resistor so
+that a disconnected input will read an indeterminate value. Change
+this using `pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A7::
+Analog input and Digital output connections. When used as inputs, Snek
+will return a value from 0-1 indicating the ratio of the voltage to
+3.3V.  By default, when used as inputs, Snek does not apply either a
+pull-up or pull-down resistor so that a disconnected input will read
+an indeterminate value. Change this using `pullnone`, `pullup` or
+`pulldown` functions.
 
 A8 or LIGHT::
 Internal ambient light sensor. Returns a value indicating how
@@ -2730,7 +2831,16 @@ disconnected pin will read an indeterminate value. Change this using
 D13 or LED::
 The yellow LED near the USB connector.
 
-A0-A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1-A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V. By default, when used as input pins, Snek does not apply

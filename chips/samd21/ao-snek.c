@@ -19,6 +19,7 @@
 #include <ao-tcc-samd21.h>
 #include <ao-tc-samd21.h>
 #include <ao-adc-samd21.h>
+#include <ao-dac-samd21.h>
 #include <setjmp.h>
 
 void
@@ -58,6 +59,27 @@ ao_snek_clr_pmux(void *port, uint8_t pin)
 void
 ao_snek_clr_pwm(void *port, uint8_t pin)
 {
+	ao_snek_clr_pmux(port, pin);
+}
+
+void
+ao_snek_set_dac(void *gpio, uint8_t pin, uint16_t value)
+{
+	ao_dac_set(value);
+	samd21_port_pmux_set(gpio, pin, SAMD21_PORT_PMUX_FUNC_B);
+	samd21_port_pincfg_set(gpio, pin,
+			       (1 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (1 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (1 << SAMD21_PORT_PINCFG_INEN),
+			       (0 << SAMD21_PORT_PINCFG_DRVSTR) |
+			       (0 << SAMD21_PORT_PINCFG_PULLEN) |
+			       (0 << SAMD21_PORT_PINCFG_INEN));
+}
+
+void
+ao_snek_clr_dac(void *port, uint8_t pin)
+{
+	ao_dac_set(0);
 	ao_snek_clr_pmux(port, pin);
 }
 
@@ -142,6 +164,7 @@ main(void)
 	ao_tcc_samd21_init();
 	ao_tc_samd21_init();
 	ao_adc_init();
+	ao_dac_init();
 	ao_usb_init();
 
 	setjmp(snek_reset_buf);

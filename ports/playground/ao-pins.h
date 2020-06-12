@@ -49,7 +49,7 @@
  *
  *	tcc0		0-7 (4-7 overlay 0-3)
  *	tcc1		0-3 (2-3 overlay 0-1)
- *	tcc2		0-1
+ *	tcc2		0-1			Reserved for tone function
  *	TC3		0-1
  *	TC4		0-1
  *	TC5		0-1
@@ -93,6 +93,7 @@
 #define AO_SNEK_TIMER_0		NULL
 #define AO_SNEK_CHANNEL_0	0
 #define AO_SNEK_ADC_0		0
+#define SNEK_SAMD21_DAC_TIMER	2	/* Use TCC2 for DAC timer */
 
 /* A1/D6 */
 #define AO_SNEK_GPIO_1		(&samd21_port_a)

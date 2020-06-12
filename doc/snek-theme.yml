@@ -24,6 +24,7 @@ font:
       bold_italic: Lato-Medium.ttf
   fallbacks:
   - Lato
+  - DejaVu Sans Mono
 title_page:
   align: right
   logo:

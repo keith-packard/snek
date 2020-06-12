@@ -65,6 +65,12 @@ uint16_t
 ao_snek_get_adc(uint8_t adc);
 
 void
+ao_snek_set_dac(void *port, uint8_t pin, uint16_t value);
+
+void
+ao_snek_clr_dac(void *port, uint8_t pin);
+
+void
 ao_snek_port_init(void);
 
 void
