@@ -21,7 +21,7 @@ SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 
 SNEK_LOCAL_SRC = \
 	snek-pow.c \
-	snek-duemilanove.c \
+	snek-328p.c \
 	$(SNEK_ATMEGA_SRC)
 
 SNEK_LOCAL_INC = \
@@ -29,7 +29,7 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
-	snek-duemilanove.builtin
+	snek-328p.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
