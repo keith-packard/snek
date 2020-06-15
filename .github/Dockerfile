@@ -25,7 +25,18 @@ RUN apt-get update && \
     libc6-dev-armel-cross \
     qemu-system-arm=1:5.0-5.1 \
     qemu-system-misc=1:5.0-5.1 \
-    black
+    black \
+    python3-pip \
+    python3-serial \
+    nsis \
+    rsync \
+    genisoimage \
+    zip \
+    gcc-mingw-w64 \
+    librsvg2-bin \
+    icoutils \
+    icnsutils && \
+    pip install pynsist
 
 RUN mkdir snek
 COPY ./ snek/
