@@ -27,7 +27,8 @@ PROGS= \
 	$(SNEK_ROOT)/snekde/snekde \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-install.in \
 	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy-install.in \
-	$(SNEK_PORTS)/mega/snek-mega-install.in
+	$(SNEK_PORTS)/mega/snek-mega-install.in \
+	$(SNEK_PORTS)/uno/snek-uno-install.in
 
 EXAMPLES=$(SNEK_ROOT)/examples
 
@@ -39,7 +40,8 @@ DOC= \
 	$(SNEK_ROOT)/COPYING \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-install.1 \
 	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy-install.1 \
-	$(SNEK_PORTS)/mega/snek-mega-install.1
+	$(SNEK_PORTS)/mega/snek-mega-install.1 \
+	$(SNEK_PORTS)/uno/snek-uno-install.1
 
 LINUX_FILES=$(PROGS) $(DESKTOP_FILES) $(FIRMWARE) $(USBFIRMWARE) $(ICONS) $(DOC) $(EXAMPLES)
 

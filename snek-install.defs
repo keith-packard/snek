@@ -36,6 +36,7 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/qemu-riscv/snek-qemu-riscv-$(SNEK_VERSION).elf \
 	$(SNEK_PORTS)/snekboard/snek-board-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/uduino/snek-uduino-$(SNEK_VERSION).hex \
+	$(SNEK_PORTS)/uno/snek-uno-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/ev3/snek-ev3-$(SNEK_VERSION) \
 	$(SNEK_PORTS_HIFIVE1REVB) $(SNEK_PORTS_ESP32)
 
