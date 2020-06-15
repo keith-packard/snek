@@ -46,6 +46,9 @@ upload: $(SNEKS)
 	+cd doc && make upload
 	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload); done
 
+install-otheros: otheros
+	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make install-otheros); done
+
 otheros: $(SNEKS)
 	+cd doc && make
 	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make); done

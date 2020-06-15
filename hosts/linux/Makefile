@@ -67,6 +67,9 @@ install:
 upload: $(LINUX_SH)
 	rsync -avz $(LINUX_SH) $(SNEKDIST)
 
+install-otheros: $(LINUX_SH)
+	cp $(LINUX_SH) $(DESTDIR)$(PREFIX)
+
 clean:
 	rm -f snek-*.sh *.bz2
 	rm -rf linux
