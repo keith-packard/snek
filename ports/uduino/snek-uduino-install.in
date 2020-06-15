@@ -2,7 +2,7 @@
 
 SHAREDIR="@SHAREDIR@"
 
-SNEKUDUINOBASE="$SHAREDIR/snek-µduino"
+SNEKUDUINOBASE="$SHAREDIR/snek-uduino"
 SNEKUDUINOREST="-@SNEK_VERSION@.hex"
 SNEKUDUINO="$SNEKUDUINOBASE""$SNEKUDUINOREST"
 
@@ -31,7 +31,7 @@ for i in "$@"; do
 		    verify="-V"
 		    ;;
 		*)
-		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-µduino.hex} {fuseload|load|fuse}" 1>&2
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-uduino.hex} {fuseload|load|fuse}" 1>&2
 		      exit 1
 		      ;;
 	    esac
