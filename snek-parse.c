@@ -231,7 +231,8 @@ snek_parse(void)
 				break;
 			return snek_parse_error;
 		case parse_return_oom:
-			break;
+			snek_error_syntax("OOM");
+			return snek_parse_error;
 		case parse_return_syntax:
 		default:
 			snek_error_syntax(snek_lex_text);
