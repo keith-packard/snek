@@ -376,11 +376,11 @@ expr-cmp-p	: cmpop
 				snek_code_add_op(value_pop().op);
 			}@
 		  expr-cmp-p
-		| IS @ goto binop_first; @ expr-lor @ goto binop_second; @ expr-cmp-p
 		|
 		;
 cmpop		: CMPOP
 		| IN
+		| IS
 		;
 expr-lor	: expr-land expr-lor-p
 		;
