@@ -120,9 +120,7 @@ del		: expr-array
 				snek_token_val.op = snek_op_del;
 				goto extract_lvalue;
 			}@
-			@{
-				goto add_op_lvalue;
-			}@
+			@ add_op_lvalue(); @
 		;
 ret-expr	: expr
 		|
@@ -161,15 +159,7 @@ assign-expr-p	: ASSIGN
 				 */
 				snek_code_delete_prev();
 			}@
-		  expr
-			@{
-			add_op_lvalue:;
-				snek_op_t op = value_pop().offset;
-				snek_id_t id = value_pop().id;
-				
-				/* add the assignment operator */
-				snek_code_add_op_id(op, id);
-			}@
+		  expr @ add_op_lvalue(); @
 		|
 		;
 globals		: global globals-p
@@ -248,18 +238,7 @@ while-stat	:
 				value_push_offset(snek_code_current());
 			}@
 		  while-else-stat
-			@{
-			patch_loop:;
-				snek_offset_t while_else_stat_off = value_pop().offset;
-				snek_offset_t loop_end_off = value_pop().offset;
-				snek_offset_t while_off = value_pop().offset;
-				snek_offset_t top_off = value_pop().offset;
-
-				snek_code_patch_branch(while_off, while_else_stat_off);
-				snek_code_patch_branch(loop_end_off, top_off);
-				snek_code_patch_forward(while_off, loop_end_off, snek_forward_continue, top_off);
-				snek_code_patch_forward(while_off, loop_end_off, snek_forward_break, snek_code_current());
-			}@
+			@ patch_loop(); @
 		;
 while-else-stat	: ELSE COLON suite
 		|
@@ -278,9 +257,7 @@ for-stat	: FOR NAME
 				for_depth--;
 			}@
 		  while-else-stat
-			@
-				goto patch_loop;
-			@
+			@ patch_loop(); @
 		;
 for-params	: RANGE OP opt-actuals CP COLON
 			@{
@@ -328,11 +305,7 @@ expr-or-p	: OR
 				value_push_offset(snek_compile_prev);
 			}@
 		  expr-and
-			@{
-			short_second:
-				snek_code_patch_branch(value_pop().offset, snek_code_current());
-				snek_code_add_op(snek_op_nop);
-			}@
+			@ short_second(); @
 		  expr-or-p
 		|
 		;
@@ -344,38 +317,16 @@ expr-and-p	: AND
 				value_push_offset(snek_compile_prev);
 			}@
 		  expr-not
-			@
-				goto short_second;
-			@
+			@ short_second(); @
 		  expr-and-p
 		|
 		;
 expr-not	: expr-cmp
-		| NOT
-			@{
-			unop_first:
-				value_push_op(snek_token_val.op);
-			}@
-		  expr-not
-			@{
-			unop_second:
-				snek_code_add_op(value_pop().op);
-			}@
+		| NOT @ unop_first(); @ expr-not @ unop_second(); @
 		;
 expr-cmp	: expr-lor expr-cmp-p
 		;
-expr-cmp-p	: cmpop
-			@{
-			binop_first:
-				snek_code_set_push(snek_code_prev_insn());
-				value_push_op(snek_token_val.op);
-			}@
-		  expr-lor
-			@{
-			binop_second:
-				snek_code_add_op(value_pop().op);
-			}@
-		  expr-cmp-p
+expr-cmp-p	: cmpop @ binop_first(); @ expr-lor @ binop_second(); @ expr-cmp-p
 		|
 		;
 cmpop		: CMPOP
@@ -384,41 +335,37 @@ cmpop		: CMPOP
 		;
 expr-lor	: expr-land expr-lor-p
 		;
-expr-lor-p	: LOR @ goto binop_first; @ expr-land @ goto binop_second; @ expr-lor-p
+expr-lor-p	: LOR @ binop_first(); @ expr-land @ binop_second(); @ expr-lor-p
 		|
 		;
 expr-land	: expr-lxor expr-land-p
 		;
-expr-land-p	: LAND @ goto binop_first; @ expr-lxor @ goto binop_second; @ expr-land-p
+expr-land-p	: LAND @ binop_first(); @ expr-lxor @ binop_second(); @ expr-land-p
 		|
 		;
 expr-lxor	: expr-shift expr-lxor-p
 		;
-expr-lxor-p	: LXOR @ goto binop_first; @ expr-shift @ goto binop_second; @ expr-lxor-p
+expr-lxor-p	: LXOR @ binop_first(); @ expr-shift @ binop_second(); @ expr-lxor-p
 		|
 		;
 expr-shift	: expr-add expr-shift-p
 		;
-expr-shift-p	: SHIFT @ goto binop_first; @ expr-add @ goto binop_second; @ expr-shift-p
+expr-shift-p	: SHIFT @ binop_first(); @ expr-add @ binop_second(); @ expr-shift-p
 		|
 		;
 expr-add	: expr-mul expr-add-p
 		;
-expr-add-p	: PLUS @ goto binop_first; @ expr-mul @ goto binop_second; @ expr-add-p
-		| MINUS @ goto binop_first; @ expr-mul @ goto binop_second; @ expr-add-p
+expr-add-p	: PLUS @ binop_first(); @ expr-mul @ binop_second(); @ expr-add-p
+		| MINUS @ binop_first(); @ expr-mul @ binop_second(); @ expr-add-p
 		|
 		;
 expr-mul	: expr-unary expr-mul-p
 		;
-expr-mul-p	: MULOP @ goto binop_first; @ expr-unary @ goto binop_second; @ expr-mul-p
+expr-mul-p	: MULOP @ binop_first(); @ expr-unary @ binop_second(); @ expr-mul-p
 		|
 		;
-expr-unary	: LNOT @ goto unop_first; @ expr-unary @ goto unop_second; @
-		| MINUS
-			@{
-				value_push_op(snek_op_uminus);
-			}@
-		  expr-unary @ goto unop_second; @
+expr-unary	: LNOT @ unop_first(); @ expr-unary @ unop_second(); @
+		| MINUS @ value_push_op(snek_op_uminus); @ expr-unary @ unop_second(); @
 		| PLUS expr-unary
 		| expr-pow
 		;
@@ -428,7 +375,7 @@ expr-unary	: LNOT @ goto unop_first; @ expr-unary @ goto unop_second; @
 expr-pow	: expr-array expr-pow-p
 		;
 
-expr-pow-p	: POW @ goto binop_first; @ expr-array expr-pow-p @ goto binop_second; @
+expr-pow-p	: POW @ binop_first(); @ expr-array expr-pow-p @ binop_second(); @
 		|
 		;
 expr-array	: expr-prim expr-array-p

@@ -152,6 +152,55 @@ _value_push_id(snek_id_t id, const char *file, int line)
 			return parse_return_error;	\
 	} while (0)
 
+static inline void binop_first(void)
+{
+	snek_code_set_push(snek_code_prev_insn());
+	value_push_op(snek_token_val.op);
+}
+
+static inline void binop_second(void)
+{
+	snek_code_add_op(value_pop().op);
+}
+
+static inline void add_op_lvalue(void)
+{
+	snek_op_t op = value_pop().offset;
+	snek_id_t id = value_pop().id;
+
+	/* add the assignment operator */
+	snek_code_add_op_id(op, id);
+}
+
+static inline void patch_loop(void)
+{
+	snek_offset_t while_else_stat_off = value_pop().offset;
+	snek_offset_t loop_end_off = value_pop().offset;
+	snek_offset_t while_off = value_pop().offset;
+	snek_offset_t top_off = value_pop().offset;
+
+	snek_code_patch_branch(while_off, while_else_stat_off);
+	snek_code_patch_branch(loop_end_off, top_off);
+	snek_code_patch_forward(while_off, loop_end_off, snek_forward_continue, top_off);
+	snek_code_patch_forward(while_off, loop_end_off, snek_forward_break, snek_code_current());
+}
+
+static inline void short_second(void)
+{
+	snek_code_patch_branch(value_pop().offset, snek_code_current());
+	snek_code_add_op(snek_op_nop);
+}
+
+static inline void unop_first(void)
+{
+	value_push_op(snek_token_val.op);
+}
+
+static inline void unop_second(void)
+{
+	snek_code_add_op(value_pop().op);
+}
+
 #define PARSE_CODE
 #include "snek-gram.h"
 
