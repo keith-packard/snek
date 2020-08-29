@@ -479,12 +479,9 @@ opt-expr	:	@{
 		;
 expr-prim	: OP opt-tuple CP
 			@{
-				bool tuple = !!value_pop().offset;
-
-				if (tuple) {
-					snek_offset_t num = value_pop().offset;
+				snek_soffset_t num = value_pop().offset;
+				if (num >= 0)
 					snek_code_add_op_offset(snek_op_tuple, num);
-				}
 			}@
 		| OS opt-actuals CS
 			@{
@@ -531,8 +528,8 @@ strings-p	: STRING
 opt-tuple	: expr opt-tuple-p
 		|
 			@{
+				/* A tuple with zero elements */
 				value_push_offset(0);
-				value_push_offset(1);
 			}@
 		;
 opt-tuple-p	: COMMA
@@ -544,12 +541,13 @@ opt-tuple-p	: COMMA
 				snek_offset_t num = value_pop().offset;
 				if (num >= 256)
 					return parse_return_syntax;
+				/* A tuple with num + 1 elements (one for the first expr) */
 				value_push_offset(num + 1);
-				value_push_offset(1);
 			}@
 		|
 			@{
-				value_push_offset(0);
+				/* Not a tuple */
+				value_push_offset(-1);
 			}@
 		;
 opt-actuals	: actuals
