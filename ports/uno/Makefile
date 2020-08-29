@@ -49,7 +49,8 @@ CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x7e00 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x7a0 \
+	-Wl,--defsym -Wl,__DATA_REGION_ORIGIN__=0x800100 \
+	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x780 \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-Map=$(MAP)
 
