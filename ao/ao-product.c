@@ -120,8 +120,8 @@ const uint8_t ao_usb_descriptors [] =
 	0x05,
 	AO_USB_CS_INTERFACE,
 	0x06,			/* bDescriptor SubType Union Functional descriptor */
-	0x00,			/* bMasterInterface */
-	0x01,			/* bSlaveInterface0 */
+	0x00,			/* bLeaderInterface */
+	0x01,			/* bFollowerInterface0 */
 
 	/* Notification EP */
 	0x07,
