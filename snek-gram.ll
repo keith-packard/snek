@@ -324,9 +324,39 @@ expr-and-p	: AND
 expr-not	: expr-cmp
 		| NOT @ unop_first(); @ expr-not @ unop_second(); @
 		;
-expr-cmp	: expr-lor expr-cmp-p
+expr-cmp	: expr-lor
+			@{
+				value_push_offset(0);
+			}@
+		  expr-cmp-p
+			@{
+				snek_offset_t cmp_off = value_pop().offset;
+				if (cmp_off)
+					snek_code_patch_forward(cmp_off, snek_code_current(), snek_forward_cmp, snek_code_current());
+			}@
 		;
-expr-cmp-p	: cmpop @ binop_first(); @ expr-lor @ binop_second(); @ expr-cmp-p
+expr-cmp-p	: cmpop
+			@{
+				/* A chain of comparison operators works as a conjunction,
+				 * which requires special handling. We use a custom operator
+				 * that does the compare and branches on false around the
+				 * remaining comparison operations. Here, we replace
+				 * the previous comparison operator with this new 'chain'
+				 * comparison operator that will be patched with the
+				 * correct offset at the end of the chain
+				 */
+				snek_offset_t cmp_offset = value_stack[value_stack_p - 1].offset;
+				snek_offset_t prev_offset = snek_code_prev_insn();
+				if (cmp_offset) {
+					snek_op_t prev_cmp = snek_compile[prev_offset];
+					snek_code_delete_prev();
+					snek_code_add_forward_op(snek_forward_cmp,
+								 prev_cmp + (snek_op_chain_eq - snek_op_eq));
+				} else
+					value_stack[value_stack_p - 1].offset = prev_offset;
+				binop_first();
+			}@
+		  expr-lor @ binop_second(); @ expr-cmp-p
 		|
 		;
 cmpop		: CMPOP

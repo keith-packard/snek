@@ -85,41 +85,48 @@ typedef enum {
 	snek_op_ge = 4,
 	snek_op_le = 5,
 
-	snek_op_is = 6,
-	snek_op_is_not = 7,
-	snek_op_in = 8,
-	snek_op_not_in = 9,
+	snek_op_chain_eq = 6,
+	snek_op_chain_ne = 7,
+	snek_op_chain_gt = 8,
+	snek_op_chain_lt = 9,
+	snek_op_chain_ge = 10,
+	snek_op_chain_le = 11,
 
-	snek_op_array = 10,
+	snek_op_is = 12,
+	snek_op_is_not = 13,
+	snek_op_in = 14,
+	snek_op_not_in = 15,
 
-	snek_op_plus = 11,
-	snek_op_minus = 12,
-	snek_op_times = 13,
-	snek_op_divide = 14,
-	snek_op_div = 15,
-	snek_op_mod = 16,
-	snek_op_pow = 17,
-	snek_op_land = 18,
-	snek_op_lor = 19,
-	snek_op_lxor = 20,
-	snek_op_lshift = 21,
-	snek_op_rshift = 22,
+	snek_op_array = 16,
 
-	snek_op_assign_plus = 23,
-	snek_op_assign_minus = 24,
-	snek_op_assign_times = 25,
-	snek_op_assign_divide = 26,
-	snek_op_assign_div = 27,
-	snek_op_assign_mod = 28,
-	snek_op_assign_pow = 29,
-	snek_op_assign_land = 30,
-	snek_op_assign_lor = 31,
-	snek_op_assign_lxor = 32,
-	snek_op_assign_lshift = 33,
-	snek_op_assign_rshift = 34,
+	snek_op_plus = 17,
+	snek_op_minus = 18,
+	snek_op_times = 19,
+	snek_op_divide = 20,
+	snek_op_div = 21,
+	snek_op_mod = 22,
+	snek_op_pow = 23,
+	snek_op_land = 24,
+	snek_op_lor = 25,
+	snek_op_lxor = 26,
+	snek_op_lshift = 27,
+	snek_op_rshift = 28,
 
-	snek_op_assign = 35,
-	snek_op_assign_named = 36,
+	snek_op_assign_plus = 29,
+	snek_op_assign_minus = 30,
+	snek_op_assign_times = 31,
+	snek_op_assign_divide = 32,
+	snek_op_assign_div = 33,
+	snek_op_assign_mod = 34,
+	snek_op_assign_pow = 35,
+	snek_op_assign_land = 36,
+	snek_op_assign_lor = 37,
+	snek_op_assign_lxor = 38,
+	snek_op_assign_lshift = 39,
+	snek_op_assign_rshift = 40,
+
+	snek_op_assign = 41,
+	snek_op_assign_named = 42,
 
 	snek_op_num,
 	snek_op_int,
@@ -163,6 +170,7 @@ typedef enum {
 	snek_forward_break,
 	snek_forward_continue,
 	snek_forward_if,
+	snek_forward_cmp,
 } __attribute__((packed)) snek_forward_t;
 
 typedef enum {
@@ -435,9 +443,17 @@ snek_code_add_op_id(snek_op_t op, snek_id_t id)
 }
 
 static inline void
+snek_code_add_forward_op(snek_forward_t forward, snek_op_t op)
+{
+	snek_code_add_op_offset(snek_op_forward,
+				(snek_offset_t) forward |
+				((snek_offset_t) op << 8));
+}
+
+static inline void
 snek_code_add_forward(snek_forward_t forward)
 {
-	snek_code_add_op_offset(snek_op_forward, (snek_offset_t) forward);
+	snek_code_add_forward_op(forward, snek_op_branch);
 }
 
 void
