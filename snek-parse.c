@@ -28,6 +28,9 @@ snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 snek_token_val_t snek_token_val;
 
 #define GRAMMAR_TABLE
+#ifdef PARSE_DEBUG
+#define TOKEN_NAMES
+#endif
 #include "snek-gram.h"
 
 #ifndef VALUE_STACK_SIZE
