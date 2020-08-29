@@ -616,14 +616,12 @@ dict-ents-end	: dict-ent dict-ents-p
 		;
 dict-ent	: expr
 			@{
-				snek_code_set_push(snek_code_prev_insn());
 				value_push_offset(value_pop().offset + 1);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
-		  dict-ent-p
-		;
-dict-ent-p	: COLON expr
+		  COLON expr
 			@{
-				snek_code_set_push(snek_code_prev_insn());
 				value_push_offset(value_pop().offset + 1);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		;
