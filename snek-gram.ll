@@ -386,12 +386,12 @@ expr-array-p	: OS
 			}@
 		  array-index CS
 			@{
-				bool slice = value_pop().bools;
+				bool slice = !!value_pop().offset;
 				if (slice) {
 					snek_code_set_push(snek_code_prev_insn());
-					uint8_t stride = value_pop().bools * SNEK_OP_SLICE_STRIDE;
-					uint8_t end = value_pop().bools * SNEK_OP_SLICE_END;
-					uint8_t start = value_pop().bools * SNEK_OP_SLICE_START;
+					uint8_t stride = value_pop().offset * SNEK_OP_SLICE_STRIDE;
+					uint8_t end = value_pop().offset * SNEK_OP_SLICE_END;
+					uint8_t start = value_pop().offset * SNEK_OP_SLICE_START;
 					snek_code_add_slice(start | end | stride);
 				} else {
 					snek_code_add_op(snek_op_array);
@@ -411,35 +411,45 @@ expr-array-p	: OS
 		;
 array-index	: expr opt-slice
 		|
-			@{ value_push_bool(false); }@
+			@{
+				value_push_offset(0);
+			}@
 		  slice
 		;
 opt-slice	:
-			@{ value_push_bool(true); }@
+			@{
+				value_push_offset(1);
+			}@
 		  slice
 		|
-			@{ value_push_bool(false); }@
+			@{
+				value_push_offset(0);
+			}@
 		;
 slice		: COLON opt-expr slice-p
-			@{ value_push_bool(true); }@
+			@{
+				value_push_offset(1);
+			}@
 		;
 slice-p		: COLON opt-expr
 		|
-			@{ value_push_bool(false); }@
+			@{
+				value_push_offset(0);
+			}@
 		;
 opt-expr	:	@{
 				snek_code_set_push(snek_code_prev_insn());
-				value_push_bool(true);
+				value_push_offset(1);
 			}@
 		  expr
 		|
 			@{
-				value_push_bool(false);
+				value_push_offset(0);
 			}@
 		;
 expr-prim	: OP opt-tuple CP
 			@{
-				bool tuple = value_pop().bools;
+				bool tuple = !!value_pop().offset;
 
 				if (tuple) {
 					snek_offset_t num = value_pop().offset;
@@ -490,7 +500,7 @@ opt-tuple	: expr opt-tuple-p
 		|
 			@{
 				value_push_offset(0);
-				value_push_bool(true);
+				value_push_offset(1);
 			}@
 		;
 opt-tuple-p	: COMMA
@@ -503,11 +513,11 @@ opt-tuple-p	: COMMA
 				if (num >= 256)
 					return parse_return_syntax;
 				value_push_offset(num + 1);
-				value_push_bool(true);
+				value_push_offset(1);
 			}@
 		|
 			@{
-				value_push_bool(false);
+				value_push_offset(0);
 			}@
 		;
 opt-actuals	: actuals

@@ -94,16 +94,6 @@ _value_push_offset(snek_offset_t value, const char *file, int line)
 }
 
 static bool
-_value_push_bool(bool value, const char *file, int line)
-{
-	(void) file; (void) line;
-#ifdef VALUE_DEBUG
-	printf("value push bool %d\n", value);
-#endif
-	return _value_push((snek_parse_val_t) { .bools = value }, file, line);
-}
-
-static bool
 _value_push_indent(uint8_t value, const char *file, int line)
 {
 	(void) file; (void) line;
@@ -135,7 +125,6 @@ _value_push_id(snek_id_t id, const char *file, int line)
 
 #define value_pop() _value_pop(__FILE__, __LINE__)
 #define value_push_int(i) _value_push_int(i, __FILE__, __LINE__)
-#define value_push_bool(b) _value_push_bool(b, __FILE__, __LINE__)
 #define value_push_indent(i) _value_push_indent(i, __FILE__, __LINE__)
 #define value_push_op(o) _value_push_op(o, __FILE__, __LINE__)
 #define value_push_offset(o) _value_push_offset(o, __FILE__, __LINE__)
