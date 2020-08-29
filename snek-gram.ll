@@ -468,8 +468,8 @@ slice-p		: COLON opt-expr
 			}@
 		;
 opt-expr	:	@{
-				snek_code_set_push(snek_code_prev_insn());
 				value_push_offset(1);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		  expr
 		|
@@ -495,10 +495,12 @@ expr-prim	: OP opt-tuple CP
 			}@
 		| OC
 			@{
+				/* Zero dict-ents so far */
 				value_push_offset(0);
 			}@
 		  opt-dict-ents CC
 			@{
+				/* Fetch the number of entries compiled */
 				snek_offset_t num = value_pop().offset;
 				snek_code_add_op_offset(snek_op_dict, num);
 			}@
@@ -553,11 +555,13 @@ opt-tuple-p	: COMMA
 opt-actuals	: actuals
 		|
 			@{
+				/* Zero actuals */
 				value_push_offset(0);
 			}@
 		;
 actuals		:
 			@{
+				/* Zero actuals so far */
 				value_push_offset(0);
 			}@
 		  expr actual-p actuals-p
@@ -575,19 +579,24 @@ actual-p	: ASSIGN
 					return parse_return_syntax;
 				memcpy(&id, prev + 1, sizeof (snek_id_t));
 				snek_code_delete_prev();
+
+				/* Stick the name ID on the stack */
 				snek_code_add_number(id);
 				snek_code_set_push(snek_code_prev_insn());
 			}@
 		  expr
 			@{
-				snek_code_set_push(snek_code_prev_insn());
+				/* One more named parameter */
 				value_push_offset(value_pop().offset + 256);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		|
 			@{
 				snek_offset_t offset = value_pop().offset;
+				/* We're using offsets > 256 to flag named parameters */
 				if (offset >= 256)
 					return parse_return_syntax;
+				/* One more positional parameter */
 				value_push_offset(offset + 1);
 				snek_code_set_push(snek_code_prev_insn());
 			}@
