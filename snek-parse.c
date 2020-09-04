@@ -231,11 +231,12 @@ snek_parse(void)
 				break;
 			return snek_parse_error;
 		case parse_return_oom:
-			snek_error_syntax("OOM");
-			return snek_parse_error;
+			snek_error_0("Out of Memory");
+			goto error_recover;
 		case parse_return_syntax:
 		default:
 			snek_error_syntax(snek_lex_text);
+		error_recover:
 			if (!snek_interactive)
 				return snek_parse_error;
 			{
