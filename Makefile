@@ -33,6 +33,8 @@ FORCE:
 
 check: all
 	+cd test && make $@
+
+black:
 	+black --check --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
 
 install:
