@@ -2,7 +2,6 @@
 # -*- makefile -*-
 
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all
-export SNEK_OTHEROS=0
 export PREFIX=/usr
 export CFLAGS_POSIX=$(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get LDFLAGS)
 export V=1
