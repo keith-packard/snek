@@ -19,7 +19,7 @@ include snek-install.defs
 
 SNEK_OTHEROS_DIR=$(SNEK_HOSTS)/linux $(SNEK_HOSTS)/windows $(SNEK_HOSTS)/macosx $(SNEK_HOSTS)/zip
 
-SUBDIRS = snekde doc examples $(SNEK_OTHEROS_DIR)
+SUBDIRS = snekde doc examples
 
 SNEKS = $(SNEK_PORTS)/posix/snek $(FIRMWARE)
 
@@ -37,19 +37,18 @@ check: all
 black:
 	+black --check --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
 
-install:
+install: all
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@) || exit 1; done
 	+for snek in $(SNEKS); do (cd `dirname $$snek` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@) || exit 1; done
 
-upload: $(SNEKS)
+upload: otheros
 	+cd doc && make upload
 	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload); done
 
-install-otheros: otheros
+install-otheros: otheros install
 	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make install-otheros); done
 
-otheros: $(SNEKS)
-	+cd doc && make
+otheros: all
 	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make); done
 
 snek-mu.py:
