@@ -23,8 +23,8 @@ RUN apt-get update && \
     ruby-coderay \
     gcc-arm-linux-gnueabi \
     libc6-dev-armel-cross \
-    qemu-system-arm=1:5.0-5.1 \
-    qemu-system-misc=1:5.0-5.1 \
+    qemu-system-arm=1:5.0-5.2 \
+    qemu-system-misc=1:5.0-5.2 \
     black \
     python3-pip \
     python3-serial \
