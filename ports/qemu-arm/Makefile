@@ -46,4 +46,4 @@ snek-arm: snek-arm.in
 uninstall:
 
 clean::
-	rm -f run-arm
+	rm -f snek-arm

@@ -105,6 +105,9 @@ FORCE:
 install:
 	echo install done
 
+install-otheros: $(MACOSX_DIST)
+	cp $(MACOSX_DIST) $(DESTDIR)$(PREFIX)
+
 upload: $(MACOSX_DIST)
 	rsync -avz $(MACOSX_DIST) $(SNEKDIST)
 

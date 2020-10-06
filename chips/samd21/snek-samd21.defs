@@ -33,6 +33,7 @@ SNEK_SAMD21_SRC = \
 	ao-tcc-samd21.c \
 	ao-tc-samd21.c \
 	ao-adc-samd21.c \
+	ao-dac-samd21.c \
 	ao-flash-samd21.c \
 	ao-stdio.c \
 	ao-notask.c \
@@ -53,6 +54,7 @@ SNEK_SAMD21_INC = \
 	ao-snek.h \
 	ao-tcc-samd21.h \
 	ao-tc-samd21.h \
+	ao-dac-samd21.h \
 	ao-usb.h \
 	samd21.h
 

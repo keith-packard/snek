@@ -33,25 +33,18 @@ there are always improvements that can be made.
 
 Here's some places that have seen recent work
 
- * [EV3](https://education.lego.com/en-us/products/lego-mindstorms-education-ev3-core-set/5003400) port.
-   This port, done by Mikhail Gusarov, includes custom functions for
-   the motors and sensors.
+ * [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3) port.
+   This port, is mostly the same as the Duemilanove port but includes
+   replacement firmware for the Atmega 16u2 on the Uno board which
+   acts as the USB interface.
 
- * [HiFive1 Rev B](https://www.sifive.com/boards/hifive1-rev-b) port.
-   This uses a bunch of code from [freedom-e-sdk](https://github.com/sifive/freedom-e-sdk)
-   for all of the core and device support.
- 
- * Lots of bugs fixed in string interpolation
+ * Handle 'chained' comparison operators (a < b < c) correctly.
 
- * [Lessons using LEGO with Snekboard](https://sneklang.org/docs/).
-   There are four lessons that show you how to build a simple robot
-   with step-by-step construction information, and then explore
-   programming on a Snekboard.
+ * Add sound output support for the Adafruit Circuit Playground
+   Express board.
 
- * Improved time.sleep precision. time.sleep is now accurate to the
-   resolution of the timer. On a Duemilanove, that's
-   4µs. time.monotonic still returns a float, so the longer
-   the board has been running, the lower the precision...
+ * Use Optiboot on the Duemilanove board so that Snek can be replaced
+   without needing a separate programming device.
 
 ## Build and Run!
 
@@ -73,40 +66,36 @@ To build Snek you need these dependencies:
   * [python curses](https://docs.python.org/3/library/curses.html)
   * [readline](https://www.gnu.org/software/readline/)
 
-On Debian, you can get everything other than picolibc from the main archive:
+On Debian unstable, you can get everything from the main archive:
 
-	# apt install lola gcc-avr avr-libc python3-serial gcc-arm-none-eabi gcc-riscv64-unknown libreadline-dev
-
-To install picolibc, download the source and install it. Instructions
-for building and installing that are included in the picolibc project:
-
-	$ git clone git://keithp.com/git/picolibc.git
+	# apt install lola gcc-avr avr-libc python3-serial \
+          gcc-arm-none-eabi gcc-riscv64-unknown-elf libreadline-dev \
+	  picolibc-arm-none-eabi picolibc-riscv64-unknown-elf
 
 ### Building and install
 
-In the source of the project run:
+Here are some useful options to control the build. Each of these is
+run from the top level directory.
 
 	$ make
-	$ make install
-
-### Some useful make options
 
 If you just type 'make', the system will build all of the embedded
-binaries along with Linux and Windows versions of snek to run locally
-and then create packages for Linux, Windows and Mac OS X. 'make
-install' will copy all of the build products to /usr/local. Here are
-some useful options to control the build:
+binaries and a native binary to run locally.
 
-	$ make SNEK_OTHEROS=0 SNEK_OTHEROS_DIR=hosts/linux
+	$ make install
 
-This instructs the build to only build a Linux package, and not a
-Windows or Mac OS X package.
+'make install' will copy all of the built programs to /usr/local
 
 	$ make PREFIX=$HOME/.local
 
 This compiles everything to run from your home directory, instead of
-/usr/local. You can use this option with `make PREFIX=$HOME/.local
-install` to actually install things there.
+/usr/local.
+
+	$ make PREFIX=$HOME/.local install
+
+Make sure you use the same PREFIX value everytime you run make so that
+the snek install scripts (which get PREFIX embedded in them) that are
+installed know where to find the snek binaries for each device.
 
 ## Running on Embedded Devices
 

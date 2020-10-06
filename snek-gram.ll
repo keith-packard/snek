@@ -120,9 +120,7 @@ del		: expr-array
 				snek_token_val.op = snek_op_del;
 				goto extract_lvalue;
 			}@
-			@{
-				goto add_op_lvalue;
-			}@
+			@ add_op_lvalue(); @
 		;
 ret-expr	: expr
 		|
@@ -161,15 +159,7 @@ assign-expr-p	: ASSIGN
 				 */
 				snek_code_delete_prev();
 			}@
-		  expr
-			@{
-			add_op_lvalue:;
-				snek_op_t op = value_pop().offset;
-				snek_id_t id = value_pop().id;
-				
-				/* add the assignment operator */
-				snek_code_add_op_id(op, id);
-			}@
+		  expr @ add_op_lvalue(); @
 		|
 		;
 globals		: global globals-p
@@ -248,18 +238,7 @@ while-stat	:
 				value_push_offset(snek_code_current());
 			}@
 		  while-else-stat
-			@{
-			patch_loop:;
-				snek_offset_t while_else_stat_off = value_pop().offset;
-				snek_offset_t loop_end_off = value_pop().offset;
-				snek_offset_t while_off = value_pop().offset;
-				snek_offset_t top_off = value_pop().offset;
-
-				snek_code_patch_branch(while_off, while_else_stat_off);
-				snek_code_patch_branch(loop_end_off, top_off);
-				snek_code_patch_forward(while_off, loop_end_off, snek_forward_continue, top_off);
-				snek_code_patch_forward(while_off, loop_end_off, snek_forward_break, snek_code_current());
-			}@
+			@ patch_loop(); @
 		;
 while-else-stat	: ELSE COLON suite
 		|
@@ -278,9 +257,7 @@ for-stat	: FOR NAME
 				for_depth--;
 			}@
 		  while-else-stat
-			@
-				goto patch_loop;
-			@
+			@ patch_loop(); @
 		;
 for-params	: RANGE OP opt-actuals CP COLON
 			@{
@@ -328,11 +305,7 @@ expr-or-p	: OR
 				value_push_offset(snek_compile_prev);
 			}@
 		  expr-and
-			@{
-			short_second:
-				snek_code_patch_branch(value_pop().offset, snek_code_current());
-				snek_code_add_op(snek_op_nop);
-			}@
+			@ short_second(); @
 		  expr-or-p
 		|
 		;
@@ -344,81 +317,85 @@ expr-and-p	: AND
 				value_push_offset(snek_compile_prev);
 			}@
 		  expr-not
-			@
-				goto short_second;
-			@
+			@ short_second(); @
 		  expr-and-p
 		|
 		;
 expr-not	: expr-cmp
-		| NOT
-			@{
-			unop_first:
-				value_push_op(snek_token_val.op);
-			}@
-		  expr-not
-			@{
-			unop_second:
-				snek_code_add_op(value_pop().op);
-			}@
+		| NOT @ unop_first(); @ expr-not @ unop_second(); @
 		;
-expr-cmp	: expr-lor expr-cmp-p
+expr-cmp	: expr-lor
+			@{
+				value_push_offset(0);
+			}@
+		  expr-cmp-p
+			@{
+				snek_offset_t cmp_off = value_pop().offset;
+				if (cmp_off)
+					snek_code_patch_forward(cmp_off, snek_code_current(), snek_forward_cmp, snek_code_current());
+			}@
 		;
 expr-cmp-p	: cmpop
 			@{
-			binop_first:
-				snek_code_set_push(snek_code_prev_insn());
-				value_push_op(snek_token_val.op);
+				/* A chain of comparison operators works as a conjunction,
+				 * which requires special handling. We use a custom operator
+				 * that does the compare and branches on false around the
+				 * remaining comparison operations. Here, we replace
+				 * the previous comparison operator with this new 'chain'
+				 * comparison operator that will be patched with the
+				 * correct offset at the end of the chain
+				 */
+				snek_offset_t cmp_offset = value_stack[value_stack_p - 1].offset;
+				snek_offset_t prev_offset = snek_code_prev_insn();
+				if (cmp_offset) {
+					snek_op_t prev_cmp = snek_compile[prev_offset];
+					snek_code_delete_prev();
+					snek_code_add_forward_op(snek_forward_cmp,
+								 prev_cmp + (snek_op_chain_eq - snek_op_eq));
+				} else
+					value_stack[value_stack_p - 1].offset = prev_offset;
+				binop_first();
 			}@
-		  expr-lor
-			@{
-			binop_second:
-				snek_code_add_op(value_pop().op);
-			}@
-		  expr-cmp-p
-		| IS @ goto binop_first; @ expr-lor @ goto binop_second; @ expr-cmp-p
+		  expr-lor @ binop_second(); @ expr-cmp-p
 		|
 		;
 cmpop		: CMPOP
 		| IN
+		| IS
 		;
 expr-lor	: expr-land expr-lor-p
 		;
-expr-lor-p	: LOR @ goto binop_first; @ expr-land @ goto binop_second; @ expr-lor-p
+expr-lor-p	: LOR @ binop_first(); @ expr-land @ binop_second(); @ expr-lor-p
 		|
 		;
 expr-land	: expr-lxor expr-land-p
 		;
-expr-land-p	: LAND @ goto binop_first; @ expr-lxor @ goto binop_second; @ expr-land-p
+expr-land-p	: LAND @ binop_first(); @ expr-lxor @ binop_second(); @ expr-land-p
 		|
 		;
 expr-lxor	: expr-shift expr-lxor-p
 		;
-expr-lxor-p	: LXOR @ goto binop_first; @ expr-shift @ goto binop_second; @ expr-lxor-p
+expr-lxor-p	: LXOR @ binop_first(); @ expr-shift @ binop_second(); @ expr-lxor-p
 		|
 		;
 expr-shift	: expr-add expr-shift-p
 		;
-expr-shift-p	: SHIFT @ goto binop_first; @ expr-add @ goto binop_second; @ expr-shift-p
+expr-shift-p	: SHIFT @ binop_first(); @ expr-add @ binop_second(); @ expr-shift-p
 		|
 		;
 expr-add	: expr-mul expr-add-p
 		;
-expr-add-p	: PLUS @ goto binop_first; @ expr-mul @ goto binop_second; @ expr-add-p
-		| MINUS @ goto binop_first; @ expr-mul @ goto binop_second; @ expr-add-p
+expr-add-p	: PLUS @ binop_first(); @ expr-mul @ binop_second(); @ expr-add-p
+		| MINUS @ binop_first(); @ expr-mul @ binop_second(); @ expr-add-p
 		|
 		;
 expr-mul	: expr-unary expr-mul-p
 		;
-expr-mul-p	: MULOP @ goto binop_first; @ expr-unary @ goto binop_second; @ expr-mul-p
+expr-mul-p	: MULOP @ binop_first(); @ expr-unary @ binop_second(); @ expr-mul-p
 		|
 		;
-expr-unary	: LNOT @ goto unop_first; @ expr-unary @ goto unop_second; @
-		| MINUS
-			@{
-				value_push_op(snek_op_uminus);
-			}@
-		  expr-unary @ goto unop_second; @
+expr-unary	: LNOT @ unop_first(); @ expr-unary @ unop_second(); @
+		| MINUS @ value_push_op(snek_op_uminus); @ expr-unary @ unop_second(); @
 		| PLUS expr-unary
 		| expr-pow
 		;
@@ -428,7 +405,7 @@ expr-unary	: LNOT @ goto unop_first; @ expr-unary @ goto unop_second; @
 expr-pow	: expr-array expr-pow-p
 		;
 
-expr-pow-p	: POW @ goto binop_first; @ expr-array expr-pow-p @ goto binop_second; @
+expr-pow-p	: POW @ binop_first(); @ expr-array expr-pow-p @ binop_second(); @
 		|
 		;
 expr-array	: expr-prim expr-array-p
@@ -439,12 +416,12 @@ expr-array-p	: OS
 			}@
 		  array-index CS
 			@{
-				bool slice = value_pop().bools;
+				bool slice = !!value_pop().offset;
 				if (slice) {
 					snek_code_set_push(snek_code_prev_insn());
-					uint8_t stride = value_pop().bools * SNEK_OP_SLICE_STRIDE;
-					uint8_t end = value_pop().bools * SNEK_OP_SLICE_END;
-					uint8_t start = value_pop().bools * SNEK_OP_SLICE_START;
+					uint8_t stride = value_pop().offset * SNEK_OP_SLICE_STRIDE;
+					uint8_t end = value_pop().offset * SNEK_OP_SLICE_END;
+					uint8_t start = value_pop().offset * SNEK_OP_SLICE_START;
 					snek_code_add_slice(start | end | stride);
 				} else {
 					snek_code_add_op(snek_op_array);
@@ -464,40 +441,47 @@ expr-array-p	: OS
 		;
 array-index	: expr opt-slice
 		|
-			@{ value_push_bool(false); }@
+			@{
+				value_push_offset(0);
+			}@
 		  slice
 		;
 opt-slice	:
-			@{ value_push_bool(true); }@
+			@{
+				value_push_offset(1);
+			}@
 		  slice
 		|
-			@{ value_push_bool(false); }@
+			@{
+				value_push_offset(0);
+			}@
 		;
 slice		: COLON opt-expr slice-p
-			@{ value_push_bool(true); }@
+			@{
+				value_push_offset(1);
+			}@
 		;
 slice-p		: COLON opt-expr
 		|
-			@{ value_push_bool(false); }@
+			@{
+				value_push_offset(0);
+			}@
 		;
 opt-expr	:	@{
+				value_push_offset(1);
 				snek_code_set_push(snek_code_prev_insn());
-				value_push_bool(true);
 			}@
 		  expr
 		|
 			@{
-				value_push_bool(false);
+				value_push_offset(0);
 			}@
 		;
 expr-prim	: OP opt-tuple CP
 			@{
-				bool tuple = value_pop().bools;
-
-				if (tuple) {
-					snek_offset_t num = value_pop().offset;
+				snek_soffset_t num = value_pop().offset;
+				if (num >= 0)
 					snek_code_add_op_offset(snek_op_tuple, num);
-				}
 			}@
 		| OS opt-actuals CS
 			@{
@@ -508,10 +492,12 @@ expr-prim	: OP opt-tuple CP
 			}@
 		| OC
 			@{
+				/* Zero dict-ents so far */
 				value_push_offset(0);
 			}@
 		  opt-dict-ents CC
 			@{
+				/* Fetch the number of entries compiled */
 				snek_offset_t num = value_pop().offset;
 				snek_code_add_op_offset(snek_op_dict, num);
 			}@
@@ -542,8 +528,8 @@ strings-p	: STRING
 opt-tuple	: expr opt-tuple-p
 		|
 			@{
+				/* A tuple with zero elements */
 				value_push_offset(0);
-				value_push_bool(true);
 			}@
 		;
 opt-tuple-p	: COMMA
@@ -555,22 +541,25 @@ opt-tuple-p	: COMMA
 				snek_offset_t num = value_pop().offset;
 				if (num >= 256)
 					return parse_return_syntax;
+				/* A tuple with num + 1 elements (one for the first expr) */
 				value_push_offset(num + 1);
-				value_push_bool(true);
 			}@
 		|
 			@{
-				value_push_bool(false);
+				/* Not a tuple */
+				value_push_offset(-1);
 			}@
 		;
 opt-actuals	: actuals
 		|
 			@{
+				/* Zero actuals */
 				value_push_offset(0);
 			}@
 		;
 actuals		:
 			@{
+				/* Zero actuals so far */
 				value_push_offset(0);
 			}@
 		  expr actual-p actuals-p
@@ -588,19 +577,24 @@ actual-p	: ASSIGN
 					return parse_return_syntax;
 				memcpy(&id, prev + 1, sizeof (snek_id_t));
 				snek_code_delete_prev();
+
+				/* Stick the name ID on the stack */
 				snek_code_add_number(id);
 				snek_code_set_push(snek_code_prev_insn());
 			}@
 		  expr
 			@{
-				snek_code_set_push(snek_code_prev_insn());
+				/* One more named parameter */
 				value_push_offset(value_pop().offset + 256);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		|
 			@{
 				snek_offset_t offset = value_pop().offset;
+				/* We're using offsets > 256 to flag named parameters */
 				if (offset >= 256)
 					return parse_return_syntax;
+				/* One more positional parameter */
 				value_push_offset(offset + 1);
 				snek_code_set_push(snek_code_prev_insn());
 			}@
@@ -622,14 +616,12 @@ dict-ents-end	: dict-ent dict-ents-p
 		;
 dict-ent	: expr
 			@{
-				snek_code_set_push(snek_code_prev_insn());
 				value_push_offset(value_pop().offset + 1);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
-		  dict-ent-p
-		;
-dict-ent-p	: COLON expr
+		  COLON expr
 			@{
-				snek_code_set_push(snek_code_prev_insn());
 				value_push_offset(value_pop().offset + 1);
+				snek_code_set_push(snek_code_prev_insn());
 			}@
 		;

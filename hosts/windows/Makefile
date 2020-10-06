@@ -69,6 +69,9 @@ RES=16 24 32 48 64 72 96 128 180 256
 install:
 	echo install done
 
+install-otheros: $(WINDOWS_INSTALL)
+	cp $(WINDOWS_INSTALL) $(DESTDIR)$(PREFIX)
+
 upload: $(WINDOWS_INSTALL)
 	rsync -avz $(WINDOWS_INSTALL) $(SNEKDIST)
 

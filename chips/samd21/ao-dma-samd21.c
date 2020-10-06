@@ -19,13 +19,16 @@
 #include <ao.h>
 #include <ao-dma-samd21.h>
 
-uint8_t	ao_dma_done[SAMD21_DMAC_NCHAN];
-
 static struct samd21_dmac_desc samd21_dmac_desc[SAMD21_DMAC_NCHAN]  __attribute__((aligned(16)));
 static struct samd21_dmac_desc samd21_dmac_wrb[SAMD21_DMAC_NCHAN]  __attribute__((aligned(16)));
 
 static volatile uint16_t	saved_intpend;
 static volatile int		interrupts;
+
+static struct {
+	void (*callback)(uint8_t id, void *closure);
+	void *closure;
+} dmac_callback[SAMD21_DMAC_NCHAN];
 
 void
 samd21_dmac_isr(void)
@@ -38,14 +41,14 @@ samd21_dmac_isr(void)
 		uint8_t	id = (intpend >> SAMD21_DMAC_INTPEND_ID) & SAMD21_DMAC_INTPEND_ID_MASK;
 		samd21_dmac.intpend = intpend;
 		if (intpend & (1 << SAMD21_DMAC_INTPEND_TCMPL)) {
-			ao_dma_done[id] = 1;
-			ao_wakeup(&ao_dma_done[id]);
+			if (dmac_callback[id].callback)
+				(*dmac_callback[id].callback)(id, dmac_callback[id].closure);
 		}
 	}
 }
 
-static void
-dump_dma(char *where)
+void
+ao_dma_dump(char *where)
 {
 	printf("DMA %s ctrl %04x intpend %04x intstatus %04x\n",
 	       where,
@@ -72,17 +75,22 @@ dump_dma(char *where)
 	       samd21_dmac_desc[0].descaddr);
 	fflush(stdout);
 	printf("intpend %04x interrupts %d\n", saved_intpend, interrupts);
-	ao_delay(AO_SEC_TO_TICKS(1));
 }
 
 void
-ao_dma_start_transfer(uint8_t		id,
-		      void		*src,
-		      void		*dst,
-		      uint16_t		count,
-		      uint32_t		chctrlb,
-		      uint16_t		btctrl)
+_ao_dma_start_transfer(uint8_t		id,
+		       void		*src,
+		       void		*dst,
+		       uint16_t		count,
+		       uint32_t		chctrlb,
+		       uint16_t		btctrl,
+		       void		(*callback)(uint8_t id, void *closure),
+		       void		*closure)
 {
+	/* Set up the callback */
+	dmac_callback[id].closure = closure;
+	dmac_callback[id].callback = callback;
+
 	/* Set up the descriptor */
 	samd21_dmac_desc[id].btctrl = btctrl;
 	samd21_dmac_desc[id].btcnt = count;
@@ -90,30 +98,18 @@ ao_dma_start_transfer(uint8_t		id,
 	samd21_dmac_desc[id].dstaddr = (uint32_t) dst;
 	samd21_dmac_desc[id].descaddr = 0;
 
-	dump_dma("start");
-
 	/* Configure the channel and enable it */
-	ao_arch_block_interrupts();
 	samd21_dmac.chid = id;
 	samd21_dmac.chctrlb = chctrlb;
 	samd21_dmac.chctrla = (1 << SAMD21_DMAC_CHCTRLA_ENABLE);
-	ao_arch_release_interrupts();
 }
 
 void
-ao_dma_done_transfer(uint8_t id)
+_ao_dma_done_transfer(uint8_t id)
 {
-	printf("done[%d] =  %d\n", id, ao_dma_done[id]);
-	dump_dma("done");
-
 	/* Disable channel */
-	ao_arch_block_interrupts();
 	samd21_dmac.chid = id;
 	samd21_dmac.chctrla = 0;
-	ao_arch_release_interrupts();
-
-	/* Reset done flag */
-	ao_dma_done[id] = 0;
 }
 
 void

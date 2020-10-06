@@ -1,0 +1,32 @@
+#
+# Copyright © 2020 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+tone, 1
+tonefor, 2
+tone.C, 	-2,  261.6255653	/* C	*/
+tone.Csharp,	-2,  277.1826310	/* C♯	*/
+tone.Dflat, 	-2,  277.1826310	/* D♭	*/
+tone.D, 	-2,  293.6647679	/* D	*/
+tone.Dsharp, 	-2,  311.1269837	/* D♯	*/
+tone.Eflat, 	-2,  311.1269837	/* E♭	*/
+tone.E, 	-2,  329.6275569	/* E	*/
+tone.F, 	-2,  349.2282314	/* F	*/
+tone.Fsharp, 	-2,  369.9944227	/* F♯	*/
+tone.Gflat, 	-2,  369.9944227	/* G♭	*/
+tone.G, 	-2,  391.9954360	/* G	*/
+tone.Gsharp, 	-2,  415.3046976	/* G♯	*/
+tone.Aflat, 	-2,  415.3046976	/* A♭	*/
+tone.A,		-2,  440.0000000	/* A	*/
+tone.Asharp,	-2,  466.1637615	/* A♯	*/
+tone.Bflat,	-2,  466.1637615	/* B♭	*/
+tone.B, 	-2,  493.8833013	/* B	*/

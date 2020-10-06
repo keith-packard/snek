@@ -19,38 +19,20 @@ snek-duemilanove-instal \- Install Snek to Duemilanove
 .SH DESCRIPTION
 .I snek-duemilanove-install
 installs the Snek programming language on an ATmega328P Arduemilanove
-Duemilanove board.
+Duemilanove board using the Optiboot boot loader.
 .SH OPTIONS
-.TP
-\-isp <ISP model>
-Specifies the programmer to use, common options are optiboot, 
-usbtiny, and avrisp2. The default is optiboot.
 .TP
 \-hex <snek.hex>
 Specifies the hex file to load to the board. The default is the
 currently installed version of Snek.
+.TP
+\-port <port>
+Specifies the serial port to use. The default is /dev/ttyUSB0.
 .SH OPTIBOOT
-If you have optiboot installed on your device, you can use that to
-install snek without needing a separate programming device. Use the
--isp optiboot option, along with the -port option to select the right
-device. If you don't, it's probably best to install that first
-and use it to install snek so that you don't have to dig up your
-programming dongle for snek updates.
-.SH COMMANDS
-.TP
-fuseload
-Sets the target fuse bits for Snek usage and then loads Snek to the
-device. This is the default command
-.TP
-load
-Loads Snek to the device without first setting the fuse bits. Snek
-will not work correctly if the fuse bits are not set correctly, so
-only do this if the target has already had the fuse bits set correctly.
-.TP
-fuse
-Sets the target fuse bits suitable for Snek usage. You must do this
-before Snek will work on the target device, although you may do it
-before or after loading the Snek system. You only need to do this once
-per board.
+Snek for the Duemilanove requires you to first install Optiboot on
+your device.
+You can use the Arduino IDE to install Optiboot on your
+Duemilanove. Follow the instructions on the Optiboot web site:
+https://github.com/Optiboot/optiboot to learn how to do that.
 .SH AUTHOR
 Keith Packard

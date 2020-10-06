@@ -2100,6 +2100,61 @@ devices connected, they will not be modified. If there are fewer
 devices connected than the data provided, the extra values will be
 ignored.
 
+=== `tone(` _frequency_ `)`
+
+On devices with an audio output, this sets the output of that pin to a
+sine wave at _frequency_ Hertz. The amplitude is controlled by the
+power setting for the pin and whether the pin is turned `on`.(((tone)))
+
+[subs="verbatim,quotes"]
+----
+> *talkto(A0)*
+> *on()*
+> *tone(tone.A)*
+----
+
+=== `tonefor(` _frequency_ `,` _seconds_ `)`
+
+Sets the audio tone to _frequency_, turns the current Power pin *on*,
+delays for _seconds_ and then turns the current Power pin
+*off*.(((tonefor)))
+
+[subs="verbatim,quotes"]
+----
+> *talkto(A0)*
+> *tonefor(tone.C, 1)*
+----
+
+=== Musical note constants
+
+These provide frequencies commonly used in music, starting with middle
+C:
+
+.Musical note constants
+[options="header",cols="2,1,4"]
+|====
+| Name		| Note	| Frequency
+
+| `tone.C`	| C	|  261.6255653
+| `tone.Csharp`	| C♯	|  277.1826310
+| `tone.Dflat`	| D♭	|  277.1826310
+| `tone.D`	| D	|  293.6647679
+| `tone.Dsharp`	| D♯	|  311.1269837
+| `tone.Eflat`	| E♭	|  311.1269837
+| `tone.E`	| E	|  329.6275569
+| `tone.F`	| F	|  349.2282314
+| `tone.Fsharp`	| F♯	|  369.9944227
+| `tone.Gflat`	| G♭	|  369.9944227
+| `tone.G`	| G	|  391.9954360
+| `tone.Gsharp`	| G♯	|  415.3046976
+| `tone.Aflat`	| A♭	|  415.3046976
+| `tone.A`	| A	|  440.0000000
+| `tone.Asharp`	| A♯	|  466.1637615
+| `tone.Bflat`	| B♭	|  466.1637615
+| `tone.B`	| B	|  493.8833013
+|====
+
+
 == EEPROM built-in functions
 
 Snek on embedded devices may include persistent storage for source
@@ -2333,17 +2388,16 @@ over USB and then pressing the blue reset button twice in quick
 succession.
 
 Then, find the `snek-board-{version}.uf2` file included in the Snek
-package for your machine and copy it to the `CURRENT.UF2` file to the
-snekboard file system.
+package for your machine and copy it to the snekboard file system.
 
 [%nonfacing]
 [appendix]
-= Snek on Arduino Duemilanove
+= Snek on Arduino Duemilanove and Uno
 
-Snek for the Duemilanove includes the Common System, EEPROM, and GPIO
-functions. It does not include the Math functions, nor the `pulldown`
-function. Snek for the Duemilanove provides pre-defined variables for
-all of the GPIO pins:(((Duemilanove)))(((Arduino)))
+Snek for the Duemilanove and for the Uno include the Common System, EEPROM, and GPIO
+functions. They do not include the Math functions, nor the `pulldown`
+function. Snek for the Duemilanove and for the Uno provides pre-defined variables for
+all of the GPIO pins:(((Duemilanove)))(((Uno)))(((Arduino)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2358,29 +2412,56 @@ either a pull-up or pull-down resistor to the pin so that a
 disconnected pin will read an indeterminate value. Change this using
 `pullnone` or `pullup` functions.
 
-Snek fills the ATMega 328P flash completely leaving no space for the
-usual serial boot loader, so installing Snek requires a programming
+=== Installing Optiboot on the Duemilanove
+
+Snek nearly fills the ATMega 328P flash, leaving space only for the
+smaller optiboot loader. This loader is not usually installed on the
+Duemilanove, so you'll need to install it by hand using a programming
 puck, such as the USBTiny device.
 
-On Linux, the Snek installation includes a shell script,
-snek-duemilanove-install, to install the binary using 'avrdude'. Read the
-snek-duemilanove-install manual (also included in the installation) for more
-information.
+Use the Arduino IDE to install the Optiboot boot loader following
+instructions found on the
+link:https://github.com/Optiboot/optiboot[Optiboot web site].
 
-On other hosts, you'll need to install 'avrdude'. Once you've done that, there
-are two steps to getting Snek installed on the device.
+=== Installing USB Serial firmare on the Uno
 
- 1. Set the 'fuses' on the target device. This sets the start address back to the beginning of
-    memory instead of the boot loader, and then has the device leave the eeprom contents alone when
-    re-flashing. That means you won't lose your Snek program when updating the firmware.
-+
-[source]
-$ avrdude -F -V -c usbtiny -p ATMEGA328P -U lfuse:w:0xff:m -U hfuse:w:0xd7:m -U efuse:w:0xfd:m
-+
- 2. Install the Snek binary.
-+
-[source,subs="attributes+"]
-$ avrdude -F -V -c usbtiny -p ATMEGA328P -U flash:w:snek-duemilanove-{version}.hex
+The default serial firmware that communicates over USB doesn't support
+the flow control necessary to handle downloading programs to the Uno
+from mu-editor. Fixing that requires a programming puck, such as the
+USBTiny device.
+
+On Linux, use snek-uno-install to first install the updated
+firmware on the serial interface chip. That uses the programming
+header near the USB connector, not the one near the ATmega328p. Once
+you have things hooked up with power to both the ISP and Uno board,
+run the installer:
+
+	$ snek-uno-install usbserial
+
+On other hosts, you'll need to run 'avrdude' manually. Avrdude comes
+with the Arduino IDE, so install that and you should be able to run
+avrdude like this:
+
+	> avrdude -pm16u2 -cusbtiny -U flash:w:Arduino-usbserial-atmega16u2-Uno-Rev3.hex:i
+
+If you're using a different programming device, you can replace
+'usbtiny' with the appropriate value.
+
+=== Installing Snek on the Duemilanove and Uno
+
+Once your board is ready to install snek, you can use avrdude to do
+ that with Optiboot. On Linux, you can use the snek-uno-install command:
+
+	$ snek-uno-install snek
+
+On other hosts, you'll need to run 'avrdude' manually:
+
+[subs="verbatim,quotes,attributes,"]
+----
+> avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
+----
+
+Replace 'COM1' with the name of the serial port on your computer.
 
 [%nonfacing]
 [appendix]
@@ -2469,7 +2550,16 @@ functions.  D5 on the ItsyBitsy M0 is hooked to a 3.3V to 5V converter
 so that it can drive 5V devices. This means it cannot be used as an
 input pin.
 
-A0 - A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V.  By default, when used as input pins, Snek does not apply
@@ -2493,8 +2583,7 @@ more slowly. At that point, the APA102 device will turn green.
 
 Once the ItsyBitsy M0 is in boot loader mode and has been mounted,
 find the `snek-itsybitsym0-{version}.uf2` file included in the Snek
-package for your machine and copy it to the `CURRENT.UF2` file on the
-ItsyBitsy M0 file system.
+package for your machine and copy it to the ItsyBitsy M0 file system.
 
 [%nonfacing]
 [appendix]
@@ -2554,7 +2643,16 @@ Snek applies a pull-up resistor to the pin so that a disconnected pin
 will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
 functions.
 
-A0 - A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V. By default, when used as input pins, Snek does not apply
@@ -2575,8 +2673,7 @@ over USB and then pressing the reset button twice in quick
 succession.
 
 Then, find the `snek-metrom0-{version}.uf2` file included in the Snek
-package for your machine and copy it to the `CURRENT.UF2` file on the
-Metro M0 file system.
+package for your machine and copy it to the Metro M0 file system.
 
 [%nonfacing]
 [appendix]
@@ -2593,7 +2690,16 @@ Snek applies a pull-up resistor to the pin so that a disconnected pin
 will read as 1. Change this using `pullnone`, `pullup` or `pulldown`
 functions.
 
-A0 - A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V. By default, when used as input pins, Snek does not apply
@@ -2617,8 +2723,7 @@ over USB and then pressing the reset button twice in quick
 succession.
 
 Then, find the `snek-feather-{version}.uf2` file included in the Snek
-package for your machine and copy it to the `CURRENT.UF2` file on the
-Feather M0 file system.
+package for your machine and copy it to the Feather M0 file system.
 
 [%nonfacing]
 [appendix]
@@ -2644,7 +2749,11 @@ Digital pins with PWM output
 CAP1 - CAP4::
 Digital pins labeled “Capacitive Touch” on the Crickit board.
 
-SIGNAL1 - SIGNAL8::
+SIGNAL1::
+The first Signal pin. This provides analog input and output. This pin
+has a digital-to-analog converter (DAC).
+
+SIGNAL2 - SIGNAL8::
 The Signal pins. These provide digital output and analog
 input. SIGNAL5 - SIGNAL8 also provide PWM output
 
@@ -2661,20 +2770,34 @@ over USB and then pressing the reset button twice in quick
 succession.
 
 Then, find the `snek-crickit-{version}.uf2` file included in the Snek
-package for your machine and copy it to the `CURRENT.UF2` file on the
-Crickit file system.
+package for your machine and copy it to the Crickit file system.
 
 [%nonfacing]
 [appendix]
 = Snek on Adafruit Circuit Playground Express
 
 Snek for the Circuit Playground Express includes the Common System,
-Math, GPIO (including the `neopixel` function), Temperature and EEPROM
-functions. Snek for the Playground provides names for all of the external
-connections as well as the built-in devices:
+Math, GPIO (including the `neopixel`, `tone` and `tonefor` functions),
+Temperature and EEPROM functions. Snek for the Playground provides
+names for all of the external connections as well as the built-in
+devices:
 
-A0 - A7::
-External GPIO connections, labeled around the perimeter of the board.
+A0::
+Analog input and output connection. This pin has a digital-to-analog
+converter (DAC) and can be used with the `tone` and `tonefor`
+functions. When used as inputs, Snek will return a value from 0-1
+indicating the ratio of the voltage to 3.3V.  By default, when used as
+inputs, Snek does not apply either a pull-up or pull-down resistor so
+that a disconnected input will read an indeterminate value. Change
+this using `pullnone`, `pullup` or `pulldown` functions.
+
+A1 - A7::
+Analog input and Digital output connections. When used as inputs, Snek
+will return a value from 0-1 indicating the ratio of the voltage to
+3.3V.  By default, when used as inputs, Snek does not apply either a
+pull-up or pull-down resistor so that a disconnected input will read
+an indeterminate value. Change this using `pullnone`, `pullup` or
+`pulldown` functions.
 
 A8 or LIGHT::
 Internal ambient light sensor. Returns a value indicating how
@@ -2709,9 +2832,9 @@ to your computer over USB, sliding the switch to the right (towards
 the microphone) and then pressing the reset button twice in quick
 succession.(((Playground)))
 
-Then, find the `snek-playground-{version}.uf2` file included in the Snek
-package for your machine and copy it to the `CURRENT.UF2` file on the
-Circuit Playground Express file system.
+Then, find the `snek-playground-{version}.uf2` file included in the
+Snek package for your machine and copy it to the Circuit Playground
+Express file system.
 
 [%nonfacing]
 [appendix]
@@ -2730,7 +2853,16 @@ disconnected pin will read an indeterminate value. Change this using
 D13 or LED::
 The yellow LED near the USB connector.
 
-A0-A5::
+A0::
+Analog input and output pin. This pin has a digital-to-analog converter
+(DAC). When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 3.3V.  By default, when used as input pins, Snek does not apply
+either a pull-up or pull-down resistor to the pin so that a
+disconnected pin will read an indeterminate value. Change this using
+`pullnone`, `pullup` or `pulldown` functions.
+
+A1-A5::
 Analog input and Digital output pins. When used as input pins, Snek
 will return a value from 0-1 indicating the ratio of the pin voltage
 to 3.3V. By default, when used as input pins, Snek does not apply

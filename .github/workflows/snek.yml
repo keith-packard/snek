@@ -26,7 +26,7 @@ jobs:
           docker run --rm \
             --mount type=bind,source=`pwd`/artifacts,destination=/artifacts \
             snek \
-            make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_RISCV_TEST=1 check install
+            make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_OTHEROS=1 SNEK_RISCV_TEST=1 check install install-otheros
 
       - name: 'Upload results'
         uses: actions/upload-artifact@v2

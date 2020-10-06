@@ -33,6 +33,7 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_SAMD21_BUILTINS) \
 	snek-temperature.builtin \
+	snek-tone.builtin \
 	snek-playground.builtin
 
 include $(SNEK_ROOT)/snek-install.defs

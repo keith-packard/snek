@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Keith Packard <keithp@keithp.com>
+ * Copyright © 2020 Keith Packard <keithp@keithp.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,26 +16,18 @@
  * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _AO_DMA_SAM21_H_
-#define _AO_DMA_SAM21_H_
+#ifndef _AO_DAC_SAMD21_H_
+#define _AO_DAC_SAMD21_H_
 
 void
-ao_dma_init(void);
+ao_dac_set(uint16_t value);
+
+#ifdef SNEK_SAMD21_DAC_TIMER
+void
+ao_dac_set_hz(float hz);
+#endif
 
 void
-_ao_dma_start_transfer(uint8_t		id,
-		       void		*src,
-		       void		*dst,
-		       uint16_t		count,
-		       uint32_t		chctrlb,
-		       uint16_t		btctrl,
-		       void		(*callback)(uint8_t id, void *closure),
-		       void		*closure);
+ao_dac_init(void);
 
-void
-_ao_dma_done_transfer(uint8_t id);
-
-void
-ao_dma_dump(char *where);
-
-#endif /* _AO_DMA_SAM21_H_ */
+#endif /* _AO_DAC_SAMD21_H_ */

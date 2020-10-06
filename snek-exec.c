@@ -745,6 +745,20 @@ snek_exec(snek_code_t *code_in)
 			op &= ~snek_op_push;
 
 			switch(op) {
+			case snek_op_chain_eq:
+			case snek_op_chain_ne:
+			case snek_op_chain_gt:
+			case snek_op_chain_lt:
+			case snek_op_chain_ge:
+			case snek_op_chain_le:
+				op -= (snek_op_chain_eq - snek_op_eq);
+				snek_poly_t r = snek_binary(snek_stack_pick(0), op, snek_a, false);
+				if (!snek_poly_true(r)) {
+					snek_a = r;
+					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
+				} else
+					ip += sizeof (snek_offset_t);
+				break;
 			case snek_op_eq:
 			case snek_op_ne:
 			case snek_op_gt:

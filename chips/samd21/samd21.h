@@ -538,6 +538,9 @@ struct samd21_dmac_desc {
 #define SAMD21_DMAC_DESC_BTCTRL_EVOSEL		1
 #define SAMD21_DMAC_DESC_BTCTRL_BLOCKACT	3
 #define SAMD21_DMAC_DESC_BTCTRL_BEATSIZE	8
+#define  SAMD21_DMAC_DESC_BTCTRL_BEATSIZE_BYTE		0
+#define  SAMD21_DMAC_DESC_BTCTRL_BEATSIZE_HWORD		1
+#define  SAMD21_DMAC_DESC_BTCTRL_BEATSIZE_WORD		2
 #define SAMD21_DMAC_DESC_BTCTRL_SRCINC		10
 #define SAMD21_DMAC_DESC_BTCTRL_DSTINC		11
 #define SAMD21_DMAC_DESC_BTCTRL_STEPSEL		12
@@ -800,6 +803,58 @@ extern struct samd21_adc samd21_adc;
 
 #define samd21_adc (*(struct samd21_adc *) 0x42004000)
 
+struct samd21_dac {
+	vuint8_t	ctrla;
+	vuint8_t	ctrlb;
+	vuint8_t	evctrl;
+	uint8_t		reserved_03;
+
+	vuint8_t	intenclr;
+	vuint8_t	intenset;
+	vuint8_t	intflag;
+	vuint8_t	status;
+
+	vuint16_t	data;
+	uint16_t	reserved_0a;
+
+	vuint16_t	databuf;
+};
+
+#define SAMD21_DAC_CTRLA_SWRST		0
+#define SAMD21_DAC_CTRLA_ENABLE		1
+#define SAMD21_DAC_CTRLA_RUNSTDBY	2
+
+#define SAMD21_DAC_CTRLB_EOEN		0
+#define SAMD21_DAC_CTRLB_IOEN		1
+#define SAMD21_DAC_CTRLB_LEFTADJ	2
+#define SAMD21_DAC_CTRLB_VPD		3
+#define SAMD21_DAC_CTRLB_BDWP		4
+#define SAMD21_DAC_CTRLB_REFSEL		6
+#define  SAMD21_DAC_CTRLB_REFSEL_INTREF		0
+#define  SAMD21_DAC_CTRLB_REFSEL_VDDANA		1
+#define  SAMD21_DAC_CTRLB_REFSEL_VREFA		2
+#define  SAMD21_DAC_CTRLB_REFSEL_MASK		3
+
+#define SAMD21_DAC_EVCTRL_STARTEI	0
+#define SAMD21_DAC_EVCTRL_EMPTYEO	1
+
+#define SAMD21_DAC_INTENCLR_UNDERRUN	0
+#define SAMD21_DAC_INTENCLR_EMPTY	1
+#define SAMD21_DAC_INTENCLR_SYNCRDY	2
+
+#define SAMD21_DAC_INTENSET_UNDERRUN	0
+#define SAMD21_DAC_INTENSET_EMPTY	1
+#define SAMD21_DAC_INTENSET_SYNCRDY	2
+
+#define SAMD21_DAC_INTFLAG_UNDERRUN	0
+#define SAMD21_DAC_INTFLAG_EMPTY	1
+#define SAMD21_DAC_INTFLAG_SYNCRDY	2
+
+#define SAMD21_DAC_STATUS_SYNCBUSY	7
+
+extern struct samd21_dac samd21_dac;
+#define samd21_dac (*(struct samd21_dac *) 0x42004800)
+
 /* TC */
 struct samd21_tc {
 	vuint16_t	ctrla;
@@ -849,11 +904,14 @@ extern struct samd21_tc samd21_tc4;
 extern struct samd21_tc samd21_tc5;
 #define samd21_tc5 (*(struct samd21_tc *) 0x42003400)
 
+#ifdef ATSAMD21J
+/* Present on all of the samd21j parts and the samd21g16l */
 extern struct samd21_tc samd21_tc6;
 #define samd21_tc6 (*(struct samd21_tc *) 0x42003800)
 
 extern struct samd21_tc samd21_tc7;
 #define samd21_tc7 (*(struct samd21_tc *) 0x42003c00)
+#endif
 
 #define SAMD21_TC_CTRLA_SWRST		0
 #define SAMD21_TC_CTRLA_ENABLE		1
@@ -902,7 +960,7 @@ extern struct samd21_tc samd21_tc7;
 #define SAMD21_TC_INTFLAG_OVF		0
 
 #define SAMD21_TC_STATUS_STOP		3
-#define SAMD21_TC_STATUS_SLAVE		4
+#define SAMD21_TC_STATUS_FOLLOWER	4
 #define SAMD21_TC_STATUS_SYNCBUSY	7
 
 /* TCC */
@@ -957,8 +1015,11 @@ extern struct samd21_tcc samd21_tcc1;
 extern struct samd21_tcc samd21_tcc2;
 #define samd21_tcc2 (*(struct samd21_tcc *) 0x42002800)
 
+#ifdef SAMD21E17D
+/* only on the samd21e17d */
 extern struct samd21_tcc samd21_tcc3;
 #define samd21_tcc3 (*(struct samd21_tcc *) 0x42006000)
+#endif
 
 #define SAMD21_TCC_CTRLA_SWRST		0
 #define SAMD21_TCC_CTRLA_ENABLE		1
@@ -1328,7 +1389,7 @@ extern struct samd21_sercom samd21_sercom5;
 #define SAMD21_SERCOM_CTRLA_ENABLE	1
 #define SAMD21_SERCOM_CTRLA_MODE	2
 # define SAMD21_SERCOM_CTRLA_MODE_USART		1
-# define SAMD21_SERCOM_CTRLA_MODE_I2C_MASTER	5
+# define SAMD21_SERCOM_CTRLA_MODE_I2C_LEADER	5
 
 #define SAMD21_SERCOM_CTRLA_RUNSTDBY	7
 
@@ -1343,7 +1404,7 @@ extern struct samd21_sercom samd21_sercom5;
 #define SAMD21_SERCOM_CTRLA_CPOL	29
 #define SAMD21_SERCOM_CTRLA_DORD	30
 
-/* I2C master mode */
+/* I2C controller mode */
 #define SAMD21_SERCOM_CTRLA_PINOUT	16
 #define SAMD21_SERCOM_CTRLA_SDAHOLD	20
 #define  SAMD21_SERCOM_CTRLA_SDAHOLD_DIS	0

@@ -28,7 +28,11 @@ bool snek_lex_exdent;
 #endif
 
 char snek_lex_text[SNEK_MAX_TOKEN + 1];
+#if SNEK_MAX_TOKEN > 255
+static uint16_t snek_lex_len;
+#else
 static uint8_t snek_lex_len;
+#endif
 
 //#define DEBUG
 #ifdef DEBUG
@@ -79,27 +83,57 @@ unlexchar(char c)
 	ungetbuf[ungetcount++] = c;
 }
 
-static token_t
-check_equal(token_t plain_token, snek_op_t plain_op, snek_op_t assign_op)
+static void __attribute__((noinline))
+start_token(void)
 {
-	char n = lexchar();
+	snek_lex_len = 0;
+	snek_lex_text[0] = '\0';
+}
+
+static bool
+add_token(char c)
+{
+	if (snek_lex_len == SNEK_MAX_TOKEN)
+		return false;
+	snek_lex_text[snek_lex_len++] = c;
+	snek_lex_text[snek_lex_len] = '\0';
+	return true;
+}
+
+static char
+lextoken(void)
+{
+	char ch = lexchar();
+	if (ch != SNEK_EOF)
+		if (!add_token(ch))
+			return SNEK_EOF;
+	return ch;
+}
+
+static void
+unlextoken(char ch)
+{
+	unlexchar(ch);
+	if (snek_lex_len)
+		snek_lex_text[--snek_lex_len] = '\0';
+}
+
+static token_t
+check_equal(token_t plain_token, snek_op_t op)
+{
+	char n = lextoken();
 
 	if (n != '=') {
-		unlexchar(n);
-		RETURN_OP(plain_op, plain_token);
+		unlextoken(n);
+		RETURN_OP(op, plain_token);
 	}
-	RETURN_OP(assign_op, ASSIGN);
-	snek_token_val.op = assign_op;
-	RETURN(ASSIGN);
+	op += (snek_op_assign_plus - snek_op_plus);
+	RETURN_OP(op, ASSIGN);
 }
 
 static bool
 is_name(char c, bool first)
 {
-	if ('A' <= c && c <= 'Z')
-		return true;
-	if ('a' <= c && c <= 'z')
-		return true;
 	if (c == '_')
 		return true;
 	if (c & 0x80)
@@ -110,6 +144,9 @@ is_name(char c, bool first)
 		if ('0' <= c && c <= '9')
 			return true;
 	}
+	c |= ('a' - 'A');
+	if ('a' <= c && c <= 'z')
+		return true;
 	return false;
 }
 
@@ -132,23 +169,6 @@ comment(void)
 	while ((c = lexchar() != '\n'))
 		if (c == SNEK_EOF)
 			return false;
-	return true;
-}
-
-static void __attribute__((noinline))
-start_token(void)
-{
-	snek_lex_len = 0;
-	snek_lex_text[0] = '\0';
-}
-
-static bool
-add_token(char c)
-{
-	if (snek_lex_len == SNEK_MAX_TOKEN)
-		return false;
-	snek_lex_text[snek_lex_len++] = c;
-	snek_lex_text[snek_lex_len] = '\0';
 	return true;
 }
 
@@ -302,30 +322,35 @@ string(char q)
 }
 
 static token_t
-trailing(char *next, snek_op_t without_op, token_t without, snek_op_t with_op, token_t with)
+trailing(const char *next, snek_op_t without_op, token_t without, snek_op_t with_op, token_t with)
 {
 	char c;
-	uint8_t len = snek_lex_len;
-	char *n = next;
+	const char *n = next;
+	bool space = false;
 
 	/* skip spaces between words */
 	while ((c = lexchar()) == ' ')
-		add_token(c);
+		space = true;
+
+	/* clean up the token buffer so that errors look good */
+	if (space)
+		add_token(' ');
+	add_token(c);
 
 	/* match trailing word if present */
 	for (;;) {
 		if (c != *n) {
-			unlexchar(c);
+			unlextoken(c);
 			while (n > next)
-				unlexchar(*--n);
-			snek_lex_len = len;
-			snek_lex_text[len] = '\0';
+				unlextoken(*--n);
+			if (space)
+				unlextoken(' ');
 			RETURN_OP(without_op, without);
 		}
 		if (*++n == '\0') {
 			RETURN_OP(with_op, with);
 		}
-		c = lexchar();
+		c = lextoken();
 	}
 }
 
@@ -396,10 +421,8 @@ snek_lex(void)
 			snek_lex_exdent = false;
 		}
 
-		c = lexchar();
-
 		start_token();
-		add_token(c);
+		c = lextoken();
 
 		switch (c) {
 		case SNEK_EOF:
@@ -431,74 +454,66 @@ snek_lex(void)
 		case '}':
 			return snek_lex_close(CC);
 		case '+':
-			return check_equal(PLUS, snek_op_plus, snek_op_assign_plus);
+			return check_equal(PLUS, snek_op_plus);
 		case '-':
-			return check_equal(MINUS, snek_op_minus, snek_op_assign_minus);
+			return check_equal(MINUS, snek_op_minus);
 		case '*':
-			n = lexchar();
+			n = lextoken();
 			if (n == '*') {
-				add_token(n);
-				return check_equal(POW, snek_op_pow, snek_op_assign_pow);
+				return check_equal(POW, snek_op_pow);
 			}
-			unlexchar(n);
-			return check_equal(MULOP, snek_op_times, snek_op_assign_times);
+			unlextoken(n);
+			return check_equal(MULOP, snek_op_times);
 		case '/':
-			n = lexchar();
+			n = lextoken();
 			if (n == '/') {
-				add_token(n);
-				return check_equal(MULOP, snek_op_div, snek_op_assign_div);
+				return check_equal(MULOP, snek_op_div);
 			}
-			unlexchar(n);
-			return check_equal(MULOP, snek_op_divide, snek_op_assign_divide);
+			unlextoken(n);
+			return check_equal(MULOP, snek_op_divide);
 		case '%':
-			return check_equal(MULOP, snek_op_mod, snek_op_assign_mod);
+			return check_equal(MULOP, snek_op_mod);
 		case '&':
-			return check_equal(LAND, snek_op_land, snek_op_assign_land);
+			return check_equal(LAND, snek_op_land);
 		case '|':
-			return check_equal(LOR, snek_op_lor, snek_op_assign_lor);
+			return check_equal(LOR, snek_op_lor);
 		case '~':
 			RETURN_OP(snek_op_lnot, LNOT);
 		case '^':
-			return check_equal(LXOR, snek_op_lxor, snek_op_assign_lxor);
+			return check_equal(LXOR, snek_op_lxor);
 		case '<':
-			n = lexchar();
+			n = lextoken();
 			if (n == '<') {
-				add_token(n);
-				return check_equal(SHIFT, snek_op_lshift, snek_op_assign_lshift);
+				return check_equal(SHIFT, snek_op_lshift);
 			}
 			if (n == '=') {
-				add_token(n);
 				RETURN_OP(snek_op_le, CMPOP);
 			}
-			unlexchar(n);
+			unlextoken(n);
 			RETURN_OP(snek_op_lt, CMPOP);
 		case '=':
-			n = lexchar();
+			n = lextoken();
 			if (n == '=') {
-				add_token(n);
 				RETURN_OP(snek_op_eq, CMPOP);
 			}
-			unlexchar(n);
+			unlextoken(n);
 			RETURN_OP(snek_op_assign, ASSIGN);
 		case '>':
-			n = lexchar();
+			n = lextoken();
 			if (n == '>') {
-				add_token(n);
-				return check_equal(SHIFT, snek_op_rshift, snek_op_assign_rshift);
+				return check_equal(SHIFT, snek_op_rshift);
 			}
 			if (n == '=') {
-				add_token(n);
 				RETURN_OP(snek_op_ge, CMPOP);
 			}
-			unlexchar(n);
+			unlextoken(n);
 			RETURN_OP(snek_op_gt, CMPOP);
 		case '!':
-			n = lexchar();
+			n = lextoken();
 			if (n == '=') {
-				add_token(n);
 				RETURN_OP(snek_op_ne, CMPOP);
 			}
-			unlexchar(n);
+			unlextoken(n);
 			break;
 		case '"':
 		case '\'':
@@ -518,13 +533,10 @@ snek_lex(void)
 		if (!is_name(c, true))
 			RETURN(TOKEN_INVALID);
 
-		start_token();
 		do {
-			if (!add_token(c))
-				RETURN(TOKEN_INVALID);
-			c = lexchar();
+			c = lextoken();
 		} while (is_name(c, false));
-		unlexchar(c);
+		unlextoken(c);
 
 		bool keyword;
 		snek_id_t id = snek_name_id(snek_lex_text, &keyword);

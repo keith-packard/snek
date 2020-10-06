@@ -300,6 +300,18 @@ ao_snek_port_clr_pwm(uint8_t p)
 }
 
 static void
+ao_snek_port_set_dac(uint8_t p, uint16_t value)
+{
+	ao_snek_set_dac(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, value);
+}
+
+static void
+ao_snek_port_clr_dac(uint8_t p)
+{
+	ao_snek_clr_dac(ao_snek_pin[p].gpio, ao_snek_pin[p].pin);
+}
+
+static void
 ao_snek_port_set(uint8_t p, uint16_t value)
 {
 	ao_gpio_set(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, !!value);
@@ -321,6 +333,12 @@ static bool
 has_pwm(uint8_t p)
 {
 	return ao_snek_pin[p].timer != NULL;
+}
+
+static bool
+has_dac(uint8_t p)
+{
+	return ao_snek_pin[p].gpio == &samd21_port_a && ao_snek_pin[p].pin == 2;
 }
 
 #ifdef AO_SNEK_PWM_RAMP_STEP
@@ -370,6 +388,10 @@ _set_out(uint8_t pin, uint16_t p)
 		return SNEK_NULL;
 	}
 #endif
+	if (has_dac(pin)) {
+		ao_snek_port_set_dac(pin, p);
+		return SNEK_NULL;
+	}
 	if (has_pwm(pin)) {
 		if ((0 < p && p < SNEK_PWM_MAX)) {
 			ao_snek_port_set_pwm(pin, p);
@@ -379,6 +401,15 @@ _set_out(uint8_t pin, uint16_t p)
 	}
 	ao_snek_port_set(pin, p);
 	return SNEK_NULL;
+}
+
+static void
+set_in(uint8_t pin)
+{
+	if (has_pwm(pin))
+		ao_snek_port_clr_pwm(pin);
+	else if (has_dac(pin))
+		ao_snek_port_clr_dac(pin);
 }
 
 #ifdef SNEK_DRV8833
@@ -491,6 +522,7 @@ set_dir(uint8_t pin, uint8_t d)
 		ao_enable_output(ao_snek_pin[pin].gpio, ao_snek_pin[pin].pin, is_on(pin) && power[pin] != 0);
 		set_out(pin);
 	} else {
+		set_in(pin);
 		uint32_t mode = AO_MODE_PULL_UP;
 		switch (pull[pin]) {
 		case AO_MODE_PULL_NONE:
@@ -705,3 +737,24 @@ snek_builtin_neopixel(snek_poly_t pixels)
 	return SNEK_NULL;
 }
 
+#ifdef SNEK_SAMD21_DAC_TIMER
+#include <ao-dac-samd21.h>
+
+snek_poly_t
+snek_builtin_tone(snek_poly_t a)
+{
+	float f = snek_poly_get_float(a);
+	if (!snek_abort)
+		ao_dac_set_hz(f);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_tonefor(snek_poly_t a, snek_poly_t b)
+{
+	snek_builtin_tone(a);
+	snek_builtin_on();
+	snek_builtin_time_sleep(b);
+	return snek_builtin_off();
+}
+#endif

@@ -45,6 +45,9 @@ $(ZIP_DIST): $(ZIP_FILES)
 install:
 	echo install done
 
+install-otheros: $(ZIP_DIST)
+	cp $(ZIP_DIST) $(DESTDIR)$(PREFIX)
+
 upload: $(ZIP_DIST)
 	rsync -avz $(ZIP_DIST) $(SNEKDIST)
 

@@ -28,6 +28,9 @@ snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 snek_token_val_t snek_token_val;
 
 #define GRAMMAR_TABLE
+#ifdef PARSE_DEBUG
+#define TOKEN_NAMES
+#endif
 #include "snek-gram.h"
 
 #ifndef VALUE_STACK_SIZE
@@ -94,16 +97,6 @@ _value_push_offset(snek_offset_t value, const char *file, int line)
 }
 
 static bool
-_value_push_bool(bool value, const char *file, int line)
-{
-	(void) file; (void) line;
-#ifdef VALUE_DEBUG
-	printf("value push bool %d\n", value);
-#endif
-	return _value_push((snek_parse_val_t) { .bools = value }, file, line);
-}
-
-static bool
 _value_push_indent(uint8_t value, const char *file, int line)
 {
 	(void) file; (void) line;
@@ -135,7 +128,6 @@ _value_push_id(snek_id_t id, const char *file, int line)
 
 #define value_pop() _value_pop(__FILE__, __LINE__)
 #define value_push_int(i) _value_push_int(i, __FILE__, __LINE__)
-#define value_push_bool(b) _value_push_bool(b, __FILE__, __LINE__)
 #define value_push_indent(i) _value_push_indent(i, __FILE__, __LINE__)
 #define value_push_op(o) _value_push_op(o, __FILE__, __LINE__)
 #define value_push_offset(o) _value_push_offset(o, __FILE__, __LINE__)
@@ -151,6 +143,55 @@ _value_push_id(snek_id_t id, const char *file, int line)
 		if (snek_abort)				\
 			return parse_return_error;	\
 	} while (0)
+
+static inline void binop_first(void)
+{
+	snek_code_set_push(snek_code_prev_insn());
+	value_push_op(snek_token_val.op);
+}
+
+static inline void binop_second(void)
+{
+	snek_code_add_op(value_pop().op);
+}
+
+static inline void add_op_lvalue(void)
+{
+	snek_op_t op = value_pop().offset;
+	snek_id_t id = value_pop().id;
+
+	/* add the assignment operator */
+	snek_code_add_op_id(op, id);
+}
+
+static inline void patch_loop(void)
+{
+	snek_offset_t while_else_stat_off = value_pop().offset;
+	snek_offset_t loop_end_off = value_pop().offset;
+	snek_offset_t while_off = value_pop().offset;
+	snek_offset_t top_off = value_pop().offset;
+
+	snek_code_patch_branch(while_off, while_else_stat_off);
+	snek_code_patch_branch(loop_end_off, top_off);
+	snek_code_patch_forward(while_off, loop_end_off, snek_forward_continue, top_off);
+	snek_code_patch_forward(while_off, loop_end_off, snek_forward_break, snek_code_current());
+}
+
+static inline void short_second(void)
+{
+	snek_code_patch_branch(value_pop().offset, snek_code_current());
+	snek_code_add_op(snek_op_nop);
+}
+
+static inline void unop_first(void)
+{
+	value_push_op(snek_token_val.op);
+}
+
+static inline void unop_second(void)
+{
+	snek_code_add_op(value_pop().op);
+}
 
 #define PARSE_CODE
 #include "snek-gram.h"
@@ -190,10 +231,12 @@ snek_parse(void)
 				break;
 			return snek_parse_error;
 		case parse_return_oom:
-			break;
+			snek_error_0("Out of Memory");
+			goto error_recover;
 		case parse_return_syntax:
 		default:
 			snek_error_syntax(snek_lex_text);
+		error_recover:
 			if (!snek_interactive)
 				return snek_parse_error;
 			{

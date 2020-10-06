@@ -67,6 +67,12 @@ snek_op_operand_size(snek_op_t op)
 		return sizeof (snek_offset_t);
 	case snek_op_slice:
 		return 1;
+	case snek_op_chain_eq:
+	case snek_op_chain_ne:
+	case snek_op_chain_gt:
+	case snek_op_chain_lt:
+	case snek_op_chain_ge:
+	case snek_op_chain_le:
 	case snek_op_branch:
 	case snek_op_branch_true:
 	case snek_op_branch_false:
@@ -243,8 +249,8 @@ snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t 
 		switch (op) {
 		case snek_op_forward:
 			memcpy(&f, &snek_compile[ip], sizeof (snek_offset_t));
-			if ((snek_forward_t) f == forward) {
-				snek_compile[ip-1] = snek_op_branch | push;
+			if ((snek_forward_t) (f & 0xff) == forward) {
+				snek_compile[ip-1] = f >> 8 | push;
 				memcpy(&snek_compile[ip], &target, sizeof(snek_offset_t));
 			}
 			break;
@@ -452,6 +458,13 @@ static const char * const snek_op_names[] = {
 	[snek_op_ge] = "ge",
 	[snek_op_le] = "le",
 
+	[snek_op_chain_eq] = "chain eq",
+	[snek_op_chain_ne] = "chain ne",
+	[snek_op_chain_gt] = "chain gt",
+	[snek_op_chain_lt] = "chain lt",
+	[snek_op_chain_ge] = "chain ge",
+	[snek_op_chain_le] = "chain le",
+
 	[snek_op_is] = "is",
 	[snek_op_is_not] = "is_not",
 	[snek_op_in] = "in",
@@ -553,6 +566,12 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 		if (code->code[ip] & SNEK_OP_SLICE_END) dbg(" end");
 		if (code->code[ip] & SNEK_OP_SLICE_STRIDE) dbg(" stride");
 		break;
+	case snek_op_chain_eq:
+	case snek_op_chain_ne:
+	case snek_op_chain_gt:
+	case snek_op_chain_lt:
+	case snek_op_chain_ge:
+	case snek_op_chain_le:
 	case snek_op_branch:
 	case snek_op_branch_true:
 	case snek_op_branch_false:

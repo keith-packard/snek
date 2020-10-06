@@ -2,8 +2,8 @@ FROM debian:unstable AS download-tarballs
 
 RUN apt-get update && \
     apt-get install -y wget gnupg && \
-    wget -O - https://keithp.com/archive/archive-key | apt-key add - && \
-    echo "deb http://keithp.com/archive unstable/" > /etc/apt/sources.list.d/keithp.list && \
+    wget -O - https://maps.altusmetrum.org/archive/archive-key | apt-key add - && \
+    echo "deb http://maps.altusmetrum.org/archive unstable/" > /etc/apt/sources.list.d/keithp.list && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
@@ -23,9 +23,20 @@ RUN apt-get update && \
     ruby-coderay \
     gcc-arm-linux-gnueabi \
     libc6-dev-armel-cross \
-    qemu-system-arm=1:5.0-4.1 \
-    qemu-system-misc=1:5.0-4.1 \
-    black
+    qemu-system-arm=1:5.0-5.2 \
+    qemu-system-misc=1:5.0-5.2 \
+    black \
+    python3-pip \
+    python3-serial \
+    nsis \
+    rsync \
+    genisoimage \
+    zip \
+    gcc-mingw-w64 \
+    librsvg2-bin \
+    icoutils \
+    icnsutils && \
+    pip install pynsist
 
 RUN mkdir snek
 COPY ./ snek/
