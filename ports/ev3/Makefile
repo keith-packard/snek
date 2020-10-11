@@ -36,6 +36,7 @@ SNEK_LOCAL_CFLAGS = -DSNEK_USE_GLIBC_2_4_MATH
 SNEK_LOCAL_BUILTINS = \
 	snek-ev3.builtin \
 	$(SNEK_ROOT)/snek-math.builtin \
+	$(SNEK_ROOT)/snek-eeprom.builtin \
 	$(SNEK_ROOT)/snek-input.builtin
 
 include $(SNEK_ROOT)/snek-install.defs

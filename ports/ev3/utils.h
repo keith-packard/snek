@@ -37,6 +37,12 @@ ssize_t
 write_noeintr(int fd, const char *buf, size_t bufsize);
 
 /*
+ * close(2) that retries in case of EINTR
+ */
+int
+close_noeintr(int fd);
+
+/*
  * Reads up to bufsize bytes of data from sysfs file filename in directory dirfd
  * and places it into bufffer buf.
  *

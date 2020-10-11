@@ -57,6 +57,7 @@ hold, 0
 ramp_up, 1
 ramp_down, 1
 
+reset, 0
 
 #include "snek-ev3.h"
 #define SNEK_POOL 262144

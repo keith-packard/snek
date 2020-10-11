@@ -56,6 +56,17 @@ write_noeintr(int fd, const char *buf, size_t bufsize)
 	}
 }
 
+int
+close_noeintr(int fd)
+{
+	for (;;) {
+		int ret = close(fd);
+		if (ret == -1 && errno == EINTR)
+			continue;
+		return ret;
+	}
+}
+
 ssize_t
 sysfs_read(int dirfd, const char *filename, char *buf, size_t bufsize)
 {

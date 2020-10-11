@@ -15,9 +15,15 @@
 #include "snek.h"
 #include "snek-io.h"
 #include <getopt.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <signal.h>
 #include "sensors.h"
 #include "motors.h"
+#include "utils.h"
+
+// Not entirely clean, but ev3dev has got a single user, so OK for now
+#define EEPROM_FILE "/home/robot/.snek-eeprom"
 
 static FILE *snek_posix_input;
 
@@ -35,6 +41,7 @@ usage(char *program, int val)
 	exit(val);
 }
 
+static char **snek_argv;
 
 static int
 snek_getc_interactive(void)
@@ -107,6 +114,7 @@ main(int argc, char **argv)
 
 	snek_ev3_init_colors();
 	snek_init();
+	snek_argv = argv;
 
 	bool ret = true;
 
@@ -127,8 +135,20 @@ main(int argc, char **argv)
 		}
 		snek_interactive = interactive_flag;
 	} else {
-		snek_interactive = true;
 		printf("Welcome to Snek version %s\n", SNEK_VERSION);
+
+		// Try running the stored program if no files are supplied on
+		// the command line
+		snek_file = "<eeprom>";
+		snek_posix_input = fopen(EEPROM_FILE, "r");
+		if (snek_posix_input) {
+			// The return value is ignored: we know we're dropping
+			// into the REPL that will supply its own return value.
+			snek_parse();
+			fclose(snek_posix_input);
+		}
+
+		snek_interactive = true;
 	}
 
 	if (snek_interactive) { // -i or at no files are supplied on the command line
@@ -153,4 +173,83 @@ snek_builtin_read(snek_poly_t port)
 		snek_error_type_1(port);
 		return SNEK_NULL;
 	}
+}
+
+snek_poly_t
+snek_builtin_eeprom_write(void)
+{
+	int fd = open(EEPROM_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1) {
+		perror("open");
+		exit(1);
+	}
+
+	for (;;) {
+		int c = getc(stdin);
+		if (c == ('d' & 0x1f) || c == 0xff)
+			break;
+
+		char b = c;
+		if (write_noeintr(fd, &b, 1) != 1) {
+			perror("write");
+			exit(1);
+		}
+	}
+	close_noeintr(fd);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_eeprom_erase(void)
+{
+	unlink(EEPROM_FILE);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
+{
+	(void) nnamed;
+	(void) args;
+
+	int fd = open(EEPROM_FILE, O_RDONLY);
+	if (nposition)
+		putc('b' & 0x1f, stdout);
+
+	if (fd != -1) {
+		for (;;) {
+			char buf[4096];
+			int  read_ = read(fd, buf, sizeof(buf));
+			if (read_ == 0)
+				break;
+			if (read_ == -1) {
+				perror("read");
+				exit(1);
+			}
+			fputs(buf, stdout);
+		}
+		close(fd);
+	}
+
+	if (nposition)
+		putc('c' & 0x1f, stdout);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_reset(void)
+{
+	if (!snek_interactive) {
+		snek_error("reset() is not available in non-interactive mode");
+		return SNEK_NULL;
+	}
+
+	// Reset is done before \n from the input line is processed and echoed,
+	// so print it here to make sure Snek banner is not printed on the same
+	// line as reset() echo.
+	printf("\n");
+
+	execv("/proc/self/exe", snek_argv);
+	perror("execv");
+	exit(255);
 }

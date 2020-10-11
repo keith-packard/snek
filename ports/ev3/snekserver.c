@@ -77,17 +77,6 @@ accept4_noeintr(int sockfd, struct sockaddr *addr, socklen_t *addrlen, int flags
 }
 
 static int
-close_noeintr(int fd)
-{
-	for (;;) {
-		int ret = close(fd);
-		if (ret == -1 && errno == EINTR)
-			continue;
-		return ret;
-	}
-}
-
-static int
 dup2_noeintr(int fd, int fd2)
 {
 	for (;;) {
