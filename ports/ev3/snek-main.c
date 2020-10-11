@@ -23,22 +23,21 @@ static FILE *snek_posix_input;
 
 static const struct option options[] = {
 	{.name = "version", .has_arg = 0, .val = 'v'},
-	{.name = "file", .has_arg = 1, .val = 'f'},
-	{.name = "help", .has_arg = 0, .val = '?'},
+	{.name = "interactive", .has_arg = 0, .val = 'i'},
+	{.name = "help", .has_arg = 0, .val = 'h'},
 	{.name = NULL, .has_arg = 0, .val = 0},
 };
 
 static void
 usage(char *program, int val)
 {
-	fprintf(stderr, "usage: %s [--version] [--help] [--file <file.py>] <program.py>\n", program);
+	fprintf(stderr, "usage: %s [--version] [--help] [--interactive] <program.py>\n", program);
 	exit(val);
 }
 
-static int snek_tty;
 
 static int
-snek_getc_tty(void)
+snek_getc_interactive(void)
 {
 	static char  line_base[4096];
 	static char *line;
@@ -63,11 +62,11 @@ snek_getc_tty(void)
 }
 
 int
-snek_getc(void)
+snek_getc()
 {
-	if (snek_tty)
-		return snek_getc_tty();
-	return snek_io_getc(snek_posix_input);
+	if (snek_interactive)
+		return snek_getc_interactive();
+	return getc(snek_posix_input);
 }
 
 static void
@@ -80,19 +79,19 @@ on_sigint(int signal)
 int
 main(int argc, char **argv)
 {
-	int   c;
-	char *file = NULL;
+	int  c;
+	bool interactive_flag = false;
 
-	while ((c = getopt_long(argc, argv, "v?f:", options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "vi", options, NULL)) != -1) {
 		switch (c) {
 		case 'v':
 			printf("%s version %s\n", argv[0], SNEK_VERSION);
 			exit(0);
 			break;
-		case 'f':
-			file = optarg;
+		case 'i':
+			interactive_flag = true;
 			break;
-		case '?':
+		case 'h':
 			usage(argv[0], 0);
 			break;
 		default:
@@ -107,38 +106,38 @@ main(int argc, char **argv)
 	sigaction(SIGINT, &act, NULL);
 
 	snek_ev3_init_colors();
-
 	snek_init();
 
-	if (file) {
-		snek_file = file;
-		snek_posix_input = fopen(snek_file, "r");
-		if (!snek_posix_input) {
-			perror(snek_file);
-			exit(1);
-		}
-		snek_parse();
-	}
+	bool ret = true;
 
-	if (argv[optind]) {
-		snek_file = argv[optind];
-		snek_posix_input = fopen(snek_file, "r");
-		if (!snek_posix_input) {
-			perror(snek_file);
-			exit(1);
+	if (argv[optind]) { // At least one file is supplied on the command line
+		for (; argv[optind]; optind++) {
+			snek_file = argv[optind];
+			snek_posix_input = fopen(snek_file, "r");
+			if (!snek_posix_input) {
+				perror(snek_file);
+				exit(1);
+			}
+			if (snek_parse() != snek_parse_success) {
+				fclose(snek_posix_input);
+				ret = false;
+				break;
+			}
+			fclose(snek_posix_input);
 		}
+		snek_interactive = interactive_flag;
 	} else {
-		snek_file = "<stdin>";
-		snek_posix_input = stdin;
-		snek_tty = isatty(0);
 		snek_interactive = true;
-
 		printf("Welcome to Snek version %s\n", SNEK_VERSION);
 	}
 
-	bool ret = snek_parse() == snek_parse_success;
-	if (snek_posix_input == stdin)
-		printf("\n");
+	if (snek_interactive) { // -i or at no files are supplied on the command line
+		snek_file = "<stdin>";
+		snek_posix_input = stdin;
+		if (snek_parse() != snek_parse_success)
+			ret = false;
+	}
+
 	return ret ? 0 : 1;
 }
 
