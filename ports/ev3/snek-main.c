@@ -28,20 +28,20 @@
 static FILE *snek_posix_input;
 
 static const struct option options[] = {
-	{.name = "version", .has_arg = 0, .val = 'v'},
-	{.name = "interactive", .has_arg = 0, .val = 'i'},
-	{.name = "help", .has_arg = 0, .val = 'h'},
+	{.name = "version", .has_arg = 0, .val = 'v'}, {.name = "interactive", .has_arg = 0, .val = 'i'},
+	{.name = "raw", .has_arg = 0, .val = 'r'},     {.name = "help", .has_arg = 0, .val = 'h'},
 	{.name = NULL, .has_arg = 0, .val = 0},
 };
 
 static void
 usage(char *program, int val)
 {
-	fprintf(stderr, "usage: %s [--version] [--help] [--interactive] <program.py>\n", program);
+	fprintf(stderr, "usage: %s [--version] [--help] [--interactive] [--raw] <program.py>\n", program);
 	exit(val);
 }
 
 static char **snek_argv;
+static bool   snek_raw;
 
 static int
 snek_getc_interactive(void)
@@ -71,6 +71,8 @@ snek_getc_interactive(void)
 int
 snek_getc()
 {
+	if (snek_interactive && snek_raw)
+		return snek_io_getc(snek_posix_input);
 	if (snek_interactive)
 		return snek_getc_interactive();
 	return getc(snek_posix_input);
@@ -89,7 +91,7 @@ main(int argc, char **argv)
 	int  c;
 	bool interactive_flag = false;
 
-	while ((c = getopt_long(argc, argv, "vi", options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "vir", options, NULL)) != -1) {
 		switch (c) {
 		case 'v':
 			printf("%s version %s\n", argv[0], SNEK_VERSION);
@@ -100,6 +102,9 @@ main(int argc, char **argv)
 			break;
 		case 'h':
 			usage(argv[0], 0);
+			break;
+		case 'r':
+			snek_raw = true;
 			break;
 		default:
 			usage(argv[0], 1);

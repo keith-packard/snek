@@ -241,7 +241,7 @@ run_snek(const char *cmd, int *subproc_stdin, int *subproc_stdout, int *subproc_
 		close_noeintr(stderr_fd[0]);
 		close_noeintr(stderr_fd[1]);
 
-		if (execl(cmd, cmd, NULL) == -1) {
+		if (execl(cmd, cmd, "--raw", NULL) == -1) {
 			perror("execl");
 			exit(1);
 		}
