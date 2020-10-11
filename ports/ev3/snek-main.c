@@ -13,7 +13,9 @@
  */
 
 #include "snek.h"
+#include "snek-io.h"
 #include <getopt.h>
+#include <signal.h>
 #include "sensors.h"
 #include "motors.h"
 
@@ -33,8 +35,10 @@ usage(char *program, int val)
 	exit(val);
 }
 
+static int snek_tty;
+
 static int
-snek_getc_interactive(void)
+snek_getc_tty(void)
 {
 	static char  line_base[4096];
 	static char *line;
@@ -45,6 +49,7 @@ snek_getc_interactive(void)
 		if (snek_parse_middle)
 			prompt = "+ ";
 		fputs(prompt, stdout);
+		fflush(stdout);
 		line = fgets(line_base, 4096, stdin);
 		if (!line)
 			return EOF;
@@ -60,9 +65,16 @@ snek_getc_interactive(void)
 int
 snek_getc(void)
 {
-	if (snek_interactive)
-		return snek_getc_interactive();
-	return getc(snek_posix_input);
+	if (snek_tty)
+		return snek_getc_tty();
+	return snek_io_getc(snek_posix_input);
+}
+
+static void
+on_sigint(int signal)
+{
+	(void) signal;
+	snek_abort = true;
 }
 
 int
@@ -89,6 +101,11 @@ main(int argc, char **argv)
 		}
 	}
 
+	struct sigaction act = {
+		.sa_handler = on_sigint,
+	};
+	sigaction(SIGINT, &act, NULL);
+
 	snek_ev3_init_colors();
 
 	snek_init();
@@ -113,7 +130,9 @@ main(int argc, char **argv)
 	} else {
 		snek_file = "<stdin>";
 		snek_posix_input = stdin;
+		snek_tty = isatty(0);
 		snek_interactive = true;
+
 		printf("Welcome to Snek version %s\n", SNEK_VERSION);
 	}
 

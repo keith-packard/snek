@@ -34,7 +34,7 @@ close_noerrno(int fd)
 	errno = saved_errno;
 }
 
-static ssize_t
+ssize_t
 read_noeintr(int fd, char *buf, size_t bufsize)
 {
 	for (;;) {
@@ -45,7 +45,7 @@ read_noeintr(int fd, char *buf, size_t bufsize)
 	}
 }
 
-static ssize_t
+ssize_t
 write_noeintr(int fd, const char *buf, size_t bufsize)
 {
 	for (;;) {

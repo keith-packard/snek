@@ -25,6 +25,18 @@ const char *
 cutprefix(const char *s, const char *prefix, int prefixlen);
 
 /*
+ * read(2) that retries in case of EINTR
+ */
+ssize_t
+read_noeintr(int fd, char *buf, size_t bufsize);
+
+/*
+ * write(2) that retries in case of EINTR
+ */
+ssize_t
+write_noeintr(int fd, const char *buf, size_t bufsize);
+
+/*
  * Reads up to bufsize bytes of data from sysfs file filename in directory dirfd
  * and places it into bufffer buf.
  *
