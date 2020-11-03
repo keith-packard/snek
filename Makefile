@@ -37,6 +37,9 @@ check: all
 black:
 	+black --check --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
 
+black-reformat:
+	+black --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
+
 install: all
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@) || exit 1; done
 	+for snek in $(SNEKS); do (cd `dirname $$snek` && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@) || exit 1; done
