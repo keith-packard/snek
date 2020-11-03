@@ -17,12 +17,33 @@ import math
 # Make sure lists, tuples and parameter lists can have
 # a trailing comma
 
-assert (1, 2,) == (1, 2)
-assert [1,] == [1]
-assert [1, 2,] == [1, 2]
+assert (
+    1,
+    2,
+) == (1, 2)
+assert [
+    1,
+] == [1]
+assert [
+    1,
+    2,
+] == [1, 2]
 
-assert {1: "hello",} == {1: "hello"}
-assert {1: "hello", 2: "world",} == {1: "hello", 2: "world"}
+assert {
+    1: "hello",
+} == {1: "hello"}
+assert {
+    1: "hello",
+    2: "world",
+} == {1: "hello", 2: "world"}
 
-assert math.gcd(64, 12) == math.gcd(64, 12,)
-assert math.sin(1,) == math.sin(1)
+assert math.gcd(64, 12) == math.gcd(
+    64,
+    12,
+)
+assert (
+    math.sin(
+        1,
+    )
+    == math.sin(1)
+)
