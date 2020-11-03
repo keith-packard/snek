@@ -3,7 +3,7 @@ name: black
 on: [push, pull_request]
 
 jobs:
-  test:
+  black:
     runs-on: ubuntu-latest
     steps:
       - name: 'Clone snek'
@@ -14,11 +14,11 @@ jobs:
       - name: 'Build snek container'
         run: |
           docker build -t snek \
-            -f snek/.github/Dockerfile \
+            -f snek/.github/Dockerfile-black \
             snek
 
       - name: 'Check snek/python code format'
         run: |
-          docker run --rm
+          docker run --rm \
             snek \
             make black
