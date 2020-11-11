@@ -128,7 +128,7 @@ _snek_uart_xoff(void)
 		_snek_uart_flow_do();
 }
 
-#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284__)
 #define UDRE_vect USART0_UDRE_vect
 #define RX_vect USART0_RX_vect
 #else

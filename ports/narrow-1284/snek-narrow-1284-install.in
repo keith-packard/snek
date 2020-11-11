@@ -1,0 +1,41 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+SNEKNARROW="$SHAREDIR/snek-narrow-1284-@SNEK_VERSION@.hex"
+PORT=/dev/ttyUSB0
+HEX="${SNEKNARROW}"
+
+mode=arg
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		-port|--port)
+		    mode=port
+		    ;;
+		-isp|--isp)
+		    mode=isp
+		    ;;
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		*)
+		      echo "Usage: $0 {-port /dev/ttyACM0} {-hex snek-narrow-1284.hex}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	port)
+	    PORT="$i"
+	    mode=arg
+	    ;;
+	hex)
+	    HEX="$i"
+	    mode=arg
+	    ;;
+    esac
+done
+
+avrdude -pm1284p -c arduino -P$PORT -b115200 -D -U flash:w:"${HEX}":i
