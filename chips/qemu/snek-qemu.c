@@ -71,11 +71,17 @@ snek_builtin_random_seed(snek_poly_t a)
 snek_poly_t
 snek_builtin_random_randrange(snek_poly_t a)
 {
+	uint32_t mod = snek_poly_get_float(a);
+
+	if (!mod) {
+		snek_error_value(a);
+		return SNEK_NULL;
+	}
 	random_x *= random_x;
 	random_w += random_s;
 	random_x += random_w;
 	random_x = (random_x >> 32) | (random_x << 32);
-	return snek_float_to_poly((snek_soffset_t) (random_x % snek_poly_get_soffset(a)));
+	return snek_float_to_poly(random_x % mod);
 }
 
 snek_poly_t

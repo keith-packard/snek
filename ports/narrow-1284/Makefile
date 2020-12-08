@@ -21,11 +21,8 @@ SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 
 SNEK_LOCAL_SRC = \
 	snek-narrow-1284.c \
+	$(SNEK_ATMEGA_SRC) \
 	$(SNEK_ATMEGA_MATH_SRC) \
-	snek-atmega-eeprom.c \
-	snek-atmega-time.c \
-	snek-atmega-serial.c \
-	snek-io.c \
 	snek-input.c
 
 SNEK_LOCAL_INC = \
@@ -56,7 +53,7 @@ LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x1000 \
 	-Wl,-Map=$(MAP)
 
-PORT=/dev/ttyACM0
+PORT=/dev/ttyUSB0
 
 all: $(HEX) snek-narrow-1284-install
 
@@ -86,4 +83,4 @@ clean::
 	rm -f *.elf snek*.hex *.map snek-narrow-1284-install
 
 load-direct: $(HEX)
-	avrdude -pm1284p -carduino -P/dev/ttyUSB0 -b115200 -D -Uflash:w:$(HEX):i 
+	avrdude -pm1284p -carduino -P$(PORT) -b115200 -D -Uflash:w:$(HEX):i 

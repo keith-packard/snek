@@ -400,5 +400,5 @@ snek_poly_t
 snek_builtin_random_randrange(snek_poly_t a)
 {
 	random_next = random_next * 1103515245L + 12345L;
-	return snek_float_to_poly((snek_soffset_t) (random_next % snek_poly_get_soffset(a)));
+	return snek_float_to_poly(random_next % (uint32_t) snek_poly_get_float(a));
 }
