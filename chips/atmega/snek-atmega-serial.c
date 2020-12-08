@@ -22,12 +22,14 @@
 #define UART_U2X		(UART_BAUD_U2X(4) <= 4095)
 #define UART_BAUD_SCALE		(UART_U2X ? UART_BAUD_U2X(4) : UART_BAUD_U2X(8))
 
-#define RINGSIZE	16
+#ifndef UART_RINGSIZE
+#define UART_RINGSIZE	16
+#endif
 
 typedef volatile struct uart_ring {
 	uint8_t	read;
 	uint8_t	count;
-	uint8_t	buf[RINGSIZE];
+	uint8_t	buf[UART_RINGSIZE];
 } uart_ring_t;
 
 static uart_ring_t	rx_ring, tx_ring;
@@ -42,7 +44,7 @@ static volatile uint8_t	tx_flow;
 
 static bool ring_full(uart_ring_t *ring)
 {
-	return ring->count == RINGSIZE;
+	return ring->count == UART_RINGSIZE;
 }
 
 static bool ring_empty(uart_ring_t *ring)
@@ -52,7 +54,7 @@ static bool ring_empty(uart_ring_t *ring)
 
 static bool ring_mostly_full(uart_ring_t *ring)
 {
-	return ring->count >= (RINGSIZE / 2);
+	return ring->count >= (UART_RINGSIZE / 2);
 }
 
 static int
@@ -61,7 +63,7 @@ ring_get(uart_ring_t *ring)
 	if (ring_empty(ring))
 		return -1;
 	uint8_t c = ring->buf[ring->read];
-	ring->read = (ring->read + 1) & (RINGSIZE - 1);
+	ring->read = (ring->read + 1) & (UART_RINGSIZE - 1);
 	ring->count--;
 	return c;
 }
@@ -71,7 +73,7 @@ ring_put(uart_ring_t *ring, uint8_t c)
 {
 	if (ring_full(ring))
 		return false;
-	uint8_t write = (ring->read + ring->count) & (RINGSIZE - 1);
+	uint8_t write = (ring->read + ring->count) & (UART_RINGSIZE - 1);
 	ring->buf[write] = c;
 	ring->count++;
 	return true;

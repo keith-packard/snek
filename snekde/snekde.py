@@ -45,10 +45,13 @@ snek_dialog_waiting = False
 snek_cur_path = None
 
 # snek_debug_file = open('log', 'w')
-
+#
 # def snek_debug(message):
-#    snek_debug_file.write(message + '\n')
-#    snek_debug_file.flush()
+#     global snek_debug_file
+#     snek_debug_file.write(message + '\n')
+#     snek_debug_file.flush()
+#
+# snek_debug("Starting snekde")
 
 #
 # Read a character from the keyboard, releasing the
@@ -95,7 +98,8 @@ class SnekPort:
                     self.name = self.name[self.name.rfind("/") + 1 :]
             else:
                 self.name = port[1]
-            self.description = port[2]
+            self.description = port[1]
+            self.hwid = port[2]
         else:
             self.device = port.device
             if port.name:
@@ -103,6 +107,8 @@ class SnekPort:
             else:
                 self.name = self.device
             self.description = port.description
+            self.product = port.product
+            self.hwid = port.hwid
         if self.name and "/" in self.name:
             self.name = self.name[self.name.rfind("/") + 1 :]
 
@@ -147,6 +153,9 @@ def snek_list_ports():
     return ports
 
 
+port_mods = {"Arduino Mega": "slow", "1A86:": "sync"}
+
+
 class SnekDevice:
     """Link to snek device"""
 
@@ -159,6 +168,7 @@ class SnekDevice:
     write_queue = False
     device = ""
     interrupt_pending = False
+    syncronous_put = False
 
     #
     # The interface needs to have a condition variable (cv) that is
@@ -169,9 +179,14 @@ class SnekDevice:
     def __init__(self, port, interface):
         self.interface = interface
         self.device = port.device
+        self.synchronous_put = False
         rate = 115200
-        if "Arduino Mega" in port.description:
-            rate = 38400
+        for port_mod in port_mods:
+            if port_mod in port.description or port_mod in port.hwid:
+                if "slow" in port_mods[port_mod]:
+                    rate = 38400
+                if "sync" in port_mods[port_mod]:
+                    self.synchronous_put = True
         self.serial = serial.Serial(
             port=self.device,
             baudrate=rate,
@@ -237,7 +252,7 @@ class SnekDevice:
                 # read all that is there or wait for one byte
                 data = self.serial.read(1)
                 if data:
-                    self.interface.receive(str(data, encoding="utf-8", errors="ignore"))
+                    self.interface.receive(data)
         except serial.SerialException as e:
             self.interface.failed(self.device)
         finally:
@@ -247,7 +262,7 @@ class SnekDevice:
         """Copy queued data to the serial port."""
         try:
             while self.alive:
-                send_data = ""
+                send_data = b""
                 interrupt = False
                 with self.interface.cv:
                     while (
@@ -268,7 +283,7 @@ class SnekDevice:
                     self.serial.write(b"\x0f\x03\x0e")
                     self.serial.xonxoff = True
                 if send_data:
-                    self.serial.write(send_data.encode("utf-8"))
+                    self.serial.write(send_data)
         except (serial.SerialException, termios.error):
             self.interface.failed(self.device)
         finally:
@@ -278,12 +293,15 @@ class SnekDevice:
         self.interrupt_pending = True
         self.interface.cv.notify()
 
-    def write(self, data):
+    def writeb(self, data):
         if self.write_queue:
             self.write_queue += data
         else:
             self.write_queue = data
         self.interface.cv.notify()
+
+    def write(self, data):
+        self.writeb(data.encode("utf-8"))
 
     def command(self, data, intr="\x03"):
         self.write("\x0e" + intr + data)
@@ -1161,12 +1179,33 @@ def snekde_get_text():
 
 
 def snekde_put_text():
-    global snek_edit_win, snek_device
+    global snek_edit_win, snek_device, snek_monitor
     if len(snek_edit_win.text.strip()) == 0:
         ErrorWin("No program to put")
         return
+    snek_monitor.reset_acks()
     snek_device.command("eeprom.write()\n")
-    snek_device.write(snek_edit_win.text + "\x04")
+    text = snek_edit_win.text.encode("utf-8")
+    if snek_device.synchronous_put:
+        length = len(text)
+        start = 0
+        ack = -2
+        while start < length:
+            this_time = 16
+            if start + this_time > length:
+                this_time = length - start
+            this_text = text[start : start + this_time]
+            snek_device.writeb(this_text)
+            if this_time == 16:
+                ack += 1
+                if not snek_monitor.wait_ack(ack, timeout=1):
+                    ErrorWin("Put failed\n")
+                    return
+            start += this_time
+        snek_device.writeb(b"\004")
+    else:
+        snek_device.writeb(text + b"\004")
+
     snek_device.command("reset()\n", intr="")
     snek_edit_win.changed = False
 
@@ -1309,10 +1348,20 @@ class SnekMonitor:
     def __init__(self):
         global snek_lock
         self.cv = threading.Condition(snek_lock)
+        self.ack = threading.Condition(snek_lock)
+        self.acks = 0
+        self.getting_text = False
 
     # Reading text to snek_edit_win instead of snek_repl_win
 
-    getting_text = False
+    def reset_acks(self):
+        self.acks = 0
+
+    def wait_ack(self, ack, timeout=None):
+        while self.acks < ack:
+            if not self.ack.wait(timeout):
+                return False
+        return True
 
     def add_to(self, window, data):
         global snek_current_window, snek_repl_win
@@ -1326,27 +1375,35 @@ class SnekMonitor:
 
     def receive(self, data):
         global snek_edit_win, snek_repl_win, snek_lock
-        data_edit = ""
-        data_repl = ""
+        data_edit = b""
+        data_repl = b""
         for c in data:
-            if c == "\x02":
+            b = bytes((c,))
+            if b == b"\02":
                 self.getting_text = True
-            elif c == "\x03":
+            elif b == b"\03":
                 self.getting_text = False
-            elif c == "\x00":
+            elif b == b"\00":
                 continue
-            elif c == "\r":
+            elif b == b"\r":
+                with snek_lock:
+                    self.acks += 1
+                    self.ack.notify_all()
                 continue
             else:
                 if self.getting_text:
-                    data_edit += c
+                    data_edit += b
                 else:
-                    data_repl += c
+                    data_repl += b
         with snek_lock:
             if data_edit:
-                self.add_to(snek_edit_win, data_edit)
+                self.add_to(
+                    snek_edit_win, str(data_edit, encoding="utf-8", errors="ignore")
+                )
             if data_repl:
-                self.add_to(snek_repl_win, data_repl)
+                self.add_to(
+                    snek_repl_win, str(data_repl, encoding="utf-8", errors="ignore")
+                )
 
     def failed(self, device):
         global snek_device, snek_lock
@@ -1373,7 +1430,7 @@ def main():
     snek_device = False
     if args.list:
         for port in snek_list_ports():
-            print("%-30.30s %s" % (port.name, port.description))
+            print("%-30.30s %s %s" % (port.name, port.description, port.hwid))
         sys.exit(0)
     if args.port:
         try:
