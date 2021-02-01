@@ -77,6 +77,7 @@ snek_string_cat(char *a, char *b)
 						    b, 0, strlen(b)));
 }
 
+#ifndef SNEK_NO_SLICE
 char *
 snek_string_slice(char *a, snek_slice_t *slice)
 {
@@ -94,6 +95,7 @@ snek_string_slice(char *a, snek_slice_t *slice)
 	r[i] = '\0';
 	return r;
 }
+#endif
 
 snek_poly_t
 snek_string_times(char *a, snek_soffset_t b)

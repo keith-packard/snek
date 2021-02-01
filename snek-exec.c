@@ -480,6 +480,7 @@ soffset_sgn(snek_soffset_t s) {
 	return (s > 0) - (s < 0);
 }
 
+#ifndef SNEK_NO_SLICE
 /*
  * Slice operator
  */
@@ -571,6 +572,7 @@ snek_slice(uint8_t bits)
 		break;
 	}
 }
+#endif
 
 /*
  * Raise an undefined name exception
@@ -908,7 +910,11 @@ snek_exec(snek_code_t *code_in)
 			done_func:
 				break;
 			case snek_op_slice:
+#ifdef SNEK_NO_SLICE
+				snek_error_0("No slices");
+#else
 				snek_slice(snek_code->code[ip]);
+#endif
 				ip++;
 				break;
 			case snek_op_global:

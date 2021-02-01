@@ -27,6 +27,12 @@ snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 snek_token_val_t snek_token_val;
 
+#ifdef SNEK_NO_SLICE
+#define snek_no_slice SNEK_NO_SLICE
+#else
+#define snek_no_slice 0
+#endif
+
 #define GRAMMAR_TABLE
 #ifdef PARSE_DEBUG
 #define TOKEN_NAMES

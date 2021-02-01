@@ -305,6 +305,7 @@ snek_list_build(snek_list_type_t type, snek_offset_t size, ...)
 }
 #endif
 
+#ifndef SNEK_NO_SLICE
 snek_list_t *
 snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 {
@@ -324,6 +325,7 @@ snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 		ndata[i++] = data[slice->pos];
 	return n;
 }
+#endif
 
 void
 snek_stack_push_list(snek_list_t *l)

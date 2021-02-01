@@ -417,7 +417,7 @@ expr-array-p	: OS
 		  array-index CS
 			@{
 				bool slice = !!value_pop().offset;
-				if (slice) {
+				if (!snek_no_slice && slice) {
 					snek_code_set_push(snek_code_prev_insn());
 					uint8_t stride = value_pop().offset * SNEK_OP_SLICE_STRIDE;
 					uint8_t end = value_pop().offset * SNEK_OP_SLICE_END;
@@ -439,6 +439,7 @@ expr-array-p	: OS
 		  expr-array-p
 		|
 		;
+{SNEK_SLICE
 array-index	: expr opt-slice
 		|
 			@{
@@ -477,6 +478,11 @@ opt-expr	:	@{
 				value_push_offset(0);
 			}@
 		;
+}
+{SNEK_NO_SLICE
+array-index	: expr
+		;
+}
 expr-prim	: OP opt-tuple CP
 			@{
 				snek_soffset_t num = value_pop().offset;
