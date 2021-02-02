@@ -25,6 +25,7 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/crickit/snek-crickit-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/feather/snek-feather-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/grove/snek-grove-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/itsybitsy3v/snek-itsybitsy3v-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy5v-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/itsybitsym0/snek-itsybitsym0-$(SNEK_VERSION).uf2 \
