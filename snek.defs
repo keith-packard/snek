@@ -101,11 +101,19 @@ SNEK_BASE_CFLAGS = \
 
 LOLA_FLAGS ?=
 
+
 ifdef SNEK_NO_SLICE
 SNEK_BASE_CFLAGS += -DSNEK_NO_SLICE
 SNEK_LOLA_FLAGS += -DSNEK_NO_SLICE
 else
 SNEK_LOLA_FLAGS += -DSNEK_SLICE
+endif
+
+ifdef SNEK_NO_DICT
+SNEK_BASE_CFLAGS += -DSNEK_NO_DICT
+SNEK_LOLA_FLAGS += -DSNEK_NO_DICT
+else
+SNEK_LOLA_FLAGS += -DSNEK_DICT
 endif
 
 SNEK_LDFLAGS = -Wl,--gc-sections 
@@ -126,10 +134,8 @@ SNEK_SED = sed \
 
 ifndef SNEK_NO_BUILD_TARGETS
 
-LOLA_FLAGS =
-
 snek-gram.h: $(SNEK_ROOT)/snek-gram.ll
-	lola $(LOLA_FLAGS) -o $@ $^
+	lola $(SNEK_LOLA_FLAGS) -o $@ $^
 
 snek-builtin.h: $(SNEK_ROOT)/snek-builtin.py $(SNEK_BUILTINS)
 	python3 $^ -o $@

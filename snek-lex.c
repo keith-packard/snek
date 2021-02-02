@@ -448,11 +448,13 @@ snek_lex(void)
 			RETURN(OS);
 		case ']':
 			return snek_lex_close(CS);
+#ifndef SNEK_NO_DICT
 		case '{':
 			++snek_ignore_nl;
 			RETURN(OC);
 		case '}':
 			return snek_lex_close(CC);
+#endif
 		case '+':
 			return check_equal(PLUS, snek_op_plus);
 		case '-':

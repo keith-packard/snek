@@ -133,7 +133,9 @@ typedef enum {
 	snek_op_string,
 	snek_op_list,
 	snek_op_tuple,
+#ifndef SNEK_NO_DICT
 	snek_op_dict,
+#endif
 	snek_op_id,
 
 	snek_op_not,
@@ -210,7 +212,9 @@ typedef struct snek_mem {
 typedef enum {
 	snek_list_list,
 	snek_list_tuple,
+#ifndef SNEK_NO_DICT
 	snek_list_dict
+#endif
 } __attribute__((packed)) snek_list_type_t;
 
 typedef struct snek_list {

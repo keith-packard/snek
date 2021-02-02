@@ -33,6 +33,12 @@ snek_token_val_t snek_token_val;
 #define snek_no_slice 0
 #endif
 
+#ifdef SNEK_NO_DICT
+#define snek_no_dict SNEK_NO_DICT
+#else
+#define snek_no_dict 0
+#endif
+
 #define GRAMMAR_TABLE
 #ifdef PARSE_DEBUG
 #define TOKEN_NAMES

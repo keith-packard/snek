@@ -126,8 +126,10 @@ snek_poly_len(snek_poly_t a)
 	case snek_list:
 		al = snek_poly_to_list(a);
 		len = al->size;
+#ifndef SNEK_NO_DICT
 		if (snek_list_type(al) == snek_list_dict)
 			len /= 2;
+#endif
 		return len;
 	default:
 		return 0;

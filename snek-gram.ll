@@ -496,6 +496,7 @@ expr-prim	: OP opt-tuple CP
 					return parse_return_syntax;
 				snek_code_add_op_offset(snek_op_list, num);
 			}@
+{SNEK_DICT
 		| OC
 			@{
 				/* Zero dict-ents so far */
@@ -507,6 +508,7 @@ expr-prim	: OP opt-tuple CP
 				snek_offset_t num = value_pop().offset;
 				snek_code_add_op_offset(snek_op_dict, num);
 			}@
+}
 		| NAME
 			@{
 				snek_code_add_op_id(snek_op_id, snek_token_val.id);
@@ -611,6 +613,7 @@ actuals-p	: COMMA actuals-end
 actuals-end	: expr actual-p actuals-p
 		|
 		;
+{SNEK_DICT
 opt-dict-ents	: dict-ent dict-ents-p
 		|
 		;
@@ -631,3 +634,4 @@ dict-ent	: expr
 				snek_code_set_push(snek_code_prev_insn());
 			}@
 		;
+}

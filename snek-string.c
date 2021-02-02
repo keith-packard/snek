@@ -185,7 +185,10 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 	is_list = false;
 	if (snek_poly_type(poly) == snek_list) {
 		snek_list_t *list = snek_poly_to_list(poly);
-		if (snek_list_type(list) != snek_list_dict) {
+#ifndef SNEK_NO_DICT
+		if (snek_list_type(list) != snek_list_dict)
+#endif
+		{
 			is_list = true;
 			size = list->size;
 		}
