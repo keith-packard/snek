@@ -27,6 +27,39 @@ static uint32_t	on_pins;
 /* digital pins all use PULL_UP by default */
 static uint32_t pull_pins = 0x03fff;
 
+#ifdef SNEK_TONE
+static uint8_t 	tccr0a;
+static uint8_t	tccr0b;
+
+static void
+tcc0_set(void)
+{
+	TCCR0A = tccr0a;
+	TCCR0B = tccr0b;
+}
+
+static void
+tcc0_reset(void)
+{
+ 	tccr0a = ((1 << WGM01) |
+		  (1 << WGM00));
+
+	tccr0b = ((0 << CS02) |
+		  (0 << CS01) |
+		  (1 << CS00));
+	tcc0_set();
+}
+#else
+#define tcc0_reset(a) do {			\
+		TCCR0A = ((1 << WGM01) |	\
+			  (1 << WGM00));	\
+						\
+		TCCR0B = ((0 << CS02) |		\
+			  (0 << CS01) |		\
+			  (1 << CS00));		\
+	} while (0)
+#endif
+
 static void
 port_init(void)
 {
@@ -36,17 +69,7 @@ port_init(void)
 		  (1 << ADPS0) |
 		  (1 << ADEN));
 
-	/* Timer 0 */
-	TCCR0A = ((1 << WGM01) |
-		  (1 << WGM00));
-
-	/* / 64 */
-	TCCR0B = ((0 << CS02) |
-		  (1 << CS01) |
-		  (1 << CS00));
-
-	/* enable interrupt */
-	TIMSK0 = (1 << TOIE0);
+	tcc0_reset();
 
 	/* Timer 1 */
 	TCCR1B = ((0 << CS12) |
@@ -65,7 +88,15 @@ port_init(void)
 		  (0 << CS21) |
 		  (0 << CS20));
 
-	TCCR2A = ((1 << WGM20));
+	TCCR2A = ((1 << WGM20) |
+		  (1 << WGM21));
+
+	TCCR2B = ((0 << CS22) |
+		  (1 << CS21) |
+		  (1 << CS00));
+
+	/* enable interrupt */
+	TIMSK2 = (1 << TOIE2);
 
 	memset(power, 0xff, NUM_PIN);
 }
@@ -149,7 +180,7 @@ has_pwm(uint8_t p)
 
 	p &= 15;
 
-	return pwm_pins & 1 << p;
+	return pwm_pins & (1 << p);
 }
 
 static volatile uint8_t * const PROGMEM ocr_reg_addrs[] = {
@@ -285,6 +316,58 @@ set_out(uint8_t pin)
 	return SNEK_NULL;
 }
 
+#ifdef SNEK_TONE
+/* Output tone on D5 */
+snek_poly_t
+snek_builtin_tone(snek_poly_t a)
+{
+	float freq = snek_poly_get_float(a);
+
+	if (freq == 0.0f) {
+	off:
+		tcc0_reset();
+		set_off(5);
+		return SNEK_NULL;
+	}
+
+	uint32_t val = (F_CPU / 2) / freq;
+
+	/*
+	 *       Val range	Prescale	Freq range (assuming 16MHz clock)
+	 *      1 -    256	1		8MHz - 31.250kHz
+	 *    257 -   2048	8		31.128kHz - 3906.25Hz
+	 *   2049 -  16384	64		3904.34Hz - 488.28Hz
+	 *  16385 -  65536	256		488.28Hz - 122.1Hz
+	 *  65537 - 262144	1024		122.1Hz - 30.52Hz
+	 */
+
+	uint8_t cs = 1;
+
+	/* Figure out which prescale value to use */
+	while (val > 256UL) {
+		uint8_t shift = 2;
+		if  (cs < 3)
+			shift = 3;
+		val >>= shift;
+		++cs;
+		if (cs > 5)
+			goto off;
+	}
+
+	tccr0a = ((1 << COM0B0) |
+		  (1 << WGM01));
+	tccr0b = cs;
+	tcc0_set();
+
+	OCR0A = (uint8_t) (val - 1);
+
+	set_dir(5, 1);
+	set_on(5);
+
+	return SNEK_NULL;
+}
+#endif
+
 snek_poly_t
 snek_builtin_setpower(snek_poly_t a)
 {
@@ -379,6 +462,9 @@ snek_poly_t
 snek_builtin_stopall(void)
 {
 	uint8_t p;
+#ifdef SNEK_TONE
+	tcc0_reset();
+#endif
 	for (p = 0; p < NUM_PIN; p++)
 		if (on_pins & ((uint32_t) 1 << p)) {
 			set_off(p);

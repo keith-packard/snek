@@ -24,11 +24,11 @@
 #define TICKS_PER_SECOND	(F_CPU / 64.0f)
 #define SECONDS_PER_TICK	(64.0f / F_CPU)
 
-volatile uint32_t timer0_tocks = 0;
+volatile uint32_t timer2_tocks = 0;
 
-ISR(TIMER0_OVF_vect)
+ISR(TIMER2_OVF_vect)
 {
-	timer0_tocks++;
+	timer2_tocks++;
 }
 
 
@@ -43,11 +43,11 @@ snek_ticks(void)
 	 */
 	do {
 		cli();
-		tocks_before = timer0_tocks;
+		tocks_before = timer2_tocks;
 		sei();
-		ticks = TCNT0;
+		ticks = TCNT2;
 		cli();
-		tocks_after = timer0_tocks;
+		tocks_after = timer2_tocks;
 		sei();
 	} while (tocks_before != tocks_after);
 	return (tocks_before << 8) | ticks;
