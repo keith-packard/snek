@@ -1,14 +1,7 @@
 #!/bin/sh
 
-SHAREDIR="@SHAREDIR@"
-
-SNEKMEGA="$SHAREDIR/snek-uno-@SNEK_VERSION@.hex"
-USBSERIAL="$SHAREDIR/Arduino-usbserial-atmega16u2-Uno-Rev3.hex"
+HEX="@SHAREDIR@/snek-uno-@SNEK_VERSION@.hex"
 PORT=/dev/ttyACM0
-ISP=usbtiny
-HEX=default
-
-action="snek"
 
 mode=arg
 
@@ -16,27 +9,17 @@ for i in "$@"; do
     case "$mode" in
 	arg)
 	    case "$i" in
-		snek|usbserial)
-		    action="$i"
-		    ;;
 		-port|--port)
 		    mode=port
-		    ;;
-		-isp|--isp)
-		    mode=isp
 		    ;;
 		-hex|--hex)
 		    mode=hex
 		    ;;
 		*)
-		      echo "Usage: $0 {-port /dev/ttyACM0} {-isp avrisp2} {-hex snek-uno.hex} {snek|usbserial}" 1>&2
+		      echo "Usage: $0 {-port $PORT} {-hex snek-uno.hex}" 1>&2
 		      exit 1
 		      ;;
 	    esac
-	    ;;
-	isp)
-	    ISP="$i"
-	    mode=arg
 	    ;;
 	port)
 	    PORT="$i"
@@ -49,28 +32,4 @@ for i in "$@"; do
     esac
 done
 
-case "$HEX" in
-    default)
-	case "$action" in
-	    snek)
-		HEX="${SNEKMEGA}"
-		;;
-	    usbserial)
-		HEX="${USBSERIAL}"
-		;;
-	esac
-	;;
-esac
-
-case "$action" in
-    snek)
-	avrdude -pATMEGA328P -carduino -P$PORT -b115200 -D -U flash:w:"${HEX}":i
-	;;
-    usbserial)
-	avrdude -pm16u2 -c$ISP -U flash:w:"${HEX}":i
-	;;
-    *)
-	echo "Usage: $0 {-port /dev/ttyACM0} {-isp avrisp2} {-hex snek-uno.hex} {snek|usbserial}" 1>&2
-	exit 1
-	;;
-esac
+avrdude -pATMEGA328P -carduino -P$PORT -b115200 -D -U flash:w:"${HEX}":i

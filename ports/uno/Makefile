@@ -33,9 +33,7 @@ SNEK_LOCAL_BUILTINS = \
 
 include $(SNEK_ROOT)/snek-install.defs
 
-USBSERIAL_HEX=Arduino-usbserial-atmega16u2-Uno-Rev3.hex
-
-SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS) -DUART_BAUD=38400
+SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS) -DUART_BAUD=115200
 
 BASE=snek-uno-$(SNEK_VERSION)
 ELF=$(BASE).elf
@@ -75,7 +73,6 @@ install: snek-uno-install $(HEX) snek-uno-install.1
 	install snek-uno-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
-	install -m 0644 $(USBSERIAL_HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-uno-install.1 $(DESTDIR)$(MANDIR)/man1
 
