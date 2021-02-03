@@ -187,9 +187,6 @@ void
 snek_uart_putch(char c)
 {
 	switch (c) {
-	case 'q' & 0x1f:
-	case 's' & 0x1f:
-		return;
 	case '\n':
 		snek_uart_putch('\r');
 		break;

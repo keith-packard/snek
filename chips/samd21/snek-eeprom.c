@@ -85,9 +85,11 @@ int
 snek_eeprom_getchar(FILE *stream)
 {
 	(void) stream;
-	uint8_t c = ao_flash_read_byte();
-	if (c != 0xff)
-		return c;
+	if (!snek_abort) {
+		uint8_t c = ao_flash_read_byte();
+		if (c != 0xff)
+			return c;
+	}
 	snek_interactive = true;
 	__iob[0]->get = save_getc;
 	return EOF;

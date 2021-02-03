@@ -131,9 +131,11 @@ int
 snek_eeprom_getchar(FILE *stream)
 {
 	(void) stream;
-	uint8_t c = eeprom_getc();
-	if (c != 0xff)
-		return c;
+	if (!snek_abort) {
+		uint8_t c = eeprom_getc();
+		if (c != 0xff)
+			return c;
+	}
 	snek_interactive = true;
 	snek_avr_file.get = snek_io_getc;
 	return EOF;

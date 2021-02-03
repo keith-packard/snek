@@ -76,7 +76,7 @@ int
 snek_eeprom_getchar(FILE *stream)
 {
 	(void) stream;
-	if (snek_eeprom_addr < EEPROM_SIZE) {
+	if (snek_eeprom_addr < EEPROM_SIZE && !snek_abort) {
 		uint8_t c = eeprom_read_byte((uint8_t *) (snek_eeprom_addr++));
 		if (c != 0xff)
 			return c;
