@@ -149,12 +149,15 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define PARSE_STACK_SIZE 128
 #endif
 
-#define lex(context) ({ (void) context; token_t __token__ = snek_lex(); snek_line = snek_lex_line; snek_parse_middle = true; __token__; })
-
-#define PARSE_ACTION_BOTTOM do {			\
-		if (snek_abort)				\
-			return parse_return_error;	\
-	} while (0)
+#define lex(context) ({						\
+			(void) context;				\
+			token_t __token__ = snek_lex();		\
+			if (snek_abort)				\
+				return parse_return_error;	\
+			snek_line = snek_lex_line;		\
+			snek_parse_middle = true;		\
+			__token__;				\
+		})
 
 static inline void binop_first(void)
 {
