@@ -1218,6 +1218,7 @@ def load_file(path):
     with open(path, "r") as myfile:
         data = myfile.read()
         snek_edit_win.set_text(data)
+        snek_edit_win.repaint()
         snek_cur_path = path
         snek_edit_win.changed = False
 
