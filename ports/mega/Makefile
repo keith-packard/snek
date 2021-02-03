@@ -23,6 +23,8 @@ SNEK_LOCAL_SRC = \
 	$(SNEK_ATMEGA_SRC) \
 	$(SNEK_ATMEGA_MATH_SRC) \
 	snek-input.c \
+	snek-i2c.c \
+	snek-atmega-i2c.c \
 	snek-mega.c
 
 SNEK_LOCAL_INC = \
@@ -34,6 +36,7 @@ SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_MATH_BUILTINS) \
 	snek-math.builtin \
 	snek-input.builtin \
+	snek-i2c.builtin \
 	snek-mega.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
