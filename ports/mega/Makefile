@@ -43,8 +43,6 @@ include $(SNEK_ROOT)/snek-install.defs
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
-USBSERIAL_HEX=Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex
-
 BASE=snek-mega-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
