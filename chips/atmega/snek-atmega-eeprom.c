@@ -22,18 +22,22 @@ snek_builtin_eeprom_write(void)
 	uint8_t c;
 	snek_offset_t	addr = 0;
 
-	for (addr = 0; addr < EEPROM_SIZE; addr++) {
+	for(;;) {
 		c = snek_uart_getch();
 		if (c == '\r')
 			c = '\n';
 		if (c == ('d' & 0x1f))
 			c = 0xff;
 		eeprom_write_byte((uint8_t *) addr, c);
+		addr++;
+		if (addr == EEPROM_SIZE)
+			break;
 		if (c == 0xff)
 			break;
-		if ((addr & 0xf) == 0xf)
+		if ((addr & 0xf) == 0)
 			snek_uart_putch('\r');
 	}
+	snek_uart_putch('\r');
 	return SNEK_NULL;
 }
 

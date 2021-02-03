@@ -18,6 +18,10 @@
 
 FILE snek_avr_file = FDEV_SETUP_STREAM(ao_usb_putc, snek_eeprom_getchar, _FDEV_SETUP_RW);
 
+#ifndef EEPROM_SIZE
+#define EEPROM_SIZE 1024
+#endif
+
 static void
 snek_intflash_wait_idle(void)
 {
@@ -46,22 +50,34 @@ snek_intflash_read(snek_offset_t pos)
 	return EEDR;
 }
 
+static int __attribute__((noinline))
+eeprom_showc(char c)
+{
+	return ao_usb_putc(c, NULL);
+}
+
 snek_poly_t
 snek_builtin_eeprom_write(void)
 {
 	uint8_t c;
 	snek_offset_t	addr = 0;
 
-	for (addr = 0; addr < 1024; addr++) {
+	for (;;) {
 		c = ao_usb_getc();
 		if (c == '\r')
 			c = '\n';
 		if (c == ('d' & 0x1f))
 			c = 0xff;
 		snek_intflash_write(addr, c);
+		addr++;
+		if (addr == EEPROM_SIZE)
+			break;
 		if (c == 0xff)
 			break;
+		if ((addr & 0xf) == 0)
+			eeprom_showc('\r');
 	}
+	eeprom_showc('\r');
 	return SNEK_NULL;
 }
 
@@ -78,16 +94,10 @@ snek_builtin_eeprom_load(void)
 }
 #endif
 
-static int __attribute__((noinline))
-eeprom_showc(char c)
-{
-	return ao_usb_putc(c, NULL);
-}
-
 static uint8_t __attribute__((noinline))
 eeprom_getc(void)
 {
-	if (snek_eeprom_addr < 1024)
+	if (snek_eeprom_addr < EEPROM_SIZE)
 		return snek_intflash_read(snek_eeprom_addr++);
 	return 0xff;
 }

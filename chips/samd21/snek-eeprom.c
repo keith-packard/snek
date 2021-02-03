@@ -21,6 +21,7 @@ snek_poly_t
 snek_builtin_eeprom_write(void)
 {
 	uint8_t c;
+	snek_offset_t addr = 0;
 
 	ao_flash_write_init();
 	for (;;) {
@@ -32,8 +33,12 @@ snek_builtin_eeprom_write(void)
 		ao_flash_write_byte(c);
 		if (c == 0xff)
 			break;
+		++addr;
+		if ((addr & 0xf) == 0)
+			putc('\r', stdout);
 	}
 	ao_flash_write_flush();
+	putc('\r', stdout);
 	return SNEK_NULL;
 }
 

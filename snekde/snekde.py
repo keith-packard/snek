@@ -152,9 +152,7 @@ def snek_list_ports():
         ports += [SnekPort(port)]
     return ports
 
-
-port_mods = {"Arduino Mega": "slow", "1A86:": "sync"}
-
+port_mods = { "239A:": "async" }
 
 class SnekDevice:
     """Link to snek device"""
@@ -179,14 +177,12 @@ class SnekDevice:
     def __init__(self, port, interface):
         self.interface = interface
         self.device = port.device
-        self.synchronous_put = False
+        self.synchronous_put = True
         rate = 115200
         for port_mod in port_mods:
             if port_mod in port.description or port_mod in port.hwid:
-                if "slow" in port_mods[port_mod]:
-                    rate = 38400
-                if "sync" in port_mods[port_mod]:
-                    self.synchronous_put = True
+                if "async" in port_mods[port_mod]:
+                    self.synchronous_put = False
         self.serial = serial.Serial(
             port=self.device,
             baudrate=rate,
@@ -1183,13 +1179,13 @@ def snekde_put_text():
     if len(snek_edit_win.text.strip()) == 0:
         ErrorWin("No program to put")
         return
-    snek_monitor.reset_acks()
     snek_device.command("eeprom.write()\n")
     text = snek_edit_win.text.encode("utf-8")
+    snek_monitor.reset_acks()
     if snek_device.synchronous_put:
         length = len(text)
         start = 0
-        ack = -2
+        ack = 0
         while start < length:
             this_time = 16
             if start + this_time > length:
@@ -1203,6 +1199,10 @@ def snekde_put_text():
                     return
             start += this_time
         snek_device.writeb(b"\004")
+        ack += 1
+        if not snek_monitor.wait_ack(ack, timeout=1):
+            ErrorWin("Put failed\n")
+            return
     else:
         snek_device.writeb(text + b"\004")
 
