@@ -49,8 +49,13 @@ static void
 snek_i2c_start(uint8_t addr)
 {
 	if (!been_here) {
+#if defined(__AVR_ATmega640__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284__)
+		/* Enable pull-ups on PD0 and PD1 */
+		PORTD |= (1 << 0) | (1 << 1);
+#else
 		/* Enable pull-ups on PC4 and PC5 */
 		PORTC |= (1 << 4) | (1 << 5);
+#endif
 
 		/* Set pre-scaler and bit rate */
 //		TWSR = 0;
