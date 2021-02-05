@@ -29,14 +29,21 @@ snek_i2c_cr(uint8_t val)
 		;
 }
 
-static uint8_t
-snek_i2c_read(void)
+uint8_t
+snek_i2c_read_ack(void)
+{
+	snek_i2c_cr(_BV(TWINT) | _BV(TWEN) | _BV(TWEA));
+	return TWDR;
+}
+
+uint8_t
+snek_i2c_read_nak(void)
 {
 	snek_i2c_cr(_BV(TWINT) | _BV(TWEN));
 	return TWDR;
 }
 
-static void
+void
 snek_i2c_write(uint8_t val)
 {
 	TWDR = val;
@@ -45,7 +52,7 @@ snek_i2c_write(uint8_t val)
 
 static bool been_here;
 
-static void
+void
 snek_i2c_start(uint8_t addr)
 {
 	if (!been_here) {
@@ -68,7 +75,7 @@ snek_i2c_start(uint8_t addr)
 	snek_i2c_write(addr);
 }
 
-static void
+void
 snek_i2c_stop(void)
 {
 	TWCR = _BV(TWINT) | _BV(TWSTO) | _BV(TWEN);
@@ -90,7 +97,7 @@ snek_i2c_get(uint8_t addr, uint8_t reg)
 	snek_i2c_start(addr | SNEK_I2C_WRITE);
 	snek_i2c_write(reg);
 	snek_i2c_start(addr | SNEK_I2C_READ);
-	val = snek_i2c_read();
+	val = snek_i2c_read_nak();
 	snek_i2c_stop();
 	return val;
 }

@@ -22,8 +22,26 @@
 #define SNEK_I2C_READ	0x01
 #define SNEK_I2C_WRITE	0x00
 
+/* High level API */
 void
 snek_i2c_put(uint8_t addr, uint8_t reg, uint8_t val);
 
 uint8_t
 snek_i2c_get(uint8_t addr, uint8_t reg);
+
+/* Low level API */
+
+void
+snek_i2c_start(uint8_t addr);
+
+uint8_t
+snek_i2c_read_ack(void);
+
+uint8_t
+snek_i2c_read_nak(void);
+
+void
+snek_i2c_write(uint8_t val);
+
+void
+snek_i2c_stop(void);
