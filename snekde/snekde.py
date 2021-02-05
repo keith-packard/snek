@@ -152,7 +152,9 @@ def snek_list_ports():
         ports += [SnekPort(port)]
     return ports
 
-port_mods = { "239A:": "async" }
+
+port_mods = {"239A:": "async"}
+
 
 class SnekDevice:
     """Link to snek device"""

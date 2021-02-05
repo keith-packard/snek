@@ -15,10 +15,12 @@
 
 import random
 
+
 def check(got, r):
     if got < 0 or r <= got:
         print("random value %d outside range %d" % (got, r))
         exit(1)
+
 
 for r in (2, 163844, 100000, 8388607):
     for t in range(100):
