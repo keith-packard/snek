@@ -90,4 +90,4 @@ install: snek-$(BOARD)-install $(HEX) snek-$(BOARD)-install.1
 	install -m 0644 snek-$(BOARD)-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f *.elf *.hex *.map snek-$(BOARD)-install
+	rm -f *.elf *.hex *.map snek-$(BOARD)-install snek-$(BOARD)-install.1
