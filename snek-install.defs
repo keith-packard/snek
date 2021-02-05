@@ -43,7 +43,6 @@ FIRMWARE ?= \
 	$(SNEK_PORTS_HIFIVE1REVB) $(SNEK_PORTS_ESP32)
 
 USBFIRMWARE ?= \
-	$(SNEK_PORTS)/mega/Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex \
 	$(SNEK_PORTS)/nano33iot/update-bootloader-nano33iot.ino \
 	$(SNEK_PORTS)/snekboard/bootloader-snekboard.bin
 
