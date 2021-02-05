@@ -79,7 +79,6 @@ install: snek-mega-install $(HEX) $(USBSERIAL_HEX) snek-mega-install.1
 	install snek-mega-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
-	install -m 0644 $(USBSERIAL_HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-mega-install.1 $(DESTDIR)$(MANDIR)/man1
 
