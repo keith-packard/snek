@@ -32,6 +32,8 @@ A3, -2, 17
 A4, -2, 18
 A5, -2, 19
 #include <snek-atmega.h>
-#define SNEK_POOL 1024
+#if !defined(SNEK_POOL)
+#define SNEK_POOL 768
+#endif
 #define SNEK_MAX_TOKEN 63
 #define EEPROM_SIZE 1024
