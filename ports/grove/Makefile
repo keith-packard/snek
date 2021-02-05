@@ -25,8 +25,9 @@ SNEK_LOCAL_SRC = \
 	snek-pow.c \
 	snek-328p.c \
 	snek-atmega-i2c.c \
-	snek-bmp280.c \
+	snek-ssd1315.c \
 	snek-lis3dh.c \
+	snek-input.c \
 	$(SNEK_ATMEGA_SRC)
 
 SNEK_LOCAL_INC = \
@@ -35,6 +36,7 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
 	snek-328p.builtin \
+	snek-draw.builtin \
 	snek-grove.builtin
 
 include $(SNEK_ROOT)/snek-install.defs

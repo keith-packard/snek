@@ -13,6 +13,7 @@
 #
 A6, -2, 20
 accel, 0
-baro, 0
+float, 1
+int, 1
 tone, 1
 #define SNEK_TONE
