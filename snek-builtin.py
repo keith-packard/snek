@@ -131,7 +131,7 @@ def load_builtins(filename):
             pass
         elif line.startswith("#ifdef"):
             current_condition = line.split(" ")[1].strip()
-        elif line.startswith("#endif"):
+        elif line.startswith("#endif") and current_condition:
             current_condition = None
         elif line[0] == "#":
             if len(line) > 1 and line[1] != " ":
