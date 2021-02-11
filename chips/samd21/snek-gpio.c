@@ -287,9 +287,17 @@ ao_snek_port_init(void)
 #endif
 }
 
+static bool
+invert_pin(uint8_t p)
+{
+	return ao_snek_pin[p].flags & SNEK_PIN_INVERT;
+}
+
 static void
 ao_snek_port_set_pwm(uint8_t p, uint16_t pwm)
 {
+	if (invert_pin(p))
+		pwm = SNEK_PWM_MAX - pwm;
 	ao_snek_set_pwm(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, ao_snek_pin[p].timer, ao_snek_pin[p].channel, pwm);
 }
 
@@ -314,6 +322,8 @@ ao_snek_port_clr_dac(uint8_t p)
 static void
 ao_snek_port_set(uint8_t p, uint16_t value)
 {
+	if (invert_pin(p))
+		value = !value;
 	ao_gpio_set(ao_snek_pin[p].gpio, ao_snek_pin[p].pin, !!value);
 }
 
