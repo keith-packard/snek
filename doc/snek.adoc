@@ -15,6 +15,7 @@ Keith Packard <keithp@keithp.com>
 :pdf-stylesdir: .
 :pdf-fontsdir: fonts
 :source-highlighter: coderay
+:stem: latexmath
 :media: prepress
 
 ifndef::backend-pdf[]
