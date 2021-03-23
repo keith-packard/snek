@@ -24,6 +24,51 @@ too small to run [MicroPython](https://micropython.org/).
    and Windows are available in the
    [Snek Dist directory](http://sneklang.org/dist)
 
+## Supported Hardware
+
+Snek supports analog and digital I/O operations on all of these
+boards. Snek also has some support for built-in devices on boards as
+described below.
+
+ * [Adafruit Crickit](https://www.adafruit.com/product/3093). This is
+   sold as an expansion board for other Adafruit products, but Snek is
+   able to run on the local processor. Snek supports the motor
+   controllers and Neopixel.
+
+ * [Arduino Duemilanove](https://www.arduino.cc/en/Main/arduinoBoardDuemilanove). 
+   
+ * [Adafruit Feather M0 Express](https://www.adafruit.com/product/3403).
+   Snek supports digital and analog input and output with this device.
+
+ * [Seeed Grove Beginner Kit for Arduino](https://www.seeedstudio.com/Grove-Beginner-Kit-for-Arduino-p-4549.html).
+   Snek supports the LED, Buzzer, Light, Sound, OLED Display, Button, Rotary
+   Potentiometer and 3-axis Accelerometer.
+
+ * [Adafruit ItsyBitsy 32u4 - 5V](https://www.adafruit.com/product/3677),
+   [Adafruit ItsyBitsy 32u4 - 3V](https://www.adafruit.com/product/3675).
+
+ * [Adafruit ItsyBitsy M0 Express](https://www.adafruit.com/product/3727)
+ * [Arduino Mega 2560](https://store.arduino.cc/usa/mega-2560-r3)
+ * [Adafruit METRO M0 Express](https://www.adafruit.com/product/3505)
+ * [Arduino Nano 33 IoT](https://store.arduino.cc/usa/nano-33-iot)
+ * [Crowd Supply 1284 Narrow](https://www.crowdsupply.com/pandauino/narrow)
+
+ * [Circuit Playground Express](https://www.adafruit.com/product/3333).
+   Snek supports the NeoPixels, sound, light sensor and temperature
+   sensor. It does not support the accelerometer yet.
+
+ * [Snekboard](https://www.crowdsupply.com/keith-packard/snekboard).
+   This board was designed to run Snek and control Lego Power Function motors.
+
+ * [Crowd Supply µduino](https://www.crowdsupply.com/uduino/uduino).
+
+ * [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3)
+
+ * [Seeeduino XIAO](https://www.seeedstudio.com/Seeeduino-XIAO-Arduino-Microcontroller-SAMD21-Cortex-M0+-p-4426.html).
+
+ * [LEGO® MINDSTORMS® EV3](https://www.lego.com/en-us/product/lego-mindstorms-ev3-31313).
+   Snek supports EV3 motors and sensors.
+
 ## To Do list
 
 I think the basic Snek language is pretty complete at this point, but
