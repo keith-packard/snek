@@ -16,7 +16,7 @@ start		: command @{ snek_parse_middle = false; }@ start
 		;
 command		: @{ snek_print_val = snek_interactive; }@ stat
 			@{
-				snek_code_t *code = snek_code_finish();
+				snek_code_t *code = snek_code_finish(0);
 				SNEK_CODE_HOOK_START
 				snek_poly_t p = snek_exec(code);
 				SNEK_CODE_HOOK_STOP
@@ -42,7 +42,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 					snek_code_delete_prev();
 				else
 					snek_code_add_op(snek_op_null);
-				snek_code_t	*code = snek_code_finish();
+				snek_code_t	*code = snek_code_finish(0);
 				if (!code)
 					break;
 				snek_func_t	*func = snek_func_alloc(code);
@@ -298,6 +298,25 @@ suite		: simple-stat
 			}@
 		;
 expr		: expr-and expr-or-p
+		| LAMBDA
+			@{
+				value_push_offset(snek_compile_size);
+				snek_parse_nformal = 0;
+				snek_parse_nnamed = 0;
+			}@
+		  opt-formals
+		  COLON
+		  expr
+			@{
+				snek_offset_t	start = value_pop().offset;
+				snek_code_t	*code = snek_code_finish(start);
+				if (!code)
+					break;
+				snek_func_t	*func = snek_func_alloc(code);
+				if (!func)
+					break;
+				snek_code_add_op_offset(snek_op_func, snek_pool_offset(func));
+			}@
 		;
 expr-or-p	: OR
 			@{

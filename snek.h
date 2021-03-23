@@ -136,6 +136,7 @@ typedef enum {
 #ifndef SNEK_NO_DICT
 	snek_op_dict,
 #endif
+	snek_op_func,
 	snek_op_id,
 
 	snek_op_not,
@@ -488,10 +489,10 @@ snek_code_patch_branch(snek_offset_t branch, snek_offset_t target)
 }
 
 void
-snek_code_reset(void);
+snek_code_reset(snek_offset_t size);
 
 snek_code_t *
-snek_code_finish(void);
+snek_code_finish(snek_offset_t start);
 
 snek_offset_t
 snek_code_line(snek_code_t *code);

@@ -45,6 +45,7 @@ snek_op_operand_size(snek_op_t op)
 	case snek_op_string:
 	case snek_op_list:
 	case snek_op_tuple:
+	case snek_op_func:
 		return sizeof (snek_offset_t);
 	case snek_op_id:
 	case snek_op_global:
@@ -265,31 +266,34 @@ snek_code_patch_forward(snek_offset_t start, snek_offset_t stop, snek_forward_t 
  * Reset compiler state to mark the compiler buffer as empty
  */
 void
-snek_code_reset(void)
+snek_code_reset(snek_offset_t size)
 {
-	snek_compile_size = 0;
-	compile_alloc = 0;
-	snek_compile = NULL;
+	snek_compile_size = size;
+	if (!size) {
+		compile_alloc = 0;
+		snek_compile = NULL;
+	}
 }
 
 /*
  * Construct a code object from the current bytecode buffer
  */
 snek_code_t *
-snek_code_finish(void)
+snek_code_finish(snek_offset_t start)
 {
-	if (snek_compile_size == 0)
+	snek_offset_t size = snek_compile_size - start;
+	if (size == 0)
 		return NULL;
-	snek_code_t *code = snek_alloc(sizeof (snek_code_t) + snek_compile_size);
+	snek_code_t *code = snek_alloc(sizeof (snek_code_t) + size);
 
 	if (code) {
-		memcpy(&code->code, snek_compile, snek_compile_size);
-		code->size = snek_compile_size;
+		memcpy(&code->code, snek_compile + start, size);
+		code->size = size;
 #ifdef DEBUG_COMPILE
 		snek_code_dump(code);
 #endif
 	}
-	snek_code_reset();
+	snek_code_reset(start);
 	return code;
 }
 
@@ -335,6 +339,10 @@ code_mark(uint8_t *code, snek_offset_t size)
 		case snek_op_string:
 			memcpy(&o, &code[ip], sizeof (snek_offset_t));
 			snek_mark_offset(snek_mems(snek_string), o);
+			break;
+		case snek_op_func:
+			memcpy(&o, &code[ip], sizeof (snek_offset_t));
+			snek_mark_offset(snek_mems(snek_func), o);
 			break;
 		default:
 			break;
@@ -446,6 +454,7 @@ static const char * const snek_op_names[] = {
 	[snek_op_string] = "string",
 	[snek_op_list] = "list",
 	[snek_op_tuple] = "tuple",
+	[snek_op_func] = "func",
 	[snek_op_id] = "id",
 
 
@@ -527,6 +536,10 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 		break;
 	case snek_op_list:
 	case snek_op_tuple:
+		memcpy(&o, &code->code[ip], sizeof(snek_offset_t));
+		dbg("%u\n", o);
+		break;
+	case snek_op_func:
 		memcpy(&o, &code->code[ip], sizeof(snek_offset_t));
 		dbg("%u\n", o);
 		break;

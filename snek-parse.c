@@ -228,7 +228,7 @@ snek_parse(void)
 		for_depth = 0;
 
 		/* Reset codegen state */
-		snek_code_reset();
+		snek_code_reset(0);
 
 		/* Reset error state */
 		snek_abort = false;

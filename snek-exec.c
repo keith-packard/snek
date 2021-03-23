@@ -844,6 +844,11 @@ snek_exec(snek_code_t *code_in)
 				ip += sizeof (snek_offset_t);
 				snek_a = snek_list_imm(o, op - snek_op_list);
 				break;
+			case snek_op_func:
+				memcpy(&o, &snek_code->code[ip], sizeof(snek_offset_t));
+				ip += sizeof (snek_offset_t);
+				snek_a = snek_func_to_poly(snek_pool_addr(o));
+				break;
 			case snek_op_id:
 				memcpy(&id, &snek_code->code[ip], sizeof(snek_id_t));
 				ip += sizeof (snek_id_t);
