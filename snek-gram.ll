@@ -460,6 +460,13 @@ opt-slice	:
 				value_push_offset(1);
 			}@
 		  slice
+		| tuple-p
+			@{
+				snek_code_add_op_offset(snek_op_tuple, value_pop().offset);
+			}@
+			@{
+				value_push_offset(0);
+			}@
 		|
 			@{
 				value_push_offset(0);
@@ -477,8 +484,10 @@ slice-p		: COLON opt-expr
 			}@
 		;
 opt-expr	:	@{
-				value_push_offset(1);
 				snek_code_set_push(snek_code_prev_insn());
+			}@
+			@{
+				value_push_offset(1);
 			}@
 		  expr
 		|
@@ -544,7 +553,14 @@ opt-tuple	: expr opt-tuple-p
 				value_push_offset(0);
 			}@
 		;
-opt-tuple-p	: COMMA
+opt-tuple-p	: tuple-p
+		|
+			@{
+				/* Not a tuple */
+				value_push_offset(-1);
+			}@
+		;
+tuple-p		: COMMA
 			@{
 				snek_code_set_push(snek_code_prev_insn());
 			}@
@@ -555,11 +571,6 @@ opt-tuple-p	: COMMA
 					return parse_return_syntax;
 				/* A tuple with num + 1 elements (one for the first expr) */
 				value_push_offset(num + 1);
-			}@
-		|
-			@{
-				/* Not a tuple */
-				value_push_offset(-1);
 			}@
 		;
 opt-actuals	: actuals
