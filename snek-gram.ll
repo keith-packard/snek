@@ -363,19 +363,19 @@ cmpop		: CMPOP
 		| IN
 		| IS
 		;
-expr-lor	: expr-land expr-lor-p
+expr-lor	: expr-lxor expr-lor-p
 		;
-expr-lor-p	: LOR @ binop_first(); @ expr-land @ binop_second(); @ expr-lor-p
+expr-lor-p	: LOR @ binop_first(); @ expr-lxor @ binop_second(); @ expr-lor-p
 		|
 		;
-expr-land	: expr-lxor expr-land-p
+expr-lxor	: expr-land expr-lxor-p
 		;
-expr-land-p	: LAND @ binop_first(); @ expr-lxor @ binop_second(); @ expr-land-p
+expr-lxor-p	: LXOR @ binop_first(); @ expr-land @ binop_second(); @ expr-lxor-p
 		|
 		;
-expr-lxor	: expr-shift expr-lxor-p
+expr-land	: expr-shift expr-land-p
 		;
-expr-lxor-p	: LXOR @ binop_first(); @ expr-shift @ binop_second(); @ expr-lxor-p
+expr-land-p	: LAND @ binop_first(); @ expr-shift @ binop_second(); @ expr-land-p
 		|
 		;
 expr-shift	: expr-add expr-shift-p
