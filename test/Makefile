@@ -58,7 +58,8 @@ SUCCESS_TESTS = \
 	pass-get.py \
 	pass-interpolate-str.py \
 	pass-trailing-comma.py \
-	pass-chain-op.py
+	pass-chain-op.py \
+	pass-precedence.py
 
 SYNTAX_TESTS = \
 	fail-syntax-lex-bang.py \
