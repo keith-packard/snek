@@ -60,17 +60,21 @@ snek_getc_interactive(void)
 	return c;
 }
 
+static bool snek_sigint;
+
 int
 snek_getc(FILE *input)
 {
 	int c = EOF;
-	if (!snek_abort) {
+	if (!snek_abort)
+		snek_sigint = false;
+	if (!snek_sigint) {
 		if (snek_interactive)
 			c = snek_getc_interactive();
 		else
 			c = getc(input);
 	}
-	if (snek_abort)
+	if (snek_sigint)
 		return EOF;
 	return c;
 }
@@ -80,6 +84,7 @@ sigint(int sig)
 {
 	(void) sig;
 	snek_abort = true;
+	snek_sigint = true;
 	signal(SIGINT, sigint);
 }
 
