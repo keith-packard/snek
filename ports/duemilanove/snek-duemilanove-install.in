@@ -6,7 +6,7 @@ SNEKDUINO="$SHAREDIR/snek-duemilanove-@SNEK_VERSION@.hex"
 
 action="default"
 
-PORT=""
+PORT="@PORT@"
 
 mode=arg
 
@@ -31,11 +31,9 @@ for i in "$@"; do
 	    mode=arg
 	    ;;
 	port)
-	    PORT="-P $i"
+	    PORT="$i"
 	    mode=arg
     esac
 done
 
-[ "$ISPPORT" ] || ISPPORT="-P /dev/ttyUSB0"
-
-avrdude $ISPPORT -c arduino -b 115200 -p ATMEGA328P -D -U flash:w:"${SNEKDUINO}"
+avrdude -P $PORT -c arduino -b 115200 -p ATMEGA328P -D -U flash:w:"${SNEKDUINO}"
