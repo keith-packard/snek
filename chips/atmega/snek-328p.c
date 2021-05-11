@@ -91,10 +91,6 @@ port_init(void)
 	TCCR2A = ((1 << WGM20) |
 		  (1 << WGM21));
 
-	TCCR2B = ((0 << CS22) |
-		  (1 << CS21) |
-		  (1 << CS00));
-
 	/* enable interrupt */
 	TIMSK2 = (1 << TOIE2);
 
