@@ -62,7 +62,7 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	return SNEK_NULL;
 }
 
-static snek_soffset_t	snek_eeprom_addr;
+static snek_offset_t	snek_eeprom_addr;
 
 snek_poly_t
 snek_builtin_eeprom_erase(void)
