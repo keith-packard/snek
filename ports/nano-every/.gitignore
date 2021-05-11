@@ -1,0 +1,6 @@
+*.elf
+*.hex
+*.map
+snek-nano-every-install
+snek-nano-every-install.1
+snek-nano-every-reset-port

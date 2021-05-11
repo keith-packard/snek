@@ -1,0 +1,53 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+SNEKDUINO="$SHAREDIR/snek-@BOARD@-@SNEK_VERSION@.hex"
+
+AVR_ROOT=@AVR_ROOT@
+AVRDUDE="$AVR_ROOT/bin/avrdude -C$AVR_ROOT/etc/avrdude.conf -v"
+
+RESET="$SHAREDIR/snek-@BOARD@-reset-port"
+action="default"
+
+PORT="@PORT@"
+
+mode=arg
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		-port|--port)
+		    mode=port
+		    ;;
+		-reset|--reset)
+		    mode=reset
+		    ;;
+		*)
+		      echo "Usage: $0 {-hex snek-nano-every.hex} {-port /dev/ttyACM0}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	hex)
+	    SNEKDUINO="$i"
+	    mode=arg
+	    ;;
+	port)
+	    PORT="$i"
+	    mode=arg
+	    ;;
+	reset)
+	    RESET="$i"
+	    mode=arg
+    esac
+done
+
+echo "$RESET" "$PORT"
+"$RESET" "$PORT"
+echo $AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 -e -D -U flash:w:"${SNEKDUINO}" -Ufuse2:w:0x02:m -Ufuse5:w:0xC9:m -Ufuse8:w:0x00:m
+$AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 -e -D -U flash:w:"${SNEKDUINO}" -Ufuse2:w:0x02:m -Ufuse5:w:0xC9:m -Ufuse8:w:0x00:m
