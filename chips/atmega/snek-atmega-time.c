@@ -14,8 +14,22 @@
 
 #include "snek.h"
 
+#if defined(__AVR_ATmega4809__)
+#define timer_vect 	TCA0_OVF_vect
+#define timer_cnt 	TCA0_SINGLE_CNT
+#define clear_irq()	(TCA0_SINGLE_INTFLAGS = 1)
+#define CLOCK_SHIFT	6
+typedef uint16_t TICK_TYPE;
+#else
+#define timer_vect 	TIMER2_OVF_vect
+#define timer_cnt 	TCNT2
+#define clear_irq()
+#define CLOCK_SHIFT	0
+typedef uint8_t TICK_TYPE;
+#endif
+
 /*
- * TIMER0 is running at 1/64 F_CPU, and the overflow hits ever 256
+ * Timer is running at 1/64 F_CPU, and the overflow hits ever 256
  * clocks. We can measure down to the timer resolution by reading
  * the 'tocks' value (number of overflows) and adding in the current
  * timer count
@@ -24,11 +38,12 @@
 #define TICKS_PER_SECOND	(F_CPU / 64.0f)
 #define SECONDS_PER_TICK	(64.0f / F_CPU)
 
-volatile uint32_t timer2_tocks = 0;
+volatile uint32_t timer_tocks = 0;
 
-ISR(TIMER2_OVF_vect)
+ISR(timer_vect)
 {
-	timer2_tocks++;
+	clear_irq();
+	timer_tocks++;
 }
 
 
@@ -36,21 +51,21 @@ static uint32_t
 snek_ticks(void)
 {
 	uint32_t	tocks_before, tocks_after;
-	uint8_t		ticks;
+	TICK_TYPE	ticks;
 
 	/* Read the 'tocks' value twice to make sure
 	 * we don't hit right across an interrupt
 	 */
 	do {
 		cli();
-		tocks_before = timer2_tocks;
+		tocks_before = timer_tocks;
 		sei();
-		ticks = TCNT2;
+		ticks = timer_cnt;
 		cli();
-		tocks_after = timer2_tocks;
+		tocks_after = timer_tocks;
 		sei();
 	} while (tocks_before != tocks_after);
-	return (tocks_before << 8) | ticks;
+	return (tocks_before << (8 * sizeof(ticks) - CLOCK_SHIFT)) | (ticks >> CLOCK_SHIFT);
 }
 
 static inline uint32_t
