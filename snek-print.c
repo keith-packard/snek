@@ -114,7 +114,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 		buf->put_s("None", closure);
 	else switch (atype) {
 	case snek_float:
-		sprintf_const(tmp, "%.9g", printf_float(snek_poly_to_float(a)));
+		strfromf(tmp, sizeof(tmp), "%.9g", snek_poly_to_float(a));
 		buf->put_s(tmp, closure);
 		break;
 	case snek_string:
