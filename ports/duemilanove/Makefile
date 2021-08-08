@@ -58,7 +58,7 @@ LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,-Map=$(MAP)
 
-all: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1
+all:: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1
 
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $^ $@
