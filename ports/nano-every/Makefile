@@ -59,9 +59,6 @@ OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 CFLAGS=$(OPT) -DF_CPU=20000000UL -mmcu=atmega4809 -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0xc000 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x1780 \
-	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x100 \
 	-Wl,-Map=$(MAP)
 
 all: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1 snek-$(BOARD)-reset-port

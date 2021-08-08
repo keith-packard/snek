@@ -25,6 +25,7 @@ D10, -2, 10
 D11, -2, 11
 D12, -2, 12
 D13, -2, 13
+LED, -2, 13
 A0, -2, 14
 A1, -2, 15
 A2, -2, 16
@@ -33,7 +34,6 @@ A4, -2, 18
 A5, -2, 19
 #include <snek-atmega.h>
 #if !defined(SNEK_POOL)
-#define SNEK_POOL 768
+#define SNEK_POOL 940
 #endif
 #define SNEK_MAX_TOKEN 63
-#define EEPROM_SIZE 1024

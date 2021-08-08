@@ -48,9 +48,6 @@ CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega1284 -I. -I$(SNEK_LOCAL_VPATH) -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x1fc00 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x3e00 \
-	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x1000 \
 	-Wl,-Map=$(MAP)
 
 PORT=/dev/ttyUSB0

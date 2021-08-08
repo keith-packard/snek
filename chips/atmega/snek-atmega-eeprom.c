@@ -28,7 +28,7 @@ snek_builtin_eeprom_write(void)
 			c = 0xff;
 		eeprom_write_byte((uint8_t *) addr, c);
 		addr++;
-		if (addr == EEPROM_SIZE)
+		if (addr == (E2END + 1))
 			break;
 		if (c == 0xff)
 			break;
@@ -46,7 +46,7 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	(void) args;
 	if (nposition)
 		putc('b' & 0x1f, stdout);
-	for (addr = 0; addr < EEPROM_SIZE; addr++) {
+	for (addr = 0; addr <= E2END; addr++) {
 		c = eeprom_read_byte((uint8_t *) addr);
 		if (c == 0xff)
 			break;
@@ -71,7 +71,7 @@ int
 snek_eeprom_getchar(FILE *stream)
 {
 	(void) stream;
-	if (snek_eeprom_addr < EEPROM_SIZE && !snek_abort) {
+	if (snek_eeprom_addr <= E2END && !snek_abort) {
 		uint8_t c = eeprom_read_byte((uint8_t *) (snek_eeprom_addr++));
 		if (c != 0xff)
 			return c;

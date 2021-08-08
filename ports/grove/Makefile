@@ -35,9 +35,9 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
+	snek-grove.builtin \
 	snek-328p.builtin \
-	snek-draw.builtin \
-	snek-grove.builtin
+	snek-draw.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -54,10 +54,6 @@ OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x7e00 \
-	-Wl,--defsym -Wl,__DATA_REGION_ORIGIN__=0x800100 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x780 \
-	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-Map=$(MAP)
 
 all: $(HEX) snek-grove-install

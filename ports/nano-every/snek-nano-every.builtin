@@ -38,6 +38,3 @@ A7, -2, 21
 #define SNEK_POOL 4096
 #endif
 #define SNEK_MAX_TOKEN 63
-#ifndef EEPROM_SIZE
-#define EEPROM_SIZE 256
-#endif

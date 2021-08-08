@@ -58,9 +58,6 @@ LDSCRIPT=$(SNEK_AVR)/snek-avr51.x
 
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x880 \
-	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-T$(LDSCRIPT) \
 	-Wl,-Map=$(MAP)
 

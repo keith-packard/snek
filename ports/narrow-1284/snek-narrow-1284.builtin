@@ -19,6 +19,7 @@ D4, -2, 4
 D5, -2, 5
 D6, -2, 6
 D7, -2, 7
+LED, -2, 7
 D8, -2, 8
 D9, -2, 9
 D10, -2, 10
@@ -47,5 +48,4 @@ A7, -2, 61
 #include <snek-atmega-math.h>
 #define SNEK_POOL 12288
 #define SNEK_MAX_TOKEN 63
-#define EEPROM_SIZE 4096
 #define UART_RINGSIZE 64

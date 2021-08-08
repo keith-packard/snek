@@ -18,10 +18,6 @@
 
 FILE snek_avr_file = FDEV_SETUP_STREAM(ao_usb_putc, snek_eeprom_getchar, _FDEV_SETUP_RW);
 
-#ifndef EEPROM_SIZE
-#define EEPROM_SIZE 1024
-#endif
-
 static void
 snek_intflash_wait_idle(void)
 {
@@ -68,7 +64,7 @@ snek_builtin_eeprom_write(void)
 			c = 0xff;
 		snek_intflash_write(addr, c);
 		addr++;
-		if (addr == EEPROM_SIZE)
+		if (addr == E2END + 1)
 			break;
 		if (c == 0xff)
 			break;
@@ -92,7 +88,7 @@ snek_builtin_eeprom_load(void)
 static uint8_t __attribute__((noinline))
 eeprom_getc(void)
 {
-	if (snek_eeprom_addr < EEPROM_SIZE)
+	if (snek_eeprom_addr <= E2END)
 		return snek_intflash_read(snek_eeprom_addr++);
 	return 0xff;
 }
