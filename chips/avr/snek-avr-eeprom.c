@@ -63,9 +63,7 @@ snek_builtin_eeprom_write(void)
 	snek_offset_t	addr = 0;
 
 	for (;;) {
-		c = ao_usb_getc();
-		if (c == '\r')
-			c = '\n';
+		c = snek_raw_getc(stdin);
 		if (c == ('d' & 0x1f))
 			c = 0xff;
 		snek_intflash_write(addr, c);
@@ -74,10 +72,7 @@ snek_builtin_eeprom_write(void)
 			break;
 		if (c == 0xff)
 			break;
-		if ((addr & 0xf) == 0)
-			eeprom_showc('\r');
 	}
-	eeprom_showc('\r');
 	return SNEK_NULL;
 }
 

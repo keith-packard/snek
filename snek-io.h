@@ -17,7 +17,39 @@
 
 #include <stdio.h>
 
+#ifndef SNEK_IO_PUTS
+#define SNEK_IO_PUTS(s)	fputs(s, stdout)
+#endif
+#ifndef SNEK_IO_PUTC
+#define SNEK_IO_PUTC(c) putchar(c)
+#endif
+#ifndef SNEK_IO_WAITING
+#define SNEK_IO_WAITING(s) false
+#endif
+#ifndef SNEK_IO_LINEBUF
+#define SNEK_IO_LINEBUF	132
+#endif
+#ifndef SNEK_IO_GETC
+#define SNEK_IO_GETC(s) getchar()
+#endif
+
 int
 snek_io_getc(FILE *stream);
+
+static inline char
+snek_raw_getc(FILE *stream)
+{
+	char c;
+	if (!SNEK_IO_WAITING(stream))
+		fflush(stdout);
+	c = SNEK_IO_GETC(stream);
+	if (c == ('e' & 0x1f)) {
+		SNEK_IO_PUTC('f' & 0x1f);
+		return snek_raw_getc(stream);
+	}
+	if (c == '\r')
+		c = '\n';
+	return c;
+}
 
 #endif /* _SNEK_IO_H_ */

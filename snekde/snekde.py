@@ -17,6 +17,7 @@ import argparse
 import curses
 import serial
 import serial.tools.list_ports
+import termios
 import sys
 import threading
 import time
@@ -27,7 +28,6 @@ from pathlib import Path, PurePath
 stdscr = 0
 
 snek_lock = threading.Lock()
-snek_lock.acquire()
 
 snek_current_window = 0
 snek_edit_win = 0
@@ -44,13 +44,17 @@ snek_dialog_waiting = False
 
 snek_cur_path = None
 
-# snek_debug_file = open('log', 'w')
-#
-# def snek_debug(message):
-#     global snek_debug_file
-#     snek_debug_file.write(message + '\n')
-#     snek_debug_file.flush()
-#
+snek_debug_file = False
+
+
+def snek_debug(message):
+    global snek_debug_file
+    if not snek_debug_file:
+        snek_debug_file = open("log", "w")
+    snek_debug_file.write(message + "\n")
+    snek_debug_file.flush()
+
+
 # snek_debug("Starting snekde")
 
 #
@@ -63,11 +67,13 @@ def my_getch(edit_win):
     global snek_lock, snek_current_window, snek_dialog_waiting
     while True:
         edit_win.set_cursor()
-        snek_lock.release()
-        c = edit_win.window.getch()
+        try:
+            snek_lock.release()
+            c = edit_win.window.getch()
+        finally:
+            snek_lock.acquire()
         if c == ord("\r"):
             c = ord("\n")
-        snek_lock.acquire()
         if not snek_dialog_waiting:
             break
         if c == ord("\n"):
@@ -179,7 +185,13 @@ class SnekDevice:
     def __init__(self, port, interface):
         self.interface = interface
         self.device = port.device
+
+        # For devices without flow control, use snek's ENQ/ACK
+        # mechanism to avoid overrunning the device input buffer
+
         self.synchronous_put = True
+        self.synchronous_limit = 16
+
         rate = 115200
         for port_mod in port_mods:
             if port_mod in port.description or port_mod in port.hwid:
@@ -191,7 +203,7 @@ class SnekDevice:
             bytesize=serial.EIGHTBITS,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
-            xonxoff=True,
+            xonxoff=False,
             rtscts=False,
             dsrdtr=False,
         )
@@ -238,7 +250,6 @@ class SnekDevice:
             self.serial.write_timeout = 1
             self.serial.write(b"\x0f")
             self.serial.reset_output_buffer()
-            self.serial.xonxoff = False
             self.serial.close()
         except serial.SerialException:
             pass
@@ -257,41 +268,66 @@ class SnekDevice:
             self.receiver_thread = False
 
     def writer(self):
+        global snek_lock
+
         """Copy queued data to the serial port."""
         try:
-            while self.alive:
+            sent = 0
+            while True:
                 send_data = b""
                 interrupt = False
-                with self.interface.cv:
+                # snek_debug('writer locking')
+                with snek_lock:
+                    # snek_debug('writer waiting')
+
+                    # Wait until there's something to do
+
                     while (
                         not self.write_queue
                         and not self.interrupt_pending
                         and self.alive
                     ):
                         self.interface.cv.wait()
-                    if not self.alive:
-                        return
+                    # snek_debug('writer awake')
                     send_data = self.write_queue
                     interrupt = self.interrupt_pending
                     self.write_queue = False
                     self.interrupt_pending = False
+                if not self.alive:
+                    break
                 if interrupt:
+                    # snek_debug('interrupt')
                     self.serial.reset_output_buffer()
-                    self.serial.xonxoff = False
                     self.serial.write(b"\x0f\x03\x0e")
-                    self.serial.xonxoff = True
-                if send_data:
-                    self.serial.write(send_data)
+                if self.synchronous_put:
+                    while send_data:
+                        amt = self.synchronous_limit - sent
+                        if amt > len(send_data):
+                            amt = len(send_data)
+                        this_time = send_data[:amt]
+                        send_data = send_data[amt:]
+                        self.serial.write(this_time)
+                        sent += amt
+                        if sent >= self.synchronous_limit:
+                            # snek_debug('sync %d limit %d' % (sent, self.synchronous_limit))
+                            snek_monitor.sync()
+                            sent = 0
+                else:
+                    if send_data:
+                        self.serial.write(send_data)
         except (serial.SerialException, termios.error):
             self.interface.failed(self.device)
         finally:
             self.transmitter_thread = False
 
     def interrupt(self):
+        # snek_debug('pend interrupt waited')
         self.interrupt_pending = True
         self.interface.cv.notify()
+        # snek_debug('pended')
 
     def writeb(self, data):
+        # snek_debug('writeb waited')
         if self.write_queue:
             self.write_queue += data
         else:
@@ -1183,30 +1219,8 @@ def snekde_put_text():
         return
     snek_device.command("eeprom.write()\n")
     text = snek_edit_win.text.encode("utf-8")
-    snek_monitor.reset_acks()
-    if snek_device.synchronous_put:
-        length = len(text)
-        start = 0
-        ack = 0
-        while start < length:
-            this_time = 16
-            if start + this_time > length:
-                this_time = length - start
-            this_text = text[start : start + this_time]
-            snek_device.writeb(this_text)
-            if this_time == 16:
-                ack += 1
-                if not snek_monitor.wait_ack(ack, timeout=1):
-                    ErrorWin("Put failed\n")
-                    return
-            start += this_time
-        snek_device.writeb(b"\004")
-        ack += 1
-        if not snek_monitor.wait_ack(ack, timeout=1):
-            ErrorWin("Put failed\n")
-            return
-    else:
-        snek_device.writeb(text + b"\004")
+    snek_device.writeb(text)
+    snek_device.writeb(b"\004")
 
     snek_device.command("reset()\n", intr="")
     snek_edit_win.changed = False
@@ -1271,9 +1285,10 @@ def snekde_save_file():
 
 
 def run():
-    global snek_current_window, snek_edit_win, snek_repl_win, snek_device
+    global snek_current_window, snek_edit_win, snek_repl_win, snek_device, snek_lock
     snek_current_window = snek_edit_win
     prev_exit = False
+    snek_lock.acquire()
     while True:
         ch = snek_current_window.getch()
         if ch == curses.ascii.ESC:
@@ -1352,19 +1367,21 @@ class SnekMonitor:
         global snek_lock
         self.cv = threading.Condition(snek_lock)
         self.ack = threading.Condition(snek_lock)
-        self.acks = 0
         self.getting_text = False
 
+    # Synchronize with the remote device by sending ENQ and
+    # waiting until an ACK is received
+
+    def sync(self):
+        global snek_lock
+        # snek_debug('sync locking')
+        with snek_lock:
+            # snek_debug('sync locked')
+            snek_device.serial.write(b"\x05")
+            self.ack.wait(1)
+            # snek_debug('sync done')
+
     # Reading text to snek_edit_win instead of snek_repl_win
-
-    def reset_acks(self):
-        self.acks = 0
-
-    def wait_ack(self, ack, timeout=None):
-        while self.acks < ack:
-            if not self.ack.wait(timeout):
-                return False
-        return True
 
     def add_to(self, window, data):
         global snek_current_window, snek_repl_win
@@ -1376,28 +1393,45 @@ class SnekMonitor:
         if snek_current_window:
             snek_current_window.set_cursor()
 
+    # Receive serial data
+
     def receive(self, data):
         global snek_edit_win, snek_repl_win, snek_lock
         data_edit = b""
         data_repl = b""
         for c in data:
             b = bytes((c,))
-            if b == b"\02":
+
+            # STX - start receiving eeprom contents
+            if b == b"\x02":
+                # snek_debug('getting edit')
                 self.getting_text = True
-            elif b == b"\03":
+
+            # ETX - stop receiving eeprom contents
+            elif b == b"\x03":
+                # snek_debug('getting repl')
                 self.getting_text = False
-            elif b == b"\00":
-                continue
-            elif b == b"\r":
+
+            # ACK - device has seen ENQ
+            elif b == b"\x06":
+                # snek_debug('receive ACK')
                 with snek_lock:
-                    self.acks += 1
+                    # snek_debug('notify ack')
                     self.ack.notify_all()
+
+            # ignore all control chars other than newline
+            elif b < b"\x20" and b != b"\n":
                 continue
+
+            # Otherwise, handle text
             else:
                 if self.getting_text:
                     data_edit += b
                 else:
                     data_repl += b
+
+        # Append data to appropriate buffer
+
         with snek_lock:
             if data_edit:
                 self.add_to(
@@ -1408,8 +1442,13 @@ class SnekMonitor:
                     snek_repl_win, str(data_repl, encoding="utf-8", errors="ignore")
                 )
 
+    # Device has failed in reader or writer thread
+
     def failed(self, device):
         global snek_device, snek_lock
+
+        # Need to acquire lock for other threads
+
         with snek_lock:
             if snek_device:
                 snek_device.close()

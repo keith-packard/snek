@@ -16,6 +16,7 @@
 #include <ao-snek.h>
 #include <ao-flash.h>
 #include <snek.h>
+#include <snek-io.h>
 
 snek_poly_t
 snek_builtin_eeprom_write(void)
@@ -25,20 +26,15 @@ snek_builtin_eeprom_write(void)
 
 	ao_flash_write_init();
 	for (;;) {
-		c = SNEK_IO_GETC(stdin);
-		if (c == '\r')
-			c = '\n';
+		c = snek_raw_getc(stdin);
 		if (c == ('d' & 0x1f))
 			c = 0xff;
 		ao_flash_write_byte(c);
 		if (c == 0xff)
 			break;
 		++addr;
-		if ((addr & 0xf) == 0)
-			putc('\r', stdout);
 	}
 	ao_flash_write_flush();
-	putc('\r', stdout);
 	return SNEK_NULL;
 }
 

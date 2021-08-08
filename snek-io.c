@@ -15,19 +15,6 @@
 #include "snek.h"
 #include "snek-io.h"
 
-#ifndef SNEK_IO_PUTS
-#define SNEK_IO_PUTS(s)	fputs(s, stdout)
-#endif
-#ifndef SNEK_IO_PUTC
-#define SNEK_IO_PUTC(c) putchar(c)
-#endif
-#ifndef SNEK_IO_WAITING
-#define SNEK_IO_WAITING(s) false
-#endif
-#ifndef SNEK_IO_LINEBUF
-#define SNEK_IO_LINEBUF	132
-#endif
-
 static bool	raw_mode;
 static char	buf[SNEK_IO_LINEBUF];
 static uint8_t	used, avail;
@@ -36,8 +23,7 @@ static void
 snek_io_backspace(void)
 {
 	avail--;
-	if (!raw_mode)
-		SNEK_IO_PUTS("\b \b");
+	SNEK_IO_PUTS("\b \b");
 }
 
 static void
@@ -70,9 +56,7 @@ snek_io_getc(FILE *stream)
 		}
 		used = avail = 0;
 		for (;;) {
-			if (!SNEK_IO_WAITING(stream))
-				fflush(stdout);
-			uint8_t c;
+			char c;
 
 #ifdef SNEK_BUILTIN_input
 			if (unget) {
@@ -80,11 +64,10 @@ snek_io_getc(FILE *stream)
 				unget = 0;
 			} else
 #endif
-			c = SNEK_IO_GETC(stream);
+			c = snek_raw_getc(stream);
 
 			switch (c)
 			{
-			case '\r':
 			case '\n':
 				snek_io_addc('\n');
 				break;
@@ -117,7 +100,7 @@ snek_io_getc(FILE *stream)
 				c = ' ';
 				/* fall through ... */
 			default:
-				if (c >= (uint8_t)' ') {
+				if ((uint8_t) c >= (uint8_t)' ') {
 					if (avail < SNEK_IO_LINEBUF-1)
 						snek_io_addc(c);
 				}

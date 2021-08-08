@@ -14,6 +14,10 @@
 
 #pragma once
 
+#define SNEK_GETC()		snek_qemu_getc()
+
+#define SNEK_IO_GETC(file)	getc(stdin)
+
 #include <snek-io.h>
 
 #define RX_LINEBUF	132
@@ -22,7 +26,3 @@
 extern int snek_qemu_getc(void);
 
 #define abort() exit(1)
-
-#define SNEK_GETC()		snek_qemu_getc()
-
-#define SNEK_IO_GETC(file)	getc(stdin)

@@ -23,9 +23,7 @@ snek_builtin_eeprom_write(void)
 	snek_offset_t	addr = 0;
 
 	for(;;) {
-		c = snek_uart_getch();
-		if (c == '\r')
-			c = '\n';
+		c = snek_raw_getc(stdin);
 		if (c == ('d' & 0x1f))
 			c = 0xff;
 		eeprom_write_byte((uint8_t *) addr, c);
@@ -34,10 +32,7 @@ snek_builtin_eeprom_write(void)
 			break;
 		if (c == 0xff)
 			break;
-		if ((addr & 0xf) == 0)
-			snek_uart_putch('\r');
 	}
-	snek_uart_putch('\r');
 	return SNEK_NULL;
 }
 
