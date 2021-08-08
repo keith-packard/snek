@@ -35,7 +35,8 @@ SNEK_AVR_INC = \
 	ao-pins.h \
 	ao-product.h \
 	snek-avr.h \
-	ao-usb.h
+	ao-usb.h \
+	$(SNEK_EXT_INC)
 
 SNEK_AVR_BUILTINS = \
 	snek-gpio.builtin \

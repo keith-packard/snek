@@ -56,7 +56,8 @@ SNEK_SAMD21_INC = \
 	ao-tc-samd21.h \
 	ao-dac-samd21.h \
 	ao-usb.h \
-	samd21.h
+	samd21.h \
+	$(SNEK_EXT_INC)
 
 SNEK_SAMD21_BUILTINS = \
 	snek-gpio.builtin \

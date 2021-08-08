@@ -42,7 +42,8 @@ SNEK_ATMEGA_MATH_INC = \
 	$(SNEK_ATMEGA)/math_config.h
 
 SNEK_ATMEGA_INC = \
-	$(SNEK_ATMEGA)/snek-atmega.h
+	$(SNEK_ATMEGA)/snek-atmega.h \
+	$(SNEK_EXT_INC)
 
 SNEK_ATMEGA_MATH_BUILTINS = \
 	snek-math.builtin
