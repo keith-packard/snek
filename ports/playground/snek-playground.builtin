@@ -12,6 +12,7 @@
 # General Public License for more details.
 #
 A0,		-2,	0
+SPEAKER,	-2,	0
 A1,		-2,	1
 A2,		-2,	2
 A3,		-2,	3
