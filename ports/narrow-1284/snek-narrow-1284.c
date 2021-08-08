@@ -46,9 +46,6 @@ port_init(void)
 		  (1 << CS01) |
 		  (1 << CS00));
 
-	/* enable interrupt */
-	TIMSK0 = (1 << TOIE0);
-
 	/* Timer 1 */
 	TCCR1B = ((0 << CS12) |
 		  (1 << CS11) |
@@ -67,6 +64,9 @@ port_init(void)
 		  (0 << CS20));
 
 	TCCR2A = ((1 << WGM20));
+
+	/* enable interrupt */
+	TIMSK2 = (1 << TOIE2);
 
 	/* Timer 3 */
 	TCCR3B = ((1 << CS32) |
