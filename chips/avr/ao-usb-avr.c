@@ -286,9 +286,11 @@ ao_usb_flush(FILE *file)
 	 * want to send an empty packet
 	 */
 	if (!ao_usb_in_flushed) {
-		ao_usb_in_flushed = true;
 		_ao_usb_in_wait();
-		_ao_usb_in_send();
+		if (!ao_usb_in_flushed) {
+			ao_usb_in_flushed = true;
+			_ao_usb_in_send();
+		}
 	}
 	ao_arch_release_interrupts();
 	return 0;
@@ -317,6 +319,8 @@ ao_usb_putc(char c, FILE *file)
 		_ao_usb_in_send();
 	ao_usb_in_flushed = false;
 	ao_arch_release_interrupts();
+	if (c == '\n')
+		ao_usb_flush(file);
 	return (unsigned char) c;
 }
 
