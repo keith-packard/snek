@@ -34,7 +34,5 @@ A5, -2, 19
 A6, -2, 20
 A7, -2, 21
 #include <snek-atmega.h>
-#if !defined(SNEK_POOL)
-#define SNEK_POOL 4096
-#endif
+#define SNEK_POOL 3584
 #define SNEK_MAX_TOKEN 63
