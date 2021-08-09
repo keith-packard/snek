@@ -17,8 +17,10 @@ import argparse
 import curses
 import serial
 import serial.tools.list_ports
-import termios
 import sys
+termios_error = serial.SerialException
+if hasattr(serial, 'termios'):
+    termios_error = termios.error
 import threading
 import time
 
@@ -262,7 +264,8 @@ class SnekDevice:
                 data = self.serial.read(1)
                 if data:
                     self.interface.receive(data)
-        except serial.SerialException as e:
+        except (serial.SerialException, termios_error):
+            # snek_debug('serial interface failed in reader')
             self.interface.failed(self.device)
         finally:
             self.receiver_thread = False
@@ -315,7 +318,8 @@ class SnekDevice:
                 else:
                     if send_data:
                         self.serial.write(send_data)
-        except (serial.SerialException, termios.error):
+        except (serial.SerialException, termios_error):
+            # snek_debug('serial interface failed in writer')
             self.interface.failed(self.device)
         finally:
             self.transmitter_thread = False
@@ -811,6 +815,7 @@ class ErrorWin:
     def __init__(self, label, inputthread=True):
         self.label = label
         self.inputthread = inputthread
+        self.nlines = 5
         self.ncols = min(snek_cols, max(40, len(label) + 2))
         self.x = (snek_cols - self.ncols) // 2
         self.y = (snek_lines - self.nlines) // 2
@@ -1138,8 +1143,7 @@ def screen_paint():
 
 
 def screen_repaint():
-    global snek_edit_win, snek_repl_win
-    stdscr.clear()
+    global snek_edit_win, snek_repl_win, snek_current_window
     snek_edit_win.repaint()
     snek_repl_win.repaint()
     screen_paint()
@@ -1288,6 +1292,7 @@ def run():
     global snek_current_window, snek_edit_win, snek_repl_win, snek_device, snek_lock
     snek_current_window = snek_edit_win
     prev_exit = False
+    prev_get = False
     snek_lock.acquire()
     while True:
         ch = snek_current_window.getch()
@@ -1300,6 +1305,10 @@ def run():
             snekde_open_device()
         elif ch == curses.KEY_F2 or ch == ord("2") | 0x80:
             if snek_device:
+                if snek_edit_win.changed and not prev_get:
+                    ErrorWin("Unsaved changes, get again to abandon them")
+                    prev_get = True
+                    continue
                 snekde_get_text()
             else:
                 ErrorWin("No device")
@@ -1353,6 +1362,7 @@ def run():
         else:
             snek_current_window.dispatch(ch)
         prev_exit = False
+        prev_get = False
 
 
 # Class to monitor the serial device for data and
@@ -1404,12 +1414,10 @@ class SnekMonitor:
 
             # STX - start receiving eeprom contents
             if b == b"\x02":
-                # snek_debug('getting edit')
                 self.getting_text = True
 
             # ETX - stop receiving eeprom contents
             elif b == b"\x03":
-                # snek_debug('getting repl')
                 self.getting_text = False
 
             # ACK - device has seen ENQ
@@ -1419,9 +1427,9 @@ class SnekMonitor:
                     # snek_debug('notify ack')
                     self.ack.notify_all()
 
-            # ignore all control chars other than newline
+            # Ignore all control chars other than newline
             elif b < b"\x20" and b != b"\n":
-                continue
+                pass
 
             # Otherwise, handle text
             else:
@@ -1454,6 +1462,7 @@ class SnekMonitor:
                 snek_device.close()
                 del snek_device
                 snek_device = False
+            # snek_debug('show error dialog')
             ErrorWin("Device %s failed" % device, inputthread=False)
 
 
