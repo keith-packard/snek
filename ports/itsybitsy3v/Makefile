@@ -12,50 +12,9 @@
 # General Public License for more details.
 #
 
-SNEK_ROOT = ../..
-SNEK_AVR = $(SNEK_ROOT)/chips/avr
-
+AVR_CLOCK=8000000UL
 PROGNAME=snek-itsybitsy3v
 PRODUCT_NAME=SnekItsyBitsy3v
+BUILD_INSTALL=0
 
-AVR_CLOCK=8000000UL
-
-include $(SNEK_AVR)/snek-avr.defs
-
-SNEK_LOCAL_SRC = \
-	$(SNEK_AVR_SRC)
-
-SNEK_LOCAL_INC = \
-	$(SNEK_AVR_INC)
-
-SNEK_LOCAL_BUILTINS = \
-	$(SNEK_AVR_BUILTINS) \
-	snek-itsybitsy3v.builtin
-
-include $(SNEK_ROOT)/snek-install.defs
-
-all: $(ELF) $(HEX)
-
-$(PROG): Makefile $(SNEK_OBJ)
-	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
-
-$(SNEK_OBJ): $(SNEK_INC)
-
-distclean: clean
-
-clean::
-	rm -f *.hex *.elf *.map
-	rm -f ao-product.h
-
-install: $(HEX)
-	install -d $(DESTDIR)$(SHAREDIR)
-	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
-
-uninstall:
-
-ISP=avrisp2
-
-load: $(HEX) ../itsybitsy5v/snek-itsybitsy-install
-	../itsybitsy5v/snek-itsybitsy-install -quick -isp $(ISP) -hex $(HEX) load
-
+include ../itsybitsy5v/Makefile

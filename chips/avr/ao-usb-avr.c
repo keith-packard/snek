@@ -429,16 +429,6 @@ ISR(USB_COM_vect)
 	}
 }
 
-#if AVR_VCC_5V
-#define AO_PAD_REGULATOR_INIT	(1 << UVREGE)	/* Turn on pad regulator */
-#endif
-#if AVR_VCC_3V3
-/* TeleScience V0.1 has a hardware bug -- UVcc is hooked up, but UCap is not
- * Make this work by running power through UVcc to the USB system
- */
-#define AO_PAD_REGULATOR_INIT	(1 << UVREGE)	/* Turn off pad regulator */
-#endif
-
 #if F_CPU == 16000000UL
 #define AO_USB_PLL_INPUT_PRESCALER	(1 << PINDIV)	/* Divide 16MHz clock by 2 */
 #endif
@@ -455,7 +445,7 @@ void
 ao_usb_init(void)
 {
 	/* Configure pad regulator */
-	UHWCON = AO_PAD_REGULATOR_INIT;
+	UHWCON = (1 << UVREGE);
 
 	/* Enable USB device, but freeze the clocks until initialized */
 	USBCON = AO_USB_CON | (1 <<FRZCLK);
