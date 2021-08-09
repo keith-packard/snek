@@ -18,8 +18,9 @@ import curses
 import serial
 import serial.tools.list_ports
 import sys
+
 termios_error = serial.SerialException
-if hasattr(serial, 'termios'):
+if hasattr(serial, "termios"):
     termios_error = termios.error
 import threading
 import time
