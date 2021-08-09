@@ -30,8 +30,10 @@ sqrtf(float x) {
 
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
+#define SNEK_POOL		1024
+#define SNEK_MAX_TOKEN		63
 #define VALUE_STACK_SIZE	16
-#define PARSE_STACK_SIZE	56
+#define PARSE_STACK_SIZE	128
 #define SNEK_STACK		32
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
 #define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
