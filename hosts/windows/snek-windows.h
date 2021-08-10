@@ -19,6 +19,8 @@ extern FILE	*snek_windows_input;
 
 int snek_getc(FILE *input);
 
+#define strfromf(dst, len, fmt, val) sprintf_const(dst, fmt, val)
+
 #define SNEK_GETC()	snek_getc(snek_windows_input)
 
 #define isnanf(x) __isnanf(x)

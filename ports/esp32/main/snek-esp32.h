@@ -17,6 +17,17 @@
  */
 
 #pragma once
+
+#include "snek.h"
+
+#define SNEK_GETC()		snek_io_getc(stdin)
+
+int snek_getc(void);
+
+#define SNEK_IO_GETC(file)	snek_getc()
+
+#define strfromf(dst, len, fmt, val) sprintf_const(dst, fmt, val)
+
 #include "snek-io.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -24,8 +35,3 @@
 
 #define RX_LINEBUF	132
 
-#define SNEK_GETC()		snek_io_getc(stdin)
-
-int snek_getc(void);
-
-#define SNEK_IO_GETC(file)	snek_getc()

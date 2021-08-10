@@ -46,19 +46,26 @@ snek_intflash_read(snek_offset_t pos)
 	return EEDR;
 }
 
+static int __attribute__((noinline))
+eeprom_showc(char c)
+{
+	return ao_usb_putc(c, NULL);
+}
+
 snek_poly_t
 snek_builtin_eeprom_write(void)
 {
 	uint8_t c;
 	snek_offset_t	addr = 0;
 
-	for (addr = 0; addr < 1024; addr++) {
-		c = ao_usb_getc();
-		if (c == '\r')
-			c = '\n';
+	for (;;) {
+		c = snek_raw_getc(stdin);
 		if (c == ('d' & 0x1f))
 			c = 0xff;
 		snek_intflash_write(addr, c);
+		addr++;
+		if (addr == E2END + 1)
+			break;
 		if (c == 0xff)
 			break;
 	}
@@ -78,16 +85,10 @@ snek_builtin_eeprom_load(void)
 }
 #endif
 
-static int __attribute__((noinline))
-eeprom_showc(char c)
-{
-	return ao_usb_putc(c, NULL);
-}
-
 static uint8_t __attribute__((noinline))
 eeprom_getc(void)
 {
-	if (snek_eeprom_addr < 1024)
+	if (snek_eeprom_addr <= E2END)
 		return snek_intflash_read(snek_eeprom_addr++);
 	return 0xff;
 }
@@ -121,9 +122,11 @@ int
 snek_eeprom_getchar(FILE *stream)
 {
 	(void) stream;
-	uint8_t c = eeprom_getc();
-	if (c != 0xff)
-		return c;
+	if (!snek_abort) {
+		uint8_t c = eeprom_getc();
+		if (c != 0xff)
+			return c;
+	}
 	snek_interactive = true;
 	snek_avr_file.get = snek_io_getc;
 	return EOF;

@@ -77,6 +77,7 @@ snek_string_cat(char *a, char *b)
 						    b, 0, strlen(b)));
 }
 
+#ifndef SNEK_NO_SLICE
 char *
 snek_string_slice(char *a, snek_slice_t *slice)
 {
@@ -94,6 +95,7 @@ snek_string_slice(char *a, snek_slice_t *slice)
 	r[i] = '\0';
 	return r;
 }
+#endif
 
 snek_poly_t
 snek_string_times(char *a, snek_soffset_t b)
@@ -183,7 +185,10 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 	is_list = false;
 	if (snek_poly_type(poly) == snek_list) {
 		snek_list_t *list = snek_poly_to_list(poly);
-		if (snek_list_type(list) != snek_list_dict) {
+#ifndef SNEK_NO_DICT
+		if (snek_list_type(list) != snek_list_dict)
+#endif
+		{
 			is_list = true;
 			size = list->size;
 		}

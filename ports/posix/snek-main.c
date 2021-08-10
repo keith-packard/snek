@@ -16,6 +16,7 @@
 #include <getopt.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
 
 FILE	*snek_posix_input;
 
@@ -59,12 +60,32 @@ snek_getc_interactive(void)
 	return c;
 }
 
+static bool snek_sigint;
+
 int
 snek_getc(FILE *input)
 {
-	if (snek_interactive)
-		return snek_getc_interactive();
-	return getc(input);
+	int c = EOF;
+	if (!snek_abort)
+		snek_sigint = false;
+	if (!snek_sigint) {
+		if (snek_interactive)
+			c = snek_getc_interactive();
+		else
+			c = getc(input);
+	}
+	if (snek_sigint)
+		return EOF;
+	return c;
+}
+
+static void
+sigint(int sig)
+{
+	(void) sig;
+	snek_abort = true;
+	snek_sigint = true;
+	signal(SIGINT, sigint);
 }
 
 int
@@ -91,6 +112,8 @@ main (int argc, char **argv)
 			break;
 		}
 	}
+
+	signal(SIGINT, sigint);
 
 	snek_init();
 

@@ -28,10 +28,12 @@ static inline char snek_list_open(snek_list_type_t type)
 	switch(type) {
 	case snek_list_list:
 		return '[';
-	case snek_list_tuple:
-		return '(';
 	default:
+#ifndef SNEK_NO_DICT
 		return '{';
+	case snek_list_tuple:
+#endif
+		return '(';
 	}
 }
 
@@ -40,10 +42,12 @@ static inline char snek_list_close(snek_list_type_t type)
 	switch(type) {
 	case snek_list_list:
 		return ']';
-	case snek_list_tuple:
-		return ')';
 	default:
+#ifndef SNEK_NO_DICT
 		return '}';
+	case snek_list_tuple:
+#endif
+		return ')';
 	}
 }
 
@@ -110,7 +114,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 		buf->put_s("None", closure);
 	else switch (atype) {
 	case snek_float:
-		sprintf_const(tmp, "%.9g", printf_float(snek_poly_to_float(a)));
+		strfromf(tmp, sizeof(tmp), "%.9g", snek_poly_to_float(a));
 		buf->put_s(tmp, closure);
 		break;
 	case snek_string:
@@ -140,8 +144,13 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 			list = snek_stack_pop_list();
 			snek_stack_push_list(list);
 			snek_poly_format(buf, snek_list_data(list)[o], format);
+#ifdef SNEK_NO_DICT
+#define list_sep_char(type,o) ','
+#else
+#define list_sep_char(type,o) (((type) == snek_list_dict && !((o)&1)) ? ':' : ',')
+#endif
 			if (o < size - 1 || (size == 1 && type == snek_list_tuple)) {
-				buf->put_c((type == snek_list_dict && !(o&1)) ? ':' : ',', closure);
+				buf->put_c(list_sep_char(type, o), closure);
 				buf->put_c(' ', closure);
 			}
 		}

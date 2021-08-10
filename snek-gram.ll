@@ -88,11 +88,11 @@ opt-stats	: stat opt-stats
 		|
 		;
 stat		: simple-stat
-		| @{ snek_print_val = false; snek_code_add_op_offset(snek_op_line, snek_lex_line); }@
+		| @{ snek_print_val = false; snek_code_add_line(); }@
 		  compound-stat
 		| NL
 		;
-simple-stat	: @{ snek_code_add_op_offset(snek_op_line, snek_lex_line); }@ small-stat small-stats-p NL
+simple-stat	: @{ snek_code_add_line(); }@ small-stat small-stats-p NL
 		;
 small-stats-p	: SEMI small-stat small-stats-p
 		|
@@ -188,7 +188,7 @@ if-stat		: IF if-expr suite elif-stats
 		;
 elif-stats	: ELIF
 			@{
-				snek_code_add_op_offset(snek_op_line, snek_lex_line);
+				snek_code_add_line();
 			else_branch:
 				snek_code_add_forward(snek_forward_if);
 				value_push_offset(snek_code_current());
@@ -363,19 +363,19 @@ cmpop		: CMPOP
 		| IN
 		| IS
 		;
-expr-lor	: expr-land expr-lor-p
+expr-lor	: expr-lxor expr-lor-p
 		;
-expr-lor-p	: LOR @ binop_first(); @ expr-land @ binop_second(); @ expr-lor-p
+expr-lor-p	: LOR @ binop_first(); @ expr-lxor @ binop_second(); @ expr-lor-p
 		|
 		;
-expr-land	: expr-lxor expr-land-p
+expr-lxor	: expr-land expr-lxor-p
 		;
-expr-land-p	: LAND @ binop_first(); @ expr-lxor @ binop_second(); @ expr-land-p
+expr-lxor-p	: LXOR @ binop_first(); @ expr-land @ binop_second(); @ expr-lxor-p
 		|
 		;
-expr-lxor	: expr-shift expr-lxor-p
+expr-land	: expr-shift expr-land-p
 		;
-expr-lxor-p	: LXOR @ binop_first(); @ expr-shift @ binop_second(); @ expr-lxor-p
+expr-land-p	: LAND @ binop_first(); @ expr-shift @ binop_second(); @ expr-land-p
 		|
 		;
 expr-shift	: expr-add expr-shift-p
@@ -414,6 +414,7 @@ expr-array-p	: OS
 			@{
 				snek_code_set_push(snek_code_prev_insn());
 			}@
+{SNEK_SLICE
 		  array-index CS
 			@{
 				bool slice = !!value_pop().offset;
@@ -427,6 +428,13 @@ expr-array-p	: OS
 					snek_code_add_op(snek_op_array);
 				}
  			}@
+}
+{SNEK_NO_SLICE
+		  expr CS
+			@{
+				snek_code_add_op(snek_op_array);
+			}@
+}
 		  expr-array-p
 		| OP
 			@{
@@ -439,6 +447,7 @@ expr-array-p	: OS
 		  expr-array-p
 		|
 		;
+{SNEK_SLICE
 array-index	: expr opt-slice
 		|
 			@{
@@ -477,6 +486,7 @@ opt-expr	:	@{
 				value_push_offset(0);
 			}@
 		;
+}
 expr-prim	: OP opt-tuple CP
 			@{
 				snek_soffset_t num = value_pop().offset;
@@ -490,6 +500,7 @@ expr-prim	: OP opt-tuple CP
 					return parse_return_syntax;
 				snek_code_add_op_offset(snek_op_list, num);
 			}@
+{SNEK_DICT
 		| OC
 			@{
 				/* Zero dict-ents so far */
@@ -501,6 +512,7 @@ expr-prim	: OP opt-tuple CP
 				snek_offset_t num = value_pop().offset;
 				snek_code_add_op_offset(snek_op_dict, num);
 			}@
+}
 		| NAME
 			@{
 				snek_code_add_op_id(snek_op_id, snek_token_val.id);
@@ -605,6 +617,7 @@ actuals-p	: COMMA actuals-end
 actuals-end	: expr actual-p actuals-p
 		|
 		;
+{SNEK_DICT
 opt-dict-ents	: dict-ent dict-ents-p
 		|
 		;
@@ -625,3 +638,4 @@ dict-ent	: expr
 				snek_code_set_push(snek_code_prev_insn());
 			}@
 		;
+}

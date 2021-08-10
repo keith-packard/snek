@@ -14,6 +14,10 @@
 
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
+BOARD?=duemilanove
+CBOARD?=Duemilanove
+UBOARD?=DUEMILANOVE
+PORT?=/dev/ttyUSB0
 
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
@@ -33,9 +37,15 @@ SNEK_LOCAL_BUILTINS = \
 
 include $(SNEK_ROOT)/snek-install.defs
 
+SNEK_ATMEGA_SED=$(SNEK_SED) \
+	-e 's;@BOARD@;$(BOARD);g' \
+	-e 's;@UBOARD@;$(UBOARD);g' \
+	-e 's;@CBOARD@;$(CBOARD);g' \
+	-e 's;@PORT@;$(PORT);g'
+
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
-BASE=snek-duemilanove-$(SNEK_VERSION)
+BASE=snek-$(BOARD)-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
@@ -46,40 +56,9 @@ OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x7e00 \
-	-Wl,--defsym -Wl,__DATA_REGION_ORIGIN__=0x800100 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x780 \
-	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-Map=$(MAP)
 
-ISP = usbtiny
-#ISP = avrisp2
-
-#
-# lfuse: 0xff
-#	CKDIV8:		1	no divide by 8
-#	CKOUT:		1	no clock output
-#	SUT1:		1	crystal osc, slow startup
-#	SUT0:		1	crystal osc, slow startup
-#	CKSEL3:		1	low swing osc, 8-16MHz
-#	CKSEL2:		1	low swing osc, 8-16MHz
-#	CKSEL1:		1	low swing osc, 8-16MHz
-#	CKSEL0:		1	crystal osc
-# hfuse:
-#	RSTDISBL:	1	reset enabled
-#	DWEN:		1	debug wire disabled
-#	SPIEN:		0	SPI program enabled
-#	WDTON:		1	watch dog disabled
-#	EESAVE:		0	EEPROM saved across chip erase
-#	BOOTSZ1:	1	256 words
-#	BOOTSZ0:	1	256 words
-#	BOOTRST:	1	boot to address 0
-# efuse:
-#	BODLEVEL2	1	brown out 2.5-2.9V
-#	BODLEVEL1	0	brown out 2.5-2.9V
-#	BODLEVEL0	1	brown out 2.5-2.9V
-
-all: $(HEX) snek-duemilanove-install
+all:: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1
 
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $^ $@
@@ -88,25 +67,23 @@ $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
-snek-duemilanove-install: snek-duemilanove-install.in
-	$(SNEK_SED) $^ > $@
+snek-$(BOARD)-install: snek-duemilanove-install.in
+	$(SNEK_ATMEGA_SED) $^ > $@
 	chmod +x $@
 
-set-fuse:
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U lfuse:w:0xff:m
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U hfuse:w:0xd7:m
-	avrdude -F -V -c $(ISP) -p ATMEGA328P -U efuse:w:0xfd:m
+load: $(HEX) snek-$(BOARD)-install
+	./snek-$(BOARD)-install -hex $(HEX)
 
-load: $(HEX) snek-duemilanove-install
-	./snek-duemilanove-install -hex $(HEX)
+snek-$(BOARD)-install.1: snek-duemilanove-install.1.in
+	$(SNEK_ATMEGA_SED) $^ > $@
 
-install: snek-duemilanove-install $(HEX) snek-duemilanove-install.1
+install: snek-$(BOARD)-install $(HEX) snek-$(BOARD)-install.1
 	install -d $(DESTDIR)$(BINDIR)
-	install snek-duemilanove-install $(DESTDIR)$(BINDIR)
+	install snek-$(BOARD)-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
-	install -m 0644 snek-duemilanove-install.1 $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-$(BOARD)-install.1 $(DESTDIR)$(MANDIR)/man1
 
 clean::
-	rm -f *.elf *.hex *.map snek-duemilanove-install
+	rm -f *.elf *.hex *.map snek-$(BOARD)-install snek-$(BOARD)-install.1

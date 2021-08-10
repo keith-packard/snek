@@ -13,6 +13,7 @@
  */
 
 #include "snek.h"
+#include "snek-io.h"
 
 #define NUM_PIN	70
 #define A0	54
@@ -51,12 +52,9 @@ port_init(void)
 
 	/* / 64 */
 	TCCR0B = ((0 << CS02) |
-		  (1 << CS01) |
+		  (0 << CS01) |
 		  (1 << CS00) |
 		  (0 << WGM02));
-
-	/* enable interrupt */
-	TIMSK0 = (1 << TOIE0);
 
 	/* Timer 1 */
 	TCCR1B = ((0 << CS12) |
@@ -76,6 +74,9 @@ port_init(void)
 		  (0 << CS20));
 
 	TCCR2A = ((1 << WGM20));
+
+	/* enable interrupt */
+	TIMSK2 = (1 << TOIE2);
 
 	/* Timer 3 */
 	TCCR3B = ((0 << CS12) |
@@ -670,5 +671,5 @@ snek_poly_t
 snek_builtin_random_randrange(snek_poly_t a)
 {
 	random_next = random_next * 1103515245L + 12345L;
-	return snek_float_to_poly((snek_soffset_t) (random_next % snek_poly_get_soffset(a)));
+	return snek_float_to_poly(random_next % (uint32_t) snek_poly_get_float(a));
 }

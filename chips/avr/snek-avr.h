@@ -30,8 +30,10 @@ sqrtf(float x) {
 
 #define SNEK_DEBUG	0
 #define strtof(a,b) strtod(a,b)
+#define SNEK_POOL		1024
+#define SNEK_MAX_TOKEN		63
 #define VALUE_STACK_SIZE	16
-#define PARSE_STACK_SIZE	56
+#define PARSE_STACK_SIZE	128
 #define SNEK_STACK		32
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
 #define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
@@ -62,6 +64,7 @@ sqrtf(float x) {
 		static const char PROGMEM __fmt__[] = (fmt);	\
 		sprintf_P(dst, __fmt__, ##args);		\
 	})
+#define strfromf(dst, len, fmt, val) sprintf_const(dst, fmt, val)
 
 #define SNEK_BUILTIN_NAMES_DECLARE(n) 	PROGMEM n
 #define SNEK_BUILTIN_NAMES(a)		((uint8_t) pgm_read_byte(&snek_builtin_names[a]))

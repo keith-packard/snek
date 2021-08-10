@@ -15,6 +15,7 @@
 #include "snek.h"
 #include <math.h>
 
+#ifdef SNEK_BUILTIN_input
 bool snek_in_input;
 
 snek_poly_t
@@ -43,7 +44,9 @@ snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	snek_in_input = false;
 	return s;
 }
+#endif
 
+#if defined(SNEK_BUILTIN_float)
 snek_poly_t
 snek_builtin_float(snek_poly_t a)
 {
@@ -60,9 +63,12 @@ snek_builtin_float(snek_poly_t a)
 	}
 	return snek_float_to_poly(f);
 }
+#endif
 
+#ifdef SNEK_BUILTIN_int
 snek_poly_t
 snek_builtin_int(snek_poly_t a)
 {
 	return snek_float_to_poly(truncf(snek_poly_get_float(snek_builtin_float(a))));
 }
+#endif

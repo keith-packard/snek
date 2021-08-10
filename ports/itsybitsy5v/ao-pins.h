@@ -23,9 +23,6 @@
 #define HAS_BEEP		0
 #define AO_FIFO_SIZE		64
 
-#define AVR_VCC_5V	       	1
-#define AVR_VCC_3V3		0
-
 #define SNEK_IO_GETC(file)	ao_usb_getc()
 #define SNEK_GETC()		(snek_avr_file.get(stdin))
 #define fflush(x)		ao_usb_flush(x)

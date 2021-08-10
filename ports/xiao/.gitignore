@@ -1,0 +1,7 @@
+snek-xiao-*.bin
+snek-xiao-*.map
+snek-xiao-*.uf2
+snek-xiao-*.elf
+*.o
+ao-product.h
+

@@ -19,12 +19,14 @@ SNEK_ROOT=../..
 CC=arm-linux-gnueabi-gcc
 PROGNAME=snek-ev3
 PROG=$(PROGNAME)-$(SNEK_VERSION)
+SERVER=snekserver-$(SNEK_VERSION)
 
 SNEK_LOCAL_SRC = \
 	snek-main.c \
 	snek-posix.c \
 	snek-math.c \
 	snek-input.c \
+	snek-io.c \
 	sensors.c \
 	motors.c \
 	utils.c
@@ -34,6 +36,7 @@ SNEK_LOCAL_CFLAGS = -DSNEK_USE_GLIBC_2_4_MATH
 SNEK_LOCAL_BUILTINS = \
 	snek-ev3.builtin \
 	$(SNEK_ROOT)/snek-math.builtin \
+	$(SNEK_ROOT)/snek-eeprom.builtin \
 	$(SNEK_ROOT)/snek-input.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
@@ -46,14 +49,17 @@ CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
 
 LIBS=-lm
 
-all: $(PROG)
+all: $(PROG) $(SERVER)
 
 $(PROG): $(SNEK_OBJ)
 	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
+
+$(SERVER): snekserver.o utils.o
+	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 install: $(PROG)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install $(PROG) $(DESTDIR)$(SHAREDIR)
 
 clean::
-	rm -f $(PROG)
+	rm -f $(PROG) $(SERVER) snekserver.o

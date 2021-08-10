@@ -36,5 +36,3 @@ MOSI, -2, 21
 SCK, -2, 22
 #include <ao.h>
 #include <snek-avr.h>
-#define SNEK_POOL 1024
-#define SNEK_MAX_TOKEN 63

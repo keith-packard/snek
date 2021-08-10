@@ -21,6 +21,9 @@ SNEK_LOCAL_SRC = \
 	snek-esp32.c \
 	snek-io.c
 
+SNEK_LOCAL_INC = \
+	$(SNEK_EXT_INC)
+
 SNEK_LOCAL_BUILTINS = \
 	snek-esp32.builtin \
 	$(SNEK_ROOT)/snek-math.builtin \

@@ -23,6 +23,8 @@ SNEK_LOCAL_SRC = \
 	$(SNEK_ATMEGA_SRC) \
 	$(SNEK_ATMEGA_MATH_SRC) \
 	snek-input.c \
+	snek-i2c.c \
+	snek-atmega-i2c.c \
 	snek-mega.c
 
 SNEK_LOCAL_INC = \
@@ -34,13 +36,12 @@ SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_MATH_BUILTINS) \
 	snek-math.builtin \
 	snek-input.builtin \
+	snek-i2c.builtin \
 	snek-mega.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
-
-USBSERIAL_HEX=Arduino-usbserial-atmega16u2-Mega2560-Rev3.hex
 
 BASE=snek-mega-$(SNEK_VERSION)
 ELF=$(BASE).elf
@@ -50,9 +51,6 @@ CC=avr-gcc
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega2560 -I. -I$(SNEK_LOCAL_VPATH) -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x3e000 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x1e00 \
-	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x1000 \
 	-Wl,-Map=$(MAP)
 
 PORT=/dev/ttyACM0
@@ -78,7 +76,6 @@ install: snek-mega-install $(HEX) $(USBSERIAL_HEX) snek-mega-install.1
 	install snek-mega-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
-	install -m 0644 $(USBSERIAL_HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-mega-install.1 $(DESTDIR)$(MANDIR)/man1
 

@@ -139,6 +139,7 @@ snek_list_times(snek_list_t *a, snek_soffset_t count)
 	return n;
 }
 
+#ifndef SNEK_NO_DICT
 static bool
 snek_mutable(snek_poly_t p)
 {
@@ -154,6 +155,7 @@ snek_mutable(snek_poly_t p)
 			return true;
 	return false;
 }
+#endif
 
 static snek_poly_t *
 _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
@@ -161,6 +163,8 @@ _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 	snek_offset_t o;
 	snek_poly_t *data = snek_list_data(list);
 
+	(void) add;
+#ifndef SNEK_NO_DICT
 	if (snek_list_type(list) == snek_list_dict) {
 		snek_offset_t l = 0, r = list->size;
 		while (l < r) {
@@ -187,7 +191,9 @@ _snek_list_ref(snek_list_t *list, snek_poly_t p, bool report_error, bool add)
 			data[o] = p;
 		}
 		o++;
-	} else {
+	} else
+#endif
+	{
 		snek_soffset_t so = snek_poly_get_soffset(p);
 		o = so;
 		if (so < 0)
@@ -226,10 +232,12 @@ snek_list_del(snek_poly_t lp, snek_poly_t p)
 		return;
 	snek_offset_t	num = 1;
 	switch (snek_list_type(list)) {
+#ifndef SNEK_NO_DICT
 	case snek_list_dict:
 		r--;
 		num = 2;
 		break;
+#endif
 	case snek_list_tuple:
 		snek_error_value(lp);
 		return;
@@ -273,6 +281,7 @@ snek_list_imm(snek_offset_t size, snek_list_type_t type)
 	}
 
 	snek_poly_t	*data = snek_list_data(list);
+#ifndef SNEK_NO_DICT
 	if (type == snek_list_dict) {
 		list->size = 0;
 		snek_offset_t s = size;
@@ -285,7 +294,9 @@ snek_list_imm(snek_offset_t size, snek_list_type_t type)
 				*ref = value;
 		}
 		snek_stack_drop(size);
-	} else {
+	} else
+#endif
+	{
 		while (size--)
 			data[size] = snek_stack_pop();
 	}
@@ -305,6 +316,7 @@ snek_list_build(snek_list_type_t type, snek_offset_t size, ...)
 }
 #endif
 
+#ifndef SNEK_NO_SLICE
 snek_list_t *
 snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 {
@@ -324,6 +336,7 @@ snek_list_slice(snek_list_t *list, snek_slice_t *slice)
 		ndata[i++] = data[slice->pos];
 	return n;
 }
+#endif
 
 void
 snek_stack_push_list(snek_list_t *l)

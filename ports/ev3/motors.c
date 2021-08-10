@@ -411,7 +411,7 @@ motor_onfor(int fd, snek_poly_t duration)
 
 	float fduration = snek_poly_get_float(duration);
 
-	if (sysfs_write_int(fd, "time_sp", ((int) fduration * DURATION_SCALE)) == -1) {
+	if (sysfs_write_int(fd, "time_sp", (int) (fduration * DURATION_SCALE)) == -1) {
 		snek_error("unable to set run duration: %s", strerror(errno));
 		return SNEK_NULL;
 	}

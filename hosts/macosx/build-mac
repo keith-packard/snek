@@ -35,6 +35,6 @@ target="$2"
 
 rsync -Ravz --delete `git ls-files` "$build"
 
-ssh $buildhost "cd '$builddir'/ports/posix && make"
+ssh $buildhost "cd '$builddir'/ports/posix && make" || exit 1
 
 rsync -avz "$build"/ports/posix/snek "$curdir"/"$target"

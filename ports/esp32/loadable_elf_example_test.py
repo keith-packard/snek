@@ -110,7 +110,13 @@ class SerialThread(object):
 
     def __init__(self, log_path):
         self.exit_event = threading.Event()
-        self.t = threading.Thread(target=self.run, args=(log_path, self.exit_event,))
+        self.t = threading.Thread(
+            target=self.run,
+            args=(
+                log_path,
+                self.exit_event,
+            ),
+        )
         self.t.start()
 
     def __enter__(self):

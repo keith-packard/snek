@@ -14,6 +14,7 @@
 
 #pragma once
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -133,7 +134,9 @@ typedef enum {
 	snek_op_string,
 	snek_op_list,
 	snek_op_tuple,
+#ifndef SNEK_NO_DICT
 	snek_op_dict,
+#endif
 	snek_op_id,
 
 	snek_op_not,
@@ -210,7 +213,9 @@ typedef struct snek_mem {
 typedef enum {
 	snek_list_list,
 	snek_list_tuple,
+#ifndef SNEK_NO_DICT
 	snek_list_dict
+#endif
 } __attribute__((packed)) snek_list_type_t;
 
 typedef struct snek_list {
@@ -476,6 +481,9 @@ snek_code_add_in_range(snek_id_t id, uint8_t nactual, uint8_t for_depth);
 
 void
 snek_code_add_in_enum(snek_id_t id, uint8_t for_depth);
+
+void
+snek_code_add_line(void);
 
 static inline void
 snek_code_patch_branch(snek_offset_t branch, snek_offset_t target)

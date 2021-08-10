@@ -1,0 +1,37 @@
+.\"
+.\" Copyright © 2019 Keith Packard <keithp@keithp.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.TH SNEK-@UBOARD@-INSTALL 1 "snek-@BOARD@-install" ""
+.SH NAME
+snek-@BOARD@-instal \- Install Snek to @CBOARD@
+.SH SYNOPSIS
+.B "snek-@BOARD@-install" [OPTION]... [COMMAND]
+.SH DESCRIPTION
+.I snek-@BOARD@-install
+installs the Snek programming language on an ATmega4809
+@CBOARD@ board using the Optiboot boot loader.
+.SH OPTIONS
+.TP
+\-hex <snek.hex>
+Specifies the hex file to load to the board. The default is the
+currently installed version of Snek.
+.TP
+\-port <port>
+Specifies the serial port to use. The default is @PORT@.
+.SH OPTIBOOT
+Snek for the @CBOARD@ requires Optiboot. If your board does not
+already have Optiboot, you can use the Arduino IDE to install Optiboot
+on your @CBOARD@. Follow the instructions on the Optiboot web site:
+https://github.com/Optiboot/optiboot to learn how to do that.
+.SH AUTHOR
+Keith Packard

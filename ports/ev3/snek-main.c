@@ -13,25 +13,35 @@
  */
 
 #include "snek.h"
+#include "snek-io.h"
 #include <getopt.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <signal.h>
 #include "sensors.h"
 #include "motors.h"
+#include "utils.h"
+
+// Not entirely clean, but ev3dev has got a single user, so OK for now
+#define EEPROM_FILE "/home/robot/.snek-eeprom"
 
 static FILE *snek_posix_input;
 
 static const struct option options[] = {
-	{.name = "version", .has_arg = 0, .val = 'v'},
-	{.name = "file", .has_arg = 1, .val = 'f'},
-	{.name = "help", .has_arg = 0, .val = '?'},
+	{.name = "version", .has_arg = 0, .val = 'v'}, {.name = "interactive", .has_arg = 0, .val = 'i'},
+	{.name = "raw", .has_arg = 0, .val = 'r'},     {.name = "help", .has_arg = 0, .val = 'h'},
 	{.name = NULL, .has_arg = 0, .val = 0},
 };
 
 static void
 usage(char *program, int val)
 {
-	fprintf(stderr, "usage: %s [--version] [--help] [--file <file.py>] <program.py>\n", program);
+	fprintf(stderr, "usage: %s [--version] [--help] [--interactive] [--raw] <program.py>\n", program);
 	exit(val);
 }
+
+static char **snek_argv;
+static bool   snek_raw;
 
 static int
 snek_getc_interactive(void)
@@ -45,6 +55,7 @@ snek_getc_interactive(void)
 		if (snek_parse_middle)
 			prompt = "+ ";
 		fputs(prompt, stdout);
+		fflush(stdout);
 		line = fgets(line_base, 4096, stdin);
 		if (!line)
 			return EOF;
@@ -58,30 +69,42 @@ snek_getc_interactive(void)
 }
 
 int
-snek_getc(void)
+snek_getc()
 {
+	if (snek_interactive && snek_raw)
+		return snek_io_getc(snek_posix_input);
 	if (snek_interactive)
 		return snek_getc_interactive();
 	return getc(snek_posix_input);
 }
 
+static void
+on_sigint(int signal)
+{
+	(void) signal;
+	snek_abort = true;
+}
+
 int
 main(int argc, char **argv)
 {
-	int   c;
-	char *file = NULL;
+	int  c;
+	bool interactive_flag = false;
 
-	while ((c = getopt_long(argc, argv, "v?f:", options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "vir", options, NULL)) != -1) {
 		switch (c) {
 		case 'v':
 			printf("%s version %s\n", argv[0], SNEK_VERSION);
 			exit(0);
 			break;
-		case 'f':
-			file = optarg;
+		case 'i':
+			interactive_flag = true;
 			break;
-		case '?':
+		case 'h':
 			usage(argv[0], 0);
+			break;
+		case 'r':
+			snek_raw = true;
 			break;
 		default:
 			usage(argv[0], 1);
@@ -89,37 +112,57 @@ main(int argc, char **argv)
 		}
 	}
 
+	struct sigaction act = {
+		.sa_handler = on_sigint,
+	};
+	sigaction(SIGINT, &act, NULL);
+
 	snek_ev3_init_colors();
-
 	snek_init();
+	snek_argv = argv;
 
-	if (file) {
-		snek_file = file;
-		snek_posix_input = fopen(snek_file, "r");
-		if (!snek_posix_input) {
-			perror(snek_file);
-			exit(1);
+	bool ret = true;
+
+	if (argv[optind]) { // At least one file is supplied on the command line
+		for (; argv[optind]; optind++) {
+			snek_file = argv[optind];
+			snek_posix_input = fopen(snek_file, "r");
+			if (!snek_posix_input) {
+				perror(snek_file);
+				exit(1);
+			}
+			if (snek_parse() != snek_parse_success) {
+				fclose(snek_posix_input);
+				ret = false;
+				break;
+			}
+			fclose(snek_posix_input);
 		}
-		snek_parse();
+		snek_interactive = interactive_flag;
+	} else {
+		printf("Welcome to Snek version %s\n", SNEK_VERSION);
+
+		// Try running the stored program if no files are supplied on
+		// the command line
+		snek_file = "<eeprom>";
+		snek_posix_input = fopen(EEPROM_FILE, "r");
+		if (snek_posix_input) {
+			// The return value is ignored: we know we're dropping
+			// into the REPL that will supply its own return value.
+			snek_parse();
+			fclose(snek_posix_input);
+		}
+
+		snek_interactive = true;
 	}
 
-	if (argv[optind]) {
-		snek_file = argv[optind];
-		snek_posix_input = fopen(snek_file, "r");
-		if (!snek_posix_input) {
-			perror(snek_file);
-			exit(1);
-		}
-	} else {
+	if (snek_interactive) { // -i or at no files are supplied on the command line
 		snek_file = "<stdin>";
 		snek_posix_input = stdin;
-		snek_interactive = true;
-		printf("Welcome to Snek version %s\n", SNEK_VERSION);
+		if (snek_parse() != snek_parse_success)
+			ret = false;
 	}
 
-	bool ret = snek_parse() == snek_parse_success;
-	if (snek_posix_input == stdin)
-		printf("\n");
 	return ret ? 0 : 1;
 }
 
@@ -135,4 +178,83 @@ snek_builtin_read(snek_poly_t port)
 		snek_error_type_1(port);
 		return SNEK_NULL;
 	}
+}
+
+snek_poly_t
+snek_builtin_eeprom_write(void)
+{
+	int fd = open(EEPROM_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1) {
+		perror("open");
+		exit(1);
+	}
+
+	for (;;) {
+		int c = getc(stdin);
+		if (c == ('d' & 0x1f) || c == 0xff)
+			break;
+
+		char b = c;
+		if (write_noeintr(fd, &b, 1) != 1) {
+			perror("write");
+			exit(1);
+		}
+	}
+	close_noeintr(fd);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_eeprom_erase(void)
+{
+	unlink(EEPROM_FILE);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
+{
+	(void) nnamed;
+	(void) args;
+
+	int fd = open(EEPROM_FILE, O_RDONLY);
+	if (nposition)
+		putc('b' & 0x1f, stdout);
+
+	if (fd != -1) {
+		for (;;) {
+			char buf[4096];
+			int  read_ = read(fd, buf, sizeof(buf));
+			if (read_ == 0)
+				break;
+			if (read_ == -1) {
+				perror("read");
+				exit(1);
+			}
+			fputs(buf, stdout);
+		}
+		close(fd);
+	}
+
+	if (nposition)
+		putc('c' & 0x1f, stdout);
+	return SNEK_NULL;
+}
+
+snek_poly_t
+snek_builtin_reset(void)
+{
+	if (!snek_interactive) {
+		snek_error("reset() is not available in non-interactive mode");
+		return SNEK_NULL;
+	}
+
+	// Reset is done before \n from the input line is processed and echoed,
+	// so print it here to make sure Snek banner is not printed on the same
+	// line as reset() echo.
+	printf("\n");
+
+	execv("/proc/self/exe", snek_argv);
+	perror("execv");
+	exit(255);
 }

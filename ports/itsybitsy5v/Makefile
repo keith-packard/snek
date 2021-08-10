@@ -15,10 +15,11 @@
 SNEK_ROOT = ../..
 SNEK_AVR = $(SNEK_ROOT)/chips/avr
 
-PROGNAME=snek-itsybitsy5v
-PRODUCT_NAME=SnekItsyBitsy5v
+BUILD_INSTALL?=1
+PROGNAME?=snek-itsybitsy5v
+PRODUCT_NAME?=SnekItsyBitsy5v
 
-AVR_CLOCK=16000000UL
+AVR_CLOCK?=16000000UL
 
 include $(SNEK_AVR)/snek-avr.defs
 
@@ -30,38 +31,45 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_AVR_BUILTINS) \
-	snek-itsybitsy5v.builtin
+	../itsybitsy5v/snek-itsybitsy5v.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
-all: $(ELF) $(HEX) snek-itsybitsy-install
+ifeq ($(BUILD_INSTALL),1)
+INSTALLER=snek-itsybitsy-install
+else
+INSTALLER=
+endif
+
+all: $(ELF) $(HEX) $(INSTALLER)
 
 $(PROG): Makefile $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
 	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
 
-snek-itsybitsy-install: snek-itsybitsy-install.in
-	$(SNEK_SED) $^ > $@
-	chmod +x $@
-
 install:: $(HEX)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
+
+ifeq ($(BUILD_INSTALL),1)
+snek-itsybitsy-install: ../itsybitsy5v/snek-itsybitsy-install.in
+	$(SNEK_SED) $^ > $@
+	chmod +x $@
 
 install:: snek-itsybitsy-install snek-itsybitsy-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-itsybitsy-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-itsybitsy-install.1 $(DESTDIR)$(MANDIR)/man1
+endif
 
 clean::
-	rm -f snek-itsybitsy-install
 	rm -f *.hex *.elf *.map
-	rm -f ao-product.h
+	rm -f ao-product.h $(INSTALLER)
 
 uninstall::
 
 ISP=avrisp2
 
-load: $(HEX) snek-itsybitsy-install
-	./snek-itsybitsy-install -quick -isp $(ISP) -hex $(HEX) load
+load: all
+	../itsybitsy5v/snek-itsybitsy-install -quick -isp $(ISP) -hex $(HEX) load

@@ -286,9 +286,11 @@ ao_usb_flush(FILE *file)
 	 * want to send an empty packet
 	 */
 	if (!ao_usb_in_flushed) {
-		ao_usb_in_flushed = true;
 		_ao_usb_in_wait();
-		_ao_usb_in_send();
+		if (!ao_usb_in_flushed) {
+			ao_usb_in_flushed = true;
+			_ao_usb_in_send();
+		}
 	}
 	ao_arch_release_interrupts();
 	return 0;
@@ -317,6 +319,8 @@ ao_usb_putc(char c, FILE *file)
 		_ao_usb_in_send();
 	ao_usb_in_flushed = false;
 	ao_arch_release_interrupts();
+	if (c == '\n')
+		ao_usb_flush(file);
 	return (unsigned char) c;
 }
 
@@ -425,16 +429,6 @@ ISR(USB_COM_vect)
 	}
 }
 
-#if AVR_VCC_5V
-#define AO_PAD_REGULATOR_INIT	(1 << UVREGE)	/* Turn on pad regulator */
-#endif
-#if AVR_VCC_3V3
-/* TeleScience V0.1 has a hardware bug -- UVcc is hooked up, but UCap is not
- * Make this work by running power through UVcc to the USB system
- */
-#define AO_PAD_REGULATOR_INIT	(1 << UVREGE)	/* Turn off pad regulator */
-#endif
-
 #if F_CPU == 16000000UL
 #define AO_USB_PLL_INPUT_PRESCALER	(1 << PINDIV)	/* Divide 16MHz clock by 2 */
 #endif
@@ -451,7 +445,7 @@ void
 ao_usb_init(void)
 {
 	/* Configure pad regulator */
-	UHWCON = AO_PAD_REGULATOR_INIT;
+	UHWCON = (1 << UVREGE);
 
 	/* Enable USB device, but freeze the clocks until initialized */
 	USBCON = AO_USB_CON | (1 <<FRZCLK);

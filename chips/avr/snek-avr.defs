@@ -14,7 +14,9 @@
 
 SNEK_AO = $(SNEK_ROOT)/ao
 
-SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
+SNEK_PORT?=.
+
+SNEK_LOCAL_VPATH = $(SNEK_PORT):$(SNEK_AVR):$(SNEK_AO)
 
 SNEK_AVR_SRC = \
 	snek-io.c \
@@ -35,7 +37,8 @@ SNEK_AVR_INC = \
 	ao-pins.h \
 	ao-product.h \
 	snek-avr.h \
-	ao-usb.h
+	ao-usb.h \
+	$(SNEK_EXT_INC)
 
 SNEK_AVR_BUILTINS = \
 	snek-gpio.builtin \
@@ -50,7 +53,7 @@ AO_CFLAGS=\
 	-std=gnu99 $(OPT) -g
 
 AVR_CFLAGS=-DF_CPU=$(AVR_CLOCK) -mmcu=atmega32u4 -g $(SNEK_CFLAGS) -Waddr-space-convert \
-	-I. -I$(SNEK_AVR) -I$(SNEK_AO) -I$(SNEK_ROOT) $(AO_CFLAGS)
+	-I. -I$(SNEK_PORT) -I$(SNEK_AVR) -I$(SNEK_AO) -I$(SNEK_ROOT) $(AO_CFLAGS)
 
 CFLAGS = $(AVR_CFLAGS) $(SNEK_CFLAGS)
 
@@ -58,9 +61,6 @@ LDSCRIPT=$(SNEK_AVR)/snek-avr51.x
 
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
-	-Wl,--defsym -Wl,__DATA_REGION_LENGTH__=0x880 \
-	-Wl,--defsym -Wl,__EEPROM_REGION_LENGTH__=0x400 \
 	-Wl,-T$(LDSCRIPT) \
 	-Wl,-Map=$(MAP)
 

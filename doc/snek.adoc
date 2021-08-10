@@ -2423,30 +2423,6 @@ Use the Arduino IDE to install the Optiboot boot loader following
 instructions found on the
 link:https://github.com/Optiboot/optiboot[Optiboot web site].
 
-=== Installing USB Serial firmare on the Uno
-
-The default serial firmware that communicates over USB doesn't support
-the flow control necessary to handle downloading programs to the Uno
-from mu-editor. Fixing that requires a programming puck, such as the
-USBTiny device.
-
-On Linux, use snek-uno-install to first install the updated
-firmware on the serial interface chip. That uses the programming
-header near the USB connector, not the one near the ATmega328p. Once
-you have things hooked up with power to both the ISP and Uno board,
-run the installer:
-
-	$ snek-uno-install usbserial
-
-On other hosts, you'll need to run 'avrdude' manually. Avrdude comes
-with the Arduino IDE, so install that and you should be able to run
-avrdude like this:
-
-	> avrdude -pm16u2 -cusbtiny -U flash:w:Arduino-usbserial-atmega16u2-Uno-Rev3.hex:i
-
-If you're using a different programming device, you can replace
-'usbtiny' with the appropriate value.
-
 === Installing Snek on the Duemilanove and Uno
 
 Once your board is ready to install snek, you can use avrdude to do

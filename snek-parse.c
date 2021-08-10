@@ -27,6 +27,18 @@ snek_id_t snek_parse_formals[SNEK_MAX_FORMALS];
 
 snek_token_val_t snek_token_val;
 
+#ifdef SNEK_NO_SLICE
+#define snek_no_slice SNEK_NO_SLICE
+#else
+#define snek_no_slice 0
+#endif
+
+#ifdef SNEK_NO_DICT
+#define snek_no_dict SNEK_NO_DICT
+#else
+#define snek_no_dict 0
+#endif
+
 #define GRAMMAR_TABLE
 #ifdef PARSE_DEBUG
 #define TOKEN_NAMES
@@ -137,12 +149,15 @@ _value_push_id(snek_id_t id, const char *file, int line)
 #define PARSE_STACK_SIZE 128
 #endif
 
-#define lex(context) ({ (void) context; token_t __token__ = snek_lex(); snek_line = snek_lex_line; snek_parse_middle = true; __token__; })
-
-#define PARSE_ACTION_BOTTOM do {			\
-		if (snek_abort)				\
-			return parse_return_error;	\
-	} while (0)
+#define lex(context) ({						\
+			(void) context;				\
+			token_t __token__ = snek_lex();		\
+			if (snek_abort)				\
+				return parse_return_error;	\
+			snek_line = snek_lex_line;		\
+			snek_parse_middle = true;		\
+			__token__;				\
+		})
 
 static inline void binop_first(void)
 {

@@ -1,0 +1,76 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+
+#
+# Number-theoretic and representation functions
+#
+math.ceil, 1
+math.copysign, 2
+math.fabs, 1
+math.factorial, 1
+math.floor, 1
+math.fmod, 2
+math.frexp, 1
+math.fsum, 1
+math.gcd, 2
+math.isclose, -1
+rel_tol,-2
+abs_tol,-2
+math.isfinite, 1
+math.isinf, 1
+math.isnan, 1
+math.ldexp, 2
+math.modf, 1
+math.trunc, 1
+round, 1
+#
+# Power and logarithmic functions
+#
+math.exp, 1
+math.log, 1
+math.log10, 1
+math.pow, 2
+#
+# Trigonometric functions
+#
+math.acos, 1
+math.asin, 1
+math.atan, 1
+math.atan2, 2
+math.cos, 1
+math.hypot, 2
+math.sin, 1
+math.tan, 1
+#
+# Angular conversion
+#
+math.degrees, 1
+math.radians, 1
+#
+# Hyperbolic functions
+#
+math.cosh, 1
+math.sinh, 1
+math.tanh, 1
+#
+# Special functions
+#
+#
+# constants
+#
+math.pi, -2, 3.141592653589793
+math.e, -2, 2.718281828459045
+math.tau, -2, 6.283185307179586
+math.inf, -2, INFINITY
+math.nan, -2, NAN

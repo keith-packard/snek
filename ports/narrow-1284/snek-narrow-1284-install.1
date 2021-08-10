@@ -11,28 +11,23 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 .\" General Public License for more details.
 .\"
-.TH SNEK-DUEMILANOVE-INSTALL 1 "snek-duemilanove-install" ""
+.TH SNEK-NARROW-1284-INSTALL 1 "snek-narrow-1284-install" ""
 .SH NAME
-snek-duemilanove-instal \- Install Snek to Duemilanove
+snek-narrow-1284-install \- Install Snek to Narrow 1284 board
 .SH SYNOPSIS
-.B "snek-duemilanove-install" [OPTION]... [COMMAND]
+.B "snek-narrow-1284-install" [OPTION]... [COMMAND]
 .SH DESCRIPTION
-.I snek-duemilanove-install
-installs the Snek programming language on an ATmega328P Arduemilanove
-Duemilanove board using the Optiboot boot loader.
+.I snek-narrow-1284-install
+installs the Snek programming language on an Narrow 1284 board 
+board
 .SH OPTIONS
+.TP
+\-port <port>
+Specifies the serial port to use when programning the ATnarrow-12842560 chip,
+the default is '/dev/ttyACM0'.
 .TP
 \-hex <snek.hex>
 Specifies the hex file to load to the board. The default is the
 currently installed version of Snek.
-.TP
-\-port <port>
-Specifies the serial port to use. The default is /dev/ttyUSB0.
-.SH OPTIBOOT
-Snek for the Duemilanove requires you to first install Optiboot on
-your device.
-You can use the Arduino IDE to install Optiboot on your
-Duemilanove. Follow the instructions on the Optiboot web site:
-https://github.com/Optiboot/optiboot to learn how to do that.
 .SH AUTHOR
 Keith Packard

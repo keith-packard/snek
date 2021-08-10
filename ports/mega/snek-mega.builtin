@@ -83,6 +83,4 @@ A14, -2, 68
 A15, -2, 69
 #include <snek-atmega.h>
 #include <snek-atmega-math.h>
-#define SNEK_POOL 6144
-#define SNEK_MAX_TOKEN 63
-#define UART_BAUD 38400
+#define SNEK_POOL 5120
