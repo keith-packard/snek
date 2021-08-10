@@ -12,7 +12,7 @@ SNEK_DATE = 2020-10-06
 
 SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
-SNEK_CLANG = $(shell if $(CC) --version | grep -q -i llvm; then echo yes; else echo no; fi)
+SNEK_CLANG = $(shell if $(CC) --version | grep -q -i 'llvm\|clang'; then echo yes; else echo no; fi)
 
 SNEK_PORTS = $(SNEK_ROOT)/ports
 SNEK_HOSTS = $(SNEK_ROOT)/hosts

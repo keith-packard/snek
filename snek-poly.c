@@ -94,6 +94,9 @@ snek_poly_cmp(snek_poly_t a, snek_poly_t b, bool is)
 	case snek_list:
 		if (!is)
 			return snek_list_cmp(snek_poly_to_list(a), snek_poly_to_list(b));
+#ifdef __clang__
+		__attribute__((fallthrough));
+#endif
 		/* fall through */
 	default:
 		return (b.u < a.u) - (a.u < b.u);

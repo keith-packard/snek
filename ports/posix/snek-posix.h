@@ -21,6 +21,7 @@ int snek_getc(FILE *input);
 
 #ifdef __APPLE__
 #define isnanf isnan
+#define strfromf(dst, len, fmt, val) sprintf_const(dst, fmt, val)
 #endif
 
 #define SNEK_GETC()	snek_getc(snek_posix_input)
