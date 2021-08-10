@@ -233,6 +233,12 @@ snek_code_add_in_enum(snek_id_t id, uint8_t for_depth)
 	compile_extend(sizeof(snek_id_t), &id);
 }
 
+void
+snek_code_add_line(void)
+{
+	snek_code_add_op_offset(snek_op_line, snek_lex_line);
+}
+
 /*
  * Patch pending branch once the target instruction is known
  */

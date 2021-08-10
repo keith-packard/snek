@@ -88,11 +88,11 @@ opt-stats	: stat opt-stats
 		|
 		;
 stat		: simple-stat
-		| @{ snek_print_val = false; snek_code_add_op_offset(snek_op_line, snek_lex_line); }@
+		| @{ snek_print_val = false; snek_code_add_line(); }@
 		  compound-stat
 		| NL
 		;
-simple-stat	: @{ snek_code_add_op_offset(snek_op_line, snek_lex_line); }@ small-stat small-stats-p NL
+simple-stat	: @{ snek_code_add_line(); }@ small-stat small-stats-p NL
 		;
 small-stats-p	: SEMI small-stat small-stats-p
 		|
@@ -188,7 +188,7 @@ if-stat		: IF if-expr suite elif-stats
 		;
 elif-stats	: ELIF
 			@{
-				snek_code_add_op_offset(snek_op_line, snek_lex_line);
+				snek_code_add_line();
 			else_branch:
 				snek_code_add_forward(snek_forward_if);
 				value_push_offset(snek_code_current());
