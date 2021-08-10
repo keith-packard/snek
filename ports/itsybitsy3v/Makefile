@@ -17,4 +17,6 @@ PROGNAME=snek-itsybitsy3v
 PRODUCT_NAME=SnekItsyBitsy3v
 BUILD_INSTALL=0
 
+SNEK_PORT=../itsybitsy5v
+
 include ../itsybitsy5v/Makefile

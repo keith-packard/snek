@@ -36,12 +36,12 @@ SNEK_LOCAL_BUILTINS = \
 include $(SNEK_ROOT)/snek-install.defs
 
 ifeq ($(BUILD_INSTALL),1)
-INSTALL=snek-itsybitsy-install
+INSTALLER=snek-itsybitsy-install
 else
-INSTALL=
+INSTALLER=
 endif
 
-all: $(ELF) $(HEX) $(INSTALL)
+all: $(ELF) $(HEX) $(INSTALLER)
 
 $(PROG): Makefile $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
@@ -65,7 +65,7 @@ endif
 
 clean::
 	rm -f *.hex *.elf *.map
-	rm -f ao-product.h $(INSTALL)
+	rm -f ao-product.h $(INSTALLER)
 
 uninstall::
 
