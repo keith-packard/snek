@@ -17,4 +17,6 @@ float, 1
 int, 1
 tone, 1
 #define SNEK_TONE
-#define SNEK_POOL 768
+#define SNEK_POOL		800
+#define PARSE_STACK_SIZE	64
+#define SNEK_STACK		16

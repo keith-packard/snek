@@ -38,5 +38,9 @@ A5, -2, 19
 #endif
 #define SNEK_MAX_TOKEN 63
 #define VALUE_STACK_SIZE	16
+#ifndef PARSE_STACK_SIZE
 #define PARSE_STACK_SIZE	128
+#endif
+#ifndef SNEK_STACK
 #define SNEK_STACK		32
+#endif
