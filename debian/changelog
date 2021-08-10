@@ -1,3 +1,13 @@
+snek (1.6-1) unstable; urgency=medium
+
+  * New upstream release
+  * Software flow control (ENQ/ACK) support added.
+  * Narrow 1284 support.
+  * Seed Grove Beginner Kit support.
+  * Seeduino XIAO support.
+
+ -- Keith Packard <keithp@keithp.com>  Tue, 10 Aug 2021 15:55:54 -0700
+
 snek (1.5-1) unstable; urgency=medium
 
   * New upstream release.
