@@ -1,0 +1,8 @@
+#!/bin/sh
+export SNEKMAC=imac.keithp.com:build/snek
+export SNEK_RISCV_TEST=1
+export SNEK_ESP32=1
+export SNEK_OTHEROS=1
+export ESP_IDF=$HOME/src/esp/esp-idf
+wakeonlan 58:40:4e:ee:39:1a
+make  "$@"
