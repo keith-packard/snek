@@ -69,27 +69,55 @@ described below.
  * [LEGO® MINDSTORMS® EV3](https://www.lego.com/en-us/product/lego-mindstorms-ev3-31313).
    Snek supports EV3 motors and sensors.
 
+ * [Seeed Grove Beginner Kit](https://www.seeedstudio.com/Grove-Beginner-Kit-for-Arduino-p-4549.html).
+   The port includes drivers for everything except the temperature,
+   humidity and barometric pressure sensors.
+
+ * [Narrow 1284](https://www.crowdsupply.com/pandauino/narrow).
+
+ * [Arduino Nano Every](https://store.arduino.cc/usa/nano-every).
+
 ## To Do list
 
-I think the basic Snek language is pretty complete at this point, but
-there are always improvements that can be made.
+ * Convert parser from LL to SLR. The hope here is to reduce the
+   amount of parse stack space needed due to the large number of
+   precedence levels in the language.
 
 ## Recent Changes
 
 Here's some places that have seen recent work
 
- * [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3) port.
-   This port, is mostly the same as the Duemilanove port but includes
-   replacement firmware for the Atmega 16u2 on the Uno board which
-   acts as the USB interface.
+ * Support explicit serial synchronization using ENQ/ACK so that
+   applications sending lots of data do not require OS flow control
+   support. With many devices connecting via USB/serial adapters that
+   do not provide any flow control, adding explicit flow control to
+   the Snek implementation provides a way to make downloading code
+   reliable for them.
 
- * Handle 'chained' comparison operators (a < b < c) correctly.
+ * Fixed incorrect precedence between bitwise and (&) and bitwise xor
+   (^) operators.
 
- * Add sound output support for the Adafruit Circuit Playground
-   Express board.
+ * Lots of improvements to the EV3 port making it more like
+   other Snek devices.
 
- * Use Optiboot on the Duemilanove board so that Snek can be replaced
-   without needing a separate programming device.
+ * [Narrow 1284](https://www.crowdsupply.com/pandauino/narrow) port.
+   This is a small board with the ATmega1284 SoC which is like the
+   ATmega328 but with much more Flash and RAM which provides way more
+   room for Snek to run.
+
+ * [Seeed Grove Beginner Kit](https://www.seeedstudio.com/Grove-Beginner-Kit-for-Arduino-p-4549.html)
+   port. This is another ATmega328p based board but with a range of
+   devices provided in the kit. Snek supports the LED, Buzzer, Light,
+   Sound, OLED Display, Button, Rotary Potentiometer and 3-axis
+   Accelerometer.
+
+ * [Seeeduino XIAO](https://www.seeedstudio.com/Seeeduino-XIAO-Arduino-Microcontroller-SAMD21-Cortex-M0+-p-4426.html)
+   port. This is a SAMD21-based device on a tiny board with a USB-C
+   connector.
+
+ * [Arduino Nano Every](https://store.arduino.cc/usa/nano-every) port.
+   This uses the ATmega4809 which has 6kB of RAM, providing much more
+   space for Snek programs.
 
 ## Build and Run!
 
@@ -138,7 +166,7 @@ This compiles everything to run from your home directory, instead of
 
 	$ make PREFIX=$HOME/.local install
 
-Make sure you use the same PREFIX value everytime you run make so that
+Make sure you use the same PREFIX value every time you run make so that
 the snek install scripts (which get PREFIX embedded in them) that are
 installed know where to find the snek binaries for each device.
 
@@ -189,7 +217,7 @@ There are a couple more keybindings which you'll want to know:
    this means you don't get a Copy command in the interaction pane.
  * Ctrl-Z — Undo.
 
-Tab auto-indents the current line. Backspace backs up over a tabstop
+Tab auto-indents the current line. Backspace backs up over a tab stop
 when appropriate.
 
 ## Examples
