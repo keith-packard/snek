@@ -9,8 +9,8 @@ Build-Depends-Indep: avr-libc, gcc-avr,
  binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.4),
  gcc-arm-linux-gnueabi, libc6-dev-armel-cross,
  asciidoctor, ruby-asciidoctor-pdf, ruby-coderay
-Standards-Version: 4.5.0
-HomePage: https://sneklang.org
+Standards-Version: 4.5.1
+Homepage: https://sneklang.org
 Vcs-Git: git://sneklang.org/git/snek.git
 Vcs-Browser: https://sneklang.org/cgit/snek.git
 
