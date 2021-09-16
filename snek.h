@@ -574,6 +574,10 @@ snek_panic(const char *message);
 #define sprintf_const sprintf
 #endif
 
+#ifndef strfromf_const
+#define strfromf_const strfromf
+#endif
+
 extern bool snek_abort;
 
 /* snek-frame.c */
