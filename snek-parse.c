@@ -17,9 +17,6 @@
 bool snek_interactive;
 
 bool snek_parse_middle;
-static uint8_t for_depth;
-
-static bool snek_print_val;
 
 uint8_t snek_parse_nformal;
 uint8_t snek_parse_nnamed;
@@ -38,6 +35,10 @@ snek_token_val_t snek_token_val;
 #else
 #define snek_no_dict 0
 #endif
+
+#define PARSE_TOP \
+	uint8_t for_depth = 0; \
+	bool snek_print_val = 0;
 
 #define GRAMMAR_TABLE
 #ifdef PARSE_DEBUG
@@ -225,7 +226,6 @@ snek_parse(void)
 		/* Reset parse state */
 		snek_parse_middle = false;
 		value_stack_p = 0;
-		for_depth = 0;
 
 		/* Reset codegen state */
 		snek_code_reset();
