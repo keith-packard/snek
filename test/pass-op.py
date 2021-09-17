@@ -51,3 +51,23 @@ if not math.isclose(7.8 % 2.2, 1.2):
     exit(1)
 if not math.isclose(-7.8 % 2.2, 1.0):
     exit(1)
+inf = float("inf")
+
+vals = (-inf, -2, -1, 0, 1, 2, inf)
+
+for first in range(0, len(vals)):
+    assert vals[first] == vals[first] + 0
+
+    for second in range(first, len(vals)):
+        assert vals[first] <= vals[second] + 0
+
+        assert vals[second] >= vals[first] + 0
+
+    for second in range(first + 1, len(vals)):
+        assert vals[first] < vals[second] + 0
+
+        assert vals[second] > vals[first] + 0
+
+    for second in range(0, len(vals)):
+        if second != first:
+            assert vals[first] != vals[second] + 0
