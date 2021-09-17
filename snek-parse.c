@@ -209,6 +209,12 @@ static inline void unop_second(void)
 	snek_code_add_op(value_pop().op);
 }
 
+static inline void bool_branch(snek_op_t op)
+{
+	snek_code_add_op_offset(op, 0);
+	value_push_offset(snek_compile_prev);
+}
+
 #define PARSE_CODE
 #include "snek-gram.h"
 
