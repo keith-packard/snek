@@ -42,6 +42,7 @@ SUCCESS_TESTS = \
 	pass-if.py \
 	pass-int.py \
 	pass-math.py \
+	pass-nan.py \
 	pass-op.py \
 	pass-random.py \
 	pass-range.py \
