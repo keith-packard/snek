@@ -159,3 +159,9 @@ snek_poly_get_soffset(snek_poly_t a)
 {
 	return (snek_soffset_t) snek_poly_get_float(a);
 }
+
+bool
+snek_is_nan(snek_poly_t p)
+{
+	return p.u == SNEK_NAN_U;
+}

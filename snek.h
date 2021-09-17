@@ -337,11 +337,8 @@ extern snek_offset_t	snek_stackp;
 extern snek_poly_t	snek_a;
 extern snek_code_t	*snek_code;
 
-static inline bool
-snek_is_nan(snek_poly_t p)
-{
-	return p.u == SNEK_NAN_U;
-}
+bool
+snek_is_nan(snek_poly_t p);
 
 static inline bool
 snek_is_null(snek_poly_t p)
