@@ -29,7 +29,8 @@ sqrtf(float x) {
 }
 
 #define SNEK_DEBUG	0
-#define strtof(a,b) strtod(a,b)
+float atoff(const char *);
+#define strtof(s, n) atoff(s)
 #define SNEK_POOL		1024
 #define SNEK_MAX_TOKEN		63
 #define VALUE_STACK_SIZE	16

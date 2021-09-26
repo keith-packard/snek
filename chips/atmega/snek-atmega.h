@@ -21,7 +21,8 @@
 #include <avr/interrupt.h>
 
 #define SNEK_DEBUG	0
-#define strtof(a,b) strtod(a,b)
+float atoff(const char *);
+#define strtof(s, n) atoff(s)
 #define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
 #define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
 #define PARSE_TABLE_FETCH_INDEX(a)	((uint8_t) pgm_read_byte(a))
