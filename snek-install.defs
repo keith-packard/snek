@@ -20,6 +20,10 @@ SNEK_ESP32 ?= 0
 ifneq "$(SNEK_ESP32)" "0"
 SNEK_PORTS_ESP32=$(SNEK_PORTS)/esp32/snek-esp32-$(SNEK_VERSION).bin
 endif
+SNEK_NANO_EVERY ?= 0
+ifneq "$(SNEK_NANO_EVERY)" "0"
+SNEK_PORTS_NANO_EVERY=$(SNEK_PORTS)/nano-every/snek-nano-every-$(SNEK_VERSION).hex
+endif
 #SNEKMAC ?= imac-remote:build/snek
 FIRMWARE ?= \
 	$(SNEK_PORTS)/crickit/snek-crickit-$(SNEK_VERSION).uf2 \
@@ -41,7 +45,8 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/uduino/snek-uduino-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/uno/snek-uno-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/xiao/snek-xiao-$(SNEK_VERSION).uf2 \
-	$(SNEK_PORTS_HIFIVE1REVB) $(SNEK_PORTS_ESP32)
+	$(SNEK_PORTS_HIFIVE1REVB) $(SNEK_PORTS_ESP32) \
+	$(SNEK_PORTS_NANO_EVERY)
 
 USBFIRMWARE ?= \
 	$(SNEK_PORTS)/nano33iot/update-bootloader-nano33iot.ino \
