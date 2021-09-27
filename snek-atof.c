@@ -99,10 +99,12 @@ atoff (const char * nptr)
 
     c = *nptr++;
 
+#if defined(SNEK_BUILTIN_float)
     if (TOLOWER(c) == 'n')
 	    return NAN;
     if (TOLOWER(c) == 'i')
 	    return INFINITY;
+#endif
 
     flag = 0;
 
@@ -120,8 +122,7 @@ atoff (const char * nptr)
 	    } else {
 		if (flag & FL_DOT)
 		    exp -= 1;
-		/* x.u32 = x.u32 * 10 + c	*/
-		x.u32 = (((x.u32 << 2) + x.u32) << 1) + c;
+		x.u32 = x.u32 * 10 + c;
 		if (x.u32 >= (ULONG_MAX - 9) / 10)
 		    flag |= FL_OVFL;
 	    }
@@ -134,7 +135,7 @@ atoff (const char * nptr)
 	c = *nptr++;
     }
 
-    if (c == (('e'-'0') & 0xff) || c == (('E'-'0') & 0xff))
+    if (TOLOWER(c) == 'e' - '0')
     {
 	int i;
 	c = *nptr++;
