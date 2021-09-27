@@ -87,6 +87,12 @@ described below.
 
 Here's some places that have seen recent work
 
+ * Fix NaN comparisons and make dicts containing NaN keys work.
+   [Jake Edge's article, “Revisiting NaNs in Python”](https://lwn.net/Articles/869231/)
+   led to the discovery that Snek had several bugs in NaN
+   comparisons. Snek now computes the right value for comparisons with
+   Nan, as well as permitting NaN to be used as a key in dictionaries.
+
  * Support explicit serial synchronization using ENQ/ACK so that
    applications sending lots of data do not require OS flow control
    support. With many devices connecting via USB/serial adapters that
