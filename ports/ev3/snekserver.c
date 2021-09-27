@@ -12,8 +12,7 @@
  * General Public License for more details.
  */
 
-#define _GNU_SOURCE
-
+#include <snek.h>
 #include "utils.h"
 #include <errno.h>
 #include <getopt.h>
