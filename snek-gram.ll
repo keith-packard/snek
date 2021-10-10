@@ -38,7 +38,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 	 		}@
 		  OP opt-formals CP COLON suite
 			@{
-				if (snek_compile[snek_compile_prev] == snek_op_return)
+				if (snek_compile[snek_code_prev_insn()] == snek_op_return)
 					snek_code_delete_prev();
 				else
 					snek_code_add_op(snek_op_null);
@@ -215,7 +215,7 @@ if-expr		: expr COLON
 				snek_code_add_op_offset(snek_op_branch_false, 0);
 
 				/* push 0 - if_expr_off */
-				value_push_offset(snek_compile_prev);
+				value_push_offset(snek_code_prev_insn());
 			}@
 		;
 while-stat	:
@@ -227,13 +227,13 @@ while-stat	:
 			@{
 				snek_code_add_op_offset(snek_op_branch_false, 0);
 				/* push 1 - while_off */
-				value_push_offset(snek_compile_prev);
+				value_push_offset(snek_code_prev_insn());
 			}@
 		  suite
 			@{
 				/* push 2 - loop_end_off */
 				snek_code_add_op_offset(snek_op_branch, 0);
-				value_push_offset(snek_compile_prev);
+				value_push_offset(snek_code_prev_insn());
 				/* push 3 - while_else_stat_off */
 				value_push_offset(snek_code_current());
 			}@
@@ -251,9 +251,10 @@ for-stat	: FOR NAME
 			@{
 				snek_code_add_op_offset(snek_op_branch, 0);
 				/* push 2 - loop_end_off */
-				value_push_offset(snek_compile_prev);
+				value_push_offset(snek_code_prev_insn());
 				/* push 3 - while_else_stat_off */
 				value_push_offset(snek_code_current());
+			}@ @{
 				for_depth--;
 			}@
 		  while-else-stat
@@ -268,9 +269,9 @@ for-params	: RANGE OP opt-actuals CP COLON
 				snek_code_add_in_range(id, num, for_depth);
 			for_push_prevs:
 				/* push 0 - for_off */
-				value_push_offset(snek_compile_prev);
+				value_push_offset(snek_code_prev_insn());
 				/* push 1 - top_off */
-				value_push_offset(snek_compile_prev);
+				value_push_offset(snek_code_prev_insn());
 				for_depth++;
 			}@
 		| expr COLON
@@ -300,10 +301,7 @@ suite		: simple-stat
 expr		: expr-and expr-or-p
 		;
 expr-or-p	: OR
-			@{
-				snek_code_add_op_offset(snek_op_branch_true, 0);
-				value_push_offset(snek_compile_prev);
-			}@
+			@ bool_branch(snek_op_branch_true); @
 		  expr-and
 			@ short_second(); @
 		  expr-or-p
@@ -312,10 +310,7 @@ expr-or-p	: OR
 expr-and	: expr-not expr-and-p
 		;
 expr-and-p	: AND
-			@{
-				snek_code_add_op_offset(snek_op_branch_false, 0);
-				value_push_offset(snek_compile_prev);
-			}@
+			@ bool_branch(snek_op_branch_false); @
 		  expr-not
 			@ short_second(); @
 		  expr-and-p
@@ -495,10 +490,10 @@ expr-prim	: OP opt-tuple CP
 			}@
 		| OS opt-actuals CS
 			@{
-				snek_offset_t num = value_pop().offset;
-				if (num >= 256)
+				snek_offset_t offset = value_pop().offset;
+				if (offset >= 256)
 					return parse_return_syntax;
-				snek_code_add_op_offset(snek_op_list, num);
+				snek_code_add_op_offset(snek_op_list, offset);
 			}@
 {SNEK_DICT
 		| OC
@@ -509,8 +504,8 @@ expr-prim	: OP opt-tuple CP
 		  opt-dict-ents CC
 			@{
 				/* Fetch the number of entries compiled */
-				snek_offset_t num = value_pop().offset;
-				snek_code_add_op_offset(snek_op_dict, num);
+				snek_offset_t offset = value_pop().offset;
+				snek_code_add_op_offset(snek_op_dict, offset);
 			}@
 }
 		| NAME

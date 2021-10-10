@@ -87,6 +87,9 @@ snek_poly_cmp(snek_poly_t a, snek_poly_t b, bool is)
 	int sdiff;
 	switch (atype) {
 	case snek_float:
+		tdiff = snek_is_nan(a) - snek_is_nan(b);
+		if (tdiff)
+			return tdiff;
 		return (b.f < a.f) - (a.f < b.f);
 	case snek_string:
 		sdiff = strcmp(snek_poly_to_string(a), snek_poly_to_string(b));
@@ -158,4 +161,10 @@ snek_soffset_t
 snek_poly_get_soffset(snek_poly_t a)
 {
 	return (snek_soffset_t) snek_poly_get_float(a);
+}
+
+bool
+snek_is_nan(snek_poly_t p)
+{
+	return p.u == SNEK_NAN_U;
 }

@@ -73,8 +73,8 @@ snek_eeprom_load(void)
 {
 	snek_interactive = false;
 	ao_flash_read_init();
-	save_getc = __iob[0]->get;
-	__iob[0]->get = snek_eeprom_getchar;
+	save_getc = stdin->get;
+	stdin->get = snek_eeprom_getchar;
 }
 
 int
@@ -87,6 +87,6 @@ snek_eeprom_getchar(FILE *stream)
 			return c;
 	}
 	snek_interactive = true;
-	__iob[0]->get = save_getc;
+	stdin->get = save_getc;
 	return EOF;
 }

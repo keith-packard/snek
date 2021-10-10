@@ -28,8 +28,6 @@
    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
    POSSIBILITY OF SUCH DAMAGE. */
 
-/* $Id: strtod.c 2191 2010-11-05 13:45:57Z arcanum $ */
-
 
 #include <ctype.h>
 #include <errno.h>
@@ -38,27 +36,27 @@
 #include <stdlib.h>
 
 #ifdef AVR
-#define strtof strtod
 #define float double
 #include <avr/pgmspace.h>
 #else
-#define PROGMEM
+#define __flash
 #define pgm_read_dword(x)	(*x)
 #endif
+#include <snek.h>
 
 /* Only GCC 4.2 calls the library function to convert an unsigned long
    to float.  Other GCC-es (including 4.3) use a signed long to float
    conversion along with a large inline code to correct the result.	*/
 extern float __floatunsisf (unsigned long);
 
-PROGMEM static const float pwr_p10 [6] = {
-    1e+1, 1e+2, 1e+4, 1e+8, 1e+16, 1e+32
+static const __flash float pwr_p10 [6] = {
+    1e+32, 1e+16, 1e+8, 1e+4, 1e+2, 1e+1,
 };
-PROGMEM static const float pwr_m10 [6] = {
-    1e-1, 1e-2, 1e-4, 1e-8, 1e-16, 1e-32
+static const __flash float pwr_m10 [6] = {
+    1e-32, 1e-16, 1e-8, 1e-4, 1e-2, 1e-1,
 };
 
-/**  The strtof() function converts the initial portion of the string pointed
+/**  The atof() function converts the initial portion of the string pointed
      to by \a nptr to float representation.
 
      The expected form of the string is an optional plus ( \c '+' ) or minus
@@ -69,11 +67,7 @@ PROGMEM static const float pwr_m10 [6] = {
 
      Leading white-space characters in the string are not skipped.
 
-     The strtod() function returns the converted value, if any.
-
-     If \a endptr is not \c NULL, a pointer to the character after the last
-     character used in the conversion is stored in the location referenced by
-     \a endptr.
+     The atof() function returns the converted value, if any.
 
      If no conversion is performed, zero is returned and the value of
      \a nptr is stored in the location referenced by \a endptr.
@@ -83,8 +77,12 @@ PROGMEM static const float pwr_m10 [6] = {
      in \c errno.  If the correct value would cause underflow, zero is
      returned and \c ERANGE is stored in \c errno.
  */
+
+#define CASE_CONVERT    ('a' - 'A')
+#define TOLOWER(c)        ((c) | CASE_CONVERT)
+
 float
-strtof (const char * nptr, char ** endptr)
+atoff (const char * nptr)
 {
     union {
 	unsigned long u32;
@@ -99,10 +97,14 @@ strtof (const char * nptr, char ** endptr)
 #define FL_DOT	    0x04	/* decimal '.' was	*/
 #define FL_MEXP	    0x08	/* exponent 'e' is neg.	*/
 
-    if (endptr)
-	*endptr = (char *)nptr;
-
     c = *nptr++;
+
+#if defined(SNEK_BUILTIN_float)
+    if (TOLOWER(c) == 'n')
+	    return NAN;
+    if (TOLOWER(c) == 'i')
+	    return INFINITY;
+#endif
 
     flag = 0;
 
@@ -120,8 +122,7 @@ strtof (const char * nptr, char ** endptr)
 	    } else {
 		if (flag & FL_DOT)
 		    exp -= 1;
-		/* x.u32 = x.u32 * 10 + c	*/
-		x.u32 = (((x.u32 << 2) + x.u32) << 1) + c;
+		x.u32 = x.u32 * 10 + c;
 		if (x.u32 >= (ULONG_MAX - 9) / 10)
 		    flag |= FL_OVFL;
 	    }
@@ -134,7 +135,7 @@ strtof (const char * nptr, char ** endptr)
 	c = *nptr++;
     }
 
-    if (c == (('e'-'0') & 0xff) || c == (('E'-'0') & 0xff))
+    if (TOLOWER(c) == 'e' - '0')
     {
 	int i;
 	c = *nptr++;
@@ -163,29 +164,22 @@ strtof (const char * nptr, char ** endptr)
 	}
     }
 
-    if ((flag & FL_ANY) && endptr)
-	*endptr = (char *)nptr - 1;
-
     x.flt = __floatunsisf (x.u32);		/* manually	*/
 
     if (x.flt != 0) {
 	int pwr;
+	const __flash float *fptr;
+
 	if (exp < 0) {
-	    nptr = (void *)(pwr_m10 + 5);
+	    fptr = pwr_m10;
 	    exp = -exp;
 	} else {
-	    nptr = (void *)(pwr_p10 + 5);
+	    fptr = pwr_p10;
 	}
 	for (pwr = 32; pwr; pwr >>= 1) {
-	    for (; exp >= pwr; exp -= pwr) {
-		union {
-		    unsigned long u32;
-		    float flt;
-		} y;
-		y.u32 = pgm_read_dword ((float *)nptr);
-		x.flt *= y.flt;
-	    }
-	    nptr -= sizeof(float);
+	    for (; exp >= pwr; exp -= pwr)
+		x.flt *= *fptr;
+	    fptr++;
 	}
     }
 

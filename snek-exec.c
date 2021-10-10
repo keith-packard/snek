@@ -290,30 +290,35 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 	 * in snek, so no type checking needed here.
 	 */
 	if (op <= snek_op_is_not) {
-		int8_t cmp = snek_poly_cmp(a, b, op >= snek_op_is);
 		bool v;
-		switch (op) {
-		case snek_op_eq:
-		case snek_op_is:
-			v = cmp == 0;
-			break;
-		case snek_op_ne:
-		case snek_op_is_not:
-			v = cmp != 0;
-			break;
-		case snek_op_gt:
-			v = cmp > 0;
-			break;
-		case snek_op_lt:
-			v = cmp < 0;
-			break;
-		case snek_op_ge:
-			v = cmp >= 0;
-			break;
-		case snek_op_le:
-		default:
-			v = cmp <= 0;
-			break;
+		if (op < snek_op_is && (snek_is_nan(a) || snek_is_nan(b)))
+			v = (op == snek_op_ne);
+		else
+		{
+			int8_t cmp = snek_poly_cmp(a, b, op >= snek_op_is);
+			switch (op) {
+			case snek_op_eq:
+			case snek_op_is:
+				v = cmp == 0;
+				break;
+			case snek_op_ne:
+			case snek_op_is_not:
+				v = cmp != 0;
+				break;
+			case snek_op_gt:
+				v = cmp > 0;
+				break;
+			case snek_op_lt:
+				v = cmp < 0;
+				break;
+			case snek_op_ge:
+				v = cmp >= 0;
+				break;
+			case snek_op_le:
+			default:
+				v = cmp <= 0;
+				break;
+			}
 		}
 		return snek_bool_to_poly(v);
 	}

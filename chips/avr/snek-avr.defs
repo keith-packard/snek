@@ -26,7 +26,7 @@ SNEK_AVR_SRC = \
 	ao-usb-avr.c \
 	ao-notask.c \
 	ao-product.c \
-	snek-strtof.c
+	snek-atof.c
 
 SNEK_AVR_INC = \
 	ao.h \

@@ -22,4 +22,17 @@
 
 static FILE __stdio = FDEV_SETUP_STREAM(ao_usb_putc, snek_io_getc, ao_usb_flush, _FDEV_SETUP_RW);
 
+#ifdef PICOLIBC_STDIO_GLOBALS
+#ifdef __strong_reference
+#define STDIO_ALIAS(x) __strong_reference(stdin, x);
+#else
+#define STDIO_ALIAS(x) FILE *const x = &__stdio;
+#endif
+
+FILE *const stdin = &__stdio;
+STDIO_ALIAS(stdout);
+STDIO_ALIAS(stderr);
+
+#else
 FILE *const __iob[3] = { &__stdio, &__stdio, &__stdio };
+#endif
