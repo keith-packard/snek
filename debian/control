@@ -3,7 +3,7 @@ Section: interpreters
 Priority: optional
 Maintainer: Keith Packard <keithp@keithp.com>
 Rules-Requires-Root: no
-Build-Depends: debhelper-compat (= 13), libreadline-dev, python3, lola, gawk
+Build-Depends: debhelper-compat (= 13), libreadline-dev, python3:any, lola, gawk
 Build-Depends-Indep: avr-libc, gcc-avr,
  binutils-arm-none-eabi, gcc-arm-none-eabi, picolibc-arm-none-eabi (>= 1.4), qemu-system-arm,
  binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.4),
@@ -17,7 +17,7 @@ Vcs-Browser: https://sneklang.org/cgit/snek.git
 Package: snek
 Architecture: all
 Suggests: snek-bin
-Depends: ${misc:Depends}, python3, python3-serial, usbutils
+Depends: ${misc:Depends}, python3:any, python3-serial, usbutils
 Description: Embedded system programming language
  Snek is a small python-like language designed for embedded
  computers. It can run on systems as small as an Arduino Duemilanove
