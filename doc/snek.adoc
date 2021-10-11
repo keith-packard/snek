@@ -445,7 +445,7 @@ is another string which is then passed to print, which
 displays it.
 
 How the values are formatted depends on the character
-following the % mark; that's discussed in the
+following the `%` mark; that's discussed in the
 <<String Interpolation>> section. How to make that set of
 values on the right is discussed in the next section,
 <<lists_and_tuples_tutorial>>
