@@ -1,3 +1,9 @@
+snek (1.7-2) unstable; urgency=medium
+
+  * Note that 1.7 builds fine with gcc-11. Closes: #984343.
+
+ -- Keith Packard <keithp@keithp.com>  Sun, 10 Oct 2021 18:16:17 -0700
+
 snek (1.7-1) unstable; urgency=medium
 
   * New upstream release
