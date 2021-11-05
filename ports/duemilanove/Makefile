@@ -25,6 +25,7 @@ SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 
 SNEK_LOCAL_SRC = \
 	snek-pow.c \
+	snek-input.c \
 	snek-328p.c \
 	$(SNEK_ATMEGA_SRC)
 
@@ -33,6 +34,7 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
+	snek-input.builtin \
 	snek-328p.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
@@ -56,7 +58,7 @@ OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x7e00 \
+	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x8000 \
 	-Wl,-Map=$(MAP)
 
 all:: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1
