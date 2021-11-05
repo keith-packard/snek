@@ -1789,6 +1789,16 @@ Converts an ASCII value to a one character string.(((chr)))
 'A'
 ----
 
+=== `abs(` _number_ `)`
+Computes the absolute value of its numeric argument. The absolute
+value of a number is the number's distance from 0.(((abs)))
+
+[subs="verbatim,quotes"]
+----
+> *abs(-2)*
+2
+----
+
 === `math.sqrt(` _number_ `)`
 Compute the square root of its numeric argument.(((math.sqrt)))
 
