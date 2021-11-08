@@ -1418,7 +1418,7 @@ A While statements consists of a `while` block followed by an optional
 
 [source,subs="normal+"]
 ----
-while _while_value_ :
+while while_value :
     block
 else:
     block
@@ -1450,7 +1450,7 @@ as a range expression involving numbers:(((for)))(((else)))
 
 [source,subs="verbatim,quotes"]
 ----
-for _name_ in _value_:
+for name in value:
     for statements
 else:
     else statements
@@ -1465,7 +1465,7 @@ keys in the dictionary.
 
 [source,subs="verbatim,quotes"]
 ----
-for name in range ( _[_ start , _]_ stop _[_ , step _]_ ):
+for name in range ( start, stop, step ):
     for statements
 else:
     else statements
