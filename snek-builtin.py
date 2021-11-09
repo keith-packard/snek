@@ -149,10 +149,16 @@ def dump_headers(fp):
         fprint("%s" % line, file=fp)
 
 
+init_header = """#define snek_init() {\\
+	snek_globals = snek_alloc(sizeof (snek_frame_t));\\
+	snek_globals->prev = SNEK_OFFSET_NONE;\\
+	snek_globals->code = SNEK_OFFSET_NONE;\\"""
+
+
 def dump_init(fp):
     use_list_build = False
     use_string_build = False
-    fprint("#define snek_init() {\\", file=fp)
+    fprint(init_header, file=fp)
     for name in sorted(builtins):
         if name.is_init():
             if "snek_list_build" in name.init:
