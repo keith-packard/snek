@@ -47,6 +47,7 @@ snek_op_operand_size(snek_op_t op)
 	case snek_op_tuple:
 		return sizeof (snek_offset_t);
 	case snek_op_id:
+	case snek_op_del:
 	case snek_op_global:
 	case snek_op_assign:
 	case snek_op_assign_named:
@@ -537,6 +538,7 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 		dbg("%u\n", o);
 		break;
 	case snek_op_id:
+	case snek_op_del:
 	case snek_op_global:
 	case snek_op_assign:
 	case snek_op_assign_named:
