@@ -1,0 +1,39 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+SNEKHEX="$SHAREDIR/snek-lilypad328-@SNEK_VERSION@.hex"
+
+action="default"
+
+PORT="/dev/ttyACM0"
+
+mode=arg
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		-port|--port)
+		    mode=port
+		    ;;
+		*)
+		      echo "Usage: $0 {-hex snek-lilypad328.hex} {-port /dev/ttyACM0}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	hex)
+	    SNEKHEX="$i"
+	    mode=arg
+	    ;;
+	port)
+	    PORT="$i"
+	    mode=arg
+    esac
+done
+
+avrdude -P $PORT -c arduino -b 38400 -p ATMEGA328P -D -U flash:w:"${SNEKHEX}"

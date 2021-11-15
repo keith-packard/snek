@@ -2402,12 +2402,13 @@ package for your machine and copy it to the snekboard file system.
 
 [%nonfacing]
 [appendix]
-= Snek on Arduino Duemilanove and Uno
+= Snek on Arduino Duemilanove, Uno and Lilypad
 
-Snek for the Duemilanove and for the Uno include the Common System, EEPROM, and GPIO
-functions. They do not include the Math functions, nor the `pulldown`
-function. Snek for the Duemilanove and for the Uno provides pre-defined variables for
-all of the GPIO pins:(((Duemilanove)))(((Uno)))(((Arduino)))
+Snek for the Duemilanove, Uno and for the Lilypad include the Common
+System, EEPROM, and GPIO functions. They do not include the Math
+functions, nor the `pulldown` function. Snek for the Duemilanove, Uno
+and for the Lilypad provides pre-defined variables for all of the GPIO
+pins:(((Duemilanove)))(((Uno)))(((Arduino)))(((Lilypad)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2422,18 +2423,18 @@ either a pull-up or pull-down resistor to the pin so that a
 disconnected pin will read an indeterminate value. Change this using
 `pullnone` or `pullup` functions.
 
-=== Installing Optiboot on the Duemilanove
+=== Installing Optiboot on the Duemilanove and Lilypad
 
 Snek nearly fills the ATMega 328P flash, leaving space only for the
 smaller optiboot loader. This loader is not usually installed on the
-Duemilanove, so you'll need to install it by hand using a programming
-puck, such as the USBTiny device.
+Duemilanove and Lilypad, so you'll need to install it by hand using a
+programming puck, such as the USBTiny device.
 
 Use the Arduino IDE to install the Optiboot boot loader following
 instructions found on the
 link:https://github.com/Optiboot/optiboot[Optiboot web site].
 
-=== Installing Snek on the Duemilanove and Uno
+=== Installing Snek on the Duemilanove, Uno and Lilypad
 
 Once your board is ready to install snek, you can use avrdude to do
  that with Optiboot. On Linux, you can use the snek-uno-install command:

@@ -28,7 +28,8 @@ PROGS= \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-install.in \
 	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy-install.in \
 	$(SNEK_PORTS)/mega/snek-mega-install.in \
-	$(SNEK_PORTS)/uno/snek-uno-install.in
+	$(SNEK_PORTS)/uno/snek-uno-install.in \
+	$(SNEK_PORTS)/lilypad328/snek-lilypad328-install.in
 
 EXAMPLES=$(SNEK_ROOT)/examples
 

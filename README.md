@@ -77,6 +77,8 @@ described below.
 
  * [Arduino Nano Every](https://store.arduino.cc/usa/nano-every).
 
+ * [LilyPad Arduino 328](https://www.sparkfun.com/products/13342).
+
 ## To Do list
 
  * Convert parser from LL to SLR. The hope here is to reduce the
