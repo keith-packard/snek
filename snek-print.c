@@ -51,11 +51,13 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 {
 	void *closure = buf->closure;
 	static char tmp[32];
-	static char format_string[3] = "%.";
+	char format_string[3];
 	snek_type_t atype = snek_poly_type(a);
 	int i;
 
+	format_string[0] = '%';
 	format_string[1] = format;
+	format_string[2] = '\0';
 	switch (format) {
 	case 'd':
 	case 'i':
