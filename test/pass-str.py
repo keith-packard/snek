@@ -1,5 +1,5 @@
 #
-# Copyright © 2019 Keith Packard <keithp@keithp.com>
+# Copyright © 2021 Keith Packard <keithp@keithp.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,7 +11,17 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-input, -1
-float, 1
-int, 1
-str, 1
+
+tests = {
+    "[1, 2, 3]": [1, 2, 3],
+    "('a', 'b', 'c')": ("a", "b", "c"),
+    "{1: 'hello', 2: 'world'}": {1: "hello", 2: "world"},
+    "hello world": "hello world",
+    "1": "1",
+    "0.5": 1 / 2,
+}
+
+for expect in tests:
+    value = tests[expect]
+    result = str(value)
+    assert result == expect

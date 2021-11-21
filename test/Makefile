@@ -60,7 +60,8 @@ SUCCESS_TESTS = \
 	pass-interpolate-str.py \
 	pass-trailing-comma.py \
 	pass-chain-op.py \
-	pass-precedence.py
+	pass-precedence.py \
+	pass-str.py
 
 SYNTAX_TESTS = \
 	fail-syntax-lex-bang.py \
