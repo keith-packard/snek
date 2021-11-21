@@ -27,13 +27,10 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 					putchar('\n');
 				}
 			}@
-		| DEF
+		| DEF NAME
 			@{
 				snek_parse_nformal = 0;
 				snek_parse_nnamed = 0;
-			}@
-		  NAME
-			@{
 				value_push_id(snek_token_val.id);
 	 		}@
 		  OP opt-formals CP COLON suite
