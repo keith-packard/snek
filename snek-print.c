@@ -99,6 +99,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 			buf->put_s(snek_poly_to_string(a), closure);
 			return;
 		}
+		format='a';
 		break;
 	default:
 		break;
