@@ -1869,6 +1869,64 @@ Generates a random integer between 0 and max-1 inclusive.(((random.randrange)))
 3
 ----
 
+== Input Functions
+
+The Snek Input functions provide some operations commonly required
+when reading data provided by the user via the serial port.
+
+=== `float(` _value_ `)`
+
+Converts _value_ into a number. _value_ can be either a string or a
+number.
+
+[subs="verbatim,quotes"]
+----
+> *float('10.25')*
+10.25
+----
+
+=== `input(` _prompt_ `)`
+
+Prints _prompt_ and then waits for the user to enter some text,
+terminated with a newline. The text, without the trailing newline, is
+returned.
+
+[subs="verbatim,quotes"]
+----
+> *input('--> ')*
+--> *Hi there*
+'Hi there'
+----
+
+==== `int(` _value_ `)`
+
+Converts _value_ into an integer, rounding towards zero. _value_ can
+be either a string or a number.
+
+[subs="verbatim,quotes"]
+----
+> *int('10.75')*
+10
+> *int(-10.75)*
+-10
+----
+
+==== `str(` _value_ `)`
+
+Converts _value_ (which may be any snek value) into a string. This is
+the same as `'%s' % (`_value_`, )`, but may be more clear in some
+contexts.
+
+[subs="verbatim,quotes"]
+----
+> *str(10.75)*
+'10.75'
+> *str((1,2,3))*
+'(1, 2, 3)'
+> *str('hello world')
+'hello world'
+----
+
 == Math Functions
 
 The Snek math functions offer the same functions as the Python math
@@ -2366,7 +2424,7 @@ To quit from the dialog and skip loading or saving a file, press Escape.
 [appendix]
 = Snek on snekboard
 
-Snek for the snekboard includes the Common System, Math, GPIO
+Snek for the snekboard includes the Common System, Math, Input, GPIO
 (including the `neopixel` function) and EEPROM fountain's. Snek for the
 snekboard provides pre-defined variables for the eight analog I/O pins
 as well as the four 9V motor controllers:(((snekboard)))
@@ -2523,10 +2581,10 @@ $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-uduino-{version}.hex
 [appendix]
 = Snek on Adafruit ItsyBitsy M0
 
-Snek for the Adafruit ItsyBitsy includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek for
-the itsybitsy m0 provides pre-defined variables for all of the the
-GPIO pins:(((ItsyBitsy M0)))
+Snek for the Adafruit ItsyBitsy includes the Common System, Input,
+Math, GPIO (including the `neopixel` function), and EEPROM
+functions. Snek for the itsybitsy m0 provides pre-defined variables
+for all of the the GPIO pins:(((ItsyBitsy M0)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2575,7 +2633,7 @@ package for your machine and copy it to the ItsyBitsy M0 file system.
 [appendix]
 = Snek on Arduino Mega
 
-Snek for the Mega includes the Common System, EEPROM, GPIO (not
+Snek for the Mega includes the Common System, EEPROM, Input, GPIO (not
 including the `pulldown` function) and math functions. Snek for the
 Mega provides pre-defined variables for all of the GPIO
 pins:(((Arduino Mega)))
@@ -2618,10 +2676,10 @@ $ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{versi
 [appendix]
 = Snek on Metro M0 Express
 
-Snek for the Metro M0 Express includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek for the metro m0 provides
-pre-defined variables for all of the GPIO pins:(((Metro M0
-Express)))(((Arduino)))
+Snek for the Metro M0 Express includes the Common System, Input, Math,
+GPIO (including the `neopixel` function), and EEPROM functions. Snek
+for the metro m0 provides pre-defined variables for all of the GPIO
+pins:(((Metro M0 Express)))(((Arduino)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2665,10 +2723,10 @@ package for your machine and copy it to the Metro M0 file system.
 [appendix]
 = Snek on Feather M0 Express
 
-Snek for the Feather M0 Express includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek for the feather provides
-pre-defined variables for all of the GPIO pins:(((Feather M0
-Express)))(((Arduino)))
+Snek for the Feather M0 Express includes the Common System, Input,
+Math, GPIO (including the `neopixel` function), and EEPROM
+functions. Snek for the feather provides pre-defined variables for all
+of the GPIO pins:(((Feather M0 Express)))(((Arduino)))
 
 D0 - D13::
 Digital input and output pins.  By default, when used as input pins,
@@ -2715,9 +2773,9 @@ package for your machine and copy it to the Feather M0 file system.
 [appendix]
 = Snek on Adafruit Crickit
 
-Snek for the Crickit includes the Common System, Math, GPIO (including
-the `neopixel` function), and
-EEPROM functions. Snek for the Crickit provides names for all of the GPIO pins:(((Crickit)))
+Snek for the Crickit includes the Common System, Input, Math, GPIO
+(including the `neopixel` function), and EEPROM functions. Snek for
+the Crickit provides names for all of the GPIO pins:(((Crickit)))
 
 DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
@@ -2763,10 +2821,10 @@ package for your machine and copy it to the Crickit file system.
 = Snek on Adafruit Circuit Playground Express
 
 Snek for the Circuit Playground Express includes the Common System,
-Math, GPIO (including the `neopixel`, `tone` and `tonefor` functions),
-Temperature and EEPROM functions. Snek for the Playground provides
-names for all of the external connections as well as the built-in
-devices:
+Input, Math, GPIO (including the `neopixel`, `tone` and `tonefor`
+functions), Temperature and EEPROM functions. Snek for the Playground
+provides names for all of the external connections as well as the
+built-in devices:
 
 A0::
 Analog input and output connection. This pin has a digital-to-analog
@@ -2826,7 +2884,7 @@ Express file system.
 [appendix]
 = Snek on Arduino SA Nano 33 IoT
 
-Snek for the Nano 33 IoT includes the Common System, Math, GPIO, and
+Snek for the Nano 33 IoT includes the Common System, Input, Math, GPIO, and
 EEPROM functions. Snek for the Nano 33 IoT provides names for all of the GPIO pins:(((Nano 33 IoT)))
 
 D0 - D12::
