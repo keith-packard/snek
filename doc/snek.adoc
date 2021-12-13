@@ -2460,12 +2460,19 @@ package for your machine and copy it to the snekboard file system.
 
 [%nonfacing]
 [appendix]
-= Snek on Arduino Duemilanove and Uno
+= Snek on Arduino Duemilanove, Nano and Uno
 
-Snek for the Duemilanove and for the Uno include the Common System, EEPROM, and GPIO
+There are two versions of Snek for these boards, the regular version
+and a “big” version. The regular version co-exists with the Optiboot
+bootloader which makes re-flashing with new versions of Snek
+convenient. The big version overwrites the boot loader to provide
+additional functionality.
+
+Snek for the Duemilanove, Nano and Uno include the Common System,
+EEPROM, and GPIO functions. The “big” versions add the Input
 functions. They do not include the Math functions, nor the `pulldown`
-function. Snek for the Duemilanove and for the Uno provides pre-defined variables for
-all of the GPIO pins:(((Duemilanove)))(((Uno)))(((Arduino)))
+function. Snek for these boards provides pre-defined variables for all
+of the GPIO pins:(((Duemilanove)))(((Nano)))(((Uno)))(((Arduino)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2480,32 +2487,72 @@ either a pull-up or pull-down resistor to the pin so that a
 disconnected pin will read an indeterminate value. Change this using
 `pullnone` or `pullup` functions.
 
-=== Installing Optiboot on the Duemilanove
+=== Installing Optiboot on the Duemilanove or Nano
 
 Snek nearly fills the ATMega 328P flash, leaving space only for the
 smaller optiboot loader. This loader is not usually installed on the
-Duemilanove, so you'll need to install it by hand using a programming
-puck, such as the USBTiny device.
+Duemilanove or Nano, so you'll need to install it by hand using a
+programming puck, such as the USBTiny device.
 
 Use the Arduino IDE to install the Optiboot boot loader following
 instructions found on the
 link:https://github.com/Optiboot/optiboot[Optiboot web site].
 
-=== Installing Snek on the Duemilanove and Uno
+=== Installing Snek on the Duemilanove, Nano and Uno
 
-Once your board is ready to install snek, you can use avrdude to do
- that with Optiboot. On Linux, you can use the snek-uno-install command:
+To install the regular version, once your board is ready to install
+snek, you can use avrdude to do that with Optiboot. On Linux, you can
+use either snek-duemilanove-install (for Duemilanove and Nano
+boards), or snek-uno-install (for Uno boards):
 
-	$ snek-uno-install snek
+	$ snek-duemilanove-install
+
+or
+
+	$ snek-uno-install
+
+On other hosts, you'll need to run 'avrdude' manually. For duemilanove or nano boards:
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-duemilanove-{version}.hex:i
+----
+
+For uno boards:
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
+----
+
+Replace 'COM1' with the name of the serial port on your computer.
+
+To install the “big” version, you'll need to use a programming device,
+such as a usbtiny from Adafruit. Once connected, on Linux you can use
+snek-duemilanove-big-install (for Duemilanove or Nano boards) or
+snek-uno-big-install (for Uno boards):
+
+	$ snek-duemilanove-big-install
+
+or
+
+	$ snek-uno-install-big-install
 
 On other hosts, you'll need to run 'avrdude' manually:
 
 [subs="verbatim,quotes,attributes,"]
 ----
-> avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
+$ avrdude -V -c usbtiny -p m328 -u -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
+$ avrdude -c usbtiny -p m328 -U flash:w:snek-duemilanove-big-{version}.hex:i
 ----
 
-Replace 'COM1' with the name of the serial port on your computer.
+or
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -V -c usbtiny -p m328 -u -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
+$ avrdude -c usbtiny -p m328 -U flash:w:snek-uno-big-{version}.hex:i
+----
 
 [%nonfacing]
 [appendix]
