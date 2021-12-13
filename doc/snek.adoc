@@ -1149,11 +1149,11 @@ returns `False` (which is 0), and if the operand is a `False` value,
 then Not returns `True` (which is 1).(((not)))
 
 _a_ ``and`` _b_::
-The Boolean And operator first evalutes _a_. If that is False, then its
+The Boolean And operator first evaluates _a_. If that is False, then its
 value is returned. Otherwise, the value of _b_ is returned.(((and)))
 
 _a_ ``or`` _b_::
-The Boolean And operator first evalutes _a_. If that is True, then its
+The Boolean And operator first evaluates _a_. If that is True, then its
 value is returned. Otherwise, the value of _b_ is returned.(((or)))
 
 _a_ ``is`` _b_::
@@ -2860,7 +2860,7 @@ The Arduino SA Nano 33 IoT board includes a boot loader which works
 with the Arduino IDE. Snek includes a replacement boot loader which
 presents as a USB mass storage device with a FAT file system. To
 install this boot loader, start the Arduino IDE, find the
-update-bootloader-nano33iot.ino project included in thte Snek package
+update-bootloader-nano33iot.ino project included in the Snek package
 for your machine and load it into the Arduino IDE. Then compile and
 download that to the Nano 33 IoT board. That will replace the boot
 loader and restart the board, at which point it should present a file
@@ -2868,7 +2868,7 @@ system.  For future updates, you can get the board back into this mode
 by connecting the board to your computer over USB and then pressing
 the reset button twice in quick succession.
 
-Onec the board is showing a file system on your computer, find the
+Once the board is showing a file system on your computer, find the
 `snek-nano33iot-{version}.uf2` file included in the Snek package for
 your machine and copy it to the file system.
 
@@ -2918,7 +2918,7 @@ The following motors are supported:
 * link:https://www.lego.com/en-us/product/ev3-medium-servo-motor-45503[Lego EV3 Medium Servo Motor]
 
 Servo motors have two-way communication with the host, so current speed (either
-from applicaiton of power or from manual rotation) and current position of the
+from application of power or from manual rotation) and current position of the
 motor can be queried:
 
 * `read` reads the current speed of the motor (-3 to 3 rotations per second),
