@@ -87,3 +87,11 @@ assert not ("a" > "b" == "c")
 assert not ("a" > "b" != "c")
 assert not ("a" > "b" >= "c")
 assert not ("a" > "b" > "c")
+
+
+def add(a, b):
+    return a + b
+
+
+assert add(1 == 2 != 0, 3) == 3
+assert add(1 == 1 != 1, 4) == 4

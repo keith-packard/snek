@@ -326,8 +326,10 @@ expr-cmp	: expr-lor
 		  expr-cmp-p
 			@{
 				snek_offset_t cmp_off = value_pop().offset;
-				if (cmp_off)
+				if (cmp_off) {
 					snek_code_patch_forward(cmp_off, snek_code_current(), snek_forward_cmp, snek_code_current());
+					snek_code_add_op(snek_op_nop);
+				}
 			}@
 		;
 expr-cmp-p	: cmpop
