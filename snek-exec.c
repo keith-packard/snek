@@ -454,6 +454,8 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			}
 			break;
 		case snek_op_times:
+			if (at == snek_float)
+				return snek_binary(b, op, a, inplace);
 			if (bt == snek_float) {
 				snek_soffset_t bo = snek_poly_get_soffset(b);
 				if (bo < 0)

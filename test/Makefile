@@ -61,7 +61,8 @@ SUCCESS_TESTS = \
 	pass-trailing-comma.py \
 	pass-chain-op.py \
 	pass-precedence.py \
-	pass-str.py
+	pass-str.py \
+	pass-str-op.py
 
 SYNTAX_TESTS = \
 	fail-syntax-lex-bang.py \
