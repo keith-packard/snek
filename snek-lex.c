@@ -15,7 +15,9 @@
 #include "snek.h"
 
 snek_offset_t snek_lex_line = 1;
+#ifndef SNEK_NO_FILE
 char *snek_file = "<stdin>";
+#endif
 
 uint8_t snek_current_indent;
 uint8_t snek_lex_indent;

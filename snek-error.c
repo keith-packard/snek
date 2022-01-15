@@ -50,7 +50,11 @@ snek_error_name(const char *format, ...)
 		return SNEK_NULL;
 	snek_abort = true;
 	va_start(args, format);
+#ifdef SNEK_NO_FILE
+	fprintf(stderr, "<stdin>:%d ", snek_line);
+#else
 	fprintf(stderr, "%s:%d ", snek_file, snek_line);
+#endif
 	while ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
 		if (c == '%') {
 			switch ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {

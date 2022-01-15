@@ -52,3 +52,5 @@ SNEK_ATMEGA_BUILTINS = \
 	snek-eeprom.builtin \
 	snek-gpio.builtin \
 	snek-atmega.builtin
+
+SNEK_NO_FILE = 1
