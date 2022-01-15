@@ -19,4 +19,4 @@ while i < 10:
         break
     j = j + 1
 
-j == 4
+assert j == 4

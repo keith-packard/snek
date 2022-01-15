@@ -17,4 +17,4 @@ while i < 10:
     i = i + 1
     j = j + 1
 
-j == 10
+assert j == 10
