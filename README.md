@@ -87,6 +87,9 @@ described below.
 
 Here's some places that have seen recent work
 
+ * Support multiple baud rates in snekde, auto-detect baud rate when
+   connecting to non-USB based devices.
+
  * Fix NaN comparisons and make dicts containing NaN keys work.
    [Jake Edge's article, “Revisiting NaNs in Python”](https://lwn.net/Articles/869231/)
    led to the discovery that Snek had several bugs in NaN
