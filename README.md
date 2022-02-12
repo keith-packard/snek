@@ -77,6 +77,10 @@ described below.
 
  * [Arduino Nano Every](https://store.arduino.cc/usa/nano-every).
 
+ * [LilyPad Arduino 328](https://www.sparkfun.com/products/13342).
+   This port leaves out dictionaries and slices so that it has space
+   for the tone driver.
+
 ## To Do list
 
  * Convert parser from LL to SLR. The hope here is to reduce the
@@ -86,6 +90,12 @@ described below.
 ## Recent Changes
 
 Here's some places that have seen recent work
+
+ * [LilyPad Arduino 328](https://www.sparkfun.com/products/13342)
+   port. This is a round ATmega328p-based board designed for wearable
+   projects. This board runs at 8MHz, which can't run the serial port
+   at 115.2kbaud, so it runs at 57.6k instead. Thanks to Douglas
+   Fraser for this.
 
  * Support multiple baud rates in snekde, auto-detect baud rate when
    connecting to non-USB based devices.

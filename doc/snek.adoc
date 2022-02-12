@@ -2460,19 +2460,24 @@ package for your machine and copy it to the snekboard file system.
 
 [%nonfacing]
 [appendix]
-= Snek on Arduino Duemilanove, Nano and Uno
+= Snek on Arduino Duemilanove, LilyPad, Nano and Uno
 
-There are two versions of Snek for these boards, the regular version
-and a “big” version. The regular version co-exists with the Optiboot
-bootloader which makes re-flashing with new versions of Snek
-convenient. The big version overwrites the boot loader to provide
-additional functionality.
+These boards are all based on the original Arduino ATMega 328
+processor. There are two versions of Snek for these boards: the
+regular version and a “big” version. The regular version co-exists
+with the Optiboot bootloader which makes re-flashing with new versions
+of Snek convenient. The big version overwrites the boot loader to
+provide additional functionality.
 
-Snek for the Duemilanove, Nano and Uno include the Common System,
-EEPROM, and GPIO functions. The “big” versions add the Input
-functions. They do not include the Math functions, nor the `pulldown`
-function. Snek for these boards provides pre-defined variables for all
-of the GPIO pins:(((Duemilanove)))(((Nano)))(((Uno)))(((Arduino)))
+Snek for these boards include the Common System, EEPROM, and GPIO
+functions. The “big” versions add the Input functions. They do not
+include the Math functions, nor the `pulldown` function. Snek for
+these boards provides pre-defined variables for all of the GPIO
+pins:(((Duemilanove)))(((LilyPad)))(((Nano)))(((Uno)))(((Arduino)))
+
+Snek for the LilyPad adds the 'tone' and 'tonefor' builtins, which
+send an audio tone to pin D5. To make space for this, support for
+Dictionaries was removed.
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2487,7 +2492,7 @@ either a pull-up or pull-down resistor to the pin so that a
 disconnected pin will read an indeterminate value. Change this using
 `pullnone` or `pullup` functions.
 
-=== Installing Optiboot on the Duemilanove or Nano
+=== Installing Optiboot on ATMega 328 boards
 
 Snek nearly fills the ATMega 328P flash, leaving space only for the
 smaller optiboot loader. This loader is not usually installed on the
@@ -2498,31 +2503,42 @@ Use the Arduino IDE to install the Optiboot boot loader following
 instructions found on the
 link:https://github.com/Optiboot/optiboot[Optiboot web site].
 
-=== Installing Snek on the Duemilanove, Nano and Uno
+=== Installing Snek on ATMega 328 boards
 
 To install the regular version, once your board is ready to install
 snek, you can use avrdude to do that with Optiboot. On Linux, you can
-use either snek-duemilanove-install (for Duemilanove and Nano
-boards), or snek-uno-install (for Uno boards):
+use snek-duemilanove-install (for Duemilanove and Nano),
+snek-uno-install (for Uno), or snek-lilypad-install (for LilyPad).
 
 	$ snek-duemilanove-install
 
 or
 
+	$ snek-lilypad-install
+
+or
+
 	$ snek-uno-install
 
-On other hosts, you'll need to run 'avrdude' manually. For duemilanove or nano boards:
+On other hosts, you'll need to run 'avrdude' manually. For Duemilanove or Nano boards:
 
 [subs="verbatim,quotes,attributes,"]
 ----
 $ avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-duemilanove-{version}.hex:i
 ----
 
-For uno boards:
+For Uno boards:
 
 [subs="verbatim,quotes,attributes,"]
 ----
 $ avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
+----
+
+For LilyPad boards:
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -pATMEGA328P -carduino -PCOM1 -b57600 -D -U flash:w:snek-lilypad-{version}.hex:i
 ----
 
 Replace 'COM1' with the name of the serial port on your computer.
