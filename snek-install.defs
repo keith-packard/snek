@@ -35,6 +35,7 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/itsybitsy3v/snek-itsybitsy3v-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy5v-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/itsybitsym0/snek-itsybitsym0-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/lilypad/snek-lilypad-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/mega/snek-mega-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/metrom0/snek-metrom0-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/nano33iot/snek-nano33iot-$(SNEK_VERSION).uf2 \
