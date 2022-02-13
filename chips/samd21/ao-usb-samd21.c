@@ -540,9 +540,6 @@ ao_usb_fifo_check(void)
 		if (ao_fifo_has_space(&ao_usb_rx_fifo, len)) {
 			uint16_t	i;
 
-#if AO_USB_OUT_HOOK
-			ao_usb_out_hook(buf, len);
-#endif
 			for (i = 0; i < len; i++)
 				ao_fifo_insert(&ao_usb_rx_fifo, buf[i]);
 			samd21_usb_ep_clr_ready(AO_USB_OUT_EP, next_which);
@@ -550,6 +547,9 @@ ao_usb_fifo_check(void)
 			ao_usb_out_rx_which = next_which;
 			ao_wakeup(AO_USB_OUT_SLEEP_ADDR);
 		}
+#if AO_USB_OUT_HOOK
+		ao_usb_out_hook(buf, len);
+#endif
 	}
 }
 #endif
