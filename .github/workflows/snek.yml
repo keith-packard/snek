@@ -1,6 +1,17 @@
 name: snek
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  IMAGE_FILE: dockerimg.tar
+  IMAGE: snek
+  HASH_FILE: snek/.github/Dockerfile
 
 jobs:
   test:
@@ -11,11 +22,30 @@ jobs:
         with:
           path: snek
 
-      - name: 'Build snek container'
+      - name: Check for Docker Image
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.IMAGE_FILE }}
+          key: ${{ env.IMAGE_FILE }}-${{ hashFiles( env.HASH_FILE ) }}
+
+      - name: Set up Docker build
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build snek container
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/amd64
+          file: .github/Dockerfile
+          tags: ${{ env.IMAGE }}:latest
+          outputs: type=docker,dest=${{ env.IMAGE_FILE }}
+
+      - name: Load Docker image
         run: |
-          docker build -t snek \
-            -f snek/.github/Dockerfile \
-            snek
+          docker load -i $IMAGE_FILE
+          docker images -a $IMAGE
 
       - name: 'Create install destinationn'
         run: |
