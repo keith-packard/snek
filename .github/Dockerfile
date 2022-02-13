@@ -32,7 +32,8 @@ RUN apt-get update && \
     gcc-mingw-w64 \
     librsvg2-bin \
     icoutils \
-    icnsutils && \
+    icnsutils \
+    black && \
     pip install pynsist
 
 RUN mkdir snek
