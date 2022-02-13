@@ -362,6 +362,17 @@ snek_builtin_tone(snek_poly_t a)
 
 	return SNEK_NULL;
 }
+
+#ifdef SNEK_BUILTIN_tonefor
+snek_poly_t
+snek_builtin_tonefor(snek_poly_t a, snek_poly_t b)
+{
+	snek_builtin_tone(a);
+	snek_builtin_on();
+	snek_builtin_time_sleep(b);
+	return snek_builtin_tone(SNEK_ZERO);
+}
+#endif
 #endif
 
 snek_poly_t
