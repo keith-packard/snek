@@ -84,11 +84,23 @@ snek_builtin_random_randrange(snek_poly_t a)
 	return snek_float_to_poly(random_x % mod);
 }
 
+#ifdef HAVE_SEMIHOST
+static uint32_t
+centisecs(void)
+{
+	/* QEMU uses real time for elapsed, but CPU time for clock */
+	uint64_t elapsed = sys_semihost_elapsed();
+	uint64_t tickfreq = sys_semihost_tickfreq();
+
+	return (uint32_t) (elapsed / (tickfreq / 100));
+}
+#endif
+
 snek_poly_t
 snek_builtin_time_monotonic(void)
 {
 #ifdef HAVE_SEMIHOST
-	return snek_float_to_poly((float) sys_semihost_clock() / 100.0f);
+	return snek_float_to_poly((float) centisecs() * 0.01f);
 #else
 	static float now;
 	now += 0.01;
@@ -101,10 +113,10 @@ snek_builtin_time_sleep(snek_poly_t a)
 {
 #ifdef  HAVE_SEMIHOST
 	if (snek_poly_type(a) == snek_float) {
-		int csecs = floorf(snek_poly_to_float(a) * 100.0f);
-		uintptr_t then = sys_semihost_clock() + csecs;
+		int32_t csecs = floorf(snek_poly_to_float(a) * 100.0f);
+		uint32_t then = centisecs() + csecs;
 
-		while (sys_semihost_clock() < then)
+		while ((int32_t) (then - centisecs()) > 0)
 			;
 	}
 #endif
