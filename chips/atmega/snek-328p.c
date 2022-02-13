@@ -137,7 +137,9 @@ pin_reg(uint8_t pin)
 {
 	if (pin < 8)
 		return &PIND;
-	return &PINB;
+	if (pin < 14)
+		return &PINB;
+	return &PINC;
 }
 
 static volatile uint8_t *
