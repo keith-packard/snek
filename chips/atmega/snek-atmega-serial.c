@@ -92,7 +92,7 @@ ring_get(uart_ring_t *ring)
 	return c;
 }
 
-static bool
+static bool __attribute__((noinline))
 ring_put(uart_ring_t *ring, uint8_t c)
 {
 	if (ring_full(ring))
@@ -140,7 +140,7 @@ _snek_uart_flow_do(void)
 	_snek_uart_tx_start();
 }
 
-static void
+static void __attribute__((noinline))
 _snek_uart_xon(void)
 {
 	if (rx_flow == FLOW_STOPPED && ring_empty(&rx_ring))
@@ -175,6 +175,10 @@ ISR(RX_vect)
 	case 'q' & 0x1f:
 		tx_flow = false;
 		_snek_uart_tx_start();
+		return;
+	case 't' & 0x1f:
+		while(!TX_EMPTY());
+		TX_DATA = c;
 		return;
 	}
 
