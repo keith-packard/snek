@@ -18,11 +18,3 @@ UBOARD=UNO
 PORT=/dev/ttyACM0
 
 include ../duemilanove/Makefile
-
-all:: snek-uno-install.in
-
-snek-uno-install.in: snek-duemilanove-install.in
-	sed -e 's;@BOARD@;$(BOARD);g' \
-	-e 's;@UBOARD@;$(UBOARD);g' \
-	-e 's;@CBOARD@;$(CBOARD);g' \
-	-e 's;@PORT@;$(PORT);g' $^ > $@
