@@ -30,8 +30,10 @@ build/$(TARGET_DASH):
 	SNEK_VERSION_DASH=$(SNEK_VERSION_DASH) $(ESP32_IDF) build
 
 clean::
+	rm -f $(TARGET)
 	$(ESP32_IDF) clean
 	+make -C main clean
+	rm -rf build
 
 load:
 	$(ESP32_IDF) -p /dev/ttyUSB1 flash
