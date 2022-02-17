@@ -36,4 +36,4 @@ for i in "$@"; do
     esac
 done
 
-avrdude -P $PORT -c arduino -b 115200 -p ATMEGA328P -D -U flash:w:"${SNEKHEX}"
+avrdude -P $PORT -c arduino -b @BAUD@ -p ATMEGA328P -D -U flash:w:"${SNEKHEX}"
