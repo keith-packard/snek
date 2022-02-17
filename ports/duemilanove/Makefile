@@ -20,6 +20,8 @@ BOARD?=duemilanove
 CBOARD?=Duemilanove
 UBOARD?=DUEMILANOVE
 PORT?=/dev/ttyUSB0
+CLOCK?=16000000
+BAUD?=115200
 INSTALLER?=1
 ATMEGA_FLASH_SIZE?=0x7e00
 
@@ -47,6 +49,7 @@ SNEK_ATMEGA_SED=$(SNEK_SED) \
 	-e 's;@BOARD@;$(BOARD);g' \
 	-e 's;@UBOARD@;$(UBOARD);g' \
 	-e 's;@CBOARD@;$(CBOARD);g' \
+	-e 's;@BAUD@;$(BAUD);g' \
 	-e 's;@PORT@;$(PORT);g'
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
@@ -59,7 +62,7 @@ CC=avr-gcc
 
 OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 
-CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
+CFLAGS=$(OPT) -DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=$(ATMEGA_FLASH_SIZE) \
