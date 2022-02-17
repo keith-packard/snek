@@ -12,8 +12,6 @@
 # General Public License for more details.
 #
 
-vpath %.in ../duemilanove
-
 BOARD=uno
 CBOARD=Uno
 UBOARD=UNO

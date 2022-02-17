@@ -12,6 +12,8 @@
 # General Public License for more details.
 #
 
+vpath %.in ../duemilanove
+
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 BOARD?=duemilanove
