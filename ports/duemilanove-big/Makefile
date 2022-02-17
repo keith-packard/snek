@@ -22,10 +22,10 @@ INSTALLER?=0
 
 ATMEGA_FLASH_SIZE=0x8000
 
-SNEK_ATMEGA_SRC_EXTRA = \
+SNEK_ATMEGA_SRC_EXTRA ?= \
 	snek-input.c
 
-SNEK_ATMEGA_BUILTINS_EXTRA = \
+SNEK_ATMEGA_BUILTINS_EXTRA ?= \
 	snek-input.builtin
 
 include ../duemilanove/Makefile
