@@ -2545,14 +2545,18 @@ Replace 'COM1' with the name of the serial port on your computer.
 
 To install the “big” version, you'll need to use a programming device,
 such as a usbtiny from Adafruit. Once connected, on Linux you can use
-snek-duemilanove-big-install (for Duemilanove or Nano boards) or
-snek-uno-big-install (for Uno boards):
+snek-duemilanove-big-install (for Duemilanove or Nano),
+snek-lilypad-big-install (for LilyPad), or snek-uno-big-install (for Uno):
 
 	$ snek-duemilanove-big-install
 
 or
 
-	$ snek-uno-install-big-install
+	$ snek-lilypad-install-big
+
+or
+
+	$ snek-uno-big-install
 
 On other hosts, you'll need to run 'avrdude' manually:
 
@@ -2560,6 +2564,14 @@ On other hosts, you'll need to run 'avrdude' manually:
 ----
 $ avrdude -V -c usbtiny -p m328 -u -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
 $ avrdude -c usbtiny -p m328 -U flash:w:snek-duemilanove-big-{version}.hex:i
+----
+
+or
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -V -c usbtiny -p m328 -u -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
+$ avrdude -c usbtiny -p m328 -U flash:w:snek-lilypad-big-{version}.hex:i
 ----
 
 or
