@@ -2534,21 +2534,21 @@ On other hosts, you'll need to run 'avrdude' manually. For Duemilanove or Nano b
 
 [subs="verbatim,quotes,attributes,"]
 ----
-$ avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-duemilanove-{version}.hex:i
+$ avrdude -pm328p -carduino -PCOM1 -b115200 -D -U flash:w:snek-duemilanove-{version}.hex:i
 ----
 
 For Uno boards:
 
 [subs="verbatim,quotes,attributes,"]
 ----
-$ avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
+$ avrdude -pm328p -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
 ----
 
 For LilyPad boards:
 
 [subs="verbatim,quotes,attributes,"]
 ----
-$ avrdude -pATMEGA328P -carduino -PCOM1 -b57600 -D -U flash:w:snek-lilypad-{version}.hex:i
+$ avrdude -pm328p -carduino -PCOM1 -b57600 -D -U flash:w:snek-lilypad-{version}.hex:i
 ----
 
 Replace 'COM1' with the name of the serial port on your computer.
@@ -2572,24 +2572,24 @@ On other hosts, you'll need to run 'avrdude' manually:
 
 [subs="verbatim,quotes,attributes,"]
 ----
-$ avrdude -V -c usbtiny -p m328 -u -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
-$ avrdude -c usbtiny -p m328 -U flash:w:snek-duemilanove-big-{version}.hex:i
+$ avrdude -V -c usbtiny -p m328p -u -U -U hfuse:w:0xd1:m
+$ avrdude -c usbtiny -p m328p -U flash:w:snek-duemilanove-big-{version}.hex:i
 ----
 
 or
 
 [subs="verbatim,quotes,attributes,"]
 ----
-$ avrdude -V -c usbtiny -p m328 -u -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
-$ avrdude -c usbtiny -p m328 -U flash:w:snek-lilypad-big-{version}.hex:i
+$ avrdude -V -c usbtiny -p m328p -u -U -U hfuse:w:0xd1:m
+$ avrdude -c usbtiny -p m328p -U flash:w:snek-lilypad-big-{version}.hex:i
 ----
 
 or
 
 [subs="verbatim,quotes,attributes,"]
 ----
-$ avrdude -V -c usbtiny -p m328 -u -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
-$ avrdude -c usbtiny -p m328 -U flash:w:snek-uno-big-{version}.hex:i
+$ avrdude -V -c usbtiny -p m328p -u -U -U hfuse:w:0xd1:m
+$ avrdude -c usbtiny -p m328p -U flash:w:snek-uno-big-{version}.hex:i
 ----
 
 [%nonfacing]
@@ -2644,7 +2644,7 @@ are two steps to getting Snek installed on the device.
     updating the firmware.
 +
 [source]
-$ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
+$ avrdude -F -V -c usbtiny -p m32u4 -U:m -U hfuse:w:0x99:m
 +
  2. Install the Snek binary. Pick the version for your board as that
     also sets the right clock speed. For 5v boards, install the 5v binary:
