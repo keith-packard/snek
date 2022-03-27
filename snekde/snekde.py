@@ -1427,7 +1427,7 @@ class SnekMonitor:
 
     def ping(self):
         global snek_lock
-        #snek_debug('send PING')
+        # snek_debug('send PING')
         snek_device.serial.write(b"\x14")
         ret = self.dc4.wait(0.25)
         return ret

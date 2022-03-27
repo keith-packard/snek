@@ -41,9 +41,6 @@ assert math.gcd(64, 12) == math.gcd(
     64,
     12,
 )
-assert (
-    math.sin(
-        1,
-    )
-    == math.sin(1)
-)
+assert math.sin(
+    1,
+) == math.sin(1)
