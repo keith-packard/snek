@@ -1,6 +1,6 @@
 #!/bin/sh
 here=`dirname $0`
-args="arg='snek'"
+args=""
 extra=""
 for i in "$@"; do
     case "$i" in
@@ -8,7 +8,14 @@ for i in "$@"; do
 	    extra="$extra $i"
 	    ;;
 	*)
-	    args="$args,arg=$i"
+	    case "$args" in
+		"")
+		    args="$i"
+		    ;;
+		*)
+		    args="$args $i"
+		    ;;
+	    esac
 	    ;;
     esac
 done
@@ -19,5 +26,5 @@ cpu=sifive-e31
 chardev="-chardev stdio,mux=on,id=stdio0"
 serial="-serial none"
 mon="-monitor none"
-semihost="-semihosting-config enable=on,chardev=stdio0,$args"
-$qemu $chardev $serial $mon $semihost -machine $machine -cpu $cpu -kernel $elf -nographic -bios none $extra
+semihost="enable=on,chardev=stdio0,arg=$args"
+$qemu $chardev $serial $mon -semihosting-config "$semihost" -machine $machine -cpu $cpu -kernel $elf -nographic -bios none $extra

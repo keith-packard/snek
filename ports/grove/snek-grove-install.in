@@ -7,6 +7,8 @@ PORT=/dev/ttyUSB0
 
 mode=arg
 
+MCU=m328
+
 for i in "$@"; do
     case "$mode" in
 	arg)
@@ -17,8 +19,11 @@ for i in "$@"; do
 		-hex|--hex)
 		    mode=hex
 		    ;;
+		-mcu|--mcu)
+		    mode=mcu
+		    ;;
 		*)
-		      echo "Usage: $0 {-port $PORT} {-hex snek-grove.hex}" 1>&2
+		      echo "Usage: $0 {-port $PORT} {-hex snek-grove.hex} {-mcu $MCU}" 1>&2
 		      exit 1
 		      ;;
 	    esac
@@ -31,7 +36,11 @@ for i in "$@"; do
 	    HEX="$i"
 	    mode=arg
 	    ;;
+	mcu)
+	    MCU="$i"
+	    mode=arg
+	    ;;
     esac
 done
 
-avrdude -pATMEGA328P -carduino -P$PORT -b115200 -D -U flash:w:"${HEX}":i
+avrdude -p"$MCU" -carduino -P$PORT -b115200 -D -U flash:w:"${HEX}":i

@@ -92,6 +92,7 @@ install: snek-$(BOARD)-install $(HEX) snek-$(BOARD)-install.1
 	install -d $(DESTDIR)$(BINDIR)
 	install snek-$(BOARD)-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SHAREDIR)
+	install snek-$(BOARD)-reset-port $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-$(BOARD)-install.1 $(DESTDIR)$(MANDIR)/man1

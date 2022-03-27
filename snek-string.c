@@ -234,6 +234,21 @@ snek_string_interpolate(char *a, snek_poly_t poly)
 	return snek_string_to_poly(result);
 }
 
+#ifdef SNEK_BUILTIN_str
+snek_poly_t
+snek_builtin_str(snek_poly_t a)
+{
+	char *result = NULL;
+	snek_buf_t buf = {
+		.put_c = snek_buf_sprintc,
+		.put_s = snek_buf_sprints,
+		.closure = &result
+	};
+	snek_poly_format(&buf, a, 's');
+	return snek_string_to_poly(result);
+}
+#endif
+
 void
 snek_stack_push_string(const char *s)
 {

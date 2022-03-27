@@ -1,0 +1,59 @@
+.\"
+.\" Copyright © 2021 Keith Packard <keithp@keithp.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.TH SNEK-@UBOARD@-INSTALL 1 "snek-@BOARD@-install" ""
+.SH NAME
+snek-@BOARD@-big-install \- Install larger version of Snek to
+Arduino ATmega328 board
+.SH SYNOPSIS
+.B "snek-@BOARD@-install" [OPTION]... [COMMAND]
+.SH DESCRIPTION
+.I snek-@BOARD@-install
+installs the larger version Snek programming language on an Arduino
+board with an ATmega328, overwriting the boot loader. This
+version of snek provides support for a few extra
+functions, 'input', 'float' and 'int'. As a consequence, it does not
+leave room for the Optiboot loader and must be flashed using a
+separate programmer dongle.
+.SH OPTIONS
+.TP
+\-isp <ISP model>
+Specifies the programmer to use, common options are 'usbtiny'
+and 'avrisp2'. The default is 'usbtiny'.
+.TP
+\-hex <snek.hex>
+Specifies the hex file to load to the board. The default is the
+currently installed version of Snek.
+.TP
+\-mcu <MCU name>
+Specifies which micro controller to expect to find on the board. Some
+boards have m328 while others have m328p. The default is @MCU@, but if
+you get an error message indicating a mismatch, you can try the other.
+.SH COMMANDS
+.TP
+fuseload
+Sets the target fuse bits for Snek usage and then loads Snek to the
+device. This is the default command
+.TP
+load
+Loads Snek to the device without first setting the fuse bits. Snek
+will not work correctly if the fuse bits are not set correctly, so
+only do this if the target has already had the fuse bits set correctly.
+.TP
+fuse
+Sets the target fuse bits suitable for Snek usage. You must do this
+before Snek will work on the target device, although you may do it
+before or after loading the Snek system. You only need to do this once
+per board.
+.SH AUTHOR
+Keith Packard

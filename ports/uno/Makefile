@@ -12,19 +12,10 @@
 # General Public License for more details.
 #
 
-vpath %.in ../duemilanove
-
 BOARD=uno
 CBOARD=Uno
 UBOARD=UNO
 PORT=/dev/ttyACM0
+MCU?=m328p
 
 include ../duemilanove/Makefile
-
-all:: snek-uno-install.in
-
-snek-uno-install.in: snek-duemilanove-install.in
-	sed -e 's;@BOARD@;$(BOARD);g' \
-	-e 's;@UBOARD@;$(UBOARD);g' \
-	-e 's;@CBOARD@;$(CBOARD);g' \
-	-e 's;@PORT@;$(PORT);g' $^ > $@

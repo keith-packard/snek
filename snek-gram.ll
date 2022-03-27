@@ -27,13 +27,10 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 					putchar('\n');
 				}
 			}@
-		| DEF
+		| DEF NAME
 			@{
 				snek_parse_nformal = 0;
 				snek_parse_nnamed = 0;
-			}@
-		  NAME
-			@{
 				value_push_id(snek_token_val.id);
 	 		}@
 		  OP opt-formals CP COLON suite
@@ -92,7 +89,10 @@ stat		: simple-stat
 		  compound-stat
 		| NL
 		;
-simple-stat	: @{ snek_code_add_line(); }@ small-stat small-stats-p NL
+simple-stat	: @{ snek_code_add_line(); }@ small-stat small-stats-p nl-or-end
+		;
+nl-or-end	: NL
+		| END
 		;
 small-stats-p	: SEMI small-stat small-stats-p
 		|
@@ -326,8 +326,10 @@ expr-cmp	: expr-lor
 		  expr-cmp-p
 			@{
 				snek_offset_t cmp_off = value_pop().offset;
-				if (cmp_off)
+				if (cmp_off) {
 					snek_code_patch_forward(cmp_off, snek_code_current(), snek_forward_cmp, snek_code_current());
+					snek_code_add_op(snek_op_nop);
+				}
 			}@
 		;
 expr-cmp-p	: cmpop

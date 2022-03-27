@@ -1,5 +1,5 @@
 #
-# Copyright © 2019 Keith Packard <keithp@keithp.com>
+# Copyright © 2020 Keith Packard <keithp@keithp.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,28 +11,11 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-D0,	-2,	0
-A0,	-2,	0
-D1,	-2,	1
-A1,	-2,	1
-D2,	-2,	2
-A2,	-2,	2
-D3,	-2,	3
-A3,	-2,	3
-D4,	-2,	4
-A4,	-2,	4
-D5,	-2,	5
-A5,	-2,	5
-D6,	-2,	6
-A6,	-2,	6
-D7,	-2,	7
-AX,	-2,	7
-D8,	-2,	8
-A8,	-2,	8
-D9,	-2,	9
-A9,	-2,	9
-D10,	-2,	10
-A10,	-2,	10
-LED1,	-2,	11
-LED,	-2,	11
-LED2,	-2,	12
+
+BOARD?=uno-big
+CBOARD?=Uno-big
+UBOARD?=UNO-BIG
+PORT?=/dev/ttyACM0
+MCU?=m328p
+
+include ../duemilanove-big/Makefile

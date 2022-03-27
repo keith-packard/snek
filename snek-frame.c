@@ -19,14 +19,8 @@ snek_frame_t	*snek_frame;
 
 static snek_frame_t *snek_pick_frame(bool globals)
 {
-	if (globals) {
-		if (!snek_globals) {
-			snek_globals = snek_alloc(sizeof (snek_frame_t));
-			snek_globals->prev = SNEK_OFFSET_NONE;
-			snek_globals->code = SNEK_OFFSET_NONE;
-		}
+	if (globals)
 		return snek_globals;
-	}
 	return snek_frame;
 }
 

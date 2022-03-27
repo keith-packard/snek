@@ -18,11 +18,7 @@ include $(SNEK_ROOT)/snek.defs
 
 PYTHON3?=python3
 SNEK_NATIVE?=$(SNEK_PORTS)/posix/snek
-ifdef SNEK_RISCV_TEST
 SNEK_RISCV?=$(SNEK_PORTS)/qemu-riscv/snek-riscv
-else
-SNEK_RISCV=
-endif
 SNEK_ARM?=$(SNEK_PORTS)/qemu-arm/snek-arm
 
 LANGS=python3 $(SNEK_NATIVE) $(SNEK_ARM) $(SNEK_RISCV)
@@ -60,7 +56,9 @@ SUCCESS_TESTS = \
 	pass-interpolate-str.py \
 	pass-trailing-comma.py \
 	pass-chain-op.py \
-	pass-precedence.py
+	pass-precedence.py \
+	pass-str.py \
+	pass-str-op.py
 
 SYNTAX_TESTS = \
 	fail-syntax-lex-bang.py \

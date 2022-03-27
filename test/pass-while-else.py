@@ -19,4 +19,4 @@ while i < 10:
 else:
     j = 0
 
-j == 0
+assert j == 0

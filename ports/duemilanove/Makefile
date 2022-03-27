@@ -12,12 +12,19 @@
 # General Public License for more details.
 #
 
+vpath %.in ../duemilanove
+
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 BOARD?=duemilanove
 CBOARD?=Duemilanove
 UBOARD?=DUEMILANOVE
 PORT?=/dev/ttyUSB0
+CLOCK?=16000000
+BAUD?=115200
+INSTALLER?=1
+ATMEGA_FLASH_SIZE?=0x7e00
+MCU?=m328
 
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
@@ -26,6 +33,7 @@ SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 SNEK_LOCAL_SRC = \
 	snek-pow.c \
 	snek-328p.c \
+	$(SNEK_ATMEGA_SRC_EXTRA) \
 	$(SNEK_ATMEGA_SRC)
 
 SNEK_LOCAL_INC = \
@@ -33,6 +41,7 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
+	$(SNEK_ATMEGA_BUILTINS_EXTRA) \
 	snek-328p.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
@@ -41,7 +50,9 @@ SNEK_ATMEGA_SED=$(SNEK_SED) \
 	-e 's;@BOARD@;$(BOARD);g' \
 	-e 's;@UBOARD@;$(UBOARD);g' \
 	-e 's;@CBOARD@;$(CBOARD);g' \
-	-e 's;@PORT@;$(PORT);g'
+	-e 's;@BAUD@;$(BAUD);g' \
+	-e 's;@PORT@;$(PORT);g' \
+	-e 's;@MCU@;$(MCU);g'
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
@@ -53,13 +64,13 @@ CC=avr-gcc
 
 OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 
-CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
+CFLAGS=$(OPT) -DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
-	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x7e00 \
+	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=$(ATMEGA_FLASH_SIZE) \
 	-Wl,-Map=$(MAP)
 
-all:: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1
+all:: $(HEX)
 
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $^ $@
@@ -67,6 +78,9 @@ $(HEX): $(ELF)
 $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+
+ifeq ($(INSTALLER),1)
+all:: snek-$(BOARD)-install snek-$(BOARD)-install.1
 
 snek-$(BOARD)-install: snek-duemilanove-install.in
 	$(SNEK_ATMEGA_SED) $^ > $@
@@ -85,6 +99,8 @@ install: snek-$(BOARD)-install $(HEX) snek-$(BOARD)-install.1
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
 	install -m 0644 snek-$(BOARD)-install.1 $(DESTDIR)$(MANDIR)/man1
+
+endif
 
 clean::
 	rm -f *.elf *.hex *.map snek-$(BOARD)-install snek-$(BOARD)-install.1

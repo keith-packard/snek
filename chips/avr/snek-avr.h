@@ -58,7 +58,7 @@ float atoff(const char *);
 
 #define fprintf(file, fmt, args...) ({				\
 		static const char PROGMEM __fmt__[] = (fmt);	\
-		fprintf_P(file, __fmt__, ## args);		\
+		printf_P(__fmt__, ## args);		\
 	})
 
 #define sprintf_const(dst, fmt, args...) ({			\

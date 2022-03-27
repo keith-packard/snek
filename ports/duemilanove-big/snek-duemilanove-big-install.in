@@ -1,0 +1,71 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+SNEKBIGBASE="$SHAREDIR/snek-@BOARD@"
+SNEKBIGREST="-@SNEK_VERSION@.hex"
+SNEKBIG="$SNEKBIGBASE""$SNEKBIGREST"
+
+action="fuseload"
+
+ISP=usbtiny
+
+mode=arg
+
+verify=""
+
+MCU="@MCU@"
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		fuse|load|fuseload)
+		    action="$i"
+		    ;;
+		-isp|--isp)
+		    mode=isp
+		    ;;
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		-mcu|--mcu)
+		    mode=mcu
+		    ;;
+		-quick)
+		    verify="-V"
+		    ;;
+		*)
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-uduino.hex} {-mcu 328} {fuseload|load|fuse}" 1>&2
+		      exit 1
+		      ;;
+	    esac
+	    ;;
+	isp)
+	    ISP="$i"
+	    mode=arg
+	    ;;
+	hex)
+	    SNEKBIG="$i"
+	    mode=arg
+	    ;;
+	mcu)
+	    MCU="$i"
+	    mode=arg;
+	    ;;
+    esac
+done
+
+FUSES="-U hfuse:w:0xd1:m"
+
+case "$action" in
+    fuse|fuseload)
+	avrdude -V -c $ISP -p $MCU -u $FUSES || exit 1
+	;;
+esac
+
+case "$action" in
+    fuseload|load)
+	avrdude $verify -c $ISP -p $MCU -U flash:w:"${SNEKBIG}" || exit 1
+	;;
+esac

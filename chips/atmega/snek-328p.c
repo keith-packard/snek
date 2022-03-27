@@ -27,7 +27,7 @@ static uint32_t	on_pins;
 /* digital pins all use PULL_UP by default */
 static uint32_t pull_pins = 0x03fff;
 
-#ifdef SNEK_TONE
+#ifdef SNEK_BUILTIN_tone
 static uint8_t 	tccr0a;
 static uint8_t	tccr0b;
 
@@ -137,7 +137,9 @@ pin_reg(uint8_t pin)
 {
 	if (pin < 8)
 		return &PIND;
-	return &PINB;
+	if (pin < 14)
+		return &PINB;
+	return &PINC;
 }
 
 static volatile uint8_t *
@@ -312,7 +314,7 @@ set_out(uint8_t pin)
 	return SNEK_NULL;
 }
 
-#ifdef SNEK_TONE
+#ifdef SNEK_BUILTIN_tone
 /* Output tone on D5 */
 snek_poly_t
 snek_builtin_tone(snek_poly_t a)
@@ -362,6 +364,17 @@ snek_builtin_tone(snek_poly_t a)
 
 	return SNEK_NULL;
 }
+
+#ifdef SNEK_BUILTIN_tonefor
+snek_poly_t
+snek_builtin_tonefor(snek_poly_t a, snek_poly_t b)
+{
+	snek_builtin_tone(a);
+	snek_builtin_on();
+	snek_builtin_time_sleep(b);
+	return snek_builtin_tone(SNEK_ZERO);
+}
+#endif
 #endif
 
 snek_poly_t
@@ -458,7 +471,7 @@ snek_poly_t
 snek_builtin_stopall(void)
 {
 	uint8_t p;
-#ifdef SNEK_TONE
+#ifdef SNEK_builtin_tone
 	tcc0_reset();
 #endif
 	for (p = 0; p < NUM_PIN; p++)

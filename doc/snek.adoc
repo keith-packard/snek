@@ -445,7 +445,7 @@ is another string which is then passed to print, which
 displays it.
 
 How the values are formatted depends on the character
-following the % mark; that's discussed in the
+following the `%` mark; that's discussed in the
 <<String Interpolation>> section. How to make that set of
 values on the right is discussed in the next section,
 <<lists_and_tuples_tutorial>>
@@ -1149,11 +1149,11 @@ returns `False` (which is 0), and if the operand is a `False` value,
 then Not returns `True` (which is 1).(((not)))
 
 _a_ ``and`` _b_::
-The Boolean And operator first evalutes _a_. If that is False, then its
+The Boolean And operator first evaluates _a_. If that is False, then its
 value is returned. Otherwise, the value of _b_ is returned.(((and)))
 
 _a_ ``or`` _b_::
-The Boolean And operator first evalutes _a_. If that is True, then its
+The Boolean And operator first evaluates _a_. If that is True, then its
 value is returned. Otherwise, the value of _b_ is returned.(((or)))
 
 _a_ ``is`` _b_::
@@ -1418,7 +1418,7 @@ A While statements consists of a `while` block followed by an optional
 
 [source,subs="normal+"]
 ----
-while _while_value_ :
+while while_value :
     block
 else:
     block
@@ -1450,7 +1450,7 @@ as a range expression involving numbers:(((for)))(((else)))
 
 [source,subs="verbatim,quotes"]
 ----
-for _name_ in _value_:
+for name in value:
     for statements
 else:
     else statements
@@ -1465,7 +1465,7 @@ keys in the dictionary.
 
 [source,subs="verbatim,quotes"]
 ----
-for name in range ( _[_ start , _]_ stop _[_ , step _]_ ):
+for name in range ( start, stop, step ):
     for statements
 else:
     else statements
@@ -1789,6 +1789,16 @@ Converts an ASCII value to a one character string.(((chr)))
 'A'
 ----
 
+=== `abs(` _number_ `)`
+Computes the absolute value of its numeric argument. The absolute
+value of a number is the number's distance from 0.(((abs)))
+
+[subs="verbatim,quotes"]
+----
+> *abs(-2)*
+2
+----
+
 === `math.sqrt(` _number_ `)`
 Compute the square root of its numeric argument.(((math.sqrt)))
 
@@ -1857,6 +1867,64 @@ Generates a random integer between 0 and max-1 inclusive.(((random.randrange)))
 ----
 > *random.randrange(10)*
 3
+----
+
+== Input Functions
+
+The Snek Input functions provide some operations commonly required
+when reading data provided by the user via the serial port.
+
+=== `float(` _value_ `)`
+
+Converts _value_ into a number. _value_ can be either a string or a
+number.
+
+[subs="verbatim,quotes"]
+----
+> *float('10.25')*
+10.25
+----
+
+=== `input(` _prompt_ `)`
+
+Prints _prompt_ and then waits for the user to enter some text,
+terminated with a newline. The text, without the trailing newline, is
+returned.
+
+[subs="verbatim,quotes"]
+----
+> *input('--> ')*
+--> *Hi there*
+'Hi there'
+----
+
+==== `int(` _value_ `)`
+
+Converts _value_ into an integer, rounding towards zero. _value_ can
+be either a string or a number.
+
+[subs="verbatim,quotes"]
+----
+> *int('10.75')*
+10
+> *int(-10.75)*
+-10
+----
+
+==== `str(` _value_ `)`
+
+Converts _value_ (which may be any snek value) into a string. This is
+the same as `'%s' % (`_value_`, )`, but may be more clear in some
+contexts.
+
+[subs="verbatim,quotes"]
+----
+> *str(10.75)*
+'10.75'
+> *str((1,2,3))*
+'(1, 2, 3)'
+> *str('hello world')
+'hello world'
 ----
 
 == Math Functions
@@ -2082,9 +2150,19 @@ Programs either a set of neopixel devices connected to the current
 Power pin (when Power and Direction are the same) or a set of APA102
 devices connected to the current Power (used for APA102 Data) and
 Direction (used for APA102 Clock) pins (when Power and Direction are
-different). _pixels_ is a list or tuple, each element of which is a
-list or tuple of three numbers ranging from 0 to 1 for the desired
-red, green and blue intensity of the target neopixel.(((neopixel)))
+different). _pixels_ is either a list/tuple of three numbers, or a
+list/tuple, each element of which is a list/tuple of three numbers
+ranging from 0 to 1 for the desired red, green and blue intensity of
+the target neopixel.(((neopixel)))
+
+[subs="verbatim,quotes"]
+----
+> *talkto(NEOPIXEL)*
+> *neopixel((0, 0.5, 0))*
+----
+
+This example programs a single NeoPixel device, setting it to
+half-intensity green.
 
 [subs="verbatim,quotes"]
 ----
@@ -2356,8 +2434,8 @@ To quit from the dialog and skip loading or saving a file, press Escape.
 [appendix]
 = Snek on snekboard
 
-Snek for the snekboard includes the Common System, Math, GPIO
-(including the `neopixel` function) and EEPROM fountain's. Snek for the
+Snek for the snekboard includes the Common System, Math, Input, GPIO
+(including the `neopixel` function) and EEPROM functions. Snek for the
 snekboard provides pre-defined variables for the eight analog I/O pins
 as well as the four 9V motor controllers:(((snekboard)))
 
@@ -2392,12 +2470,24 @@ package for your machine and copy it to the snekboard file system.
 
 [%nonfacing]
 [appendix]
-= Snek on Arduino Duemilanove and Uno
+= Snek on Arduino Duemilanove, LilyPad, Nano and Uno
 
-Snek for the Duemilanove and for the Uno include the Common System, EEPROM, and GPIO
-functions. They do not include the Math functions, nor the `pulldown`
-function. Snek for the Duemilanove and for the Uno provides pre-defined variables for
-all of the GPIO pins:(((Duemilanove)))(((Uno)))(((Arduino)))
+These boards are all based on the original Arduino ATMega 328
+processor. There are two versions of Snek for these boards: the
+regular version and a “big” version. The regular version co-exists
+with the Optiboot bootloader which makes re-flashing with new versions
+of Snek convenient. The big version overwrites the boot loader to
+provide additional functionality.
+
+Snek for these boards include the Common System, EEPROM, and GPIO
+functions. The “big” versions add the Input functions. They do not
+include the Math functions, nor the `pulldown` function. Snek for
+these boards provides pre-defined variables for all of the GPIO
+pins:(((Duemilanove)))(((LilyPad)))(((Nano)))(((Uno)))(((Arduino)))
+
+Snek for the LilyPad adds the 'tone' and 'tonefor' builtins, which
+send an audio tone to pin D5. To make space for this, support for
+Dictionaries was removed.
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2412,32 +2502,95 @@ either a pull-up or pull-down resistor to the pin so that a
 disconnected pin will read an indeterminate value. Change this using
 `pullnone` or `pullup` functions.
 
-=== Installing Optiboot on the Duemilanove
+=== Installing Optiboot on ATMega 328 boards
 
 Snek nearly fills the ATMega 328P flash, leaving space only for the
 smaller optiboot loader. This loader is not usually installed on the
-Duemilanove, so you'll need to install it by hand using a programming
-puck, such as the USBTiny device.
+Duemilanove or Nano, so you'll need to install it by hand using a
+programming puck, such as the USBTiny device.
 
 Use the Arduino IDE to install the Optiboot boot loader following
 instructions found on the
 link:https://github.com/Optiboot/optiboot[Optiboot web site].
 
-=== Installing Snek on the Duemilanove and Uno
+=== Installing Snek on ATMega 328 boards
 
-Once your board is ready to install snek, you can use avrdude to do
- that with Optiboot. On Linux, you can use the snek-uno-install command:
+To install the regular version, once your board is ready to install
+snek, you can use avrdude to do that with Optiboot. On Linux, you can
+use snek-duemilanove-install (for Duemilanove and Nano),
+snek-uno-install (for Uno), or snek-lilypad-install (for LilyPad).
 
-	$ snek-uno-install snek
+	$ snek-duemilanove-install
+
+or
+
+	$ snek-lilypad-install
+
+or
+
+	$ snek-uno-install
+
+On other hosts, you'll need to run 'avrdude' manually. For Duemilanove or Nano boards:
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -pm328p -carduino -PCOM1 -b115200 -D -U flash:w:snek-duemilanove-{version}.hex:i
+----
+
+For Uno boards:
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -pm328p -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
+----
+
+For LilyPad boards:
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -pm328p -carduino -PCOM1 -b57600 -D -U flash:w:snek-lilypad-{version}.hex:i
+----
+
+Replace 'COM1' with the name of the serial port on your computer.
+
+To install the “big” version, you'll need to use a programming device,
+such as a usbtiny from Adafruit. Once connected, on Linux you can use
+snek-duemilanove-big-install (for Duemilanove or Nano),
+snek-lilypad-big-install (for LilyPad), or snek-uno-big-install (for Uno):
+
+	$ snek-duemilanove-big-install
+
+or
+
+	$ snek-lilypad-install-big
+
+or
+
+	$ snek-uno-big-install
 
 On other hosts, you'll need to run 'avrdude' manually:
 
 [subs="verbatim,quotes,attributes,"]
 ----
-> avrdude -pATMEGA328P -carduino -PCOM1 -b115200 -D -U flash:w:snek-uno-{version}.hex:i
+$ avrdude -V -c usbtiny -p m328p -u -U -U hfuse:w:0xd1:m
+$ avrdude -c usbtiny -p m328p -U flash:w:snek-duemilanove-big-{version}.hex:i
 ----
 
-Replace 'COM1' with the name of the serial port on your computer.
+or
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -V -c usbtiny -p m328p -u -U -U hfuse:w:0xd1:m
+$ avrdude -c usbtiny -p m328p -U flash:w:snek-lilypad-big-{version}.hex:i
+----
+
+or
+
+[subs="verbatim,quotes,attributes,"]
+----
+$ avrdude -V -c usbtiny -p m328p -u -U -U hfuse:w:0xd1:m
+$ avrdude -c usbtiny -p m328p -U flash:w:snek-uno-big-{version}.hex:i
+----
 
 [%nonfacing]
 [appendix]
@@ -2491,7 +2644,7 @@ are two steps to getting Snek installed on the device.
     updating the firmware.
 +
 [source]
-$ avrdude -F -V -c usbtiny -p m32u4 -U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m
+$ avrdude -F -V -c usbtiny -p m32u4 -U:m -U hfuse:w:0x99:m
 +
  2. Install the Snek binary. Pick the version for your board as that
     also sets the right clock speed. For 5v boards, install the 5v binary:
@@ -2513,10 +2666,10 @@ $ avrdude -F -V -c usbtiny -p m32u4 -U flash:w:snek-uduino-{version}.hex
 [appendix]
 = Snek on Adafruit ItsyBitsy M0
 
-Snek for the Adafruit ItsyBitsy includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek for
-the itsybitsy m0 provides pre-defined variables for all of the the
-GPIO pins:(((ItsyBitsy M0)))
+Snek for the Adafruit ItsyBitsy includes the Common System, Input,
+Math, GPIO (including the `neopixel` function), and EEPROM
+functions. Snek for the itsybitsy m0 provides pre-defined variables
+for all of the the GPIO pins:(((ItsyBitsy M0)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2565,7 +2718,7 @@ package for your machine and copy it to the ItsyBitsy M0 file system.
 [appendix]
 = Snek on Arduino Mega
 
-Snek for the Mega includes the Common System, EEPROM, GPIO (not
+Snek for the Mega includes the Common System, EEPROM, Input, GPIO (not
 including the `pulldown` function) and math functions. Snek for the
 Mega provides pre-defined variables for all of the GPIO
 pins:(((Arduino Mega)))
@@ -2608,10 +2761,10 @@ $ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{versi
 [appendix]
 = Snek on Metro M0 Express
 
-Snek for the Metro M0 Express includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek for the metro m0 provides
-pre-defined variables for all of the GPIO pins:(((Metro M0
-Express)))(((Arduino)))
+Snek for the Metro M0 Express includes the Common System, Input, Math,
+GPIO (including the `neopixel` function), and EEPROM functions. Snek
+for the metro m0 provides pre-defined variables for all of the GPIO
+pins:(((Metro M0 Express)))(((Arduino)))
 
 D0 - D13::
 Digital input and output pins. By default, when used as input pins,
@@ -2655,10 +2808,10 @@ package for your machine and copy it to the Metro M0 file system.
 [appendix]
 = Snek on Feather M0 Express
 
-Snek for the Feather M0 Express includes the Common System, Math, GPIO
-(including the `neopixel` function), and EEPROM functions. Snek for the feather provides
-pre-defined variables for all of the GPIO pins:(((Feather M0
-Express)))(((Arduino)))
+Snek for the Feather M0 Express includes the Common System, Input,
+Math, GPIO (including the `neopixel` function), and EEPROM
+functions. Snek for the feather provides pre-defined variables for all
+of the GPIO pins:(((Feather M0 Express)))(((Arduino)))
 
 D0 - D13::
 Digital input and output pins.  By default, when used as input pins,
@@ -2705,9 +2858,9 @@ package for your machine and copy it to the Feather M0 file system.
 [appendix]
 = Snek on Adafruit Crickit
 
-Snek for the Crickit includes the Common System, Math, GPIO (including
-the `neopixel` function), and
-EEPROM functions. Snek for the Crickit provides names for all of the GPIO pins:(((Crickit)))
+Snek for the Crickit includes the Common System, Input, Math, GPIO
+(including the `neopixel` function), and EEPROM functions. Snek for
+the Crickit provides names for all of the GPIO pins:(((Crickit)))
 
 DRIVE1 - DRIVE4::
 High current “Darlington” 500mA drive outputs.
@@ -2753,10 +2906,10 @@ package for your machine and copy it to the Crickit file system.
 = Snek on Adafruit Circuit Playground Express
 
 Snek for the Circuit Playground Express includes the Common System,
-Math, GPIO (including the `neopixel`, `tone` and `tonefor` functions),
-Temperature and EEPROM functions. Snek for the Playground provides
-names for all of the external connections as well as the built-in
-devices:
+Input, Math, GPIO (including the `neopixel`, `tone` and `tonefor`
+functions), Temperature and EEPROM functions. Snek for the Playground
+provides names for all of the external connections as well as the
+built-in devices:
 
 A0::
 Analog input and output connection. This pin has a digital-to-analog
@@ -2816,7 +2969,7 @@ Express file system.
 [appendix]
 = Snek on Arduino SA Nano 33 IoT
 
-Snek for the Nano 33 IoT includes the Common System, Math, GPIO, and
+Snek for the Nano 33 IoT includes the Common System, Input, Math, GPIO, and
 EEPROM functions. Snek for the Nano 33 IoT provides names for all of the GPIO pins:(((Nano 33 IoT)))
 
 D0 - D12::
@@ -2850,7 +3003,7 @@ The Arduino SA Nano 33 IoT board includes a boot loader which works
 with the Arduino IDE. Snek includes a replacement boot loader which
 presents as a USB mass storage device with a FAT file system. To
 install this boot loader, start the Arduino IDE, find the
-update-bootloader-nano33iot.ino project included in thte Snek package
+update-bootloader-nano33iot.ino project included in the Snek package
 for your machine and load it into the Arduino IDE. Then compile and
 download that to the Nano 33 IoT board. That will replace the boot
 loader and restart the board, at which point it should present a file
@@ -2858,7 +3011,7 @@ system.  For future updates, you can get the board back into this mode
 by connecting the board to your computer over USB and then pressing
 the reset button twice in quick succession.
 
-Onec the board is showing a file system on your computer, find the
+Once the board is showing a file system on your computer, find the
 `snek-nano33iot-{version}.uf2` file included in the Snek package for
 your machine and copy it to the file system.
 
@@ -2908,7 +3061,7 @@ The following motors are supported:
 * link:https://www.lego.com/en-us/product/ev3-medium-servo-motor-45503[Lego EV3 Medium Servo Motor]
 
 Servo motors have two-way communication with the host, so current speed (either
-from applicaiton of power or from manual rotation) and current position of the
+from application of power or from manual rotation) and current position of the
 motor can be queried:
 
 * `read` reads the current speed of the motor (-3 to 3 rotations per second),

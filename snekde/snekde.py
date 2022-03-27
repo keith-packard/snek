@@ -49,6 +49,10 @@ snek_cur_path = None
 
 snek_debug_file = False
 
+baud_rates = [115200, 57600]
+
+baud_selection = 0
+
 
 def snek_debug(message):
     global snek_debug_file
@@ -185,7 +189,7 @@ class SnekDevice:
     # that gets data that are read
     #
 
-    def __init__(self, port, interface):
+    def __init__(self, port, interface, rate=115200):
         self.interface = interface
         self.device = port.device
 
@@ -195,7 +199,6 @@ class SnekDevice:
         self.synchronous_put = True
         self.synchronous_limit = 16
 
-        rate = 115200
         for port_mod in port_mods:
             if port_mod in port.description or port_mod in port.hwid:
                 if "async" in port_mods[port_mod]:
@@ -344,6 +347,9 @@ class SnekDevice:
 
     def command(self, data, intr="\x03"):
         self.write("\x0e" + intr + data)
+
+    def set_baud(self, baud):
+        self.serial.baudrate = baud
 
 
 class EditWin:
@@ -1112,6 +1118,7 @@ help_text = (
     ("F5", "Load"),
     ("F6", "Save"),
     ("F7", "Switch"),
+    ("F8", "Rate"),
 )
 
 # Paint the function key help text and the separator line
@@ -1128,6 +1135,7 @@ def screen_paint():
     device_name = "<no device>"
     if snek_device:
         device_name = snek_device.device
+    device_name = "%s %d" % (device_name, baud_rates[baud_selection])
     device_col = snek_cols - len(device_name)
     if device_col < 0:
         device_col = 0
@@ -1190,19 +1198,41 @@ def screen_fini():
     curses.endwin()
 
 
+def switch_baud():
+    global snek_device, baud_selection, baud_rates
+    baud_selection = (baud_selection + 1) % len(baud_rates)
+    if snek_device:
+        snek_device.set_baud(baud_rates[baud_selection])
+    screen_paint()
+
+
 def snekde_open_device():
-    global snek_device, snek_monitor
+    global snek_device, snek_monitor, baud_selection, baud_rates
     dialog = GetPortWin()
     port = dialog.run_dialog()
     if not port:
         return
     try:
-        device = SnekDevice(port, snek_monitor)
+        device = SnekDevice(port, snek_monitor, rate=baud_rates[baud_selection])
         device.start()
         if snek_device:
             snek_device.close()
             del snek_device
         snek_device = device
+
+        # Attempt to auto-baud synchronous devices
+        if snek_device.synchronous_put:
+            old_baud = baud_selection
+            for i in range(len(baud_rates)):
+                baud_selection = i
+                # snek_debug("try baud %d" % baud_rates[i])
+                snek_device.set_baud(baud_rates[baud_selection])
+                if snek_monitor.ping():
+                    break
+            else:
+                baud_selection = old_baud
+                snek_device.set_baud(baud_rates[baud_selection])
+
         screen_paint()
     except OSError as e:
         message = e.strerror
@@ -1333,6 +1363,8 @@ def run():
                 snek_current_window = snek_repl_win
             else:
                 snek_current_window = snek_edit_win
+        elif ch == curses.KEY_F8 or ch == ord("8") | 0x80:
+            switch_baud()
         elif ch == ord("\n"):
             if snek_current_window is snek_edit_win:
                 snek_current_window.dispatch(ch)
@@ -1378,6 +1410,7 @@ class SnekMonitor:
         global snek_lock
         self.cv = threading.Condition(snek_lock)
         self.ack = threading.Condition(snek_lock)
+        self.dc4 = threading.Condition(snek_lock)
         self.getting_text = False
 
     # Synchronize with the remote device by sending ENQ and
@@ -1391,6 +1424,13 @@ class SnekMonitor:
             snek_device.serial.write(b"\x05")
             self.ack.wait(1)
             # snek_debug('sync done')
+
+    def ping(self):
+        global snek_lock
+        # snek_debug('send PING')
+        snek_device.serial.write(b"\x14")
+        ret = self.dc4.wait(0.25)
+        return ret
 
     # Reading text to snek_edit_win instead of snek_repl_win
 
@@ -1427,6 +1467,13 @@ class SnekMonitor:
                 with snek_lock:
                     # snek_debug('notify ack')
                     self.ack.notify_all()
+
+            # DC4 - device has seen DC4
+            elif b == b"\x14":
+                # snek_debug("receive PING")
+                with snek_lock:
+                    # snek_debug("notify PING")
+                    self.dc4.notify_all()
 
             # Ignore all control chars other than newline
             elif b < b"\x20" and b != b"\n":

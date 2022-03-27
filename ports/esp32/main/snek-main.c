@@ -47,7 +47,7 @@ static void uart_event_task(void *pvParameters)
 	uart_event_t event;
 	int i;
 	for(;;) {
-		if(xQueueReceive(uart0_queue, (void * )&event, (portTickType)portMAX_DELAY)) {
+		if(xQueueReceive(uart0_queue, (void * )&event, (TickType_t)portMAX_DELAY)) {
 			switch(event.type) {
 			case UART_PATTERN_DET:
 				snek_abort = true;

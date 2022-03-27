@@ -14,15 +14,6 @@
 
 #include "snek.h"
 
-static snek_offset_t
-snek_func_line(snek_func_t *func)
-{
-	snek_code_t	*code = snek_pool_addr(func->code);
-	if (code)
-		return snek_code_line(code);
-	return 0;
-}
-
 static inline char snek_list_open(snek_list_type_t type)
 {
 	switch(type) {
@@ -60,11 +51,13 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 {
 	void *closure = buf->closure;
 	static char tmp[32];
-	static char format_string[3] = "%.";
+	char format_string[3];
 	snek_type_t atype = snek_poly_type(a);
 	int i;
 
+	format_string[0] = '%';
 	format_string[1] = format;
+	format_string[2] = '\0';
 	switch (format) {
 	case 'd':
 	case 'i':
@@ -106,6 +99,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 			buf->put_s(snek_poly_to_string(a), closure);
 			return;
 		}
+		format='a';
 		break;
 	default:
 		break;
@@ -124,7 +118,7 @@ snek_poly_format(snek_buf_t *buf, snek_poly_t a, char format)
 		break;
 	case snek_func:
 		sprintf_const(tmp, "<function at %d>",
-			      snek_func_line(snek_poly_to_func(a)));
+			      snek_poly_to_offset(a));
 		buf->put_s(tmp, closure);
 		break;
 	case snek_builtin:

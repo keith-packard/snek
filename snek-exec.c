@@ -454,6 +454,8 @@ snek_binary(snek_poly_t a, snek_op_t op, snek_poly_t b, bool inplace)
 			}
 			break;
 		case snek_op_times:
+			if (at == snek_float)
+				return snek_binary(b, op, a, inplace);
 			if (bt == snek_float) {
 				snek_soffset_t bo = snek_poly_get_soffset(b);
 				if (bo < 0)
@@ -771,9 +773,11 @@ snek_exec(snek_code_t *code_in)
 			case snek_op_chain_le:
 				op -= (snek_op_chain_eq - snek_op_eq);
 				snek_poly_t r = snek_binary(snek_stack_pick(0), op, snek_a, false);
+				snek_stack_drop(1);
 				if (!snek_poly_true(r)) {
 					snek_a = r;
 					memcpy(&ip, &snek_code->code[ip], sizeof (snek_offset_t));
+					push = false;
 				} else
 					ip += sizeof (snek_offset_t);
 				break;

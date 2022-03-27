@@ -45,6 +45,8 @@ SNEK_AVR_BUILTINS = \
 	snek-eeprom.builtin \
 	snek-avr.builtin
 
+SNEK_NO_FILE = 1
+
 OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
