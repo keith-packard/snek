@@ -61,8 +61,13 @@ described below.
    This board was designed to run Snek and control Lego Power Function motors.
 
  * [Crowd Supply µduino](https://www.crowdsupply.com/uduino/uduino).
+   This board doesn't have any access to the programming pins, so
+   you'd need to get Snek pre-programmed before it was split off of
+   the carrier board.
 
- * [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3)
+ * [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3). This
+   is pretty much the same as a Duemilanove board, but with a
+   different USB to serial converter.
 
  * [Seeeduino XIAO](https://www.seeedstudio.com/Seeeduino-XIAO-Arduino-Microcontroller-SAMD21-Cortex-M0+-p-4426.html).
 
@@ -206,9 +211,8 @@ system menu.
 ## The Mu Editor
 
 [mu](https://codewith.mu/) is an IDE especially designed for new
-Python developers. It already has support for embedded boards running
-MicroPython and CircuitPython, and there are patches available for
-[Snek as well](https://github.com/keith-packard/mu).
+Python developers. It has support for boards running snek upstream,
+but no release has been made with that code yet.
 
 ## The Snek Development Environment
 
@@ -252,3 +256,99 @@ suggestions and bug reports. Please feel free to send mail or use the
 github process. I've created a mailing list for collaboration; 
 you'll need to subscribe to be able to post. Subscribe to the [snek
 mailing list here](https://keithp.com/mailman/listinfo/snek)
+
+## Releases
+
+Here are more specific notes about Snek releases.
+
+### Version 1.7
+
+ * Fix NaN comparisons and make dicts containing NaN keys work.
+   [Jake Edge's article, “Revisiting NaNs in Python”](https://lwn.net/Articles/869231/)
+   led to the discovery that Snek had several bugs in NaN
+   comparisons. Snek now computes the right value for comparisons with
+   Nan, as well as permitting NaN to be used as a key in dictionaries.
+
+ * Add math functions to nano-every port; the ATmega4809 has plenty of
+   flash space for these.
+
+### Version 1.6
+
+ * Support explicit serial synchronization using ENQ/ACK so that
+   applications sending lots of data do not require OS flow control
+   support. With many devices connecting via USB/serial adapters that
+   do not provide any flow control, adding explicit flow control to
+   the Snek implementation provides a way to make downloading code
+   reliable for them.
+
+ * Fixed incorrect precedence between bitwise and (&) and bitwise xor
+   (^) operators.
+
+ * Lots of improvements to the EV3 port making it more like
+   other Snek devices.
+
+ * [Narrow 1284](https://www.crowdsupply.com/pandauino/narrow) port.
+   This is a small board with the ATmega1284 SoC which is like the
+   ATmega328 but with much more Flash and RAM which provides way more
+   room for Snek to run.
+
+ * Seeed Grove Beginner Kit port. This is another ATmega328p based board
+   but with a range of devices provided in the kit. Snek supports the
+   LED, Buzzer, Light, Sound, OLED Display, Button, Rotary Potentiometer
+   and 3-axis Accelerometer.
+
+ * Seeeduino XIAO port. This is a SAMD21-based device on a tiny board
+   with a USB-C connector.
+
+ * Arduino Nano Every port.  This uses the ATmega4809 which has 6kB of
+   RAM, providing much more space for Snek programs.
+
+### Version 1.5
+
+ * Arduino Uno port.  This port, is mostly the same as the Duemilanove
+   port but includes replacement firmware for the Atmega 16u2 on the Uno
+   board which acts as the USB interface.
+
+ * Handle 'chained' comparison operators (a < b < c) correctly.
+
+ * Add sound output support for the Adafruit Circuit Playground
+   Express board.
+
+ * Use Optiboot on the Duemilanove board so that Snek can be replaced
+   without needing a separate programming device.
+
+### Version 1.4
+
+ * LEGO EV3 port.
+   This port, done by Mikhail Gusarov, includes custom functions for
+   the motors and sensors.
+
+ * HiFive1 Rev B port.
+   This uses a bunch of code from for all of the core and device support.
+
+ * Lots of bugs fixed in string interpolation.
+
+ * Lessons using LEGO with Snekboard
+   There are four lessons that show you how to build a simple robot
+   with step-by-step construction information, and then explore
+   programming on a Snekboard.
+
+ * Improved time.sleep precision. time.sleep is now accurate to the
+   resolution of the timer. On a Duemilanove, that's
+   4µs. time.monotonic still returns a float, so the longer
+   the board has been running, the lower the precision...
+
+ * Support for optiboot in Duemilanove code. Once you've installed
+   optiboot on your Duemilanove, you can install Snek using that over
+   the USB port, instead of needing an ISP.
+
+### Version 1.3
+
+ * Ports to ESP32 and µduino
+
+ * Memory-corruption bug in string interpolation fixed
+
+ * Bunch of code refactoring saves some space
+
+ * Master now tested after every push on github
+
