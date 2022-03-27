@@ -1,3 +1,28 @@
+snek (1.8-1) unstable; urgency=medium
+
+  * New upstream release.
+
+  * Fix build with new picolibc (HAVE_SEMIHOST → _HAVE_SEMIHOST)
+
+  * Add 'str' builtin. Just like Python, the str builtin converts any
+    value to a string.
+
+  * Fix 'chained' comparisons (e.g. a < b < c). These generated
+    incorrect code that left the stack messed up unless all comparisons
+    were true.
+
+  * Allow 3 * 'a' as well as 'a' * 3. The code for evaluating
+    expressions only permitted the string to be on the left side.
+
+  * Add support in snekde for auto-detecting device baud rate between
+    57600 and 115200 baud.
+
+  * Add port to the ATMega 328 based LilyPad, in both the regular size
+    as well as the big version which replaces the boot loader to gain
+    more functionality.
+
+ -- Keith Packard <keithp@keithp.com>  Sun, 27 Mar 2022 12:28:07 -0700
+
 snek (1.7-2) unstable; urgency=medium
 
   * Note that 1.7 builds fine with gcc-11. Closes: #984343.
