@@ -261,6 +261,25 @@ mailing list here](https://keithp.com/mailman/listinfo/snek)
 
 Here are more specific notes about Snek releases.
 
+### Version 1.8
+
+ * Add 'str' builtin. Just like Python, the str builtin converts any
+   value to a string.
+
+ * Fix 'chained' comparisons (e.g. a < b < c). These generated
+   incorrect code that left the stack messed up unless all comparisons
+   were true.
+
+ * Allow 3 * 'a' as well as 'a' * 3. The code for evaluating
+   expressions only permitted the string to be on the left side.
+
+ * Add support in snekde for auto-detecting device baud rate between
+   57600 and 115200 baud.
+
+ * Add port to the ATMega 328 based LilyPad, in both the regular size
+   as well as the big version which replaces the boot loader to gain
+   more functionality.
+
 ### Version 1.7
 
  * Fix NaN comparisons and make dicts containing NaN keys work.
