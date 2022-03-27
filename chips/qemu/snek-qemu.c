@@ -36,8 +36,12 @@
 #include <snek.h>
 #include <snek-io.h>
 #ifdef HAVE_SEMIHOST
+#define _HAVE_SEMIHOST
+#endif
+#ifdef _HAVE_SEMIHOST
 #include <semihost.h>
 #endif
+#include <sys/time.h>
 
 snek_poly_t
 snek_builtin_exit(snek_poly_t a)
@@ -84,34 +88,29 @@ snek_builtin_random_randrange(snek_poly_t a)
 	return snek_float_to_poly(random_x % mod);
 }
 
-#ifdef HAVE_SEMIHOST
 static uint32_t
 centisecs(void)
 {
-	/* QEMU uses real time for elapsed, but CPU time for clock */
-	uint64_t elapsed = sys_semihost_elapsed();
-	uint64_t tickfreq = sys_semihost_tickfreq();
+#ifdef _HAVE_SEMIHOST
+	return (uint32_t) (sys_semihost_elapsed() / (sys_semihost_tickfreq()/100));
+#else
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
 
-	return (uint32_t) (elapsed / (tickfreq / 100));
-}
+	uint32_t centi = tv.tv_sec * 100 + tv.tv_usec / 10000;
+	return centi;
 #endif
+}
 
 snek_poly_t
 snek_builtin_time_monotonic(void)
 {
-#ifdef HAVE_SEMIHOST
 	return snek_float_to_poly((float) centisecs() * 0.01f);
-#else
-	static float now;
-	now += 0.01;
-	return snek_float_to_poly(now);
-#endif
 }
 
 snek_poly_t
 snek_builtin_time_sleep(snek_poly_t a)
 {
-#ifdef  HAVE_SEMIHOST
 	if (snek_poly_type(a) == snek_float) {
 		int32_t csecs = floorf(snek_poly_to_float(a) * 100.0f);
 		uint32_t then = centisecs() + csecs;
@@ -119,7 +118,6 @@ snek_builtin_time_sleep(snek_poly_t a)
 		while ((int32_t) (then - centisecs()) > 0)
 			;
 	}
-#endif
 	return SNEK_NULL;
 }
 
@@ -133,29 +131,15 @@ int snek_qemu_getc(void)
 	return snek_io_getc(stdin);
 }
 
-#ifdef HAVE_SEMIHOST
-#define CMDLINE_SIZE 128
-static char cmdline[CMDLINE_SIZE];
-#endif
-
 int
-main(void)
+main(int argc, char **argv)
 {
 	snek_init();
 
-#ifdef HAVE_SEMIHOST
 	char *file = NULL;
 
-	/* This returns the whole command line, including  argv[0] */
-	if (sys_semihost_get_cmdline(cmdline, CMDLINE_SIZE - 1) == 0) {
-
-		/* Skip to the first argument. This assumes there
-		 * are no spaces in the command name
-		 */
-		file = strchr(cmdline, ' ');
-		if (file)
-			file++;
-	}
+	if (argc > 1)
+		file = argv[1];
 
 	if (file) {
 		snek_file = file;
@@ -164,9 +148,7 @@ main(void)
 			printf("\"%s\": cannot open\n", file);
 			exit(1);
 		}
-	} else
-#endif
-	{
+	} else {
 		snek_interactive = true;
 		printf("Welcome to snek " SNEK_VERSION "\n");
 	}
