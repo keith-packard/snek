@@ -54,7 +54,7 @@ for i in "$@"; do
     esac
 done
 
-FUSES="-U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m"
+FUSES="-U hfuse:w:0x99:m"
 
 case "$action" in
     fuse)
