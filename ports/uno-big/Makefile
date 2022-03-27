@@ -16,5 +16,6 @@ BOARD?=uno-big
 CBOARD?=Uno-big
 UBOARD?=UNO-BIG
 PORT?=/dev/ttyACM0
+MCU?=m328p
 
 include ../duemilanove-big/Makefile

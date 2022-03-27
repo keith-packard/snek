@@ -10,6 +10,8 @@ PORT="@PORT@"
 
 mode=arg
 
+MCU="@MCU@"
+
 for i in "$@"; do
     case "$mode" in
 	arg)
@@ -20,8 +22,11 @@ for i in "$@"; do
 		-port|--port)
 		    mode=port
 		    ;;
+		-mcu|--mcu)
+		    mode=mcu
+		    ;;
 		*)
-		      echo "Usage: $0 {-hex snek-@BOARD@.hex} {-port @PORT@}" 1>&2
+		      echo "Usage: $0 {-hex snek-@BOARD@.hex} {-port @PORT@} {-mcu @MCU@}" 1>&2
 		      exit 1
 		      ;;
 	    esac
@@ -33,7 +38,12 @@ for i in "$@"; do
 	port)
 	    PORT="$i"
 	    mode=arg
+	    ;;
+	mcu)
+	    MCU="$i"
+	    mode=arg
+	    ;;
     esac
 done
 
-avrdude -P $PORT -c arduino -b @BAUD@ -p ATMEGA328P -D -U flash:w:"${SNEKHEX}"
+avrdude -P $PORT -c arduino -b @BAUD@ -p "$MCU" -D -U flash:w:"${SNEKHEX}"

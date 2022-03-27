@@ -24,6 +24,7 @@ CLOCK?=16000000
 BAUD?=115200
 INSTALLER?=1
 ATMEGA_FLASH_SIZE?=0x7e00
+MCU?=m328
 
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
@@ -50,7 +51,8 @@ SNEK_ATMEGA_SED=$(SNEK_SED) \
 	-e 's;@UBOARD@;$(UBOARD);g' \
 	-e 's;@CBOARD@;$(CBOARD);g' \
 	-e 's;@BAUD@;$(BAUD);g' \
-	-e 's;@PORT@;$(PORT);g'
+	-e 's;@PORT@;$(PORT);g' \
+	-e 's;@MCU@;$(MCU);g'
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 

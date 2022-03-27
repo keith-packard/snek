@@ -34,6 +34,11 @@ and 'avrisp2'. The default is 'usbtiny'.
 \-hex <snek.hex>
 Specifies the hex file to load to the board. The default is the
 currently installed version of Snek.
+.TP
+\-mcu <MCU name>
+Specifies which micro controller to expect to find on the board. Some
+boards have m328 while others have m328p. The default is @MCU@, but if
+you get an error message indicating a mismatch, you can try the other.
 .SH COMMANDS
 .TP
 fuseload

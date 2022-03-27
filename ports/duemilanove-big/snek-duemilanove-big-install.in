@@ -14,6 +14,8 @@ mode=arg
 
 verify=""
 
+MCU="@MCU@"
+
 for i in "$@"; do
     case "$mode" in
 	arg)
@@ -27,11 +29,14 @@ for i in "$@"; do
 		-hex|--hex)
 		    mode=hex
 		    ;;
+		-mcu|--mcu)
+		    mode=mcu
+		    ;;
 		-quick)
 		    verify="-V"
 		    ;;
 		*)
-		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-uduino.hex} {fuseload|load|fuse}" 1>&2
+		      echo "Usage: $0 {-isp usbtiny} {-isp avrisp2} {-hex snek-uduino.hex} {-mcu 328} {fuseload|load|fuse}" 1>&2
 		      exit 1
 		      ;;
 	    esac
@@ -44,19 +49,23 @@ for i in "$@"; do
 	    SNEKBIG="$i"
 	    mode=arg
 	    ;;
+	mcu)
+	    MCU="$i"
+	    mode=arg;
+	    ;;
     esac
 done
 
-FUSES="-U lfuse:w:0xff:m -U hfuse:w:0x91:m -U efuse:w:0xfd:m"
+FUSES="-U hfuse:w:0xd1:m"
 
 case "$action" in
-    fuse)
-	avrdude -V -c $ISP -p m328 -u $FUSES
+    fuse|fuseload)
+	avrdude -V -c $ISP -p $MCU -u $FUSES || exit 1
 	;;
-    fuseload)
-	avrdude -V -c $ISP -p m328 -u $FUSES && avrdude $verify -c $ISP -p m328 -U flash:w:"${SNEKBIG}"
-	;;
-    load)
-	avrdude $verify -c $ISP -p m328 -U flash:w:"${SNEKBIG}"
+esac
+
+case "$action" in
+    fuseload|load)
+	avrdude $verify -c $ISP -p $MCU -U flash:w:"${SNEKBIG}" || exit 1
 	;;
 esac
