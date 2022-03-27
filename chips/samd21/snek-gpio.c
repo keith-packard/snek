@@ -703,6 +703,21 @@ snek_poly_to_inten(snek_poly_t a)
 struct snek_neopixel *snek_neopixels;
 static snek_offset_t	snek_neopixel_count;
 
+static snek_poly_t
+set_neopixel(int p, snek_poly_t pixel)
+{
+	if (snek_poly_type(pixel) != snek_list)
+		return snek_error_type_1(pixel);
+	snek_list_t *pixel_list = snek_poly_to_list(pixel);
+	if (snek_list_type(pixel_list) == snek_list_dict || pixel_list->size != 3)
+		return snek_error_type_1(pixel);
+	snek_poly_t *pixel_data = snek_list_data(pixel_list);
+	snek_neopixels[p].r = snek_poly_to_inten(pixel_data[0]);
+	snek_neopixels[p].g = snek_poly_to_inten(pixel_data[1]);
+	snek_neopixels[p].b = snek_poly_to_inten(pixel_data[2]);
+	return SNEK_NULL;
+}
+
 snek_poly_t
 snek_builtin_neopixel(snek_poly_t pixels)
 {
@@ -712,28 +727,30 @@ snek_builtin_neopixel(snek_poly_t pixels)
 	if (snek_list_type(pixels_list) == snek_list_dict)
 		return snek_error_type_1(pixels);
 
-	if (snek_neopixels == NULL || snek_neopixel_count < pixels_list->size) {
-		snek_neopixels = snek_alloc(pixels_list->size * sizeof (struct snek_neopixel));
+	snek_poly_t *pixels_data = snek_list_data(pixels_list);
+	snek_offset_t list_size = pixels_list->size;
+
+	/* Did the user pass a list of three elements, the first of which is a number? */
+	bool is_immediate = (list_size == 3 && snek_poly_type(pixels_data[0]) == snek_float);
+
+	if (is_immediate)
+		list_size = 1;
+
+	if (snek_neopixels == NULL || snek_neopixel_count < list_size) {
+		snek_neopixels = snek_alloc(list_size * sizeof (struct snek_neopixel));
 		if (!snek_neopixels)
 			return SNEK_NULL;
-		snek_neopixel_count = pixels_list->size;
+		snek_neopixel_count = list_size;
 	}
 
-	snek_poly_t *pixels_data = snek_list_data(pixels_list);
-	for (int p = 0; p < pixels_list->size; p++) {
-		snek_poly_t pixel = pixels_data[p];
-
-		if (snek_poly_type(pixel) != snek_list)
-			return snek_error_type_1(pixel);
-		snek_list_t *pixel_list = snek_poly_to_list(pixel);
-		if (snek_list_type(pixel_list) == snek_list_dict || pixel_list->size != 3)
-			return snek_error_type_1(pixel);
-		snek_poly_t *pixel_data = snek_list_data(pixel_list);
-		snek_neopixels[p].r = snek_poly_to_inten(pixel_data[0]);
-		snek_neopixels[p].g = snek_poly_to_inten(pixel_data[1]);
-		snek_neopixels[p].b = snek_poly_to_inten(pixel_data[2]);
-		if (snek_abort)
-			return SNEK_NULL;
+	if (is_immediate)
+		set_neopixel(0, pixels);
+	else {
+		for (int p = 0; p < pixels_list->size; p++) {
+			set_neopixel(p, pixels_data[p]);
+			if (snek_abort)
+				return SNEK_NULL;
+		}
 	}
 	if (power_pin == dir_pin)
 		ao_snek_neopixel_write(ao_snek_pin[power_pin].gpio, ao_snek_pin[power_pin].pin,

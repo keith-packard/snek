@@ -2150,9 +2150,19 @@ Programs either a set of neopixel devices connected to the current
 Power pin (when Power and Direction are the same) or a set of APA102
 devices connected to the current Power (used for APA102 Data) and
 Direction (used for APA102 Clock) pins (when Power and Direction are
-different). _pixels_ is a list or tuple, each element of which is a
-list or tuple of three numbers ranging from 0 to 1 for the desired
-red, green and blue intensity of the target neopixel.(((neopixel)))
+different). _pixels_ is either a list/tuple of three numbers, or a
+list/tuple, each element of which is a list/tuple of three numbers
+ranging from 0 to 1 for the desired red, green and blue intensity of
+the target neopixel.(((neopixel)))
+
+[subs="verbatim,quotes"]
+----
+> *talkto(NEOPIXEL)*
+> *neopixel((0, 0.5, 0))*
+----
+
+This example programs a single NeoPixel device, setting it to
+half-intensity green.
 
 [subs="verbatim,quotes"]
 ----
