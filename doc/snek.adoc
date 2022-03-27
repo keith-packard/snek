@@ -2425,7 +2425,7 @@ To quit from the dialog and skip loading or saving a file, press Escape.
 = Snek on snekboard
 
 Snek for the snekboard includes the Common System, Math, Input, GPIO
-(including the `neopixel` function) and EEPROM fountain's. Snek for the
+(including the `neopixel` function) and EEPROM functions. Snek for the
 snekboard provides pre-defined variables for the eight analog I/O pins
 as well as the four 9V motor controllers:(((snekboard)))
 
