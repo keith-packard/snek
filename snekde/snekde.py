@@ -219,6 +219,7 @@ class SnekDevice:
 
         self.alive = True
         self._reader_alive = True
+        self.interrupt_pending = True
 
         # start threads
 
@@ -229,6 +230,15 @@ class SnekDevice:
         self.transmitter_thread = threading.Thread(target=self.writer, name="tx")
         self.transmitter_thread.daemon = True
         self.transmitter_thread.start()
+
+        self.autobauder_thread = False
+        self.autobauder_cancel = False
+        if self.synchronous_put:
+            self.autobauder_thread = threading.Thread(
+                target=self.autobauder, name="baud"
+            )
+            self.autobauder_thread.daemon = True
+            self.autobauder_thread.start()
 
     def stop_reader(self):
         if self.receiver_thread and threading.current_thread() != self.receiver_thread:
@@ -248,10 +258,17 @@ class SnekDevice:
             self.transmitter_thread.join()
             self.interface.cv.acquire()
 
+    def stop_autobauder(self):
+        if self.autobauder_thread:
+            self.autobauder_cancel = True
+            self.dc4.notify_all()
+            self.autobauder_thread.join()
+
     def close(self):
         self.alive = False
         self.stop_reader()
         self.stop_writer()
+        self.stop_autobauder()
         try:
             self.serial.write_timeout = 1
             self.serial.write(b"\x0f")
@@ -327,6 +344,34 @@ class SnekDevice:
             self.interface.failed(self.device)
         finally:
             self.transmitter_thread = False
+
+    def do_autobaud(self, delay=0):
+        global baud_selection, snek_lock
+        with snek_lock:
+            if delay > 0:
+                time.sleep(delay)
+            old_baud = baud_selection
+            for i in range(len(baud_rates)):
+                baud_selection = i
+                # snek_debug("try baud %d" % baud_rates[i])
+                if self.autobauder_cancel:
+                    break
+                self.set_baud(baud_rates[baud_selection])
+                if snek_monitor.ping():
+                    return True
+            baud_selection = old_baud
+            self.set_baud(baud_rates[baud_selection])
+            return False
+
+    def autobauder(self):
+        global baud_selection
+
+        # Try to autobaud right away, then wait 1.5 seconds
+        # for the device to boot and try again
+        if not self.do_autobaud(0.1):
+            self.do_autobaud(1.5)
+
+        self.autobauder_thread = False
 
     def interrupt(self):
         # snek_debug('pend interrupt waited')
@@ -1213,25 +1258,12 @@ def snekde_open_device():
     if not port:
         return
     try:
-        device = SnekDevice(port, snek_monitor, rate=baud_rates[baud_selection])
-        device.start()
-        if snek_device:
-            snek_device.close()
-            del snek_device
-        snek_device = device
-
-        # Attempt to auto-baud synchronous devices
-        if snek_device.synchronous_put:
-            old_baud = baud_selection
-            for i in range(len(baud_rates)):
-                baud_selection = i
-                # snek_debug("try baud %d" % baud_rates[i])
-                snek_device.set_baud(baud_rates[baud_selection])
-                if snek_monitor.ping():
-                    break
-            else:
-                baud_selection = old_baud
-                snek_device.set_baud(baud_rates[baud_selection])
+        old_device = snek_device
+        snek_device = SnekDevice(port, snek_monitor, rate=baud_rates[baud_selection])
+        snek_device.start()
+        if old_device:
+            old_device.close()
+            del old_device
 
         screen_paint()
     except OSError as e:
@@ -1426,11 +1458,13 @@ class SnekMonitor:
             # snek_debug('sync done')
 
     def ping(self):
-        global snek_lock
         # snek_debug('send PING')
-        snek_device.serial.write(b"\x14")
-        ret = self.dc4.wait(0.25)
+        snek_device.serial.write(b"\x14\x0f\x03\x0e")
+        ret = self.dc4.wait(0.05)
         return ret
+
+    def wait(self, delay):
+        return self.dc4.wait(delay)
 
     # Reading text to snek_edit_win instead of snek_repl_win
 
