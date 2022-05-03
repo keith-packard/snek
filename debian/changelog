@@ -1,3 +1,9 @@
+snek (1.8-4) unstable; urgency=medium
+
+  * Add bits for risc-v in autopkgtest. Closes: #1009206.
+
+ -- Keith Packard <keithp@keithp.com>  Tue, 03 May 2022 13:44:53 -0700
+
 snek (1.8-3) unstable; urgency=medium
 
   * Fix typo in changelog
