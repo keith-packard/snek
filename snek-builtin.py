@@ -96,7 +96,10 @@ class SnekBuiltin:
             if self.value[0].isdigit():
                 return "(snek_poly_t)(float)%s" % self.value
             return self.value
-        return "snek_builtin_%s" % (self.name.replace(".", "_"))
+        name = self.name;
+        if self.init is not None:
+            name = self.init
+        return "snek_builtin_%s" % (name.replace(".", "_"))
 
     def func_field(self):
         if self.is_value():

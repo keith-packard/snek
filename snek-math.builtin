@@ -46,6 +46,7 @@ math.log1p, 1
 math.log2, 1
 math.log10, 1
 math.pow, 2
+pow, 2, =math.pow
 #
 # Trigonometric functions
 #
