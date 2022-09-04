@@ -165,9 +165,19 @@ To build Snek you need these dependencies:
 
 On Debian unstable, you can get everything from the main archive:
 
-	# apt install lola gcc-avr avr-libc python3-serial \
+	# apt install lola gcc-avr avr-libc python3-serial gawk \
           gcc-arm-none-eabi gcc-riscv64-unknown-elf libreadline-dev \
 	  picolibc-arm-none-eabi picolibc-riscv64-unknown-elf
+
+Debian stable has too old a version of lola, so if you're using that,
+you'll need to install lola from the git repository above.
+
+The snek build scripts use the GNU awk implementation, `gawk`,
+including a GNU extension, `strtonum`, which is not available in other
+awk implementations. It's not critical to compiling the code as it's
+only used to print out ROM usage for AVR targets so you can tell how
+much space is still available, but if you don't have gawk, you will
+get build failures.
 
 ### Building and install
 
