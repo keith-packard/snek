@@ -96,7 +96,7 @@ class SnekBuiltin:
             if self.value[0].isdigit():
                 return "(snek_poly_t)(float)%s" % self.value
             return self.value
-        name = self.name;
+        name = self.name
         if self.init is not None:
             name = self.init
         return "snek_builtin_%s" % (name.replace(".", "_"))
