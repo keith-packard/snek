@@ -23,7 +23,7 @@ snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 {
 	char		in[2] = {0, 0};
 	int		c;
-	snek_poly_t	s = SNEK_NULL;
+	snek_poly_t	s = snek_string_to_poly(snek_alloc(1));
 
 	while (nposition--) {
 		snek_poly_t arg = *args++;
@@ -34,12 +34,8 @@ snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	(void) nnamed;
 	snek_in_input = true;
 	while ((c = getchar()) != '\n' && c != EOF) {
-		if (snek_is_null(s)) {
-			s = snek_string_make(c);
-		} else {
-			in[0] = c;
-			s = snek_string_cat(snek_poly_to_string(s), in);
-		}
+		in[0] = c;
+		s = snek_string_cat(snek_poly_to_string(s), in);
 	}
 	snek_in_input = false;
 	return s;
