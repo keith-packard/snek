@@ -47,7 +47,7 @@
 
 #define ao_arch_reboot()	/* XXX */
 
-#define ao_arch_nop()		asm("nop")
+#define ao_arch_nop()		__asm__("nop")
 
 #define ao_arch_interrupt(n)	/* nothing */
 

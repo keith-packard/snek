@@ -111,25 +111,25 @@ typedef uint32_t	ao_arch_irq_t;
 static inline uint32_t
 ao_arch_irqsave(void) {
 	uint32_t	primask;
-	asm("mrs %0,primask" : "=&r" (primask));
+	__asm__("mrs %0,primask" : "=&r" (primask));
 	ao_arch_block_interrupts();
 	return primask;
 }
 
 static inline void
 ao_arch_irqrestore(uint32_t primask) {
-	asm("msr primask,%0" : : "r" (primask));
+	__asm__("msr primask,%0" : : "r" (primask));
 }
 
 static inline void
 ao_arch_memory_barrier(void) {
-	asm volatile("" ::: "memory");
+	__asm__ volatile("" ::: "memory");
 }
 
 #define ao_arch_wait_interrupt() do {				\
-		asm("\twfi\n");					\
+		__asm__("\twfi\n");					\
 		ao_arch_release_interrupts();			\
-		asm(".global ao_idle_loc\nao_idle_loc:");	\
+		__asm__(".global ao_idle_loc\nao_idle_loc:");	\
 		ao_arch_block_interrupts();			\
 	} while (0)
 

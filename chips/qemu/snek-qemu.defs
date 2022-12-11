@@ -37,7 +37,7 @@ PICOLIBC_CFLAGS= \
 OPT?=-Os
 
 CFLAGS=$(ARCH_CFLAGS) --oslib=semihost --crt0=semihost \
-	-std=gnu99 $(OPT) -g \
+	-std=c18 $(OPT) -g \
 	-I. -I$(SNEK_QEMU) -I$(SNEK_ROOT) $(PICOLIBC_CFLAGS) $(SNEK_CFLAGS)
 
 LDFLAGS=$(SNEK_LDFLAGS) $(CFLAGS) -n

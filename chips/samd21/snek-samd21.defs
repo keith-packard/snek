@@ -75,7 +75,7 @@ PICOLIBC_CFLAGS= \
 OPT?=-Os
 
 AO_CFLAGS=\
-	-std=gnu99 $(OPT) -g
+	-std=c18 $(OPT) -g
 
 SAMD21_CFLAGS=-mlittle-endian -mcpu=cortex-m0 -mthumb\
 	-I$(SNEK_SAMD21) -I$(SNEK_AO) -I$(SNEK_ROOT) -I. $(AO_CFLAGS) $(PICOLIBC_CFLAGS)

@@ -35,10 +35,10 @@
 	(samd21_scb.aircr = ((SAMD21_SCB_AIRCR_VECTKEY_KEY << SAMD21_SCB_AIRCR_VECTKEY) | \
 			  (1 << SAMD21_SCB_AIRCR_SYSRESETREQ)))
 
-#define ao_arch_nop()		asm("nop")
+#define ao_arch_nop()		__asm__("nop")
 #define ao_arch_interrupt(n)	/* nothing */
-#define ao_arch_block_interrupts()	asm("cpsid i")
-#define ao_arch_release_interrupts()	asm("cpsie i")
+#define ao_arch_block_interrupts()	__asm__("cpsid i")
+#define ao_arch_release_interrupts()	__asm__("cpsie i")
 
 /*
  * ao_timer.c

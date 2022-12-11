@@ -19,7 +19,7 @@
 #include "snek.h"
 #include <math.h>
 
-#ifdef AVR
+#ifdef __AVR__
 #define float double
 #endif
 
