@@ -111,4 +111,16 @@ ao_snek_apa102_write(void *gpio_d, uint8_t pin_d,
 		     int npixel,
 		     struct snek_neopixel *pixels);
 
+
+#if _PICOLIBC__ == 1 && (_PICOLIBC_MINOR__ < 6 || __PICOLIBC_PATCHLEVEL__ < 1)
+#define _SNEK_NEED_STRFROMF
+int
+strfromf(char *__restrict str, size_t n,
+	 const char *__restrict format, float fp);
+#endif
+
+#if _PICOLIBC__ == 1 && (_PICOLIBC_MINOR__ < 7 || __PICOLIBC_PATCHLEVEL__ < 5)
+#define _SNEK_NEED_STRTOF
+#endif
+
 #endif /* _AO_SNEK_H_ */

@@ -158,3 +158,24 @@ main(int argc, char **argv)
 	fflush(stdout);
 	exit(ret);
 }
+
+#ifdef _SNEK_NEED_STRFROMF
+int
+strfromf(char *__restrict str, size_t n,
+	 const char *__restrict format, float fp)
+{
+	return snprintf(str, n, format, __printf_float(fp));
+}
+#endif
+
+
+#ifdef _SNEK_NEED_STRTOF
+float
+strtof(const char *restrict nptr, char **restrict endptr)
+{
+	float f;
+	(void) sscanf(nptr, "%f", &f);
+	(void) endptr;
+	return f;
+}
+#endif
