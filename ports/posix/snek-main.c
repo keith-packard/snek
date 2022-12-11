@@ -14,8 +14,10 @@
 
 #include "snek.h"
 #include <getopt.h>
+#ifdef USE_READLINE
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
 #include <signal.h>
 
 FILE	*snek_posix_input;
@@ -34,6 +36,23 @@ usage (char *program, int val)
 	exit(val);
 }
 
+#ifdef USE_READLINE
+#define snek_readline(p) readline(p)
+#define snek_add_history(p) add_history(p)
+#define snek_free_line(p) free(p)
+#else
+static char *
+snek_readline(char *prompt)
+{
+	static char	line[256];
+	fputs(prompt, stdout);
+	fflush(stdout);
+	return fgets(line, sizeof(line), stdin);
+}
+#define snek_add_history(p)
+#define snek_free_line(p)
+#endif
+
 static int
 snek_getc_interactive(void)
 {
@@ -45,16 +64,16 @@ snek_getc_interactive(void)
 		char *prompt = "> ";
 		if (snek_parse_middle)
 			prompt = "+ ";
-		line_base = readline (prompt);
+		line_base = snek_readline (prompt);
 		line = line_base;
 		if (!line)
 			return EOF;
-		add_history (line_base);
+		snek_add_history (line_base);
 	}
 	c = (*line++) & 0xff;
 	if (!c) {
 		c = '\n';
-		free (line_base);
+		snek_free_line (line_base);
 		line = 0;
 	}
 	return c;
