@@ -141,25 +141,13 @@ snek_range_start(snek_offset_t ip)
 	}
 
 	/* Assign initial value (current - step) */
-
-	snek_poly_t	*id_ref = snek_id_ref(id, true);
-	if(!id_ref)
-		return;
-	*id_ref = snek_float_to_poly(current - step);
+	(void) snek_id_store(id, snek_float_to_poly(current - step));
 
 	/* Save limit in tmp variable */
-	snek_poly_t	*limit_ref = snek_id_ref(snek_for_tmp(for_depth, 0), true);
-	if (!limit_ref)
-		return;
-	*limit_ref = snek_float_to_poly(limit);
+	(void) snek_id_store(snek_for_tmp(for_depth, 0), snek_float_to_poly(limit));
 
 	/* Save step in tmp variable */
-	snek_poly_t	*step_ref = snek_id_ref(snek_for_tmp(for_depth, 1), true);
-	if (!step_ref)
-		return;
-	*step_ref = snek_float_to_poly(step);
-
-	return;
+	(void) snek_id_store(snek_for_tmp(for_depth, 1), snek_float_to_poly(step));
 }
 
 /*
@@ -204,7 +192,6 @@ snek_in_step(snek_offset_t ip)
 {
 	uint8_t		for_depth;	/* nesting depth of loop */
 	snek_id_t	id;		/* id of the 'for' variable */
-	snek_poly_t	*ref;		/* reference to the 'for' variable storage */
 
 	memcpy(&for_depth, &snek_code->code[ip + sizeof(snek_offset_t)], sizeof(uint8_t));
 
@@ -246,13 +233,7 @@ snek_in_step(snek_offset_t ip)
 	/* Update value */
 	memcpy(&id, &snek_code->code[ip + sizeof(snek_offset_t) + sizeof (uint8_t)], sizeof (snek_id_t));
 
-	snek_stack_push(value);
-	ref = snek_id_ref(id, true);
-	value = snek_stack_pop();
-	if (!ref)
-		return false;
-	*ref = value;
-	return true;
+	return snek_id_store(id, value);
 }
 
 /*
