@@ -157,17 +157,21 @@ To build Snek you need these dependencies:
   * [avr-libc](https://www.nongnu.org/avr-libc/)
   * [gcc-arm-none-eabi](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
   * [gcc-riscv64-unknown-elf](https://github.com/sifive/freedom-tools/)
+  * [gcc-arm-linux-gnueabi](https://developer.arm.com/downloads/-/gnu-a)
   * [picolibc](https://keithp.com/picolibc/)
   * [python3](https://www.python.org/)
   * [pyserial](https://github.com/pyserial/)
   * [python curses](https://docs.python.org/3/library/curses.html)
   * [readline](https://www.gnu.org/software/readline/)
+  * [asciidoctor](https://asciidoctor.org/)
+  * [asciidoctor-pdf](https://docs.asciidoctor.org/pdf-converter/latest/)
 
 On Debian unstable, you can get everything from the main archive:
 
 	# apt install lola gcc-avr avr-libc python3-serial gawk \
           gcc-arm-none-eabi gcc-riscv64-unknown-elf libreadline-dev \
-	  picolibc-arm-none-eabi picolibc-riscv64-unknown-elf
+	  picolibc-arm-none-eabi picolibc-riscv64-unknown-elf \
+	  asciidoctor ruby-asciidoctor-pdf gcc-arm-linux-gnueabi
 
 Debian stable has too old a version of lola, so if you're using that,
 you'll need to install lola from the git repository above.
