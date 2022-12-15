@@ -23,6 +23,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				if (snek_abort)
 					return parse_return_error;
 				if (snek_print_val && !snek_is_null(p)) {
+					snek_id_store(SNEK_BUILTIN__, p);
 					snek_poly_print(stdout, p, 'r');
 					putchar('\n');
 				}
