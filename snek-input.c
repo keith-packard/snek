@@ -25,11 +25,11 @@ snek_builtin_input(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	int		c;
 	snek_poly_t	s = snek_string_to_poly(snek_alloc(1));
 
-	while (nposition--) {
-		snek_poly_t arg = *args++;
-		snek_poly_print(stdout, arg, 's');
-		if (nposition)
-			putc(' ', stdout);
+	/* print out an optional parameter */
+	if (nposition) {
+		if (nposition > 1)
+			return snek_error_args(1, nposition);
+		snek_poly_print(stdout, *args, 's');
 	}
 	(void) nnamed;
 	snek_in_input = true;
