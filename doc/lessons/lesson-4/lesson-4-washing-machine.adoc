@@ -13,7 +13,7 @@ Keith Packard <keithp@keithp.com>; Michael Ward <michaelward@sprintmail.com>
 :stylesheet: snek.css
 :linkcss:
 :toc:
-:pdf-stylesdir: ../..
+:pdf-themesdir: ../..
 :pdf-fontsdir: ../../fonts
 :source-highlighter: coderay
 :media: prepress

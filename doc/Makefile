@@ -18,8 +18,8 @@ BOOK_FILES=snek-book.pdf snek-cover.pdf snek-book-book.pdf snek-cover-book.pdf
 
 book: $(BOOK_FILES)
 
-LETTER_ATTRIBUTES=--attribute='pdf-style=snek' 
-BOOK_ATTRIBUTES=--attribute='pdf-style=snek-book' 
+LETTER_ATTRIBUTES=--attribute='pdf-theme=snek' 
+BOOK_ATTRIBUTES=--attribute='pdf-theme=snek-book' 
 ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
 
 .adoc.html:

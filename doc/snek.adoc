@@ -12,7 +12,7 @@ Keith Packard <keithp@keithp.com>
 :stylesheet: snek.css
 :linkcss:
 :toc:
-:pdf-stylesdir: .
+:pdf-themesdir: .
 :pdf-fontsdir: fonts
 :source-highlighter: coderay
 :media: prepress
@@ -1375,7 +1375,7 @@ the value of the right operand and performs the operation indicated by
 the operator. Then it stores the result back in the location indicated
 by the left operand. There are some subtleties about this which are
 discussed in the <<lists_and_tuples_reference>> section of the <<Data Types>> chapter.
-(((+=)))(((–=)))(((*=)))(((/=)))(((//=)))(((%=)))(((**=)))(((&=)))(((|=)))(((^=)))(((<\<=)))(((>>=))) 
+(((+=)))(((–=)))(((\*=)))(((/=)))(((//=)))(((%=)))(((**=)))(((&=)))(((|=)))(((^=)))(((<\<=)))(((>>=))) 
 
 == Control Flow
 

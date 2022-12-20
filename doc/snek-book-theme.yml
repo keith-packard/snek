@@ -1,3 +1,4 @@
+extends: default
 base:
   font_family: Open Sans Regular
 snek:
@@ -7,6 +8,7 @@ heading:
   font_size: 17
 font:
   catalog:
+    merge: true
     Open Sans Regular:
       normal: OpenSans-Regular.ttf
       italic: OpenSans-Italic.ttf
@@ -24,6 +26,7 @@ font:
       bold_italic: Lato-Medium.ttf
   fallbacks:
   - Lato
+  - DejaVu Sans Mono
 title_page:
   align: right
   logo:
@@ -80,7 +83,7 @@ footer:
   verso:
     center:
       content: '© 2019 Keith Packard'
-literal:
+codespan:
   font_family: DejaVu Sans Mono
 code:
   font_family: DejaVu Sans Mono
