@@ -1887,9 +1887,9 @@ number.
 
 === `input(` _prompt_ `)`
 
-Prints _prompt_ and then waits for the user to enter some text,
-terminated with a newline. The text, without the trailing newline, is
-returned.
+Prints optional _prompt_ and then waits for the user to enter some
+text, terminated with a newline. The text, without the trailing
+newline, is returned.
 
 [subs="verbatim,quotes"]
 ----
