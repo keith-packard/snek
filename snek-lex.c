@@ -187,7 +187,7 @@ typedef enum nclass {
 	c_e,
 	c_sign,
 	c_other,
-	c_underscore
+	c_underscore,
 } __attribute__((packed)) nclass_t;
 
 static nclass_t
@@ -197,7 +197,7 @@ cclass(char c)
 		return c_digit;
 	if (c == '.')
 		return c_dot;
-	if (c == 'e' || c == 'E')
+	if ((c | ('a' - 'A')) == 'e')
 		return c_e;
 	if (c == '-' || c == '+')
 		return c_sign;
