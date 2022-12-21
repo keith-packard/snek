@@ -96,6 +96,24 @@ described below.
 
 Here's some places that have seen recent work
 
+ * [Mu](https://codewith.mu/) version 1.2.0 has Snek support built in
+   now. Mu is an IDE designed for new Python users that offers a more
+   polished alternative to the simple Snek IDE provide with snek.
+
+ * Fixed a couple of `input` bugs compared with Python—input
+   returned None instead of the empty string when nothing was
+   typed before the return and input printed an arbitrary list of
+   parameters rather than just the first one. Thanks to Justin Miller
+   and Mikael Bonnier for reporting these issues.
+
+ * Store the most recently printed repl value in `_`. Thanks to Justin
+   Miller for this suggestion.
+
+ * For the Windows native port, add the input module and increase the
+   heap size to 256kB.
+
+ * Update the docs to format correctly with asciidoctor-pdf version 2.3
+
  * [LilyPad Arduino 328](https://www.sparkfun.com/products/13342)
    port. This is a round ATmega328p-based board designed for wearable
    projects. This board runs at 8MHz, which can't run the serial port
@@ -120,28 +138,6 @@ Here's some places that have seen recent work
 
  * Fixed incorrect precedence between bitwise and (&) and bitwise xor
    (^) operators.
-
- * Lots of improvements to the EV3 port making it more like
-   other Snek devices.
-
- * [Narrow 1284](https://www.crowdsupply.com/pandauino/narrow) port.
-   This is a small board with the ATmega1284 SoC which is like the
-   ATmega328 but with much more Flash and RAM which provides way more
-   room for Snek to run.
-
- * [Seeed Grove Beginner Kit](https://www.seeedstudio.com/Grove-Beginner-Kit-for-Arduino-p-4549.html)
-   port. This is another ATmega328p based board but with a range of
-   devices provided in the kit. Snek supports the LED, Buzzer, Light,
-   Sound, OLED Display, Button, Rotary Potentiometer and 3-axis
-   Accelerometer.
-
- * [Seeeduino XIAO](https://www.seeedstudio.com/Seeeduino-XIAO-Arduino-Microcontroller-SAMD21-Cortex-M0+-p-4426.html)
-   port. This is a SAMD21-based device on a tiny board with a USB-C
-   connector.
-
- * [Arduino Nano Every](https://store.arduino.cc/usa/nano-every) port.
-   This uses the ATmega4809 which has 6kB of RAM, providing much more
-   space for Snek programs.
 
 ## Build and Run!
 
