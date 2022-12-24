@@ -36,3 +36,24 @@ STDIO_ALIAS(stderr);
 #else
 FILE *const __iob[3] = { &__stdio, &__stdio, &__stdio };
 #endif
+
+#ifdef _SNEK_NEED_STRFROMF
+int
+strfromf(char *__restrict str, size_t n,
+	 const char *__restrict format, float fp)
+{
+	return snprintf(str, n, format, __printf_float(fp));
+}
+#endif
+
+
+#ifdef _SNEK_NEED_STRTOF
+float
+strtof(const char *restrict nptr, char **restrict endptr)
+{
+	float f;
+	(void) sscanf(nptr, "%f", &f);
+	(void) endptr;
+	return f;
+}
+#endif

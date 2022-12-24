@@ -22,3 +22,4 @@ chr, 1
 abs, 1
 math.sqrt, 1
 None, -2, SNEK_NULL
+_, -2, 1

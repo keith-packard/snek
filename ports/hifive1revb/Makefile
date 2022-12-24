@@ -56,7 +56,7 @@ WARN_FLAGS=-Wall -Wextra -Wcast-align \
 	-Wno-maybe-uninitialized
 
 AO_CFLAGS=\
-	-std=gnu99 $(WARN_FLAGS) $(OPT) -g
+	-std=c18 $(WARN_FLAGS) $(OPT) -g
 
 HIFIVE1REVB_CFLAGS=-march=rv32imac -mabi=ilp32 \
 	-I. -I$(SNEK_ROOT) -I$(FREEDOM_METAL_INC) $(PICOLIBC_CFLAGS)

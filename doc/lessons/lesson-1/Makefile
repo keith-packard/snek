@@ -25,7 +25,7 @@ THEME_FILE=snek-theme.yml
 
 all: $(HTML_FILES) $(PDF_FILES)
 
-LETTER_ATTRIBUTES=--attribute='pdf-style=snek' 
+LETTER_ATTRIBUTES=--attribute='pdf-theme=snek' 
 ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
 
 .adoc.html:

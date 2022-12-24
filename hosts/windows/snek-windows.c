@@ -140,9 +140,9 @@ snek_builtin_time_monotonic(void)
 }
 
 snek_poly_t
-snek_builtin_random_seed(void)
+snek_builtin_random_seed(snek_poly_t a)
 {
-	srand(GetTickCount());
+	srand(a.u);
 	return SNEK_NULL;
 }
 

@@ -23,6 +23,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				if (snek_abort)
 					return parse_return_error;
 				if (snek_print_val && !snek_is_null(p)) {
+					snek_id_store(SNEK_BUILTIN__, p);
 					snek_poly_print(stdout, p, 'r');
 					putchar('\n');
 				}
@@ -48,11 +49,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				snek_poly_t	poly = snek_func_to_poly(func);
 				snek_id_t	id = value_pop().id;
 
-				snek_stack_push(poly);
-				snek_poly_t *ref = snek_id_ref(id, true);
-				poly = snek_stack_pop();
-				if (ref)
-					*ref = poly;
+				snek_id_store(id, poly);
 			}@
 		| IMPORT NAME
 		;

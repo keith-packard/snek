@@ -52,7 +52,7 @@ OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
 AO_CFLAGS=\
-	-std=gnu99 $(OPT) -g
+	-std=c99 $(OPT) -g
 
 AVR_CFLAGS=-DF_CPU=$(AVR_CLOCK) -mmcu=atmega32u4 -g $(SNEK_CFLAGS) -Waddr-space-convert \
 	-I. -I$(SNEK_PORT) -I$(SNEK_AVR) -I$(SNEK_AO) -I$(SNEK_ROOT) $(AO_CFLAGS)

@@ -173,6 +173,20 @@ snek_id_ref(snek_id_t id, bool insert)
 }
 
 bool
+snek_id_store(snek_id_t id, snek_poly_t value)
+{
+	snek_poly_t *ref;
+
+	snek_stack_push(value);
+	ref = snek_id_ref(id, true);
+	value = snek_stack_pop();
+	if (!ref)
+		return false;
+	*ref = value;
+	return true;
+}
+
+bool
 snek_id_is_local(snek_id_t id)
 {
 	return snek_variable_lookup(false, id, false) != NULL;

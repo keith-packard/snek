@@ -29,9 +29,18 @@ include $(SNEK_ROOT)/snek-install.defs
 
 OPT?=-O3
 
-CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS) $(CFLAGS_POSIX)
+STATIC?=0
 
-LIBS=-lreadline -lm
+ifeq ($(STATIC),0)
+LIBS_READLINE=-lreadline
+CFLAGS_READLINE=-DUSE_READLINE
+else
+LIBS_STATIC=-static
+endif
+
+CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(CFLAGS_READLINE) $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS) $(CFLAGS_POSIX)
+
+LIBS=$(LIBS_STATIC) $(LIBS_READLINE) -lm
 
 all: snek snek.desktop
 
