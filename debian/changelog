@@ -1,3 +1,13 @@
+snek (1.9-1) unstable; urgency=medium
+
+  * New upstream version
+
+  * Build with latest toolchain bits
+
+  * Add '_' support
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 23 Dec 2022 21:50:47 -0800
+
 snek (1.8-4) unstable; urgency=medium
 
   * Add bits for risc-v in autopkgtest. Closes: #1009206.
