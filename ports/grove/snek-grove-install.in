@@ -7,7 +7,7 @@ PORT=/dev/ttyUSB0
 
 mode=arg
 
-MCU=m328
+MCU=m328p
 
 for i in "$@"; do
     case "$mode" in
