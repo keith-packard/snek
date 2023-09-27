@@ -1,6 +1,6 @@
 #!/bin/sh
-here=`dirname $0`
-args=""
+here=`dirname "$0"`
+args=`basename "$0"`
 extra=""
 for i in "$@"; do
     case "$i" in
