@@ -34,7 +34,7 @@ RUN apt-get update && \
     icoutils \
     icnsutils \
     black && \
-    pip install pynsist
+    pip3 install --break-system-packages pynsist
 
 RUN mkdir snek
 COPY ./ snek/
