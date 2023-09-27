@@ -1,1 +1,2 @@
 0001-ports-ev3-Fix-up-makefile-to-work-under-debian-build.patch
+0002-ports-qemu-arm-riscv-Support-updated-picolibc-semiho.patch
