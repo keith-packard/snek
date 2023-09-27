@@ -1,5 +1,5 @@
-snek: arch-independent-package-contains-binary-or-object usr/share/snek/snek-*
-snek: arch-dependent-file-in-usr-share usr/share/snek/snek-*
-snek: unstripped-binary-or-object usr/share/snek/snek-*
-snek: statically-linked-binary usr/share/snek/snek-*
-snek: missing-dependency-on-libc needed by usr/share/snek/snek-*
+snek: arch-independent-package-contains-binary-or-object
+snek: arch-dependent-file-in-usr-share
+snek: unstripped-binary-or-object
+snek: statically-linked-binary
+snek: missing-dependency-on-libc

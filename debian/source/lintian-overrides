@@ -1,3 +1,1 @@
-snek source: source-contains-prebuilt-windows-binary hosts/windows/Instdrv/NSIS/Plugins/InstDrv.dll
-snek source: source-contains-prebuilt-windows-binary hosts/windows/Instdrv/NSIS/Contrib/InstDrv/InstDrv-Test.exe
-snek source: source-contains-prebuilt-windows-binary hosts/windows/Instdrv/NSIS/Contrib/InstDrv/ircomm2k.sys
+snek source: source-contains-prebuilt-windows-binary
