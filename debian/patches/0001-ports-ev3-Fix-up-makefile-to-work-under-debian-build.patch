@@ -1,0 +1,43 @@
+From: Keith Packard <keithp@keithp.com>
+Date: Tue, 26 Sep 2023 21:58:06 -0700
+Subject: ports/ev3: Fix up makefile to work under debian build
+
+Don't inherit CFLAGS from environment to prevent host hardening flags
+from being used with the arm compiler.
+
+Signed-off-by: Keith Packard <keithp@keithp.com>
+---
+ ports/ev3/Makefile | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/ports/ev3/Makefile b/ports/ev3/Makefile
+index ad2e8f2..54864c8 100644
+--- a/ports/ev3/Makefile
++++ b/ports/ev3/Makefile
+@@ -45,7 +45,10 @@ SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
+ 
+ OPT?=-O3
+ 
+-CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
++SNEK_CFLAGS+=-ffile-prefix-map=/home/keithp/src/snek=. -fstack-protector-strong \
++	-fstack-clash-protection -Wformat -Werror=format-security
++
++CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
+ 
+ LIBS=-lm
+ 
+@@ -54,8 +57,12 @@ all: $(PROG) $(SERVER)
+ $(PROG): $(SNEK_OBJ)
+ 	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
+ 
+-$(SERVER): snekserver.o utils.o
+-	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
++SERVER_OBJ=snekserver.o utils.o
++
++$(SERVER): $(SERVER_OBJ)
++	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SERVER_OBJ)
++
++$(SERVER_OBJ): $(SNEK_INC)
+ 
+ install: $(PROG)
+ 	install -d $(DESTDIR)$(SHAREDIR)
