@@ -1,3 +1,9 @@
+snek (1.9-2) unstable; urgency=medium
+
+  * Fix ev3 build to avoid inheriting host CFLAGS. Closes: #1052744.
+
+ -- Keith Packard <keithp@keithp.com>  Tue, 26 Sep 2023 22:03:17 -0700
+
 snek (1.9-1) unstable; urgency=medium
 
   * New upstream version
