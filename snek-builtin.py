@@ -311,7 +311,6 @@ def dump_cpp(fp):
 
 
 def builtin_main():
-
     parser = argparse.ArgumentParser(description="Construct Snek builtin data.")
     parser.add_argument(
         "builtins", metavar="F", nargs="+", help="input files describing builtins"

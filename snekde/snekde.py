@@ -491,7 +491,6 @@ class EditWin:
         line = 0
         for s in self.text.split("\n"):
             if self.top_line <= line and line < self.top_line + self.lines:
-
                 # Paint the marked region in reverse video
 
                 if (
@@ -1174,7 +1173,7 @@ def screen_paint():
     help_col = 0
     help_cols = min(snek_cols // len(help_text), 13)
     stdscr.addstr(0, 0, " " * snek_cols)
-    for (f, t) in help_text:
+    for f, t in help_text:
         stdscr.addstr(0, help_col, " %2s: %-6s " % (f, t), curses.A_REVERSE)
         help_col += help_cols
     device_name = "<no device>"

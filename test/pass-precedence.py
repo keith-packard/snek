@@ -22,7 +22,6 @@ limit = 4
 for a in (False, True):
     for b in (False, True):
         for c in (False, True):
-
             # not is higher than and
 
             assert (not a and b) == ((not a) and b)
@@ -39,7 +38,6 @@ for a in range(limit):
     for b in range(limit):
         for c in range(limit):
             for d in range(limit):
-
                 # comparison is higher than boolean
 
                 assert (a < b and c < d) == ((a < b) and (c < d))
@@ -55,7 +53,6 @@ for a in range(limit):
     for b in range(limit):
         for c in range(limit):
             for d in range(limit):
-
                 # bitwise is higher than comparison
 
                 assert (a | b < c | d) == ((a | b) < (c | d))
@@ -65,7 +62,6 @@ for a in range(limit):
 for a in range(limit):
     for b in range(limit):
         for c in range(limit):
-
             # & is higher than ^
             assert a ^ b & c == a ^ (b & c)
             assert a & b ^ c == (a & b) ^ c

@@ -36,6 +36,7 @@ r_speed = 0.5
 t_speed_f = 0.6
 t_speed_s = 0.2
 
+
 # Move straight forward
 def forw():
     talkto(mr)
