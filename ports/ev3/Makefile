@@ -45,7 +45,10 @@ SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
 OPT?=-O3
 
-CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
+SNEK_CFLAGS+=-ffile-prefix-map=/home/keithp/src/snek=. -fstack-protector-strong \
+	-fstack-clash-protection -Wformat -Werror=format-security
+
+CFLAGS=-DSNEK_MEM_INCLUDE_NAME $(OPT) -g -I. $(SNEK_CFLAGS) -Werror $(CPPFLAGS)
 
 LIBS=-lm
 
@@ -54,8 +57,12 @@ all: $(PROG) $(SERVER)
 $(PROG): $(SNEK_OBJ)
 	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
 
-$(SERVER): snekserver.o utils.o
-	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+SERVER_OBJ=snekserver.o utils.o
+
+$(SERVER): $(SERVER_OBJ)
+	$(call quiet,CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SERVER_OBJ)
+
+$(SERVER_OBJ): $(SNEK_INC)
 
 install: $(PROG)
 	install -d $(DESTDIR)$(SHAREDIR)
