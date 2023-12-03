@@ -32,7 +32,7 @@ ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSIO
 	asciidoctor -v $(ATTRIBUTES) -b html5 $*.adoc
 
 .adoc.pdf:
-	asciidoctor-pdf $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
+	asciidoctor-pdf -a optimize $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
 
 $(PDF_FILES): $(THEME_FILE) $(IMAGE_FILES)
 
