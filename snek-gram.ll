@@ -52,6 +52,7 @@ command		: @{ snek_print_val = snek_interactive; }@ stat
 				snek_id_store(id, poly);
 			}@
 		| IMPORT NAME
+		| FROM NAME IMPORT MULOP
 		;
 opt-formals	: formals
 		|

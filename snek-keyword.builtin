@@ -19,6 +19,7 @@ if, IF
 else, ELSE
 elif, ELIF
 for, FOR
+from, FROM
 while, WHILE
 continue, CONTINUE
 pass, PASS
