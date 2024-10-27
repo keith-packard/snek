@@ -8,13 +8,19 @@ on:
     branches:
       - main
 
+# When a PR is updated, cancel the jobs from the previous version. Merges
+# do not define head_ref, so use run_id to never cancel those jobs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 env:
-  IMAGE_FILE: dockerimg.tar
+  IMAGE_FILE: dockerimg.tar.zst
   IMAGE: snek
-  HASH_FILE: snek/.github/Dockerfile
+  DOCKER_FILE: snek/.github/Dockerfile
 
 jobs:
-  test:
+  cache-maker:
     runs-on: ubuntu-latest
     steps:
       - name: 'Clone snek'
@@ -27,7 +33,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.IMAGE_FILE }}
-          key: ${{ env.IMAGE_FILE }}-${{ hashFiles( env.HASH_FILE ) }}
+          key: ${{ env.IMAGE_FILE }}-${{ hashFiles( env.DOCKER_FILE ) }}
+          lookup-only: true
 
       - name: Set up Docker build
         if: steps.cache.outputs.cache-hit != 'true'
@@ -40,7 +47,23 @@ jobs:
           platforms: linux/amd64
           file: .github/Dockerfile
           tags: ${{ env.IMAGE }}:latest
-          outputs: type=docker,dest=${{ env.IMAGE_FILE }}
+          outputs: type=docker,force-compression=true,compression=zstd,compression-level=22,dest=${{ env.IMAGE_FILE }}
+
+  test-snek:
+    needs: cache-maker
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Clone snek'
+        uses: actions/checkout@v4
+        with:
+          path: snek
+
+      - name: Restore the Docker Image
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.IMAGE_FILE }}
+          key: ${{ env.IMAGE_FILE }}-${{ hashFiles( env.DOCKER_FILE ) }}
+          fail-on-cache-miss: true
 
       - name: Load Docker image
         run: |
