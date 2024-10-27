@@ -13,7 +13,7 @@
 # General Public License for more details.
 #
 
-import random
+from random import *
 
 
 def check(got, r):
@@ -24,5 +24,7 @@ def check(got, r):
 
 for r in (2, 163844, 100000, 8388607):
     for t in range(100):
-        v = random.randrange(r)
+        v = randrange(r)
         check(v, r)
+        v = random()
+        check(v, 1.0)
