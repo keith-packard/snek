@@ -27,22 +27,35 @@ builtin_id = 1
 
 
 class SnekBuiltin:
-    def __init__(self, name, param, value, condition=None):
+    def __init__(self, name, param, value, globals=None, condition=None):
         self.name = name
         self.value = None
         self.init = None
+        self.alias = None
         self.condition = condition
-        if value and value[0] == "=":
-            self.init = value[1:]
-        else:
-            self.value = value
         self.id = -1
+        self.full_name = name.replace(".", "_")
+        self.global_alias = False
         if param[0].isalpha():
             self.keyword = param
             self.nformal = -3
         else:
             self.keyword = False
             self.nformal = int(param)
+        if value and value[0] == "=":
+            if self.nformal == -2:
+                self.init = value[1:]
+            else:
+                self.alias = value[1:]
+        else:
+            self.value = value
+            for g in globals:
+                if name.startswith(g + "."):
+                    self.alias = name
+                    self.global_alias = True
+                    self.name = name.removeprefix(g + ".")
+                    self.full_name = self.name
+                    break
 
     def __eq__(self, other):
         return self.name == other.name
@@ -89,7 +102,7 @@ class SnekBuiltin:
         return self.name
 
     def cpp_name(self):
-        return "SNEK_BUILTIN_%s" % (self.name.replace(".", "_"))
+        return "SNEK_BUILTIN_%s" % self.full_name
 
     def func_name(self):
         if self.is_value():
@@ -97,8 +110,8 @@ class SnekBuiltin:
                 return "(snek_poly_t)(float)%s" % self.value
             return self.value
         name = self.name
-        if self.init is not None:
-            name = self.init
+        if self.alias is not None:
+            name = self.alias
         return "snek_builtin_%s" % (name.replace(".", "_"))
 
     def func_field(self):
@@ -114,14 +127,30 @@ class SnekBuiltin:
             self.id = builtin_id
             builtin_id += 1
 
+    def __str__(self):
+        return (
+            "builtin(name='%s', value='%r', init='%r', alias='%s', full_name='%s')"
+            % (self.name, self.value, self.init, self.alias, self.full_name)
+        )
+
 
 headers = []
 builtins = []
+globals = []
+aliases = False
 
 
 def add_builtin(name, id, value, condition):
-    global builtins
-    builtins += [SnekBuiltin(name, id, value, condition)]
+    global builtins, globals, aliases
+    builtin = SnekBuiltin(name, id, value, globals, condition)
+    for b in builtins:
+        if b.name == builtin.name:
+            print("%s: skipping duplicate" % name)
+            return
+    builtins += [builtin]
+    if aliases and builtin.global_alias:
+        builtin = SnekBuiltin(name, id, value, [], condition)
+        builtins += [builtin]
 
 
 def load_builtins(filename):
@@ -311,6 +340,8 @@ def dump_cpp(fp):
 
 
 def builtin_main():
+    global globals, aliases
+
     parser = argparse.ArgumentParser(description="Construct Snek builtin data.")
     parser.add_argument(
         "builtins", metavar="F", nargs="+", help="input files describing builtins"
@@ -319,8 +350,23 @@ def builtin_main():
     parser.add_argument(
         "-m", "--mu", action="store_true", help="output just non-keyword constants"
     )
+    parser.add_argument(
+        "-a", "--alias", action="store_true", help="--globals are also namespaced"
+    )
+    parser.add_argument(
+        "-g",
+        "--global",
+        action="append",
+        dest="globals",
+        help="remove this leading namespace",
+    )
 
     args = parser.parse_args()
+
+    if args.globals:
+        globals = args.globals
+
+    aliases = args.alias
 
     for b in args.builtins:
         load_builtins(b)

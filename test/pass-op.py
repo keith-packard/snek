@@ -15,7 +15,7 @@
 # Test arithmetic operations
 #
 
-import math
+from math import *
 
 if 2 + 3 != 5:
     exit(1)
@@ -47,9 +47,9 @@ if -6.7 // 2.2 != -4.0:
     exit(1)
 if -6.6 // 2.2 != -3.0:
     exit(1)
-if not math.isclose(7.8 % 2.2, 1.2):
+if not isclose(7.8 % 2.2, 1.2):
     exit(1)
-if not math.isclose(-7.8 % 2.2, 1.0):
+if not isclose(-7.8 % 2.2, 1.0):
     exit(1)
 inf = float("inf")
 

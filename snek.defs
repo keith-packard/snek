@@ -103,6 +103,14 @@ SNEK_BASE_CFLAGS = \
 
 LOLA_FLAGS ?=
 
+SNEK_GLOBAL_ALIAS ?= y
+SNEK_GLOBAL_NAMES ?= math random time
+
+SNEK_BUILTIN_FLAGS += $^ $(foreach GL,$(SNEK_GLOBAL_NAMES),--global $(GL)) 
+
+ifeq ($(SNEK_GLOBAL_ALIAS),y)
+	SNEK_BUILTIN_FLAGS += --alias
+endif
 
 ifdef SNEK_NO_SLICE
 SNEK_BASE_CFLAGS += -DSNEK_NO_SLICE
@@ -144,7 +152,7 @@ snek-gram.h: $(SNEK_ROOT)/snek-gram.ll
 	lola $(SNEK_LOLA_FLAGS) -o $@ $^
 
 snek-builtin.h: $(SNEK_ROOT)/snek-builtin.py $(SNEK_BUILTINS)
-	python3 $^ -o $@
+	python3 $(SNEK_BUILTIN_FLAGS) -o $@
 
 clean::
 	rm -f snek-gram.h snek-builtin.h $(SNEK_OBJ)

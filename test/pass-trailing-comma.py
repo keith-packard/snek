@@ -12,7 +12,7 @@
 # General Public License for more details.
 #
 
-import math
+from math import *
 
 # Make sure lists, tuples and parameter lists can have
 # a trailing comma
@@ -37,10 +37,10 @@ assert {
     2: "world",
 } == {1: "hello", 2: "world"}
 
-assert math.gcd(64, 12) == math.gcd(
+assert gcd(64, 12) == gcd(
     64,
     12,
 )
-assert math.sin(
+assert sin(
     1,
-) == math.sin(1)
+) == sin(1)
