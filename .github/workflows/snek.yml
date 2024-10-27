@@ -59,7 +59,7 @@ jobs:
             make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_OTHEROS=1 SNEK_RISCV_TEST=1 black check install install-otheros
 
       - name: 'Upload results'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: snek
           path: artifacts
