@@ -31,7 +31,7 @@ jobs:
 
       - name: Set up Docker build
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Build snek container
         if: steps.cache.outputs.cache-hit != 'true'
