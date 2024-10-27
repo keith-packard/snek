@@ -12,23 +12,33 @@
  * General Public License for more details.
  */
 
-#include <ao.h>
-#include <ao-snek.h>
-#include <snek.h>
+#include "snek.h"
+
+static uint32_t random_next;
 
 snek_poly_t
-snek_builtin_time_sleep(snek_poly_t a)
+snek_builtin_random_seed(snek_poly_t a)
 {
-	uint64_t	ticks = (snek_poly_get_float(a) * 1e9f + 0.5f);
-	uint64_t	expire = ao_time_ns() + ticks;
-
-	while (!snek_abort && (int64_t) (expire - ao_time_ns()) > 0)
-		;
+	random_next = a.u;
 	return SNEK_NULL;
 }
 
-snek_poly_t
-snek_builtin_time_monotonic(void)
+static void
+next_random(void)
 {
-	return snek_float_to_poly(ao_time_ns() / 1e9f);
+	random_next = random_next * 1103515245L + 12345L;
+}
+
+snek_poly_t
+snek_builtin_random_randrange(snek_poly_t a)
+{
+	next_random();
+	return snek_float_to_poly(random_next % (uint32_t) snek_poly_get_float(a));
+}
+
+snek_poly_t
+snek_builtin_random_random(void)
+{
+	next_random();
+	return snek_float_to_poly(random_next / 0x1p+31f);
 }

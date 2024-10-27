@@ -25,6 +25,7 @@ SNEK_LOCAL_SRC = \
 	snek-main.c \
 	snek-posix.c \
 	snek-math.c \
+	snek-random.c \
 	snek-input.c \
 	snek-io.c \
 	sensors.c \
@@ -35,9 +36,10 @@ SNEK_LOCAL_INC = snek-ev3.h utils.h sensors.h motors.h
 SNEK_LOCAL_CFLAGS = -DSNEK_USE_GLIBC_2_4_MATH
 SNEK_LOCAL_BUILTINS = \
 	snek-ev3.builtin \
-	$(SNEK_ROOT)/snek-math.builtin \
-	$(SNEK_ROOT)/snek-eeprom.builtin \
-	$(SNEK_ROOT)/snek-input.builtin
+	snek-math.builtin \
+	snek-random.builtin \
+	snek-eeprom.builtin \
+	snek-input.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 

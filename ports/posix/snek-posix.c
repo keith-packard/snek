@@ -62,17 +62,3 @@ snek_builtin_time_monotonic(void)
 		start_sec = t.tv_sec;
 	return snek_float_to_poly((float) (t.tv_sec - start_sec) + (float) t.tv_nsec / 1e9f);
 }
-
-snek_poly_t
-snek_builtin_random_seed(snek_poly_t a)
-{
-	srandom(a.u);
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_random_randrange(snek_poly_t a)
-{
-	return snek_float_to_poly(random() % (long int) snek_poly_get_float(a));
-}
-

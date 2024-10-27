@@ -11,6 +11,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
 #
-time.sleep, 1
-time.monotonic, 0
-reset, 0
+random.seed, 1
+random.randrange, 1
+random.random, 0

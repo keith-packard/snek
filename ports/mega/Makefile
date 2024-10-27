@@ -34,7 +34,6 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
 	$(SNEK_ATMEGA_MATH_BUILTINS) \
-	snek-math.builtin \
 	snek-input.builtin \
 	snek-i2c.builtin \
 	snek-mega.builtin

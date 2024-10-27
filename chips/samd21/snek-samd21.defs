@@ -21,6 +21,7 @@ SNEK_SAMD21_SRC = \
 	snek-altos.c \
 	snek-eeprom.c \
 	snek-math.c \
+	snek-random.c \
 	snek-gpio.c \
 	snek-io.c \
 	snek-input.c \
@@ -64,6 +65,7 @@ SNEK_SAMD21_BUILTINS = \
 	snek-eeprom.builtin \
 	snek-altos.builtin \
 	snek-math.builtin \
+	snek-random.builtin \
 	snek-input.builtin
 
 PICOLIBC_PRINTF_CFLAGS = -DPICOLIBC_FLOAT_PRINTF_SCANF

@@ -40,6 +40,4 @@ SDA, -2, 20
 SCL, -2, 21
 time.sleep, 1
 time.monotonic, 0
-random.seed, 1
-random.randrange, 1
 reset, 0

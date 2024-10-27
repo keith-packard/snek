@@ -21,6 +21,7 @@ SNEK_LOCAL_VPATH = $(SNEK_PORT):$(SNEK_AVR):$(SNEK_AO)
 SNEK_AVR_SRC = \
 	snek-io.c \
 	snek-pow.c \
+	snek-random-small.c \
 	snek-avr-eeprom.c \
 	ao-snek-avr.c \
 	ao-usb-avr.c \
@@ -43,6 +44,7 @@ SNEK_AVR_INC = \
 SNEK_AVR_BUILTINS = \
 	snek-gpio.builtin \
 	snek-eeprom.builtin \
+	snek-random.builtin \
 	snek-avr.builtin
 
 SNEK_NO_FILE = 1

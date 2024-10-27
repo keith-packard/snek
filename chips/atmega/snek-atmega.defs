@@ -33,6 +33,7 @@ SNEK_ATMEGA_SRC = \
 	snek-atmega-eeprom.c \
 	snek-io.c \
 	snek-atof.c \
+	snek-random-small.c \
 	snek-atmega-serial.c \
 	snek-atmega-time.c
 
@@ -51,6 +52,7 @@ SNEK_ATMEGA_MATH_BUILTINS = \
 SNEK_ATMEGA_BUILTINS = \
 	snek-eeprom.builtin \
 	snek-gpio.builtin \
+	snek-random.builtin \
 	snek-atmega.builtin
 
 SNEK_NO_FILE = 1
