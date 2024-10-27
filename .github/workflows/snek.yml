@@ -18,24 +18,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Clone snek'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: snek
 
       - name: Check for Docker Image
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.IMAGE_FILE }}
           key: ${{ env.IMAGE_FILE }}-${{ hashFiles( env.HASH_FILE ) }}
 
       - name: Set up Docker build
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Build snek container
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64
           file: .github/Dockerfile
@@ -59,7 +59,7 @@ jobs:
             make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_OTHEROS=1 SNEK_RISCV_TEST=1 black check install install-otheros
 
       - name: 'Upload results'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: snek
           path: artifacts
