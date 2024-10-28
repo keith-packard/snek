@@ -274,7 +274,7 @@ things in front of it:
 ----
 > *while True:*
 +    *print(read(A1))*
-+    *time.sleep(1)*
++    *sleep(1)*
 +
 0.3484738
 0.3829738
@@ -289,7 +289,7 @@ things in front of it:
 *Ctrl+C*
 ----
 
-You'll need to hit kbd:[Enter] after *time.sleep(1)* to get the
+You'll need to hit kbd:[Enter] after *sleep(1)* to get the
 program to run. Hit kbd:[Ctrl+C] when you're done testing to stop the
 program.
 

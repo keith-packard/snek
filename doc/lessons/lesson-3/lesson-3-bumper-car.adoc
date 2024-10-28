@@ -138,7 +138,7 @@ distance:
 ----
 > *while True:*
 +   *print(read(A8))*
-+   *time.sleep(1)*
++   *sleep(1)*
 + 
 0.162149
 0.1758242
@@ -197,22 +197,22 @@ do this, we'll spin in place.
 To make our robot less predictable, let's have it spin a random
 amount. Random numbers are like the roll of a die; you can't predict
 the value. Snek can generate random numbers using the
-`random.randrange` function. `random.randrange` takes one value, and
+`randrange` function. `randrange` takes one value, and
 will generate a random number from zero to one less than this value.
 So, if you want a random number from the set { 0, 1, 2, 3, 4, 5 },
-you'd use `random.randrange(6)`. We can do arithmetic on the number to
+you'd use `randrange(6)`. We can do arithmetic on the number to
 adjust the range further.
 
 Let's explore that:
 
 [subs="verbatim,quotes"]
 ----
-> *random.randrange(6)*
+> *randrange(6)*
 3
-> *random.randrange(6)*
+> *randrange(6)*
 1
 > *for i in range(5):*
-+     *print(random.randrange(6))*
++     *print(randrange(6))*
 + 
 5
 1
@@ -220,7 +220,7 @@ Let's explore that:
 0
 3
 > *for i in range(5):*
-+     *print(random.randrange(6) + 1)*
++     *print(randrange(6) + 1)*
 + 
 6
 5
@@ -236,8 +236,8 @@ say between 1 and 6 seconds:
 [source,python,subs="verbatim,quotes"]
 ----
 def WaitRandom():
-    wait = random.randrange(6) + 1
-    time.sleep(wait)
+    wait = randrange(6) + 1
+    sleep(wait)
 ----
 
 Let's figure out how to get the bumper car to spin. To go straight, we
@@ -277,7 +277,7 @@ def BumperCar():
 
 	# Back up a bit and spin around
 	MoveOneDir()
-	time.sleep(1)
+	sleep(1)
 	SpinRandom()
 
 	MoveOneDir()
@@ -285,7 +285,7 @@ def BumperCar():
 
 	# Back up a bit and spin around
 	MoveOtherDir()
-	time.sleep(1)
+	sleep(1)
 	SpinRandom()
 
 	MoveOtherDir()

@@ -12,7 +12,7 @@
 # General Public License for more details.
 #
 
-import time
+from time import *
 import sys
 
 
@@ -119,7 +119,7 @@ def display_towers(x, towers):
 def display_flush():
     display_string(1, bottom_y + 1, "")
     sys.stdout.flush()
-    time.sleep(move_delay)
+    sleep(move_delay)
     return True
 
 

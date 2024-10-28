@@ -724,14 +724,14 @@ Digital pin 13:(((talkto)))(((on)))
 > *on()*
 ----
 
-Let's get a bit fancier and blink it:(((time.sleep)))
+Let's get a bit fancier and blink it:(((sleep)))
 
 [subs="verbatim,quotes"]
 ----
 > *talkto(D13)*
 > *while True:*
 +     *onfor(.5)*
-+     *time.sleep(.5)*
++     *sleep(.5)*
 ----
 
 ==== Hooking up a digital input
@@ -768,7 +768,7 @@ Analog pin 0 and make the LED track the sensor:(((read)))(((onfor)))
 > *talkto(D13)*
 > *while True:*
 +     *onfor(1-read(A0))*
-+     *time.sleep(1-read(A0))*
++     *sleep(1-read(A0))*
 ----
 
 ==== Controlling motors
@@ -788,9 +788,9 @@ directions with:(((setpower)))(((setleft)))(((setright)))
 > *on()*
 > *while True:*
 +     *setleft()*
-+     *time.sleep(1)*
++     *sleep(1)*
 +     *setright()*
-+     *time.sleep(1)*
++     *sleep(1)*
 ----
 
 = Snek Reference Manual
@@ -850,7 +850,7 @@ period. Here are some valid names:(((Name)))
 hello
 _hello
 _h4
-math.sqrt
+sqrt
 ----
 
 And here are some invalid names:
@@ -870,9 +870,10 @@ Snek keywords:(((Keyword)))
 ----
 and       assert    break     continue
 def       del       elif      else
-for       global    if        import
-in        is        not       or
-pass      range     return    while
+for       from      global    if
+import    in        is        not
+or        pass      range     return
+while
 ----
 
 === Punctuation
@@ -1625,6 +1626,16 @@ be run using Python.(((import)))
 > *import curses*
 ----
 
+=== `from` _name_ `import *`
+
+The From statement is ignored and is part of Snek so that Snek programs can
+be run using Python.(((from)))
+
+[subs="verbatim,quotes"]
+----
+> *from random import **
+----
+
 === `global` _name_ _[_ `,` _name_ … _]_
 
 The Global statement marks the names as non-local; assignment to them
@@ -1799,12 +1810,12 @@ value of a number is the number's distance from 0.(((abs)))
 2
 ----
 
-=== `math.sqrt(` _number_ `)`
-Compute the square root of its numeric argument.(((math.sqrt)))
+=== `sqrt(` _number_ `)`
+Compute the square root of its numeric argument.(((sqrt)))
 
 [subs="verbatim,quotes"]
 ----
-> *math.sqrt(2)*
+> *sqrt(2)*
 1.414214
 ----
 
@@ -1821,51 +1832,61 @@ Posix-compatible systems, _value_ should be a number which forms the
 exit code for the Snek process with zero indicating success and
 non-zero indicating failure.(((exit)))
 
-=== `time.sleep(` _seconds_ `)`
+=== `sleep(` _seconds_ `)`
 
 Pause for the specified amount of time (which can include a fractional
-part).(((time.sleep)))
+part).(((sleep)))
 
 [subs="verbatim,quotes"]
 ----
-> *time.sleep(1)*
+> *sleep(1)*
 > 
 ----
 
-=== `time.monotonic()`
+=== `monotonic()`
 
 Return the time (in seconds) since some unspecified reference point in
 the system history. This time always increases, even if the system
 clock is adjusted (hence the name). Because Snek uses single-precision
 floating point values for all numbers, the reference point will be
 close to the starting time of the Snek system, so values may be quite
-small.(((time.monotonic)))
+small.(((monotonic)))
 
 [subs="verbatim,quotes"]
 ----
-> *time.monotonic()*
+> *monotonic()*
 6.859814
 ----
 
-=== `random.seed(` _seed_ `)`
+=== `seed(` _seed_ `)`
 
 Re-seeds the random number generator with `seed`. The random number
 generator will always generate the same sequence of numbers if started
-with the same `seed`.(((random.seed)))
+with the same `seed`.(((seed)))
 
 [subs="verbatim,quotes"]
 ----
-> *random.seed(time.monotonic())*
+> *seed(monotonic())*
 > 
 ----
 
-=== `random.randrange(` _max_ `)`
+=== `random()`
 
-Generates a random integer between 0 and max-1 inclusive.(((random.randrange)))
+Generates a random value greater than or equal to 0 and less than 1.(((random)))
 
 [subs="verbatim,quotes"]
 ----
-> *random.randrange(10)*
+> *randrange(10)*
+3
+----
+
+=== `randrange(` _max_ `)`
+
+Generates a random integer between 0 and max-1 inclusive.(((randrange)))
+
+[subs="verbatim,quotes"]
+----
+> *randrange(10)*
 3
 ----
 
@@ -1936,127 +1957,127 @@ are provided and follow the definitions here.
 
 === Number-theoretic and representation functions
 
-math.ceil(x)::
-Return the ceiling of x, the smallest integer greater than or equal to x.(((math.ceil)))
-math.copysign(x,y)::
-Return a number with the magnitude (absolute value) of x but the sign of y.(((math.copysign)))
-math.fabs(x)::
-Return the absolute value of x.(((math.fabs)))
-math.factorial(x)::
-Return the factorial of x.(((math.factorial)))
-math.floor(x)::
-Return the floor of x, the largest integer less than or equal to x.(((math.floor)))
-math.fmod(x,y)::
-Return the modulus of x and y: x - trunc(x/y) * y.(((math.fmod)))
-math.frexp(x)::
-Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 ≤ abs(frac) < 1, and x = frac * pow(2,exp).(((math.frexp)))
-math.fsum(l)::
-Returns the sum of the numbers in l, which must be a list or tuple.(((math.fsum)))
-math.gcd(x,y)::
-Return the greatest common divisor of x and y.(((math.gcd)))
-math.isclose(x,y,rel_val=1e-6,abs_val=0.0)::
+ceil(x)::
+Return the ceiling of x, the smallest integer greater than or equal to x.(((ceil)))
+copysign(x,y)::
+Return a number with the magnitude (absolute value) of x but the sign of y.(((copysign)))
+fabs(x)::
+Return the absolute value of x.(((fabs)))
+factorial(x)::
+Return the factorial of x.(((factorial)))
+floor(x)::
+Return the floor of x, the largest integer less than or equal to x.(((floor)))
+fmod(x,y)::
+Return the modulus of x and y: x - trunc(x/y) * y.(((fmod)))
+frexp(x)::
+Returns the normalized fraction and exponent in a tuple (frac, exp). 0.5 ≤ abs(frac) < 1, and x = frac * pow(2,exp).(((frexp)))
+fsum(l)::
+Returns the sum of the numbers in l, which must be a list or tuple.(((fsum)))
+gcd(x,y)::
+Return the greatest common divisor of x and y.(((gcd)))
+isclose(x,y,rel_val=1e-6,abs_val=0.0)::
 Returns a boolean indicating whether x and y are 'close' together. This is defined as
-abs(x-y) ≤ max(rel_tol * max(abs(a), abs(b)), abs_tol).(((math.isclose)))
-math.isfinite(x)::
-Returns True if x is finite else False.(((math.isfinite)))
-math.isinf::
-Returns True if x is infinite else False.(((math.isinf)))
-math.isnan::
-Returns True if x is not a number else False.(((math.isnan)))
-math.ldexp(x,y)::
-Returns x * pow(2,y).(((math.ldexp)))
-math.modf(x)::
-Returns (x - trunc(x), trunc(x)).(((math.modf)))
-math.remainder(x,y)::
-Returns the remainder of x and y: x - round(x/y) * y.(((math.remainder)))
-math.trunc::
-Returns the truncation of x, the integer closest to x which is no further from zero than x.(((math.trunc)))
+abs(x-y) ≤ max(rel_tol * max(abs(a), abs(b)), abs_tol).(((isclose)))
+isfinite(x)::
+Returns True if x is finite else False.(((isfinite)))
+isinf::
+Returns True if x is infinite else False.(((isinf)))
+isnan::
+Returns True if x is not a number else False.(((isnan)))
+ldexp(x,y)::
+Returns x * pow(2,y).(((ldexp)))
+modf(x)::
+Returns (x - trunc(x), trunc(x)).(((modf)))
+remainder(x,y)::
+Returns the remainder of x and y: x - round(x/y) * y.(((remainder)))
+trunc::
+Returns the truncation of x, the integer closest to x which is no further from zero than x.(((trunc)))
 round(x)::
 Returns the integer nearest x, with values midway between two integers rounding away from zero.(((round)))
 
 === Power and logarithmic functions
 
-math.exp(x)::
-Returns pow(e,x).(((math.exp)))
-math.expm1(x)::
-Returns exp(x)-1.(((math.expm1)))
-math.exp2(x)::
-Returns pow(2,x).(((math.exp2)))
-math.log(x)::
-Returns the natural logarithm of x.(((math.log)))
-math.log1p(x)::
-Returns log(x+1).(((math.log1p)))
-math.log2(x)::
-Returns the log base 2 of x.(((math.log2)))
-math.log10(x)::
-Returns the log base 10 of x.(((math.log10)))
-math.pow(x,y)::
-Returns x raised to the y^th^ power.(((math.pow)))
+exp(x)::
+Returns pow(e,x).(((exp)))
+expm1(x)::
+Returns exp(x)-1.(((expm1)))
+exp2(x)::
+Returns pow(2,x).(((exp2)))
+log(x)::
+Returns the natural logarithm of x.(((log)))
+log1p(x)::
+Returns log(x+1).(((log1p)))
+log2(x)::
+Returns the log base 2 of x.(((log2)))
+log10(x)::
+Returns the log base 10 of x.(((log10)))
+pow(x,y)::
+Returns x raised to the y^th^ power.(((pow)))
 
 === Trigonometric functions
 
-math.acos(x)::
-Returns the arc cosine of x in the range of 0 ≤ acos(x) ≤ π.(((math.acos)))
-math.asin(x)::
-Returns the arc sine of x in the range of -π/2 ≤ asin(x) ≤ π/2.(((math.asin)))
-math.atan(x)::
-Returns the arc tangent of x in the range of -π/2 ≤ atan(x) ≤ π/2.(((math.atan)))
-math.atan2(y,x)::
-Returns the arc tangent of y/x in the range of -π ≤ atan2(y,x) ≤ π.(((math.atan2)))
-math.cos(x)::
-Returns the cosine of x.(((math.cos)))
-math.hypot(x,y)::
-Returns sqrt(x*x + y*y).(((math.hypot)))
-math.sin(x)::
-Returns the sine of x.(((math.sin)))
-math.tan(x)::
-Returns the tangent of x.(((math.tan)))
+acos(x)::
+Returns the arc cosine of x in the range of 0 ≤ acos(x) ≤ π.(((acos)))
+asin(x)::
+Returns the arc sine of x in the range of -π/2 ≤ asin(x) ≤ π/2.(((asin)))
+atan(x)::
+Returns the arc tangent of x in the range of -π/2 ≤ atan(x) ≤ π/2.(((atan)))
+atan2(y,x)::
+Returns the arc tangent of y/x in the range of -π ≤ atan2(y,x) ≤ π.(((atan2)))
+cos(x)::
+Returns the cosine of x.(((cos)))
+hypot(x,y)::
+Returns sqrt(x*x + y*y).(((hypot)))
+sin(x)::
+Returns the sine of x.(((sin)))
+tan(x)::
+Returns the tangent of x.(((tan)))
 
 === Angular conversion
 
-math.degrees(x)::
-Returns x * 180/π.(((math.degrees)))
-math.radians(x)::
-Returns x * π/180.(((math.radians)))
+degrees(x)::
+Returns x * 180/π.(((degrees)))
+radians(x)::
+Returns x * π/180.(((radians)))
 
 === Hyperbolic functions
 
-math.acosh(x)::
-Returns the inverse hyperbolic cosine of x.(((math.acosh)))
-math.asinh(x)::
-Returns the inverse hyperbolic sine of x.(((math.asinh)))
-math.atanh(x)::
-Returns the inverse hyperbolic tangent of x.(((math.atanh)))
-math.cosh(x)::
-Returns the hyperbolic cosine of x: (exp(x) + exp(-x)) / 2.(((math.cosh)))
-math.sinh(x)::
-Returns the hyperbolic sine of x: (exp(x) - exp(-x)) / 2.(((math.sinh)))
-math.tanh(x)::
-Returns the hyperbolic tangent of x: sinh(x) / cosh(x).(((math.tanh)))
+acosh(x)::
+Returns the inverse hyperbolic cosine of x.(((acosh)))
+asinh(x)::
+Returns the inverse hyperbolic sine of x.(((asinh)))
+atanh(x)::
+Returns the inverse hyperbolic tangent of x.(((atanh)))
+cosh(x)::
+Returns the hyperbolic cosine of x: (exp(x) + exp(-x)) / 2.(((cosh)))
+sinh(x)::
+Returns the hyperbolic sine of x: (exp(x) - exp(-x)) / 2.(((sinh)))
+tanh(x)::
+Returns the hyperbolic tangent of x: sinh(x) / cosh(x).(((tanh)))
 
 === Special functions
 
-math.erf(x)::
-Returns the error function at x.(((math.erf)))
-math.erfc(x)::
-Returns the complement of the error function at x. This is 1 - erf(x).(((math.erfc)))
-math.gamma(x)::
-Returns the gamma function at x.(((math.gamma)))
-math.lgamma(x)::
-Returns log(gamma(x)).(((math.lgamma)))
+erf(x)::
+Returns the error function at x.(((erf)))
+erfc(x)::
+Returns the complement of the error function at x. This is 1 - erf(x).(((erfc)))
+gamma(x)::
+Returns the gamma function at x.(((gamma)))
+lgamma(x)::
+Returns log(gamma(x)).(((lgamma)))
 
 === Mathematical constants
 
-math.pi::
-The mathematical constant π, to available precision.(((math.pi)))(((π)))
-math.e::
-The mathematical constant e, to available precision.(((math.e)))(((e)))
-math.tau::
-The mathematical constant τ, which is 2π, to available precision.(((math.tau)))(((τ)))
-math.inf::
-The floating point value which represents ∞.(((math.inf)))(((∞)))
-math.nan::
-The floating point value which represents Not a Number.(((math.nan)))(((NaN)))
+pi::
+The mathematical constant π, to available precision.(((pi)))(((π)))
+e::
+The mathematical constant e, to available precision.(((e)))(((e)))
+tau::
+The mathematical constant τ, which is 2π, to available precision.(((tau)))(((τ)))
+inf::
+The floating point value which represents ∞.(((inf)))(((∞)))
+nan::
+The floating point value which represents Not a Number.(((nan)))(((NaN)))
 
 == GPIO Functions
 

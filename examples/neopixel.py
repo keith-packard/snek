@@ -16,6 +16,8 @@
 # 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
+from time import *
+
 bright = 0.1
 
 
@@ -40,7 +42,7 @@ def blink():
     while True:
         for pos in range(0, 3, 0.01):
             rainbow(pos)
-            time.sleep(0.003)
+            sleep(0.003)
 
 
 blink()

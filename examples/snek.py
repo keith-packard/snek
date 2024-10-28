@@ -12,9 +12,9 @@
 # General Public License for more details.
 #
 
-import random
+from random import *
+from time import *
 import curses
-import time
 
 stdscr = 0
 
@@ -46,7 +46,7 @@ def _p(x, y):
 def put_snak():
     global snek, snak
     while True:
-        snak = _p(random.randrange(cols - 2) + 1, random.randrange(lines - 2) + 1)
+        snak = _p(randrange(cols - 2) + 1, randrange(lines - 2) + 1)
         for s in snek:
             if snak == s:
                 break
@@ -122,7 +122,7 @@ def main():
     curses.cbreak()
     stdscr.nodelay(True)
     stdscr.erase()
-    random.seed(time.monotonic())
+    seed(monotonic())
     snek = [_p(1, 1)]
     put_snak()
     for x in range(1, cols - 1):
@@ -135,7 +135,7 @@ def main():
     while True:
         stdscr.move(_y(snek[0]), _x(snek[0]))
         stdscr.refresh()
-        time.sleep(0.1)
+        sleep(0.1)
         c = getch()
         ndx = dx
         ndy = dy
@@ -155,7 +155,7 @@ def main():
             done("quit")
         elif c == "p":
             while getch() != "p":
-                time.sleep(0.1)
+                sleep(0.1)
         if ndx != -dx or ndy != -dy:
             dx = ndx
             dy = ndy

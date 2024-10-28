@@ -17,7 +17,7 @@ import argparse
 import serial
 import sys
 import threading
-import time
+from time import *
 
 port = None
 
@@ -27,7 +27,7 @@ def sync():
     global port
 
     # wait for the device to get started
-    time.sleep(1)
+    sleep(1)
     port.write(b"\x0eprint(chr(37))\n")
     while True:
         data = port.read(1)
