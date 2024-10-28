@@ -96,6 +96,11 @@ described below.
 
 Here's some places that have seen recent work
 
+ * Changed the builtin math, time and random functions to no longer
+   include the math., time. or random. prefixes. This makes them more
+   convenient to use. To retain compatibility with Python, you can
+   use 'from math import *' which Snek will ignore.
+
  * [Mu](https://codewith.mu/) version 1.2.0 has Snek support built in
    now. Mu is an IDE designed for new Python users that offers a more
    polished alternative to the simple Snek IDE provide with snek.

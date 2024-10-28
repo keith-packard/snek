@@ -35,11 +35,11 @@
 # arrow keys.  You can leave at the exit any time.
 #
 
-import time
+from time import *
 import sys
-import random
+from random import *
 import curses
-import math
+from math import *
 
 
 def cashvalue():
@@ -112,7 +112,7 @@ def endwin():
 
 
 def delay(t):
-    time.sleep(t * 0.05)
+    sleep(t * 0.05)
 
 
 you = _p(0, 0)
@@ -138,7 +138,7 @@ def error(s):
 
 def main():
     global penalty, loot, finish, you, money, snake, chunk
-    random.seed(time.monotonic())
+    seed(monotonic())
     penalty = 0
     loot = 0
     initscr()
@@ -323,7 +323,7 @@ def drawbox():
 
 def snrand():
     while True:
-        p = _p(random.randrange(ccnt), random.randrange(lcnt))
+        p = _p(randrange(ccnt), randrange(lcnt))
         # make sure it's not on top of something else
         if _y(p) == 0 and _x(p) < 5:
             continue
@@ -352,7 +352,7 @@ def chase(sp):
     global oldw, loot
     # this algorithm has bugs; otherwise the snake would get too good
     d = _p(_x(you) - _x(sp), _y(you) - _y(sp))
-    v1 = math.sqrt(_x(d) ** 2 + _y(d) ** 2)
+    v1 = sqrt(_x(d) ** 2 + _y(d) ** 2)
     w = 0
     max = 0
     wt = [0] * 8
@@ -391,7 +391,7 @@ def chase(sp):
     w = 0
     for i in range(8):
         w += wt[i]
-    vp = random.randrange(w)
+    vp = randrange(w)
     vpo = vp
     for i in range(8):
         if vp < wt[i]:
@@ -583,7 +583,7 @@ def pushsnake():
         if snake[i] == you or tmp == you:
             surround(you)
             i = (cashvalue()) % 10
-            bonus = random.randrange(10)
+            bonus = randrange(10)
             mvaddstr(lcnt + 1, 0, "%d" % bonus)
             refresh()
             delay(30)

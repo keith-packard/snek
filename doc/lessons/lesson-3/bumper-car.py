@@ -36,8 +36,8 @@ def WaitUntilCloseOtherDir():
 
 
 def WaitRandom():
-    wait = 0.25 + random.randrange(10) / 10
-    time.sleep(wait)
+    wait = 0.25 + randrange(10) / 10
+    sleep(wait)
 
 
 def Spin():
@@ -62,7 +62,7 @@ def BumperCar():
 
         # Back up a bit and spin around
         MoveOneDir()
-        time.sleep(0.5)
+        sleep(0.5)
         SpinRandom()
 
         MoveOneDir()
@@ -70,7 +70,7 @@ def BumperCar():
 
         # Back up a bit and spin around
         MoveOtherDir()
-        time.sleep(0.5)
+        sleep(0.5)
         SpinRandom()
 
         MoveOtherDir()
