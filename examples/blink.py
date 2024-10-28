@@ -12,6 +12,8 @@
 # General Public License for more details.
 #
 
+from time import *
+
 led = D13
 
 
@@ -19,9 +21,9 @@ def blink():
     talkto(led)
     while True:
         on()
-        time.sleep(0.5)
+        sleep(0.5)
         off()
-        time.sleep(0.5)
+        sleep(0.5)
 
 
 blink()

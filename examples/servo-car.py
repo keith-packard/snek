@@ -1,3 +1,19 @@
+#
+# Copyright © 2019 Keith Packard <keithp@keithp.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+
+from random import *
+
 servo = M4
 motor = M1
 front = A1
@@ -48,10 +64,10 @@ def right(t, d):
 
 
 def bounce():
-    straight(random.randrange(10) / 10 + 1, True)
-    right(random.randrange(10) / 10 + 1, False)
-    left(random.randrange(10) / 10 + 1, True)
-    straight(random.randrange(10) / 10 + 1, False)
+    straight(randrange(10) / 10 + 1, True)
+    right(randrange(10) / 10 + 1, False)
+    left(randrange(10) / 10 + 1, True)
+    straight(randrange(10) / 10 + 1, False)
 
 
 while True:

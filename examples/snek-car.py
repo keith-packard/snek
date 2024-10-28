@@ -16,6 +16,8 @@
 # 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
+from time import *
+
 # This program is for the Crickit FeatherWing board
 
 # Motor 1 is on the right side of the car
@@ -117,10 +119,10 @@ def bumper():
     while True:
         go_forw()
         back()
-        time.sleep(0.5)
+        sleep(0.5)
         stop()
         left()
-        time.sleep(0.25)
+        sleep(0.25)
         stop()
         go_forw()
         go_back()

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-import random
-import time
+from random import *
+from time import *
 
-random.seed(time.monotonic())
+seed(monotonic())
 
 # "Shuffle" a list, but *wrong*.
 
@@ -15,7 +15,7 @@ for _ in range(100000):
     for i in range(narray):
         a[i] = i
     for i in range(narray):
-        j = i + random.randrange(narray - i)
+        j = i + randrange(narray - i)
         tmp = a[j]
         a[j] = a[i]
         a[i] = tmp
