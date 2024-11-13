@@ -227,7 +227,7 @@ typedef struct snek_list {
 
 typedef struct snek_code {
 	snek_offset_t	size;
-	uint8_t		code[0];
+	uint8_t		code[];
 } snek_code_t;
 
 typedef struct snek_range {
@@ -249,14 +249,14 @@ typedef struct snek_func {
 	uint8_t		nformal;
 	uint8_t		nrequired;
 	snek_offset_t	code;
-	snek_id_t	formals[0];
+	snek_id_t	formals[];
 } snek_func_t;
 
 #define SNEK_FUNC_VARARGS	SNEK_SOFFSET_NONE
 
 typedef struct snek_name {
 	snek_offset_t	next;
-	char		name[0];
+	char		name[];
 } snek_name_t;
 
 typedef struct snek_variable {
@@ -269,7 +269,7 @@ typedef struct snek_frame {
 	snek_offset_t	code;
 	snek_offset_t	ip;
 	snek_offset_t	nvariables;
-	snek_variable_t	variables[0];
+	snek_variable_t	variables[];
 } snek_frame_t;
 
 

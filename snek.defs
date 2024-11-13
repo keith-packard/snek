@@ -81,6 +81,8 @@ SNEK_MOST_WARNINGS =  \
 	-Wmissing-prototypes \
 	-Wmissing-declarations \
 	-Wnested-externs \
+	-fstrict-flex-arrays=0 \
+	--strict-flex-arrays=3 \
 	-Wshadow
 
 ifeq ($(SNEK_CLANG),yes)
