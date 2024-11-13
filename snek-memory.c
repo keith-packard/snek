@@ -647,7 +647,7 @@ snek_move_block_offset(void *ref)
 	return false;
 }
 
-bool
+static bool
 snek_move_block_addr(void **ref)
 {
 	void		*addr = *ref;

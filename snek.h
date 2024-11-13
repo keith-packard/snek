@@ -733,9 +733,6 @@ bool
 snek_move_block_offset(void *ref);
 
 bool
-snek_move_block_addr(void **ref);
-
-bool
 snek_poly_move(snek_poly_t *ref);
 
 bool
