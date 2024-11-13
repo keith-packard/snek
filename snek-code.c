@@ -178,7 +178,7 @@ snek_code_add_number(float number)
  * Add an immediate string to the current bytecode
  */
 void
-snek_code_add_string(char *string)
+snek_code_add_string(const char *string)
 {
 	snek_offset_t s;
 

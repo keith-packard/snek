@@ -430,7 +430,7 @@ void
 snek_code_add_number(float number);
 
 void
-snek_code_add_string(char *string);
+snek_code_add_string(const char *string);
 
 void
 snek_code_add_op_offset(snek_op_t op, snek_offset_t offset);
