@@ -36,7 +36,6 @@
 #include <stdlib.h>
 
 #ifdef AVR
-#define float double
 #include <avr/pgmspace.h>
 #else
 #define __flash

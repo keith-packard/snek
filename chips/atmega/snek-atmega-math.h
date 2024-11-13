@@ -19,6 +19,8 @@
 #ifndef _SNEK_MEGA_MATH_H_
 #define _SNEK_MEGA_MATH_H_
 
+#undef float
+
 float exp2f(float x);
 
 float expm1f(float x);
