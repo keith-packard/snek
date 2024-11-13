@@ -49,17 +49,31 @@ SNEK_AVR_BUILTINS = \
 
 SNEK_NO_FILE = 1
 
-OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
+#OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
+
+OPT=-Os \
+    -mrelax \
+    -flto \
+    -Wno-array-bounds \
+    -frename-registers \
+    -funsigned-char \
+    -mcall-prologues \
+    -fno-move-loop-invariants \
+    -fno-move-loop-stores \
+    -fno-split-loops \
+    -fno-unswitch-loops \
+    -fno-unroll-loops \
+    -fno-peel-loops
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
 AO_CFLAGS=\
-	-std=c99 $(OPT) -g
+	$(OPT) -g
 
 AVR_CFLAGS=-DF_CPU=$(AVR_CLOCK) -mmcu=atmega32u4 -g $(SNEK_CFLAGS) -Waddr-space-convert \
 	-I. -I$(SNEK_PORT) -I$(SNEK_AVR) -I$(SNEK_AO) -I$(SNEK_ROOT) $(AO_CFLAGS)
 
-CFLAGS = $(AVR_CFLAGS) $(SNEK_CFLAGS)
+CFLAGS = $(SNEK_CFLAGS) $(AVR_CFLAGS)
 
 LDSCRIPT=$(SNEK_AVR)/snek-avr51.x
 

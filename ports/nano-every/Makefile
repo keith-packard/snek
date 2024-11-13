@@ -57,11 +57,9 @@ BASE=snek-$(BOARD)-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
-CC=$(AVR_ROOT)/bin/avr-gcc
+CC=avr-gcc
 
-OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
-
-CFLAGS=$(OPT) -DF_CPU=20000000UL -mmcu=atmega4809 -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
+CFLAGS=-DF_CPU=20000000UL -mmcu=atmega4809 -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,-Map=$(MAP)

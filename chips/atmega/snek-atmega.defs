@@ -56,3 +56,17 @@ SNEK_ATMEGA_BUILTINS = \
 	snek-atmega.builtin
 
 SNEK_NO_FILE = 1
+
+OPT=-Os \
+    -mrelax \
+    -flto \
+    -Wno-array-bounds \
+    -frename-registers \
+    -funsigned-char \
+    -mcall-prologues \
+    -fno-move-loop-invariants \
+    -fno-move-loop-stores \
+    -fno-split-loops \
+    -fno-unswitch-loops \
+    -fno-unroll-loops \
+    -fno-peel-loops

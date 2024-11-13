@@ -62,9 +62,7 @@ HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
 
-OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
-
-CFLAGS=$(OPT) -DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
+CFLAGS=-DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) $(SNEK_CFLAGS) $(OPT) -g -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=$(ATMEGA_FLASH_SIZE) \

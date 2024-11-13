@@ -49,9 +49,7 @@ HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
 
-OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
-
-CFLAGS=$(OPT) -DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
+CFLAGS=-DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x7e00 \
