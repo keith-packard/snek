@@ -737,7 +737,10 @@ snek_builtin_neopixel(snek_poly_t pixels)
 		list_size = 1;
 
 	if (snek_neopixels == NULL || snek_neopixel_count < list_size) {
+		snek_stack_push_list(pixels_list);
 		snek_neopixels = snek_alloc(list_size * sizeof (struct snek_neopixel));
+		pixels_list = snek_stack_pop_list();
+		pixels_data = snek_list_data(pixels_list);
 		if (!snek_neopixels)
 			return SNEK_NULL;
 		snek_neopixel_count = list_size;
