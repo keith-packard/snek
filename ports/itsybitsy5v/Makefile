@@ -17,6 +17,7 @@ SNEK_AVR = $(SNEK_ROOT)/chips/avr
 
 BUILD_INSTALL?=1
 PROGNAME?=snek-itsybitsy5v
+UBANAME=$(shell echo $(PROGNAME) | sed 's/snek/ubaboot/')
 PRODUCT_NAME?=SnekItsyBitsy5v
 
 AVR_CLOCK?=16000000UL
@@ -36,7 +37,7 @@ SNEK_LOCAL_BUILTINS = \
 include $(SNEK_ROOT)/snek-install.defs
 
 ifeq ($(BUILD_INSTALL),1)
-INSTALLER=snek-itsybitsy-install
+INSTALLER=snek-atmega32u4-install
 else
 INSTALLER=
 endif
@@ -45,22 +46,22 @@ all: $(ELF) $(HEX) $(INSTALLER)
 
 $(PROG): Makefile $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 install:: $(HEX)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 
 ifeq ($(BUILD_INSTALL),1)
-snek-itsybitsy-install: ../itsybitsy5v/snek-itsybitsy-install.in
+snek-atmega32u4-install: ../itsybitsy5v/snek-atmega32u4-install.in
 	$(SNEK_SED) $^ > $@
 	chmod +x $@
 
-install:: snek-itsybitsy-install snek-itsybitsy-install.1
+install:: snek-atmega32u4-install snek-atmega32u4-install.1
 	install -d $(DESTDIR)$(BINDIR)
-	install snek-itsybitsy-install $(DESTDIR)$(BINDIR)
+	install snek-atmega32u4-install $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(MANDIR)/man1
-	install -m 0644 snek-itsybitsy-install.1 $(DESTDIR)$(MANDIR)/man1
+	install -m 0644 snek-atmega32u4-install.1 $(DESTDIR)$(MANDIR)/man1
 endif
 
 clean::
@@ -69,7 +70,13 @@ clean::
 
 uninstall::
 
-ISP=avrisp2
+ISP=usbtiny
 
-load: all
-	../itsybitsy5v/snek-itsybitsy-install -quick -isp $(ISP) -hex $(HEX) load
+UBAHEX=../../ubaboot/$(UBANAME).hex
+UBABOOT=../../ubaboot/ubaboot.py
+
+load: all $(UBABOOT)
+	../itsybitsy5v/snek-atmega32u4-install -hex $(HEX) -ubaboot $(UBABOOT) load
+
+fuseboot: $(UBAHEX) $(UBABOOT)
+	../itsybitsy5v/snek-atmega32u4-install -isp $(ISP) -ubahex $(UBAHEX) fuseboot

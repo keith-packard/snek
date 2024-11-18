@@ -26,7 +26,7 @@ PROGS= \
 	$(SNEK_PORTS)/posix/snek \
 	$(SNEK_ROOT)/snekde/snekde \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-install.in \
-	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy-install.in \
+	$(SNEK_PORTS)/itsybitsy5v/snek-atmega32u4-install.in \
 	$(SNEK_PORTS)/mega/snek-mega-install.in \
 	$(SNEK_PORTS)/uno/snek-uno-install.in
 
@@ -39,7 +39,7 @@ DOC= \
 	$(SNEK_ROOT)/snekde/snekde.1 \
 	$(SNEK_ROOT)/COPYING \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-install.1 \
-	$(SNEK_PORTS)/itsybitsy5v/snek-itsybitsy-install.1 \
+	$(SNEK_PORTS)/itsybitsy5v/snek-atmega32u4-install.1 \
 	$(SNEK_PORTS)/mega/snek-mega-install.1 \
 	$(SNEK_PORTS)/uno/snek-uno-install.1
 

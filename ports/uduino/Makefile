@@ -34,34 +34,30 @@ SNEK_LOCAL_BUILTINS = \
 
 include $(SNEK_ROOT)/snek-install.defs
 
-all: $(ELF) $(HEX) snek-uduino-install
+all: $(ELF) $(HEX)
 
 $(PROG): Makefile $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
-
-snek-uduino-install: snek-uduino-install.in
-	$(SNEK_SED) $^ > $@
-	chmod +x $@
+	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 install:: $(HEX)
 	install -d $(DESTDIR)$(SHAREDIR)
 	install -m 0644 $(HEX) $(DESTDIR)$(SHAREDIR)
 
-install:: snek-uduino-install snek-uduino-install.1
-	install -d $(DESTDIR)$(BINDIR)
-	install snek-uduino-install $(DESTDIR)$(BINDIR)
-	install -d $(DESTDIR)$(MANDIR)/man1
-	install -m 0644 snek-uduino-install.1 $(DESTDIR)$(MANDIR)/man1
-
 clean::
-	rm -f snek-uduino-install
 	rm -f *.hex *.elf *.map
 	rm -f ao-product.h
 
 uninstall::
 
-ISP=avrisp2
+ISP=usbtiny
 
-load: $(HEX) snek-uduino-install
-	./snek-uduino-install -quick -isp $(ISP) -hex $(HEX) load
+UBANAME=$(shell echo $(PROGNAME) | sed 's/snek/ubaboot/')
+UBAHEX=../../ubaboot/$(UBANAME).hex
+UBABOOT=../../ubaboot/ubaboot.py
+
+load: all $(UBABOOT)
+	../itsybitsy5v/snek-atmega32u4-install -hex $(HEX) -ubaboot $(UBABOOT) load
+
+fuseboot: $(UBAHEX) $(UBABOOT)
+	../itsybitsy5v/snek-atmega32u4-install -isp $(ISP) -ubahex $(UBAHEX) fuseboot

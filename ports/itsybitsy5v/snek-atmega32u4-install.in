@@ -1,0 +1,106 @@
+#!/bin/sh
+
+SHAREDIR="@SHAREDIR@"
+
+DEVICE=""
+UBABOOT="$SHAREDIR/ubaboot"
+
+action="load"
+
+ISP=usbtiny
+
+mode=arg
+
+verify=""
+
+for i in "$@"; do
+    case "$mode" in
+	arg)
+	    case "$i" in
+		load|fuse|boot|fuseboot)
+		    action="$i"
+		    ;;
+		-isp|--isp)
+		    mode=isp
+		    ;;
+		-device|--device)
+		    mode=device
+		    ;;
+		-hex|--hex)
+		    mode=hex
+		    ;;
+		-ubahex|--ubahex)
+		    mode=ubahex
+		    ;;
+		-ubaboot|--ubaboot)
+		    mode=ubaboot
+		    ;;
+		-quick|--quick)
+		    verify="-V"
+		    ;;
+		*)
+		    cat 1>&2 <<EOF
+Usage: $0
+	[-isp {usbtiny|avrisp2}]
+	[-device {itsybitsy3v|itsybitsy5v|uduino}]
+	[-hex snek-<device>.hex]
+	[-ubahex ubaboot-<device>.hex]
+	[-ubaboot ubaboot.py]
+	[-quick]
+	{load|fuse|boot|fuseboot}
+EOF
+		    echo "" 1>&2
+		    exit 1
+		    ;;
+	    esac
+	    ;;
+	isp)
+	    ISP="$i"
+	    mode=arg
+	    ;;
+	device)
+	    DEVICE="$i"
+	    SNEKHEX="$SHAREDIR/snek-$DEVICE-@SNEK_VERSION@.hex"
+	    UBAHEX="$SHAREDIR/ubaboot-$DEVICE.hex"
+	    mode=arg
+	    ;;
+	hex)
+	    SNEKHEX="$i"
+	    mode=arg
+	    ;;
+	ubahex)
+	    UBAHEX="$i"
+	    mode=arg
+	    ;;
+	ubaboot)
+	    UBABOOT="$i"
+	    mode=arg
+	    ;;
+    esac
+done
+
+FUSES="-U hfuse:w:0x9e:m"
+
+case "$action" in
+    fuse)
+	avrdude -V -c $ISP -p m32u4 -u $FUSES
+	;;
+    fuseboot)
+	case "${UBAHEX}" in
+	    "")
+		echo "Please use either -device <device> or -ubahex <ubaboot.hex>" 1>&2
+		exit 1
+		;;
+	esac
+	avrdude -V -c $ISP -p m32u4 -u $FUSES && avrdude $verify -c $ISP -p m32u4 -U flash:w:"${UBAHEX}"
+	;;
+    load)
+	case "${SNEKHEX}" in
+	    "")
+		echo "Please use either -device <device> or -hex <snek.hex>" 1>&2
+		exit 1
+		;;
+	esac
+	python "$UBABOOT" write "${SNEKHEX}"
+	;;
+esac

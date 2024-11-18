@@ -35,10 +35,10 @@ check: all
 	+cd test && make $@
 
 black:
-	+black --check --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
+	+black --check --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py|ubaboot.py' .
 
 black-reformat:
-	+black --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py' .
+	+black --exclude 'fail-syntax-.*\.py|.*/hosts/.*.py|ubaboot.py' .
 
 install: all
 	+for dir in $(SUBDIRS); do (cd $$dir && make PREFIX=$(PREFIX) DESTDIR=$(DESTDIR) $@) || exit 1; done
