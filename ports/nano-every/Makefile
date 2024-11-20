@@ -57,7 +57,13 @@ HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
 
-CFLAGS=-DF_CPU=20000000UL -mmcu=atmega4809 -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
+MCU=atmega4809
+AVR_LIBC_ROOT=/opt/avr-libc
+AVR_LIBC_LIB=$(AVR_LIBC_ROOT)/avr/lib/$(shell avr-gcc -print-multi-os-directory -mmcu=$(MCU))
+AVR_LIBC_INCLUDE=$(AVR_LIBC_ROOT)/avr/include
+CRT0=crt$(MCU).o
+
+CFLAGS=-DF_CPU=20000000UL -mmcu=$(MCU) -isystem$(AVR_LIBC_INCLUDE) -L$(AVR_LIBC_LIB) -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,-Map=$(MAP)
@@ -67,9 +73,12 @@ all: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1 snek-$(BOARD)-reset-po
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $^ $@
 
-$(ELF): $(SNEK_OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+$(ELF): $(SNEK_OBJ) $(CRT0)
+	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
+	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
+
+$(CRT0): $(AVR_LIBC_LIB)/$(CRT0)
+	cp $^ $@
 
 snek-$(BOARD)-install: snek-nano-every-install.in
 	$(SNEK_NANO_EVERY_SED) $^ > $@
