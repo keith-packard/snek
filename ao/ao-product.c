@@ -57,7 +57,7 @@
 #define NUM_INTERFACES		(AO_USB_HAS_INT + 1)
 
 /* USB descriptors in one giant block of bytes */
-const uint8_t ao_usb_descriptors [] =
+CONST uint8_t ao_usb_descriptors [] =
 {
 	/* Device descriptor */
 	0x12,

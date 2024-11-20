@@ -35,13 +35,17 @@ static inline uint8_t pin_bit(uint8_t p)
 	return (p & 7);
 }
 
+#ifndef ADC_REFSEL_0_bm
+#define ADC_REFSEL_0_bm ADC_REFSEL0_bm
+#endif
+
 static void
 port_init(void)
 {
 	uint8_t p;
 
 	/* Enable ADC */
-	ADC0_CTRLC = (ADC_SAMPCAP_bm | ADC_REFSEL0_bm | ADC_PRESC_DIV16_gc);
+	ADC0_CTRLC = (ADC_SAMPCAP_bm | ADC_REFSEL_0_bm | ADC_PRESC_DIV16_gc);
 	ADC0_CTRLA = ADC_ENABLE_bm;
 
 	/* TCA0 */
@@ -104,7 +108,7 @@ snek_builtin_reset(void)
 
 typedef volatile uint8_t vuint8_t;
 
-static VPORT_t * PROGMEM const port_to_vport_PGM[] = {
+static VPORT_t * CONST port_to_vport_PGM[] = {
 	NOT_A_PORT,
 	&VPORTA,
 	&VPORTB,
@@ -114,7 +118,7 @@ static VPORT_t * PROGMEM const port_to_vport_PGM[] = {
 	&VPORTF,
 };
 
-const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
+static CONST uint8_t digital_pin_to_port_PGM[] = {
 	// PORTLIST
 	// -------------------------------------------
 	PB	, // PB 4 ** 0 ** USART0_RX
@@ -141,7 +145,7 @@ const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	PD	, // PD 5 ** 21 ** A7
 };
 
-const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
+static CONST uint8_t digital_pin_to_bit_mask_PGM[] = {
 	// PIN IN PORT
 	// -------------------------------------------
 	_BV(4)	, // PB 4 ** 0 ** USART0_RX
@@ -171,7 +175,7 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 static VPORT_t *
 vport(uint8_t pin)
 {
-	return pgm_read_ptr(&(port_to_vport_PGM[pgm_read_byte(&digital_pin_to_port_PGM[pin])]));
+	return port_to_vport_PGM[digital_pin_to_port_PGM[pin]];
 }
 
 static volatile uint8_t *
@@ -195,10 +199,10 @@ port_reg(uint8_t pin)
 static uint8_t
 bit(uint8_t pin)
 {
-	return pgm_read_byte(&digital_pin_to_bit_mask_PGM[pin]);
+	return digital_pin_to_bit_mask_PGM[pin];
 }
 
-static volatile uint16_t * const PROGMEM ccmp_reg_addrs[NUM_PIN] = {
+static volatile uint16_t * CONST ccmp_reg_addrs[NUM_PIN] = {
 	[3] = &TCB1_CCMP,
 	[5] = &TCA0_SINGLE_CMP2,
 	[6] = &TCB0_CCMP,
@@ -208,7 +212,7 @@ static volatile uint16_t * const PROGMEM ccmp_reg_addrs[NUM_PIN] = {
 
 static volatile uint16_t *
 ccmp_reg(uint8_t pin) {
-	return (volatile uint16_t *) pgm_read_ptr(&ccmp_reg_addrs[pin]);
+	return ccmp_reg_addrs[pin];
 }
 
 static bool
@@ -217,7 +221,7 @@ has_pwm(uint8_t p)
 	return ccmp_reg(p) != NULL;
 }
 
-static volatile uint8_t * const PROGMEM tcc_reg_addrs[NUM_PIN] = {
+static volatile uint8_t * CONST tcc_reg_addrs[NUM_PIN] = {
 	[3] = &TCB1_CTRLB,
 	[5] = &TCA0_SINGLE_CTRLB,
 	[6] = &TCB0_CTRLB,
@@ -227,10 +231,10 @@ static volatile uint8_t * const PROGMEM tcc_reg_addrs[NUM_PIN] = {
 
 static volatile uint8_t *
 tcc_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_ptr(&tcc_reg_addrs[pin]);
+	return tcc_reg_addrs[pin];
 }
 
-static uint8_t const PROGMEM tcc_vals[NUM_PIN] = {
+static uint8_t CONST tcc_vals[NUM_PIN] = {
 	[3] = TCB_CCMPEN_bm,
 	[5] = TCA_SINGLE_CMP2EN_bm,
 	[6] = TCB_CCMPEN_bm,
@@ -241,7 +245,7 @@ static uint8_t const PROGMEM tcc_vals[NUM_PIN] = {
 static uint8_t
 tcc_val(uint8_t pin)
 {
-	return (uint8_t) pgm_read_byte(&tcc_vals[pin]);
+	return tcc_vals[pin];
 }
 
 static bool
@@ -413,7 +417,7 @@ snek_builtin_pullup(snek_poly_t a)
 	return SNEK_NULL;
 }
 
-static uint8_t const PROGMEM mux_pos_vals[] = {
+static uint8_t CONST mux_pos_vals[] = {
 	[0] = ADC_MUXPOS_AIN3_gc,
 	[1] = ADC_MUXPOS_AIN2_gc,
 	[2] = ADC_MUXPOS_AIN1_gc,
@@ -426,7 +430,7 @@ static uint8_t const PROGMEM mux_pos_vals[] = {
 
 static uint8_t
 mux_pos(uint8_t a_pin) {
-	return (uint8_t) pgm_read_byte(&mux_pos_vals[a_pin]);
+	return mux_pos_vals[a_pin];
 }
 
 snek_poly_t

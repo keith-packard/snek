@@ -24,6 +24,10 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
+#ifndef CONST
+#define CONST const __flash
+#endif
+
 /*
  * AVR definitions and code fragments for AltOS
  */

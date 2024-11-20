@@ -26,6 +26,8 @@ int snek_getc(FILE *input);
 
 #define SNEK_GETC()	snek_getc(snek_posix_input)
 
+#define CONST const
+
 #define SNEK_DEBUG	1
 
 #endif /* _SNEK_POSIX_H_ */

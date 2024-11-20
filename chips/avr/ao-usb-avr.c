@@ -30,11 +30,10 @@ struct ao_usb_setup {
 
 static struct ao_fifo ao_usb_rx_fifo;
 
-static const uint8_t * ao_usb_ep0_in_data;
+static CONST uint8_t * ao_usb_ep0_in_data;
 static uint8_t 	ao_usb_ep0_in_len;
 static bool	ao_usb_ep0_in_pending;
 static uint8_t	ao_usb_address;
-static uint8_t	ao_usb_ep0_in_buf[2];
 static uint8_t 	ao_usb_ep0_out_len;
 static uint8_t *ao_usb_ep0_out_data;
 
@@ -119,14 +118,14 @@ ISR(USB_GEN_vect)
 }
 
 
-struct ao_usb_line_coding ao_usb_line_coding = {115200, 0, 0, 8};
+static CONST struct ao_usb_line_coding ao_usb_line_coding = {115200, 0, 0, 8};
 
 /* Walk through the list of descriptors and find a match
  */
 static void
 ao_usb_get_descriptor(uint16_t value)
 {
-	const uint8_t	*descriptor;
+	CONST uint8_t	*descriptor;
 	uint8_t		type = value >> 8;
 	uint8_t		index = value;
 
@@ -197,7 +196,7 @@ _ao_usb_ep0_setup(void)
 	ao_usb_ep0_out_len = 8;
 	_ao_usb_ep0_fill(8);
 
-	ao_usb_ep0_in_data = ao_usb_ep0_in_buf;
+	ao_usb_ep0_in_data = 0;
 	ao_usb_ep0_in_len = 0;
 	switch(ao_usb_setup.request) {
 	case AO_USB_REQ_GET_STATUS:
@@ -222,11 +221,11 @@ _ao_usb_ep0_setup(void)
 		break;
 	case AO_USB_SET_LINE_CODING:
 		ao_usb_ep0_out_len = 7;
-		ao_usb_ep0_out_data = (uint8_t *) &ao_usb_line_coding;
+		ao_usb_ep0_out_data = (uint8_t *) &ao_usb_setup;
 		break;
 	case AO_USB_GET_LINE_CODING:
 		ao_usb_ep0_in_len = 7;
-		ao_usb_ep0_in_data = (uint8_t *) &ao_usb_line_coding;
+		ao_usb_ep0_in_data = (CONST uint8_t *) &ao_usb_line_coding;
 		break;
 	case AO_USB_SET_CONTROL_LINE_STATE:
 		break;

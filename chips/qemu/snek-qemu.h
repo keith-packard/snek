@@ -27,6 +27,8 @@ extern int snek_qemu_getc(void);
 
 #define abort() exit(1)
 
+#define CONST const
+
 #if _PICOLIBC__ == 1 && (_PICOLIBC_MINOR__ < 6 || __PICOLIBC_PATCHLEVEL__ < 1)
 #define _SNEK_NEED_STRFROMF
 int

@@ -199,7 +199,7 @@ def set_ids():
 
 def dump_names(fp):
     fprint(
-        "static const uint8_t SNEK_BUILTIN_NAMES_DECLARE(snek_builtin_names)[] = {",
+        "static CONST uint8_t snek_builtin_names[] = {",
         file=fp,
     )
     total = 0
@@ -276,7 +276,7 @@ def dump_decls(fp):
 
 
 def dump_builtins(fp):
-    fprint("const snek_builtin_t SNEK_BUILTIN_DECLARE(snek_builtins)[] = {", file=fp)
+    fprint("CONST snek_builtin_t snek_builtins[] = {", file=fp)
 
     for name in sorted(builtins):
         if name.keyword:
@@ -336,9 +336,6 @@ def builtin_main():
 
     fprint("#ifdef SNEK_BUILTIN_DATA", file=fp)
     fprint("#undef SNEK_BUILTIN_DATA", file=fp)
-    fprint("#ifndef SNEK_BUILTIN_NAMES_DECLARE", file=fp)
-    fprint("#define SNEK_BUILTIN_NAMES_DECLARE(n) n", file=fp)
-    fprint("#endif", file=fp)
 
     set_ids()
 
@@ -347,10 +344,6 @@ def builtin_main():
     fprint(file=fp)
 
     max_formals = max_args()
-
-    fprint("#ifndef SNEK_BUILTIN_DECLARE", file=fp)
-    fprint("#define SNEK_BUILTIN_DECLARE(n) n", file=fp)
-    fprint("#endif", file=fp)
 
     dump_builtins(fp)
 
@@ -368,14 +361,6 @@ def builtin_main():
     dump_headers(fp)
 
     dump_init(fp)
-
-    fprint("#ifndef SNEK_BUILTIN_NFORMAL", file=fp)
-    fprint("#define SNEK_BUILTIN_NFORMAL(b) ((b)->nformal)", file=fp)
-    fprint("#define SNEK_BUILTIN_FUNCV(b) ((b)->funcv)", file=fp)
-    for f in range(max_formals + 1):
-        fprint("#define SNEK_BUILTIN_FUNC%d(b) ((b)->func%d)" % (f, f), file=fp)
-    fprint("#define SNEK_BUILTIN_VALUE(b) ((b)->value)", file=fp)
-    fprint("#endif", file=fp)
 
     dump_cpp(fp)
 

@@ -161,14 +161,14 @@ has_pwm(uint8_t p)
 	return pwm_pins & (1 << p);
 }
 
-static volatile uint8_t * const PROGMEM ocr8_reg_addrs[] = {
+static volatile uint8_t * CONST ocr8_reg_addrs[] = {
 	[3] = &OCR0A,
 	[4] = &OCR0B,
 	[14] = &OCR2B,
 	[15] = &OCR2A,
 };
 
-static volatile uint16_t * const PROGMEM ocr16_reg_addrs[] = {
+static volatile uint16_t * CONST ocr16_reg_addrs[] = {
 	[6] = &OCR3A,
 	[7] = &OCR3B,
 	[12] = &OCR1B,
@@ -177,15 +177,15 @@ static volatile uint16_t * const PROGMEM ocr16_reg_addrs[] = {
 
 static volatile uint8_t *
 ocr8_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_word(&ocr8_reg_addrs[pin]);
+	return ocr8_reg_addrs[pin];
 }
 
 static volatile uint16_t *
 ocr16_reg(uint8_t pin) {
-	return (volatile uint16_t *) pgm_read_word(&ocr16_reg_addrs[pin]);
+	return ocr16_reg_addrs[pin];
 }
 
-static volatile uint8_t * const PROGMEM tcc_reg_addrs[] = {
+static volatile uint8_t * CONST tcc_reg_addrs[] = {
 	[3] = &TCCR0A,
 	[4] = &TCCR0B,
 	[6] = &TCCR3A,
@@ -198,10 +198,10 @@ static volatile uint8_t * const PROGMEM tcc_reg_addrs[] = {
 
 static volatile uint8_t *
 tcc_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_word(&tcc_reg_addrs[pin]);
+	return tcc_reg_addrs[pin];
 }
 
-static uint8_t const PROGMEM tcc_val_addrs[] = {
+static uint8_t CONST tcc_val_addrs[] = {
 	[3] = 1 << COM0A1,
 	[4] = 1 << COM0B1,
 	[6] = 1 << COM3A1,
@@ -215,7 +215,7 @@ static uint8_t const PROGMEM tcc_val_addrs[] = {
 static uint8_t
 tcc_val(uint8_t pin)
 {
-	return (uint8_t) pgm_read_byte(&tcc_val_addrs[pin]);
+	return tcc_val_addrs[pin];
 }
 
 static void

@@ -384,7 +384,7 @@ snek_code_move(void *addr)
 	code_move(code->code, code->size);
 }
 
-const snek_mem_t SNEK_MEM_DECLARE(snek_code_mem) = {
+CONST snek_mem_t snek_code_mem = {
 	.size = snek_code_size,
 	.mark = snek_code_mark,
 	.move = snek_code_move,
@@ -410,7 +410,7 @@ snek_compile_move(void *addr)
 	code_move(addr, snek_compile_size);
 }
 
-const snek_mem_t SNEK_MEM_DECLARE(snek_compile_mem) = {
+CONST snek_mem_t snek_compile_mem = {
 	.size = _snek_compile_size,
 	.mark = snek_compile_mark,
 	.move = snek_compile_move,
@@ -421,7 +421,7 @@ const snek_mem_t SNEK_MEM_DECLARE(snek_compile_mem) = {
 
 #define dbg(fmt, args...) fprintf(stderr, fmt, ## args)
 
-static const char * const snek_op_names[] = {
+static CONST char * CONST snek_op_names[] = {
 	[snek_op_plus] = "plus",
 	[snek_op_minus] = "minus",
 	[snek_op_times] = "times",
@@ -557,7 +557,7 @@ snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip)
 		memcpy(&id, &code->code[ip], sizeof(snek_id_t));
 		dbg("(%5d) ", id);
 		if (id) {
-			const char *name = snek_name_string(id);
+			CONST char *name = snek_name_string(id);
 			if (!name)
 				dbg("<temp %d>\n", id);
 			else

@@ -193,17 +193,6 @@ typedef struct snek_mem {
 #endif
 } snek_mem_t;
 
-#ifndef SNEK_MEM_DECLARE
-#define SNEK_MEM_DECLARE(n) n
-#define SNEK_MEM_SIZE(m)	((m)->size)
-#define SNEK_MEM_MARK(m)	((m)->mark)
-#define SNEK_MEM_MOVE(m)	((m)->move)
-#endif
-
-#ifndef SNEK_MEMS_DECLARE
-#define SNEK_MEMS_DECLARE(n) n
-#endif
-
 #ifdef SNEK_MEM_INCLUDE_NAME
 #define SNEK_MEM_DECLARE_NAME(_name)	.name = _name,
 #else
@@ -313,7 +302,15 @@ typedef struct snek_buf {
 	void	*closure;
 } snek_buf_t;
 
-extern const snek_builtin_t snek_builtins[];
+extern CONST snek_builtin_t snek_builtins[];
+
+#ifndef snek_const_strcpy
+#define snek_const_strcpy(a,b) strcpy(a,b)
+#endif
+
+#ifndef snek_const_strcmp
+#define snek_const_strcmp(a,b) strcmp(a,(const char *) (b))
+#endif
 
 #define SNEK_BUILTIN_FLOAT	-2
 #define SNEK_BUILTIN_VARARGS	-1
@@ -502,8 +499,8 @@ snek_offset_t
 snek_code_dump_instruction(snek_code_t *code, snek_offset_t ip);
 #endif
 
-extern const snek_mem_t snek_code_mem;
-extern const snek_mem_t snek_compile_mem;
+extern CONST snek_mem_t snek_code_mem;
+extern CONST snek_mem_t snek_compile_mem;
 
 /* snek-exec.c */
 
@@ -536,10 +533,10 @@ snek_exec(snek_code_t *code);
 #endif
 
 snek_poly_t
-snek_error_name(const char *format, ...);
+snek_error_name(CONST char *format, ...);
 
 snek_poly_t
-snek_error_0_name(const char *string);
+snek_error_0_name(CONST char *string);
 
 snek_poly_t
 snek_error_step(void);
@@ -603,7 +600,7 @@ snek_id_is_local(snek_id_t id);
 bool
 snek_id_del(snek_id_t id);
 
-extern const snek_mem_t snek_frame_mem;
+extern CONST snek_mem_t snek_frame_mem;
 
 /* snek-func.c */
 
@@ -721,13 +718,13 @@ bool
 snek_mark_blob(void *addr, snek_offset_t size);
 
 bool
-snek_mark_block_addr(const struct snek_mem *type, void *addr);
+snek_mark_block_addr(CONST struct snek_mem *type, void *addr);
 
 bool
-snek_mark_addr(const struct snek_mem *type, void *addr);
+snek_mark_addr(CONST struct snek_mem *type, void *addr);
 
 bool
-snek_mark_offset(const struct snek_mem *type, snek_offset_t offset);
+snek_mark_offset(CONST struct snek_mem *type, snek_offset_t offset);
 
 bool
 snek_move_block_offset(void *ref);
@@ -736,10 +733,10 @@ bool
 snek_poly_move(snek_poly_t *ref);
 
 bool
-snek_move_addr(const struct snek_mem *type, void **ref);
+snek_move_addr(CONST struct snek_mem *type, void **ref);
 
 bool
-snek_move_offset(const struct snek_mem *type, snek_offset_t *ref);
+snek_move_offset(CONST struct snek_mem *type, snek_offset_t *ref);
 
 void *
 snek_alloc(snek_offset_t size);
@@ -762,9 +759,9 @@ snek_pool_addr(snek_offset_t offset);
 snek_offset_t
 snek_pool_offset(const void *addr);
 
-extern const struct snek_mem SNEK_MEMS_DECLARE(_snek_mems)[];
+extern CONST struct snek_mem _snek_mems[];
 
-static inline const struct snek_mem *snek_mems(snek_type_t type)
+static inline CONST struct snek_mem *snek_mems(snek_type_t type)
 {
 	/* Oddly, the compiler complains about this particular array
 	 * operation. However, this lets us declare _snek_mems with
@@ -784,7 +781,7 @@ snek_name_id(char *name, bool *keyword);
 const char *
 snek_name_string(snek_id_t id);
 
-extern const snek_mem_t snek_name_mem;
+extern CONST snek_mem_t snek_name_mem;
 extern snek_name_t *snek_names;
 
 /* snek-parse.c */
@@ -956,7 +953,7 @@ snek_builtin_id_to_poly(snek_id_t id)
 {
 	if (id < SNEK_BUILTIN_MAX_FUNC)
 		return snek_offset_to_poly(id << SNEK_ALLOC_SHIFT, snek_builtin);
-	return SNEK_BUILTIN_VALUE(&snek_builtins[id-1]);
+	return snek_builtins[id-1].value;
 }
 
 static inline snek_id_t
@@ -965,7 +962,7 @@ snek_poly_to_builtin_id(snek_poly_t a)
 	return snek_poly_to_offset(a) >> SNEK_ALLOC_SHIFT;
 }
 
-static inline const snek_builtin_t *
+static inline CONST snek_builtin_t *
 snek_poly_to_builtin(snek_poly_t a)
 {
 	return snek_builtins + (snek_poly_to_builtin_id(a) - 1);

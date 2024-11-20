@@ -231,10 +231,10 @@ snek_uart_putchar(char c, FILE *stream)
 }
 
 void
-_snek_uart_puts(const char *PROGMEM string)
+_snek_uart_puts(CONST char *string)
 {
 	char c;
-	while ((c = pgm_read_byte(string++)))
+	while ((c = *string++))
 		snek_uart_putch(c);
 }
 

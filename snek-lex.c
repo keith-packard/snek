@@ -323,11 +323,15 @@ string(char q)
 	}
 }
 
+#ifndef trailing_name
+#define trailing_name trailing
+#endif
+
 static token_t
-trailing(const char *next, snek_op_t without_op, token_t without, snek_op_t with_op, token_t with)
+trailing_name(CONST char *next, snek_op_t without_op, token_t without, snek_op_t with_op, token_t with)
 {
 	char c;
-	const char *n = next;
+	CONST char *n = next;
 	bool space = false;
 
 	/* skip spaces between words */

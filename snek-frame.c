@@ -253,7 +253,7 @@ snek_frame_move(void *addr)
 	}
 }
 
-const snek_mem_t SNEK_MEM_DECLARE(snek_frame_mem) = {
+CONST snek_mem_t snek_frame_mem = {
 	.size = snek_frame_size,
 	.mark = snek_frame_mark,
 	.move = snek_frame_move,

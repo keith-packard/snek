@@ -25,4 +25,6 @@ int snek_getc(FILE *input);
 
 #define isnanf(x) __isnanf(x)
 
+#define CONST const
+
 #endif /* _SNEK_WINDOWS_H_ */
