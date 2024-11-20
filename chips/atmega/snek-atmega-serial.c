@@ -242,7 +242,19 @@ void
 snek_uart_init(void)
 {
 #if defined(__AVR_ATmega4809__)
-	PORTMUX.USARTROUTEA |= PORTMUX_USART30_bm;
+#ifndef USART_CHSIZE_0_bm
+#define USART_CHSIZE_0_bm USART_CHSIZE0_bm
+#endif
+
+#ifndef USART_CHSIZE_1_bm
+#define USART_CHSIZE_1_bm USART_CHSIZE1_bm
+#endif
+
+#ifndef PORTMUX_USART3_0_bm
+#define PORTMUX_USART3_0_bm PORTMUX_USART30_bm
+#endif
+
+	PORTMUX.USARTROUTEA |= PORTMUX_USART3_0_bm;
 
 	int32_t baud_setting;
 	baud_setting = (((8 * F_CPU) / UART_BAUD) + 1) / 2;
@@ -250,7 +262,7 @@ snek_uart_init(void)
 	baud_setting += (baud_setting * sigrow_val) / 1024;
 
 	USART3.BAUD = baud_setting;
-	USART3.CTRLC = (USART_CHSIZE0_bm | USART_CHSIZE1_bm);
+	USART3.CTRLC = (USART_CHSIZE_0_bm | USART_CHSIZE_1_bm);
 	VPORTB_DIR |= (1 << 4);
 	VPORTB_OUT |= (1 << 4);
 	USART3.CTRLB = (USART_RXEN_bm |
