@@ -87,10 +87,7 @@ stat		: simple-stat
 		  compound-stat
 		| NL
 		;
-simple-stat	: @{ snek_code_add_line(); }@ small-stat small-stats-p nl-or-end
-		;
-nl-or-end	: NL
-		| END
+simple-stat	: @{ snek_code_add_line(); }@ small-stat small-stats-p NL
 		;
 small-stats-p	: SEMI small-stat small-stats-p
 		|
