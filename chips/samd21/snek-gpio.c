@@ -749,7 +749,7 @@ snek_builtin_neopixel(snek_poly_t pixels)
 	if (is_immediate)
 		set_neopixel(0, pixels);
 	else {
-		for (int p = 0; p < pixels_list->size; p++) {
+		for (int p = 0; p < list_size; p++) {
 			set_neopixel(p, pixels_data[p]);
 			if (snek_abort)
 				return SNEK_NULL;
