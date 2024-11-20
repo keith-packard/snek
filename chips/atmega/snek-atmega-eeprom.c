@@ -16,6 +16,10 @@
 #include "snek-io.h"
 #include <avr/eeprom.h>
 
+#ifndef EEPROM_SIZE
+#define EEPROM_SIZE (E2END + 1)
+#endif
+
 snek_poly_t
 snek_builtin_eeprom_write(void)
 {
@@ -28,7 +32,7 @@ snek_builtin_eeprom_write(void)
 			c = 0xff;
 		eeprom_write_byte((uint8_t *) addr, c);
 		addr++;
-		if (addr == (E2END + 1))
+		if (addr == EEPROM_SIZE)
 			break;
 		if (c == 0xff)
 			break;
@@ -46,7 +50,7 @@ snek_builtin_eeprom_show(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
 	(void) args;
 	if (nposition)
 		putc('b' & 0x1f, stdout);
-	for (addr = 0; addr <= E2END; addr++) {
+	for (addr = 0; addr < EEPROM_SIZE; addr++) {
 		c = eeprom_read_byte((uint8_t *) addr);
 		if (c == 0xff)
 			break;
@@ -71,7 +75,7 @@ int
 snek_eeprom_getchar(FILE *stream)
 {
 	(void) stream;
-	if (snek_eeprom_addr <= E2END && !snek_abort) {
+	if (snek_eeprom_addr < EEPROM_SIZE && !snek_abort) {
 		uint8_t c = eeprom_read_byte((uint8_t *) (snek_eeprom_addr++));
 		if (c != 0xff)
 			return c;
