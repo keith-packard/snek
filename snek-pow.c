@@ -19,7 +19,7 @@
 #include "snek.h"
 #include <math.h>
 
-#ifdef __AVR__
+#if defined(__AVR__) && __AVR_LIBC_VERSION__ < 20201UL
 #define float double
 #endif
 
@@ -117,7 +117,7 @@ logf(float a)
  */
 
 static inline float
-ipow(float a, uint32_t x)
+ipow(float a, uint8_t x)
 {
 	float r = 1;
 	while (x) {
@@ -132,7 +132,7 @@ ipow(float a, uint32_t x)
 float
 powf(float a, float b)
 {
-	uint32_t u = b;
+	uint8_t u = b;
 	if (u == b)
 		return ipow(a, u);
 	return expf(logf(a) * b);

@@ -12,6 +12,8 @@
 # General Public License for more details.
 #
 
+vpath strfromg.c $(SNEK_ATMEGA)/../avr
+
 SNEK_ATMEGA_MATH_SRC = \
 	snek-math.c \
 	ef_remainder.c \
@@ -30,7 +32,9 @@ SNEK_ATMEGA_MATH_SRC = \
 	kf_cos.c
 
 SNEK_ATMEGA_SRC = \
+	strfromg.c \
 	snek-atmega-eeprom.c \
+	snek-input.c \
 	snek-io.c \
 	snek-atof.c \
 	snek-random-small.c \
@@ -52,6 +56,7 @@ SNEK_ATMEGA_MATH_BUILTINS = \
 SNEK_ATMEGA_BUILTINS = \
 	snek-eeprom.builtin \
 	snek-gpio.builtin \
+	snek-input.builtin \
 	snek-random.builtin \
 	snek-atmega.builtin
 
@@ -59,7 +64,6 @@ SNEK_NO_FILE = 1
 
 OPT=-Os \
     -mrelax \
-    -flto \
     -Wno-array-bounds \
     -frename-registers \
     -funsigned-char \

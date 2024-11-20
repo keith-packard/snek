@@ -26,7 +26,6 @@ SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
 SNEK_LOCAL_SRC = \
 	snek-pow.c \
 	snek-nano-every.c \
-	snek-input.c \
 	$(SNEK_ATMEGA_MATH_SRC) \
 	$(SNEK_ATMEGA_SRC)
 
@@ -36,7 +35,6 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
-	snek-input.builtin \
 	snek-math.builtin \
 	snek-nano-every.builtin
 

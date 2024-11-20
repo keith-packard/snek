@@ -24,7 +24,7 @@ CLOCK?=16000000
 BAUD?=115200
 INSTALLER?=1
 ATMEGA_FLASH_SIZE?=0x7e00
-MCU?=m328
+MCU?=m328p
 
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
@@ -42,6 +42,7 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
 	$(SNEK_ATMEGA_BUILTINS_EXTRA) \
+	snek-tone.builtin \
 	snek-328p.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
@@ -64,7 +65,7 @@ CC=avr-gcc
 
 CFLAGS=-DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) $(SNEK_CFLAGS) $(OPT) -g -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
-	-Wl,-uvfprintf -lprintf_flt -lm \
+	-lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=$(ATMEGA_FLASH_SIZE) \
 	-Wl,-Map=$(MAP)
 
@@ -75,7 +76,7 @@ $(HEX): $(ELF)
 
 $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 ifeq ($(INSTALLER),1)
 all:: snek-$(BOARD)-install snek-$(BOARD)-install.1

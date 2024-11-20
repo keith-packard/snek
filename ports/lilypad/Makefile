@@ -12,7 +12,6 @@
 # General Public License for more details.
 #
 
-SNEK_NO_DICT=1
 BOARD=lilypad
 CBOARD=LilyPad
 UBOARD=LILYPAD
@@ -20,8 +19,5 @@ PORT=/dev/ttyUSB0
 BAUD=57600
 CLOCK=8000000
 MCU=m328p
-
-SNEK_ATMEGA_BUILTINS_EXTRA = \
-	snek-tone.builtin
 
 include ../duemilanove/Makefile

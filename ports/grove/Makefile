@@ -15,7 +15,7 @@
 SNEK_ROOT = ../..
 SNEK_ATMEGA = $(SNEK_ROOT)/chips/atmega
 SNEK_NO_DICT = 1
-SNEK_NO_SLICE = 1
+#SNEK_NO_SLICE = 1
 
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
@@ -27,7 +27,6 @@ SNEK_LOCAL_SRC = \
 	snek-atmega-i2c.c \
 	snek-ssd1315.c \
 	snek-lis3dh.c \
-	snek-input.c \
 	$(SNEK_ATMEGA_SRC)
 
 SNEK_LOCAL_INC = \
@@ -51,7 +50,7 @@ CC=avr-gcc
 
 CFLAGS=-DF_CPU=16000000UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
-	-Wl,-uvfprintf -lprintf_flt -lm \
+	-lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=0x7e00 \
 	-Wl,-Map=$(MAP)
 
@@ -62,7 +61,7 @@ $(HEX): $(ELF)
 
 $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-grove-install: snek-grove-install.in
 	$(SNEK_SED) $^ > $@
