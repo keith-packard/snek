@@ -5,19 +5,27 @@ SHAREDIR="@SHAREDIR@"
 SNEKDUINO="$SHAREDIR/snek-@BOARD@-@SNEK_VERSION@.hex"
 
 AVR_ROOT=@AVR_ROOT@
-AVRDUDE="$AVR_ROOT/bin/avrdude -C$AVR_ROOT/etc/avrdude.conf -v"
+AVRDUDE="$AVR_ROOT/bin/avrdude -C$AVR_ROOT/etc/avrdude.conf"
 
 RESET="$SHAREDIR/snek-@BOARD@-reset-port"
 action="default"
 
 PORT="@PORT@"
 
+# Convert end of code from bytes to flash pages (256 byte units)
+ATMEGA_CODE_SIZE=`echo "@ATMEGA_CODE_SIZE@" | sed 's/00$//'`
+
 mode=arg
+
+action=load
 
 for i in "$@"; do
     case "$mode" in
 	arg)
 	    case "$i" in
+		load|fuse|fuseload)
+		    action="$i"
+		    ;;
 		-hex|--hex)
 		    mode=hex
 		    ;;
@@ -49,5 +57,19 @@ done
 
 echo "$RESET" "$PORT"
 "$RESET" "$PORT"
-echo $AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 -e -D -U flash:w:"${SNEKDUINO}" -Ufuse2:w:0x02:m -Ufuse5:w:0xC9:m -Ufuse8:w:0x00:m
-$AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 -e -D -U flash:w:"${SNEKDUINO}" -Ufuse2:w:0x02:m -Ufuse5:w:0xC9:m -Ufuse8:w:0x00:m
+
+fuse="-Ufuse2:w:0x02:m -Ufuse5:w:0xC9:m -Ufuse8:w:$ATMEGA_CODE_SIZE:m -Ufuse7:w:$ATMEGA_CODE_SIZE:m"
+case $action in
+    fuse)
+	echo $AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 "$fuse"
+	$AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 "$fuse"
+	;;
+    load)
+	echo $AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 -U flash:w:"${SNEKDUINO}"
+	$AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 -U flash:w:"${SNEKDUINO}"
+	;;
+    fuseload)
+	echo $AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 $fuse -U flash:w:"${SNEKDUINO}"
+	$AVRDUDE -P $PORT -c jtag2updi -b 115200 -p atmega4809 $fuse -U flash:w:"${SNEKDUINO}"
+	;;
+esac

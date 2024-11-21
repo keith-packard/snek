@@ -19,6 +19,8 @@ CBOARD?=NanoEvery
 UBOARD?=NANOEVERY
 PORT?=/dev/ttyACM0
 
+SNEK_ATMEGA_STORE_SRC = snek-atmega-flash.c
+
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
 SNEK_LOCAL_VPATH = $(SNEK_ATMEGA)
@@ -35,17 +37,20 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
-	snek-math.builtin \
+	snek-math-small.builtin \
 	snek-nano-every.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
 AVR_ROOT=$(HOME)/misc/arduino/arduino-1.8.13/hardware/tools/avr
 
+ATMEGA_CODE_SIZE=0xb000
+
 SNEK_NANO_EVERY_SED=$(SNEK_SED) \
 	-e 's;@BOARD@;$(BOARD);g' \
 	-e 's;@UBOARD@;$(UBOARD);g' \
 	-e 's;@CBOARD@;$(CBOARD);g' \
+	-e 's;@ATMEGA_CODE_SIZE@;$(ATMEGA_CODE_SIZE);g' \
 	-e 's;@PORT@;$(PORT);g' \
 	-e 's;@AVR_ROOT@;$(AVR_ROOT);g'
 
@@ -63,9 +68,17 @@ AVR_LIBC_LIB=$(AVR_LIBC_ROOT)/avr/lib/$(shell avr-gcc -print-multi-os-directory 
 AVR_LIBC_INCLUDE=$(AVR_LIBC_ROOT)/avr/include
 CRT0=crt$(MCU).o
 
-CFLAGS=-DF_CPU=20000000UL -mmcu=$(MCU) -isystem$(AVR_LIBC_INCLUDE) -L$(AVR_LIBC_LIB) -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
+CFLAGS=-DF_CPU=20000000UL \
+	-mmcu=$(MCU) \
+	-isystem$(AVR_LIBC_INCLUDE) -L$(AVR_LIBC_LIB) \
+	-I. -I$(SNEK_LOCAL_VPATH) -g \
+	$(SNEK_CFLAGS) \
+	$(OPT) \
+	-Waddr-space-convert
+
 LDFLAGS=$(SNEK_LDFLAGS) \
-	-Wl,-uvfprintf -lprintf_flt -lm \
+	-lm \
+	-Wl,--defsym,__TEXT_REGION_LENGTH__=$(ATMEGA_CODE_SIZE) \
 	-Wl,-Map=$(MAP)
 
 all: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1 snek-$(BOARD)-reset-port
@@ -85,7 +98,10 @@ snek-$(BOARD)-install: snek-nano-every-install.in
 	chmod +x $@
 
 load: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-reset-port
-	./snek-$(BOARD)-install -reset ./snek-$(BOARD)-reset-port -hex $(HEX)
+	./snek-$(BOARD)-install -reset ./snek-$(BOARD)-reset-port -hex $(HEX) load
+
+fuseload: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-reset-port
+	./snek-$(BOARD)-install -reset ./snek-$(BOARD)-reset-port -hex $(HEX) fuseload
 
 snek-$(BOARD)-install.1: snek-nano-every-install.1.in
 	$(SNEK_NANO_EVERY_SED) $^ > $@

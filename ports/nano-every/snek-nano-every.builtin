@@ -38,3 +38,4 @@ A7, -2, 21
 #include <snek-atmega-math.h>
 #define SNEK_POOL 3584
 #define SNEK_MAX_TOKEN 63
+#define SNEK_NEED_UART_WAIT_QUEUED

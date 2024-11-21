@@ -80,6 +80,8 @@ FILE snek_duino_file = FDEV_SETUP_STREAM(snek_uart_putchar, snek_eeprom_getchar,
 int __attribute__((OS_main))
 main (void)
 {
+	uint8_t	ctrla = CPUINT.CTRLA | 0x40;
+	_PROTECTED_WRITE(CPUINT.CTRLA, ctrla);
 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, 0);
 	stderr = stdout = stdin = &snek_duino_file;
 	snek_uart_init();
