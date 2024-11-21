@@ -32,15 +32,21 @@ math.isinf, 1
 math.isnan, 1
 math.ldexp, 2
 math.modf, 1
+math.remainder, 2
 math.trunc, 1
 round, 1
 #
 # Power and logarithmic functions
 #
 math.exp, 1
+math.expm1, 1
+math.exp2, 1
 math.log, 1
+math.log1p, 1
+math.log2, 1
 math.log10, 1
 math.pow, 2
+pow, 2, =math.pow
 #
 # Trigonometric functions
 #
@@ -58,12 +64,6 @@ math.tan, 1
 math.degrees, 1
 math.radians, 1
 #
-# Hyperbolic functions
-#
-math.cosh, 1
-math.sinh, 1
-math.tanh, 1
-#
 # Special functions
 #
 #
@@ -72,5 +72,5 @@ math.tanh, 1
 math.pi, -2, 3.141592653589793
 math.e, -2, 2.718281828459045
 math.tau, -2, 6.283185307179586
-math.inf, -2, INFINITY
-math.nan, -2, NAN
+math.inf, -2, (snek_poly_t)(float)INFINITY
+math.nan, -2, (snek_poly_t)(float)NAN

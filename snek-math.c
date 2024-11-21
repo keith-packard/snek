@@ -244,17 +244,37 @@ radiansf(float x) { return x * (float) M_PI / 180.0f; }
 m1(math_degrees, degreesf)
 m1(math_radians, radiansf)
 
+#ifdef SNEK_BUILTIN_math_acosh
 m1(math_acosh, acoshf);
+#endif
+#ifdef SNEK_BUILTIN_math_asinh
 m1(math_asinh, asinhf);
+#endif
+#ifdef SNEK_BUILTIN_math_atanh
 m1(math_atanh, atanhf);
+#endif
+#ifdef SNEK_BUILTIN_math_cosh
 m1(math_cosh, coshf);
+#endif
+#ifdef SNEK_BUILTIN_math_sinh
 m1(math_sinh, sinhf);
+#endif
+#ifdef SNEK_BUILTIN_math_tanh
 m1(math_tanh, tanhf);
+#endif
 
+#ifdef SNEK_BUILTIN_math_erf
 m1(math_erf, erff);
+#endif
+#ifdef SNEK_BUILTIN_math_erfc
 m1(math_erfc, erfcf);
-m1(math_gamma, tgammaf);
+#endif
 
+#ifdef SNEK_BUILTIN_math_gamma
+m1(math_gamma, tgammaf);
+#endif
+
+#ifdef SNEK_BUILTIN_math_lgamma
 #if defined(WIN32) || defined(__APPLE__) || defined(_PICOLIBC__)
 m1(math_lgamma, lgammaf);
 #else
@@ -266,4 +286,5 @@ _lgammaf(float f)
 }
 
 m1(math_lgamma, _lgammaf);
+#endif
 #endif
