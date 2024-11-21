@@ -70,15 +70,17 @@ jobs:
           docker load -i $IMAGE_FILE
           docker images -a $IMAGE
 
-      - name: 'Create install destinationn'
+      - name: 'Create install destination'
         run: |
-          mkdir `pwd`/artifacts
+          mkdir -p artifacts
 
       - name: 'Build snek'
         run: |
-          docker run --rm \
-            --mount type=bind,source=`pwd`/artifacts,destination=/artifacts \
-            snek \
+          docker run \
+             -v $(readlink -f snek):/snek \
+             -v $(readlink -f artifacts):/artifacts \
+             -w /snek \
+             $IMAGE \
             make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_OTHEROS=1 SNEK_RISCV_TEST=1 black check install install-otheros
 
       - name: 'Upload results'

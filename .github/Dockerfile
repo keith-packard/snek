@@ -20,8 +20,8 @@ RUN apt-get update && \
     ruby-coderay \
     gcc-arm-linux-gnueabi \
     libc6-dev-armel-cross \
-    qemu-system-arm \
     qemu-system-misc \
+    qemu-system-arm \
     black \
     python3-pip \
     python3-serial \
@@ -35,8 +35,3 @@ RUN apt-get update && \
     icnsutils \
     black && \
     pip3 install --break-system-packages pynsist
-
-RUN mkdir snek
-COPY ./ snek/
-
-WORKDIR ./snek
