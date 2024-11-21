@@ -168,7 +168,7 @@ comment(void)
 {
 	char	c;
 
-	while ((c = lexchar() != '\n'))
+	while ((c = lexchar() != '\n') && !snek_abort)
 		if (c == SNEK_EOF)
 			return false;
 	return true;
