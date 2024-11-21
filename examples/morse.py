@@ -72,9 +72,9 @@ def m(t):
 
 
 def cq():
-    talkto(D13)
+    talkto(LED)
     while True:
-        m("cq cq de kd7sqg  ")
+        m("cq cq de k7wq  ")
 
 
 cq()
