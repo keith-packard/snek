@@ -31,9 +31,11 @@ SNEK_ATMEGA_MATH_SRC = \
 	kf_sin.c \
 	kf_cos.c
 
+SNEK_ATMEGA_STORE_SRC ?= snek-atmega-eeprom.c
+
 SNEK_ATMEGA_SRC = \
 	strfromg.c \
-	snek-atmega-eeprom.c \
+	$(SNEK_ATMEGA_STORE_SRC) \
 	snek-input.c \
 	snek-io.c \
 	snek-atof.c \

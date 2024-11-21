@@ -168,6 +168,7 @@ ISR(RX_vect)
 	switch (c) {
 	case 'c' & 0x1f:
 		snek_abort = true;
+		rx_ring.count = 0;
 		break;
 	case 's' & 0x1f:
 		tx_flow = true;
@@ -237,6 +238,32 @@ _snek_uart_puts(CONST char *string)
 	while ((c = *string++))
 		snek_uart_putch(c);
 }
+
+#ifdef SNEK_NEED_UART_WAIT_QUEUED
+void
+snek_uart_wait_queued(char c, uint32_t ticks)
+{
+	int		ret = 0;
+	uint8_t		count;
+	uint32_t	end_tick = snek_ticks() + ticks;
+
+	for (;;) {
+		cli();
+		for (count = 0; count < rx_ring.count; count++) {
+			uint8_t	pos = (rx_ring.read + count) & (UART_RINGSIZE - 1);
+			if (rx_ring.buf[pos] == c) {
+				ret = 1;
+				break;
+			}
+		}
+		sei();
+		if (ret)
+			return;
+		if (((int32_t) (snek_ticks() - end_tick)) >= 0)
+			return;
+	}
+}
+#endif
 
 void
 snek_uart_init(void)

@@ -103,6 +103,14 @@ snek_uart_getchar(FILE *stream);
 int
 snek_eeprom_getchar(FILE *stream);
 
+#define TICKS_PER_SECOND	(F_CPU / 64.0f)
+#define SECONDS_PER_TICK	(64.0f / F_CPU)
+
+#define U_TICKS_PER_SECOND	(F_CPU / 64)
+
+uint32_t
+snek_ticks(void);
+
 char
 snek_uart_getch(void);
 
@@ -111,6 +119,9 @@ _snek_uart_puts(CONST char *string);
 
 void
 snek_uart_putch(char c);
+
+void
+snek_uart_wait_queued(char c, uint32_t ticks);
 
 #define snek_uart_puts(string) ({ static CONST char __string__[] = (string); _snek_uart_puts(__string__); })
 

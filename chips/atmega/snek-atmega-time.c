@@ -46,8 +46,7 @@ ISR(timer_vect)
 	timer_tocks++;
 }
 
-
-static uint32_t
+uint32_t
 snek_ticks(void)
 {
 	uint32_t	tocks_before, tocks_after;
