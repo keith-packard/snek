@@ -81,7 +81,9 @@ jobs:
              -v $(readlink -f artifacts):/artifacts \
              -w /snek \
              $IMAGE \
-            make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_OTHEROS=1 SNEK_RISCV_TEST=1 black check install install-otheros
+            make DESTDIR=/artifacts PREFIX=/opt/snek SNEK_OTHEROS=1 \
+                SNEK_RISCV_TEST=1 -j$(nproc) \
+                black check install install-otheros
 
       - name: 'Upload results'
         uses: actions/upload-artifact@v4
