@@ -46,13 +46,13 @@ install: all
 
 upload: otheros
 	+cd doc && make upload
-	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload); done
+	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make upload) || exit 1; done
 
 install-otheros: otheros install
-	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make install-otheros); done
+	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make install-otheros) || exit 1; done
 
 otheros: all
-	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make); done
+	+for otheros in $(SNEK_OTHEROS_DIR); do (cd "$$otheros" && make) || exit 1; done
 
 snek-mu.py:
 	find . -name '*.builtin' -print0 | xargs -0 python3 ./snek-builtin.py --mu -o $@
