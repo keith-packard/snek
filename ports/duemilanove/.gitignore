@@ -2,4 +2,5 @@ snek-duemilanove-*.elf
 snek-duemilanove-*.hex
 snek-duemilanove-*.map
 snek-duemilanove-install
+snek-duemilanove-install.in
 snek-duemilanove-install.1
