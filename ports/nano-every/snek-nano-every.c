@@ -358,6 +358,79 @@ set_out(uint8_t pin)
 	return SNEK_NULL;
 }
 
+#ifdef SNEK_BUILTIN_tone
+
+#define TONE_PIN	5
+
+/* Undo whatever mess was made by the tone function */
+static void
+tone_reset(void)
+{
+	TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
+	*tcc_reg(TONE_PIN) &= ~tcc_val(TONE_PIN);
+	TCA0_SINGLE_PER = 0xffff;
+	set_off(TONE_PIN);
+}
+
+/* Output tone on D3 (PF 5, TCB1) */
+snek_poly_t
+snek_builtin_tone(snek_poly_t a)
+{
+	float freq = snek_poly_get_float(a);
+
+	if (freq == 0.0f) {
+	off:
+		tone_reset();
+		return SNEK_NULL;
+	}
+
+	uint32_t val = F_CPU / freq;
+
+	/*
+	 *       Val range	Prescale	Freq range (assuming MHz clock)
+	 */
+
+	uint8_t cs = 0;
+
+	/* Figure out which prescale value to use */
+	while (val > 0xffffUL) {
+		uint8_t shift = 1;
+		if  (cs > 3)
+			shift = 2;
+		val >>= shift;
+		++cs;
+		if (cs > 7)
+ 			goto off;
+	}
+
+	val = val - 1;
+
+	TCA0_SINGLE_CTRLA = (cs << 1) | TCA_SINGLE_ENABLE_bm;
+	*tcc_reg(TONE_PIN) |= tcc_val(TONE_PIN);
+	TCA0_SINGLE_PER = val;
+	TCA0_SINGLE_CMP2 = val>>1;
+
+	set_dir(5, 1);
+	set_on(5);
+
+	return SNEK_NULL;
+}
+
+#ifdef SNEK_BUILTIN_tonefor
+snek_poly_t
+snek_builtin_tonefor(snek_poly_t a, snek_poly_t b)
+{
+	snek_builtin_tone(a);
+	snek_builtin_on();
+	snek_builtin_time_sleep(b);
+	return snek_builtin_tone(SNEK_ZERO);
+}
+#endif
+#else
+#define tone_reset()
+#endif
+
+
 snek_poly_t
 snek_builtin_setpower(snek_poly_t a)
 {
@@ -468,6 +541,7 @@ snek_poly_t
 snek_builtin_stopall(void)
 {
 	uint8_t p;
+	tone_reset();
 	for (p = 0; p < NUM_PIN; p++)
 		if (is_on(p)) {
 			set_off(p);

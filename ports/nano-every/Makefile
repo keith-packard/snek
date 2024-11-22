@@ -38,6 +38,7 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
 	snek-math-small.builtin \
+	snek-tone.builtin \
 	snek-nano-every.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
