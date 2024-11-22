@@ -52,9 +52,6 @@ port_init(void)
 	TCA0_SINGLE_CTRLB = (TCA_SINGLE_WGMODE_SINGLESLOPE_gc);
 	TCA0_SINGLE_CTRLA = (TCA_SINGLE_ENABLE_bm);
 
-	/* Enable interrupt */
-	TCA0_SINGLE_INTCTRL = (TCA_SINGLE_OVF_bm);
-
 	/* TCA0 drives PB0-2 */
 	PORTMUX_TCAROUTEA = PORTMUX_TCA0_PORTB_gc;
 
@@ -68,6 +65,12 @@ port_init(void)
 
 	/* TCB0 drives PF4, TCB1 drives PF5 */
 	PORTMUX_TCBROUTEA = PORTMUX_TCB0_bm | PORTMUX_TCB1_bm;
+
+	/* TCB2 runs the clock */
+	TCB2_CCMP = 0xffff;
+	TCB2_INTCTRL = TCB_CAPT_bm;
+	TCB2_CTRLB = TCB_CNTMODE_INT_gc;
+	TCB2_CTRLA = TCB_CLKSEL_CLKDIV1_gc | TCB_ENABLE_bm;
 
 	memset(power, 0xff, sizeof(power));
 	memset(pull_pins, 0x00, sizeof(pull_pins));

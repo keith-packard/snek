@@ -15,9 +15,9 @@
 #include "snek.h"
 
 #if defined(__AVR_ATmega4809__)
-#define timer_vect 	TCA0_OVF_vect
-#define timer_cnt 	TCA0_SINGLE_CNT
-#define clear_irq()	(TCA0_SINGLE_INTFLAGS = 1)
+#define timer_vect 	TCB2_INT_vect
+#define timer_cnt 	TCB2_CNT
+#define clear_irq()	(TCB2_INTFLAGS = 1)
 #define CLOCK_SHIFT	6
 typedef uint16_t TICK_TYPE;
 #else
