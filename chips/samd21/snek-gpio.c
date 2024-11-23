@@ -785,6 +785,6 @@ snek_builtin_tonefor(snek_poly_t a, snek_poly_t b)
 	snek_builtin_tone(a);
 	snek_builtin_on();
 	snek_builtin_time_sleep(b);
-	return snek_builtin_off();
+	return snek_builtin_tone(SNEK_ZERO);
 }
 #endif
