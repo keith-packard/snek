@@ -18,6 +18,5 @@ UBOARD=LILYPAD
 PORT=/dev/ttyUSB0
 BAUD=57600
 CLOCK=8000000
-MCU=m328p
 
 include ../duemilanove/Makefile

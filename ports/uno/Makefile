@@ -16,6 +16,5 @@ BOARD=uno
 CBOARD=Uno
 UBOARD=UNO
 PORT=/dev/ttyACM0
-MCU?=m328p
 
 include ../duemilanove/Makefile
