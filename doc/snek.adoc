@@ -2780,6 +2780,49 @@ $ avrdude -patmega2560 -cwiring -P<port> -b115200 -D -U flash:w:snek-mega-{versi
 
 [%nonfacing]
 [appendix]
+= Snek on Arduino Nano Every
+
+Snek for the Nano Every includes the Common System, EEPROM, Input, Tone,
+GPIO (not including the `pulldown` function) and math functions (except
+for hyperbolic trig, error, and gamma functions). Snek for the Nano
+Every provides pre-defined variables for all of the GPIO
+pins:(((Arduino Nano Every)))
+
+D0-D13, LED::
+Digital input and output pins. LED is another name for D13. By
+default, when used as input pins, Snek applies a pull-up resistor to
+the pin so that a disconnected pin will read as 1. Change this using
+`pullnone` or `pullup` functions.
+
+A0-A7::
+Analog input and Digital output pins. When used as input pins, Snek
+will return a value from 0-1 indicating the ratio of the pin voltage
+to 5V. By default, when used as input pins, Snek does not apply either
+a pull-up or pull-down resistor to the pin so that a disconnected pin
+will read an indeterminate value. Change this using `pullnone` or
+`pullup` functions.
+
+Snek fits comfortably in the ATmega4809 flash, which it shares with
+the snek application. The Nano Every doesn't need a boot loader, so
+re-installing Snek can be done over USB.
+
+On Linux, the Snek installation includes a shell script,
+snek-nano-every-install, to install the binary using 'avrdude'. Read
+the snek-nano-every-install manual (also included in the installation)
+for more information.
+
+On other hosts, you'll need to install 'avrdude'. Once you've done
+that, you can use it to get Snek installed on the device. Because the
+Snek application is stored in flash along with the Snek interpreter,
+when you do this any Snek program stored on the device will be
+erased. Find out what port the Nano Every is connected to, use that as
+the value for `<port>` and then run 'avrdude' as follows:
+
+[source,subs="attributes+"]
+$ avrdude -patmega4809 -cjtag2updi  -P<port> -b115200 -Ufuse2:w:0x02:m -Ufuse5:w:0xC9:m -Ufuse8:w:0xb0:m -Ufuse7:w:0xb0:m -U flash:w:snek-mega-{version}.hex:i
+
+[%nonfacing]
+[appendix]
 = Snek on Metro M0 Express
 
 Snek for the Metro M0 Express includes the Common System, Input, Math,

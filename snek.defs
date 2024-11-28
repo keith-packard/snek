@@ -130,6 +130,9 @@ ifdef SNEK_NO_FILE
 SNEK_BASE_CFLAGS += -DSNEK_NO_FILE
 endif
 
+# We need a special version until debian's avr-libc package is updated
+ATMEGA4809_LIBC?=/opt/avr-libc
+
 SNEK_LDFLAGS = -Wl,--gc-sections 
 
 SNEK_CFLAGS ?= $(SNEK_WARNINGS) $(SNEK_BASE_CFLAGS)

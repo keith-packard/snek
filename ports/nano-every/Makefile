@@ -43,8 +43,6 @@ SNEK_LOCAL_BUILTINS = \
 
 include $(SNEK_ROOT)/snek-install.defs
 
-AVR_ROOT=$(HOME)/misc/arduino/arduino-1.8.13/hardware/tools/avr
-
 ATMEGA_CODE_SIZE=0xb000
 
 SNEK_NANO_EVERY_SED=$(SNEK_SED) \
@@ -52,8 +50,7 @@ SNEK_NANO_EVERY_SED=$(SNEK_SED) \
 	-e 's;@UBOARD@;$(UBOARD);g' \
 	-e 's;@CBOARD@;$(CBOARD);g' \
 	-e 's;@ATMEGA_CODE_SIZE@;$(ATMEGA_CODE_SIZE);g' \
-	-e 's;@PORT@;$(PORT);g' \
-	-e 's;@AVR_ROOT@;$(AVR_ROOT);g'
+	-e 's;@PORT@;$(PORT);g'
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
@@ -64,14 +61,13 @@ MAP=$(BASE).map
 CC=avr-gcc
 
 MCU=atmega4809
-AVR_LIBC_ROOT=/opt/avr-libc
-AVR_LIBC_LIB=$(AVR_LIBC_ROOT)/avr/lib/$(shell avr-gcc -print-multi-os-directory -mmcu=$(MCU))
-AVR_LIBC_INCLUDE=$(AVR_LIBC_ROOT)/avr/include
+ATMEGA4809_LIBC_LIB=$(ATMEGA4809_LIBC)/avr/lib/$(shell avr-gcc -print-multi-os-directory -mmcu=$(MCU))
+ATMEGA4809_LIBC_INCLUDE=$(ATMEGA4809_LIBC)/avr/include
 CRT0=crt$(MCU).o
 
 CFLAGS=-DF_CPU=20000000UL \
 	-mmcu=$(MCU) \
-	-isystem$(AVR_LIBC_INCLUDE) -L$(AVR_LIBC_LIB) \
+	-isystem$(ATMEGA4809_LIBC_INCLUDE) -L$(ATMEGA4809_LIBC_LIB) \
 	-I. -I$(SNEK_LOCAL_VPATH) -g \
 	$(SNEK_CFLAGS) \
 	$(OPT) \
@@ -91,7 +87,7 @@ $(ELF): $(SNEK_OBJ) $(CRT0)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
 	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
 
-$(CRT0): $(AVR_LIBC_LIB)/$(CRT0)
+$(CRT0): $(ATMEGA4809_LIBC_LIB)/$(CRT0)
 	cp $^ $@
 
 snek-$(BOARD)-install: snek-nano-every-install.in
