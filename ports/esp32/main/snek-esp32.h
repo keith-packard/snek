@@ -35,3 +35,4 @@ int snek_getc(void);
 
 #define RX_LINEBUF	132
 
+#define CONST const
