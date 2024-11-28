@@ -17,10 +17,15 @@ SNEK_ROOT=../..
 SNEK_LOCAL_SRC = \
 	snek-windows.c \
 	snek-math.c \
+	snek-random.c \
 	snek-input.c
 
 SNEK_LOCAL_INC = snek-windows.h
-SNEK_LOCAL_BUILTINS = snek-windows.builtin $(SNEK_ROOT)/snek-math.builtin $(SNEK_ROOT)/snek-input.builtin
+SNEK_LOCAL_BUILTINS = \
+	snek-windows.builtin \
+	snek-math.builtin \
+	snek-random.builtin \
+	snek-input.builtin
 
 INF=altusmetrum.inf
 WINDOWS_FILES=snek.exe snek.ico snekde.py $(PDF) $(SNEK_ROOT)/examples $(SNEK_ROOT)/COPYING $(FIRMWARE) $(USBFIRMWARE) $(INF)

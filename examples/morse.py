@@ -2,6 +2,8 @@
 # Morse code example
 #
 
+from time import *
+
 T = 1.2 / 12
 
 a = (
@@ -59,22 +61,22 @@ def l(c):
             onfor(T)
         else:
             onfor(3 * T)
-        time.sleep(T)
-    time.sleep(3 * T)
+        sleep(T)
+    sleep(3 * T)
 
 
 def m(t):
     for c in t:
         if c == " ":
-            time.sleep(6 * T)
+            sleep(6 * T)
         else:
             l(c)
 
 
 def cq():
-    talkto(D13)
+    talkto(LED)
     while True:
-        m("cq cq de kd7sqg  ")
+        m("cq cq de k7wq  ")
 
 
 cq()

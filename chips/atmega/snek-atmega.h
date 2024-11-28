@@ -21,88 +21,75 @@
 #include <avr/interrupt.h>
 
 #define SNEK_DEBUG	0
-float atoff(const char *);
-#define strtof(s, n) atoff(s)
-#define PARSE_TABLE_DECLARATION(t) 	PROGMEM t
-#define PARSE_TABLE_FETCH_TOKEN(a)	((token_key_t) pgm_read_byte(a))
-#define PARSE_TABLE_FETCH_INDEX(a)	((uint8_t) pgm_read_byte(a))
-#define ERROR_FETCH_FORMAT_CHAR(a)	((char) pgm_read_byte(a))
 
-/* no sense linking both functions */
-#define memcpy(a,b,c) memmove(a,b,c)
+#ifdef __AVR_PM_BASE_ADDRESS__
+#define CONST const
+#else
+#define PARSE_TABLE_DECLARATION(t) 	__flash t
+#define CONST const __flash
 
 #define snek_error_name snek_internal_error
 #define snek_error(fmt, args...) ({				\
-		static const char PROGMEM __fmt__[] = (fmt);	\
+		static CONST char __fmt__[] = (fmt);	\
 		snek_internal_error(__fmt__, ## args);		\
 	})
 
 #define snek_error_0_name snek_internal_error_0
 #define snek_error_0(string) ({						\
-			static const char PROGMEM __string__[] = (string); \
+			static CONST char __string__[] = (string); \
 			snek_internal_error_0(__string__);		\
 		})
 
 #define fprintf(file, fmt, args...) ({				\
-		static const char PROGMEM __fmt__[] = (fmt);	\
-		printf_P(__fmt__, ## args);		\
+		static CONST char __fmt__[] = (fmt);	\
+		printf_P((const char *) (uintptr_t) __fmt__, ## args);	\
 	})
 
-#define sprintf_const(dst, fmt, args...) ({			\
-		static const char PROGMEM __fmt__[] = (fmt);	\
-		sprintf_P(dst, __fmt__, ##args);		\
+#define sprintf_const(dst, fmt, args...) ({				\
+			static CONST char __fmt__[] = (fmt);		\
+			sprintf_P(dst, (const char *) (uintptr_t) __fmt__, ##args); \
+		})
+
+#define trailing(next, wo_op, wo, w_op, w) ({				\
+			static CONST char __next__[] = (next);		\
+			trailing_internal(__next__, wo_op, wo, w_op, w); \
+		})
+#define trailing_name trailing_internal
+
+
+#define snek_const_strcmp(a,b)		strcmp_P(a,(const char *) (uintptr_t) (b))
+
+#define snek_const_strcpy(a,b) ({ \
+		static CONST char __str__[] = (b); \
+		strcpy_P(a, (const char *) (uintptr_t) (__str__)); \
 	})
-#define strfromf_const(dst, len, fmt, val) sprintf_const(dst, fmt, val)
-#define strfromf(dst, len, fmt, val) sprintf(dst, fmt, val)
-
-#define SNEK_BUILTIN_NAMES_DECLARE(n) 	PROGMEM n
-#define SNEK_BUILTIN_NAMES(a)		((uint8_t) pgm_read_byte(&snek_builtin_names[a]))
-#define SNEK_BUILTIN_NAMES_CMP(a,b)	strcmp_P(a,b)
-
-#define SNEK_BUILTIN_DECLARE(n)	PROGMEM n
-#define SNEK_BUILTIN_NFORMAL(b) ((int8_t) pgm_read_byte(&(b)->nformal))
-#define SNEK_BUILTIN_FUNCV(b)	((snek_poly_t(*)(uint8_t, uint8_t, snek_poly_t *)) pgm_read_ptr(&(b)->funcv))
-#define SNEK_BUILTIN_FUNC0(b) 	((snek_poly_t(*)(void)) pgm_read_ptr(&(b)->func0))
-#define SNEK_BUILTIN_FUNC1(b) 	((snek_poly_t(*)(snek_poly_t)) pgm_read_ptr(&(b)->func1))
-#define SNEK_BUILTIN_FUNC2(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func2))
-#define SNEK_BUILTIN_FUNC3(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func3))
-#define SNEK_BUILTIN_FUNC4(b) 	((snek_poly_t(*)(snek_poly_t, snek_poly_t, snek_poly_t, snek_poly_t)) pgm_read_ptr(&(b)->func4))
-#define SNEK_BUILTIN_VALUE(b)	((snek_poly_t)(uint32_t)pgm_read_dword(&(b)->value))
-
-#define SNEK_ROOT_DECLARE(n)	PROGMEM n
-#define SNEK_ROOT_TYPE(n) 	((const snek_mem_t *) pgm_read_ptr(&(n)->type))
-#define SNEK_ROOT_ADDR(n) 	((void **) pgm_read_ptr(&(n)->addr))
 
 static inline const char *
-avr_snek_builtin_names_return(const uint8_t *bits)
+avr_snek_builtin_names_return(CONST uint8_t *bits)
 {
 	static char ret[SNEK_BUILTIN_NAMES_MAX_LEN + 1];
-	char *r = ret;
 
-	while ((*r++ = (char) pgm_read_byte(bits++)))
-		;
-	return ret;
-}
-
-static inline int
-avr_snek_builtin_names_len(const char *a)
-{
-	int len = 0;
-
-	while (pgm_read_byte(a++))
-		len++;
-	return len;
+	return strcpy_P(ret, (const char *) (uintptr_t) bits);
 }
 
 #define snek_builtin_names_return(a) avr_snek_builtin_names_return(a)
-#define snek_builtin_names_len(a) avr_snek_builtin_names_len(a)
+#define snek_builtin_names_len(a) strnlen_P((const char *) (uintptr_t) (a), SNEK_BUILTIN_NAMES_MAX_LEN+1)
 
-#define SNEK_MEM_DECLARE(n) 	PROGMEM n
-#define SNEK_MEM_SIZE(m)	((snek_offset_t (*)(void *addr)) pgm_read_word(&(m)->size))
-#define SNEK_MEM_MARK(m)	((void (*)(void *addr)) pgm_read_ptr(&(m)->mark))
-#define SNEK_MEM_MOVE(m)	((void (*)(void *addr)) pgm_read_ptr(&(m)->move))
+//#define strfromf_const(dst, len, fmt, val) sprintf_const(dst, fmt, val)
+//#define strfromf(dst, len, fmt, val) sprintf(dst, fmt, val)
+#endif /* !__AVR_PM_BASE_ADDRESS__ */
 
-#define SNEK_MEMS_DECLARE(n)	PROGMEM n
+float atoff(const char *);
+#define strtof(s, n) atoff(s)
+
+/* no sense linking both functions */
+#define memcpy(a,b,c) memmove(a,b,c)
+#define printf(a,args...) fprintf(stdout, a, ##args)
+
+int
+strfromg(char *dst0, float val);
+
+#define strfromf(dst, len, fmt, val) strfromg(dst, val)
 
 void
 snek_uart_init(void);
@@ -116,16 +103,27 @@ snek_uart_getchar(FILE *stream);
 int
 snek_eeprom_getchar(FILE *stream);
 
+#define TICKS_PER_SECOND	(F_CPU / 64.0f)
+#define SECONDS_PER_TICK	(64.0f / F_CPU)
+
+#define U_TICKS_PER_SECOND	(F_CPU / 64)
+
+uint32_t
+snek_ticks(void);
+
 char
 snek_uart_getch(void);
 
 void
-_snek_uart_puts(const char *PROGMEM string);
+_snek_uart_puts(CONST char *string);
 
 void
 snek_uart_putch(char c);
 
-#define snek_uart_puts(string) ({ static const char PROGMEM __string__[] = (string); _snek_uart_puts(__string__); })
+void
+snek_uart_wait_queued(char c, uint32_t ticks);
+
+#define snek_uart_puts(string) ({ static CONST char __string__[] = (string); _snek_uart_puts(__string__); })
 
 #define SNEK_IO_PUTS(s) snek_uart_puts(s)
 #define SNEK_IO_LINEBUF 80

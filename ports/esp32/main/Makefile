@@ -17,6 +17,7 @@ SNEK_ROOT=../../..
 SNEK_LOCAL_SRC = \
 	snek-main.c \
 	snek-math.c \
+	snek-random.c \
 	snek-input.c \
 	snek-esp32.c \
 	snek-io.c
@@ -26,8 +27,9 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	snek-esp32.builtin \
-	$(SNEK_ROOT)/snek-math.builtin \
-	$(SNEK_ROOT)/snek-input.builtin
+	snek-math.builtin \
+	snek-random.builtin \
+	snek-input.builtin
 
 include $(SNEK_ROOT)/snek.defs
 

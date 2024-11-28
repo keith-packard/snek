@@ -70,7 +70,7 @@ ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSIO
 	asciidoctor -v -B$(SNEK_ROOT) -B. $(ATTRIBUTES) -b html5 $*.adoc
 
 .adoc.pdf:
-	asciidoctor-pdf -B$(SNEK_ROOT) -B. $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
+	asciidoctor-pdf -a optimize -B$(SNEK_ROOT) -B. $(ATTRIBUTES) $(LETTER_ATTRIBUTES) $*.adoc
 
 $(PDF_FILES): snek-theme.yml $(IMAGE_FILES) $(INC_FILES) snek.svg
 

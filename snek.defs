@@ -7,8 +7,8 @@ vpath %.ll $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.py $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 vpath %.builtin $(SNEK_LOCAL_VPATH):$(SNEK_ROOT)
 
-SNEK_VERSION = 1.9
-SNEK_DATE = 2022-12-20
+SNEK_VERSION = 1.10
+SNEK_DATE = 2024-11-28
 
 SNEK_VERSION_DASH = $(shell echo $(SNEK_VERSION) | sed 's/\./-/g')
 
@@ -81,6 +81,8 @@ SNEK_MOST_WARNINGS =  \
 	-Wmissing-prototypes \
 	-Wmissing-declarations \
 	-Wnested-externs \
+	-fstrict-flex-arrays=0 \
+	--strict-flex-arrays=3 \
 	-Wshadow
 
 ifeq ($(SNEK_CLANG),yes)
@@ -101,6 +103,14 @@ SNEK_BASE_CFLAGS = \
 
 LOLA_FLAGS ?=
 
+SNEK_GLOBAL_ALIAS ?= y
+SNEK_GLOBAL_NAMES ?= math random time
+
+SNEK_BUILTIN_FLAGS += $^ $(foreach GL,$(SNEK_GLOBAL_NAMES),--global $(GL)) 
+
+ifeq ($(SNEK_GLOBAL_ALIAS),y)
+	SNEK_BUILTIN_FLAGS += --alias
+endif
 
 ifdef SNEK_NO_SLICE
 SNEK_BASE_CFLAGS += -DSNEK_NO_SLICE
@@ -119,6 +129,9 @@ endif
 ifdef SNEK_NO_FILE
 SNEK_BASE_CFLAGS += -DSNEK_NO_FILE
 endif
+
+# We need a special version until debian's avr-libc package is updated
+ATMEGA4809_LIBC?=/opt/avr-libc
 
 SNEK_LDFLAGS = -Wl,--gc-sections 
 
@@ -142,7 +155,7 @@ snek-gram.h: $(SNEK_ROOT)/snek-gram.ll
 	lola $(SNEK_LOLA_FLAGS) -o $@ $^
 
 snek-builtin.h: $(SNEK_ROOT)/snek-builtin.py $(SNEK_BUILTINS)
-	python3 $^ -o $@
+	python3 $(SNEK_BUILTIN_FLAGS) -o $@
 
 clean::
 	rm -f snek-gram.h snek-builtin.h $(SNEK_OBJ)

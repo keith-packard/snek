@@ -1,0 +1,63 @@
+.\"
+.\" Copyright © 2019 Keith Packard <keithp@keithp.com>
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful, but
+.\" WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.TH SNEK-atmega32u4-INSTALL 1 "snek-atmega32u4-install" ""
+.SH NAME
+snek-atmega32u4-install \- Install Snek to ATmega32u4
+.SH SYNOPSIS
+.B "snek-atmega32u4-install" [OPTION]... [COMMAND]
+.SH DESCRIPTION
+.I snek-atmega32u4-install
+installs the Snek programming language on a device
+with an ATmega32u4.
+.SH OPTIONS
+.TP
+\-isp <ISP model>
+Specifies the programmer to use, common options are 'usbtiny'
+and 'avrisp2'. The default is 'usbtiny'.
+.TP
+\-device <device>
+Set the name of the target device. Choose one
+of 'itsybitsy3v', 'itsybitsy5v' or 'uduino'.
+.TP
+\-hex <snek.hex>
+Specifies the hex file to load to the board. The default is the
+currently installed version of Snek.
+.TP
+\-ubahex <ubaboot.hex>
+Specifies the bootloader hex file to load to the board. The default is the
+currently installed version of the bootloader for the target device.
+.TP
+\-ubaboot <ubaboot.py>
+Specifies the uba bootloader to use. The default is the
+currently installed version of the bootloader.
+.SH COMMANDS
+.TP
+load
+Loads Snek to the device using ubaboot. This is the default command.
+.TP
+fuse
+Sets the target fuse bits suitable for ubaboot usage. You must do this
+before ubaboot will work on the target device, although you may do it
+before or after loading the bootloader. You only need to do this once
+per board.
+.TP
+boot
+Load the uba bootloader on the target device. You only need to do this once
+per board.
+.TP
+fuseboot
+Sets the target fuse bits for ubaboot usage and then loads the
+bootloader to the device.
+.SH AUTHOR
+Keith Packard

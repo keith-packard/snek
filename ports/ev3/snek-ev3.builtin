@@ -14,8 +14,6 @@
 exit, 1
 time.sleep, 1
 time.monotonic, 0
-random.seed, 1
-random.randrange, 1
 
 # light sensor mode
 light_reflected, 1

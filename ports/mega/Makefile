@@ -34,7 +34,6 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
 	$(SNEK_ATMEGA_MATH_BUILTINS) \
-	snek-math.builtin \
 	snek-input.builtin \
 	snek-i2c.builtin \
 	snek-mega.builtin
@@ -48,7 +47,7 @@ ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
-CFLAGS=-Os -DF_CPU=16000000UL -mmcu=atmega2560 -I. -I$(SNEK_LOCAL_VPATH) -g -fno-jump-tables $(SNEK_CFLAGS) -mcall-prologues -Waddr-space-convert
+CFLAGS=-DF_CPU=16000000UL -mmcu=atmega2560 -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \
 	-Wl,-Map=$(MAP)
@@ -62,7 +61,7 @@ $(HEX): $(ELF)
 
 $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 snek-mega-install: snek-mega-install.in
 	$(SNEK_SED) $^ > $@

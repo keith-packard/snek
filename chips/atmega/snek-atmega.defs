@@ -12,27 +12,37 @@
 # General Public License for more details.
 #
 
-SNEK_ATMEGA_MATH_SRC = \
+vpath strfromg.c $(SNEK_ATMEGA)/../avr
+
+SNEK_ATMEGA_MATH_SMALL_SRC =\
 	snek-math.c \
 	ef_remainder.c \
 	snek-atmega-math.c \
-	sf_asinh.c \
-	ef_acosh.c \
-	ef_atanh.c \
 	sf_log1p.c \
 	sf_log2.c \
 	sf_log2_data.c \
-	sf_erf.c \
-	wf_tgamma.c \
-	erf_lgamma.c \
-	erf_gamma.c \
 	kf_sin.c \
 	kf_cos.c
 
+SNEK_ATMEGA_MATH_SRC = \
+	$(SNEK_ATMEGA_MATH_SMALL_SRC) \
+	sf_asinh.c \
+	ef_acosh.c \
+	ef_atanh.c \
+	sf_erf.c \
+	wf_tgamma.c \
+	erf_lgamma.c \
+	erf_gamma.c
+
+SNEK_ATMEGA_STORE_SRC ?= snek-atmega-eeprom.c
+
 SNEK_ATMEGA_SRC = \
-	snek-atmega-eeprom.c \
+	strfromg.c \
+	$(SNEK_ATMEGA_STORE_SRC) \
+	snek-input.c \
 	snek-io.c \
 	snek-atof.c \
+	snek-random-small.c \
 	snek-atmega-serial.c \
 	snek-atmega-time.c
 
@@ -51,6 +61,21 @@ SNEK_ATMEGA_MATH_BUILTINS = \
 SNEK_ATMEGA_BUILTINS = \
 	snek-eeprom.builtin \
 	snek-gpio.builtin \
+	snek-input.builtin \
+	snek-random.builtin \
 	snek-atmega.builtin
 
 SNEK_NO_FILE = 1
+
+OPT=-Os \
+    -mrelax \
+    -Wno-array-bounds \
+    -frename-registers \
+    -funsigned-char \
+    -mcall-prologues \
+    -fno-move-loop-invariants \
+    -fno-move-loop-stores \
+    -fno-split-loops \
+    -fno-unswitch-loops \
+    -fno-unroll-loops \
+    -fno-peel-loops

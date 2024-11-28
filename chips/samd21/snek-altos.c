@@ -32,32 +32,3 @@ snek_builtin_time_monotonic(void)
 {
 	return snek_float_to_poly(ao_time_ns() / 1e9f);
 }
-
-static uint64_t random_x, random_w;
-
-#define random_s 0xb5ad4eceda1ce2a9ULL
-
-snek_poly_t
-snek_builtin_random_seed(snek_poly_t a)
-{
-	random_x = a.u;
-	random_x |= random_x << 32;
-	random_w = 0;
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_random_randrange(snek_poly_t a)
-{
-	uint32_t mod = snek_poly_get_float(a);
-
-	if (!mod) {
-		snek_error_value(a);
-		return SNEK_NULL;
-	}
-	random_x *= random_x;
-	random_w += random_s;
-	random_x += random_w;
-	random_x = (random_x >> 32) | (random_x << 32);
-	return snek_float_to_poly(random_x % mod);
-}

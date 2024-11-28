@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <samd21.h>
 
+#define CONST const
+
 /*
  * Samd21 definitions and code fragments for AltOS
  */

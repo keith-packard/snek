@@ -23,8 +23,10 @@ PORT?=/dev/ttyUSB0
 CLOCK?=16000000
 BAUD?=115200
 INSTALLER?=1
-ATMEGA_FLASH_SIZE?=0x7e00
-MCU?=m328
+ATMEGA_FLASH_SIZE?=0x7e00	# reserve 512 bytes for the boot loader
+ATMEGA_RAM_SIZE=0x740		# reserve 192 bytes for the stack
+MCU?=atmega328p
+SNEK_GLOBAL_ALIAS?=n
 
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
@@ -42,11 +44,25 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	$(SNEK_ATMEGA_BUILTINS) \
 	$(SNEK_ATMEGA_BUILTINS_EXTRA) \
+	snek-tone.builtin \
 	snek-328p.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
 SNEK_ATMEGA_SED=$(SNEK_SED) \
+	-e 's;@BOARD@;$(BOARD);g' \
+	-e 's;@UBOARD@;$(UBOARD);g' \
+	-e 's;@CBOARD@;$(CBOARD);g' \
+	-e 's;@BAUD@;$(BAUD);g' \
+	-e 's;@PORT@;$(PORT);g' \
+	-e 's;@MCU@;$(MCU);g'
+
+SNEK_ATMEGA_BOARD_SED = sed \
+	-e 's;@SNEKLIB@;$(SNEKLIB);' \
+	-e 's/@SNEK_VERSION@/$(SNEK_VERSION)/' \
+	-e 's/@SNEK_VERSION_DASH@/$(SNEK_VERSION_DASH)/' \
+	-e 's;@SNEK_ROOT@;$(SNEK_ROOT);' \
+	-e 's/@SNEK_DATE@/$(SNEK_DATE)/' \
 	-e 's;@BOARD@;$(BOARD);g' \
 	-e 's;@UBOARD@;$(UBOARD);g' \
 	-e 's;@CBOARD@;$(CBOARD);g' \
@@ -62,11 +78,9 @@ HEX=$(BASE).hex
 MAP=$(BASE).map
 CC=avr-gcc
 
-OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
-
-CFLAGS=$(OPT) -DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) -Waddr-space-convert
+CFLAGS=-DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) $(SNEK_CFLAGS) $(OPT) -g -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
-	-Wl,-uvfprintf -lprintf_flt -lm \
+	-lm \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=$(ATMEGA_FLASH_SIZE) \
 	-Wl,-Map=$(MAP)
 
@@ -77,14 +91,17 @@ $(HEX): $(ELF)
 
 $(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	@gawk '/__data_load_end/{printf("ROM used: %d bytes\n", strtonum($$1)); }' $(MAP)
+	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
 
 ifeq ($(INSTALLER),1)
-all:: snek-$(BOARD)-install snek-$(BOARD)-install.1
+all:: snek-$(BOARD)-install snek-$(BOARD)-install.in snek-$(BOARD)-install.1
 
-snek-$(BOARD)-install: snek-duemilanove-install.in
+snek-$(BOARD)-install: snek-atmega328-install.in
 	$(SNEK_ATMEGA_SED) $^ > $@
 	chmod +x $@
+
+snek-$(BOARD)-install.in: snek-atmega328-install.in
+	if [ $@ != $^ ]; then $(SNEK_ATMEGA_BOARD_SED) $^ > $@; fi
 
 load: $(HEX) snek-$(BOARD)-install
 	./snek-$(BOARD)-install -hex $(HEX)
@@ -103,4 +120,4 @@ install: snek-$(BOARD)-install $(HEX) snek-$(BOARD)-install.1
 endif
 
 clean::
-	rm -f *.elf *.hex *.map snek-$(BOARD)-install snek-$(BOARD)-install.1
+	rm -f *.elf *.hex *.map snek-$(BOARD)-install snek-$(BOARD)-install.in snek-$(BOARD)-install.1

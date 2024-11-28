@@ -35,13 +35,6 @@
 #include <math.h>		/* INFINITY, NAN		*/
 #include <stdlib.h>
 
-#ifdef AVR
-#define float double
-#include <avr/pgmspace.h>
-#else
-#define __flash
-#define pgm_read_dword(x)	(*x)
-#endif
 #include <snek.h>
 
 /* Only GCC 4.2 calls the library function to convert an unsigned long
@@ -49,10 +42,10 @@
    conversion along with a large inline code to correct the result.	*/
 extern float __floatunsisf (unsigned long);
 
-static const __flash float pwr_p10 [6] = {
+static CONST float pwr_p10 [6] = {
     1e+32, 1e+16, 1e+8, 1e+4, 1e+2, 1e+1,
 };
-static const __flash float pwr_m10 [6] = {
+static CONST float pwr_m10 [6] = {
     1e-32, 1e-16, 1e-8, 1e-4, 1e-2, 1e-1,
 };
 
@@ -168,7 +161,7 @@ atoff (const char * nptr)
 
     if (x.flt != 0) {
 	int pwr;
-	const __flash float *fptr;
+	CONST float *fptr;
 
 	if (exp < 0) {
 	    fptr = pwr_m10;

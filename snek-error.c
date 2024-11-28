@@ -16,10 +16,6 @@
 
 bool snek_abort;
 
-#ifndef ERROR_FETCH_FORMAT_CHAR
-#define ERROR_FETCH_FORMAT_CHAR(a) (*(a))
-#endif
-
 static void
 puts_clean(char *s)
 {
@@ -41,7 +37,7 @@ puts_clean(char *s)
 }
 
 snek_poly_t
-snek_error_name(const char *format, ...)
+snek_error_name(CONST char *format, ...)
 {
 	va_list		args;
 	char		c;
@@ -55,9 +51,9 @@ snek_error_name(const char *format, ...)
 #else
 	fprintf(stderr, "%s:%d ", snek_file, snek_line);
 #endif
-	while ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
+	while ((c = *format++)) {
 		if (c == '%') {
-			switch ((c = ERROR_FETCH_FORMAT_CHAR(format++))) {
+			switch ((c = *format++)) {
 			case 'd':
 				fprintf(stderr, "%d", va_arg(args, int));
 				break;
@@ -82,7 +78,7 @@ snek_error_name(const char *format, ...)
 }
 
 snek_poly_t
-snek_error_0_name(const char *string)
+snek_error_0_name(CONST char *string)
 {
 	return snek_error_name(string);
 }

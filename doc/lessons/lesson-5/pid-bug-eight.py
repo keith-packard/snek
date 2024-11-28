@@ -19,7 +19,6 @@ def measure():
     for s in range(A1, A8 + 1):
         v = read(s)
         if v > threshold:
-
             # Adjust the error value for 'how black' the
             # sensor sees
             return error + (black - v) / 2
@@ -116,7 +115,6 @@ def init():
 def loop():
     init()
     while True:
-
         # Compute desired motor setting
         value = process()
 

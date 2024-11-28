@@ -131,7 +131,6 @@ class SerialThread(object):
 
 @IDF.idf_example_test(env_tag="test_jtag_arm")
 def test_examples_loadable_elf(env, extra_data):
-
     idf_path = os.environ["IDF_PATH"]
     rel_project_path = os.path.join("examples", "get-started", "hello_world")
     proj_path = os.path.join(idf_path, rel_project_path)

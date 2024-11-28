@@ -44,4 +44,6 @@ snek_getc(void);
 #define SNEK_GETC() snek_getc()
 #define SNEK_IO_GETC(file) getc(file)
 
+#define CONST const
+
 #endif /* _SNEK_EV3_H_ */

@@ -35,21 +35,22 @@ static inline uint8_t pin_bit(uint8_t p)
 	return (p & 7);
 }
 
+#ifndef ADC_REFSEL_0_bm
+#define ADC_REFSEL_0_bm ADC_REFSEL0_bm
+#endif
+
 static void
 port_init(void)
 {
 	uint8_t p;
 
 	/* Enable ADC */
-	ADC0_CTRLC = (ADC_SAMPCAP_bm | ADC_REFSEL0_bm | ADC_PRESC_DIV16_gc);
+	ADC0_CTRLC = (ADC_SAMPCAP_bm | ADC_REFSEL_0_bm | ADC_PRESC_DIV16_gc);
 	ADC0_CTRLA = ADC_ENABLE_bm;
 
 	/* TCA0 */
 	TCA0_SINGLE_CTRLB = (TCA_SINGLE_WGMODE_SINGLESLOPE_gc);
 	TCA0_SINGLE_CTRLA = (TCA_SINGLE_ENABLE_bm);
-
-	/* Enable interrupt */
-	TCA0_SINGLE_INTCTRL = (TCA_SINGLE_OVF_bm);
 
 	/* TCA0 drives PB0-2 */
 	PORTMUX_TCAROUTEA = PORTMUX_TCA0_PORTB_gc;
@@ -65,6 +66,12 @@ port_init(void)
 	/* TCB0 drives PF4, TCB1 drives PF5 */
 	PORTMUX_TCBROUTEA = PORTMUX_TCB0_bm | PORTMUX_TCB1_bm;
 
+	/* TCB2 runs the clock */
+	TCB2_CCMP = 0xffff;
+	TCB2_INTCTRL = TCB_CAPT_bm;
+	TCB2_CTRLB = TCB_CNTMODE_INT_gc;
+	TCB2_CTRLA = TCB_CLKSEL_CLKDIV1_gc | TCB_ENABLE_bm;
+
 	memset(power, 0xff, sizeof(power));
 	memset(pull_pins, 0x00, sizeof(pull_pins));
 	for (p = 0; p < A0; p++)
@@ -76,6 +83,8 @@ FILE snek_duino_file = FDEV_SETUP_STREAM(snek_uart_putchar, snek_eeprom_getchar,
 int __attribute__((OS_main))
 main (void)
 {
+	uint8_t	ctrla = CPUINT.CTRLA | 0x40;
+	_PROTECTED_WRITE(CPUINT.CTRLA, ctrla);
 	_PROTECTED_WRITE(CLKCTRL_MCLKCTRLB, 0);
 	stderr = stdout = stdin = &snek_duino_file;
 	snek_uart_init();
@@ -104,7 +113,7 @@ snek_builtin_reset(void)
 
 typedef volatile uint8_t vuint8_t;
 
-static VPORT_t * PROGMEM const port_to_vport_PGM[] = {
+static VPORT_t * CONST port_to_vport_PGM[] = {
 	NOT_A_PORT,
 	&VPORTA,
 	&VPORTB,
@@ -114,7 +123,7 @@ static VPORT_t * PROGMEM const port_to_vport_PGM[] = {
 	&VPORTF,
 };
 
-const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
+static CONST uint8_t digital_pin_to_port_PGM[] = {
 	// PORTLIST
 	// -------------------------------------------
 	PB	, // PB 4 ** 0 ** USART0_RX
@@ -141,7 +150,7 @@ const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	PD	, // PD 5 ** 21 ** A7
 };
 
-const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
+static CONST uint8_t digital_pin_to_bit_mask_PGM[] = {
 	// PIN IN PORT
 	// -------------------------------------------
 	_BV(4)	, // PB 4 ** 0 ** USART0_RX
@@ -171,7 +180,7 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 static VPORT_t *
 vport(uint8_t pin)
 {
-	return pgm_read_ptr(&(port_to_vport_PGM[pgm_read_byte(&digital_pin_to_port_PGM[pin])]));
+	return port_to_vport_PGM[digital_pin_to_port_PGM[pin]];
 }
 
 static volatile uint8_t *
@@ -195,10 +204,10 @@ port_reg(uint8_t pin)
 static uint8_t
 bit(uint8_t pin)
 {
-	return pgm_read_byte(&digital_pin_to_bit_mask_PGM[pin]);
+	return digital_pin_to_bit_mask_PGM[pin];
 }
 
-static volatile uint16_t * const PROGMEM ccmp_reg_addrs[NUM_PIN] = {
+static volatile uint16_t * CONST ccmp_reg_addrs[NUM_PIN] = {
 	[3] = &TCB1_CCMP,
 	[5] = &TCA0_SINGLE_CMP2,
 	[6] = &TCB0_CCMP,
@@ -208,7 +217,7 @@ static volatile uint16_t * const PROGMEM ccmp_reg_addrs[NUM_PIN] = {
 
 static volatile uint16_t *
 ccmp_reg(uint8_t pin) {
-	return (volatile uint16_t *) pgm_read_ptr(&ccmp_reg_addrs[pin]);
+	return ccmp_reg_addrs[pin];
 }
 
 static bool
@@ -217,7 +226,7 @@ has_pwm(uint8_t p)
 	return ccmp_reg(p) != NULL;
 }
 
-static volatile uint8_t * const PROGMEM tcc_reg_addrs[NUM_PIN] = {
+static volatile uint8_t * CONST tcc_reg_addrs[NUM_PIN] = {
 	[3] = &TCB1_CTRLB,
 	[5] = &TCA0_SINGLE_CTRLB,
 	[6] = &TCB0_CTRLB,
@@ -227,10 +236,10 @@ static volatile uint8_t * const PROGMEM tcc_reg_addrs[NUM_PIN] = {
 
 static volatile uint8_t *
 tcc_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_ptr(&tcc_reg_addrs[pin]);
+	return tcc_reg_addrs[pin];
 }
 
-static uint8_t const PROGMEM tcc_vals[NUM_PIN] = {
+static uint8_t CONST tcc_vals[NUM_PIN] = {
 	[3] = TCB_CCMPEN_bm,
 	[5] = TCA_SINGLE_CMP2EN_bm,
 	[6] = TCB_CCMPEN_bm,
@@ -241,7 +250,7 @@ static uint8_t const PROGMEM tcc_vals[NUM_PIN] = {
 static uint8_t
 tcc_val(uint8_t pin)
 {
-	return (uint8_t) pgm_read_byte(&tcc_vals[pin]);
+	return tcc_vals[pin];
 }
 
 static bool
@@ -349,6 +358,79 @@ set_out(uint8_t pin)
 	return SNEK_NULL;
 }
 
+#ifdef SNEK_BUILTIN_tone
+
+#define TONE_PIN	5
+
+/* Undo whatever mess was made by the tone function */
+static void
+tone_reset(void)
+{
+	TCA0_SINGLE_CTRLA = TCA_SINGLE_ENABLE_bm;
+	*tcc_reg(TONE_PIN) &= ~tcc_val(TONE_PIN);
+	TCA0_SINGLE_PER = 0xffff;
+	set_off(TONE_PIN);
+}
+
+/* Output tone on D3 (PF 5, TCB1) */
+snek_poly_t
+snek_builtin_tone(snek_poly_t a)
+{
+	float freq = snek_poly_get_float(a);
+
+	if (freq == 0.0f) {
+	off:
+		tone_reset();
+		return SNEK_NULL;
+	}
+
+	uint32_t val = F_CPU / freq;
+
+	/*
+	 *       Val range	Prescale	Freq range (assuming MHz clock)
+	 */
+
+	uint8_t cs = 0;
+
+	/* Figure out which prescale value to use */
+	while (val > 0xffffUL) {
+		uint8_t shift = 1;
+		if  (cs > 3)
+			shift = 2;
+		val >>= shift;
+		++cs;
+		if (cs > 7)
+ 			goto off;
+	}
+
+	val = val - 1;
+
+	TCA0_SINGLE_CTRLA = (cs << 1) | TCA_SINGLE_ENABLE_bm;
+	*tcc_reg(TONE_PIN) |= tcc_val(TONE_PIN);
+	TCA0_SINGLE_PER = val;
+	TCA0_SINGLE_CMP2 = val>>1;
+
+	set_dir(5, 1);
+	set_on(5);
+
+	return SNEK_NULL;
+}
+
+#ifdef SNEK_BUILTIN_tonefor
+snek_poly_t
+snek_builtin_tonefor(snek_poly_t a, snek_poly_t b)
+{
+	snek_builtin_tone(a);
+	snek_builtin_on();
+	snek_builtin_time_sleep(b);
+	return snek_builtin_tone(SNEK_ZERO);
+}
+#endif
+#else
+#define tone_reset()
+#endif
+
+
 snek_poly_t
 snek_builtin_setpower(snek_poly_t a)
 {
@@ -413,7 +495,7 @@ snek_builtin_pullup(snek_poly_t a)
 	return SNEK_NULL;
 }
 
-static uint8_t const PROGMEM mux_pos_vals[] = {
+static uint8_t CONST mux_pos_vals[] = {
 	[0] = ADC_MUXPOS_AIN3_gc,
 	[1] = ADC_MUXPOS_AIN2_gc,
 	[2] = ADC_MUXPOS_AIN1_gc,
@@ -426,7 +508,7 @@ static uint8_t const PROGMEM mux_pos_vals[] = {
 
 static uint8_t
 mux_pos(uint8_t a_pin) {
-	return (uint8_t) pgm_read_byte(&mux_pos_vals[a_pin]);
+	return mux_pos_vals[a_pin];
 }
 
 snek_poly_t
@@ -459,26 +541,11 @@ snek_poly_t
 snek_builtin_stopall(void)
 {
 	uint8_t p;
+	tone_reset();
 	for (p = 0; p < NUM_PIN; p++)
 		if (is_on(p)) {
 			set_off(p);
 			set_out(p);
 		}
 	return SNEK_NULL;
-}
-
-static uint32_t random_next;
-
-snek_poly_t
-snek_builtin_random_seed(snek_poly_t a)
-{
-	random_next = a.u;
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_random_randrange(snek_poly_t a)
-{
-	random_next = random_next * 1103515245L + 12345L;
-	return snek_float_to_poly(random_next % (uint32_t) snek_poly_get_float(a));
 }

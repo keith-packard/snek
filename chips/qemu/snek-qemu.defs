@@ -14,6 +14,7 @@
 
 SNEK_LOCAL_SRC = \
 	snek-math.c \
+	snek-random.c \
 	snek-io.c \
 	snek-input.c \
 	snek-qemu.c
@@ -24,6 +25,7 @@ SNEK_LOCAL_INC = \
 SNEK_LOCAL_BUILTINS = \
 	snek-qemu.builtin \
 	snek-math.builtin \
+	snek-random.builtin \
 	snek-input.builtin
 
 SNEK_LOCAL_VPATH = $(SNEK_QEMU)

@@ -127,6 +127,7 @@ SNEK_LOCAL_SRC = \
 	watchdog.c \
 	snek-metal.c \
 	snek-math.c \
+	snek-random.c \
 	snek-io.c \
 	snek-input.c \
 	snek-metal-gpio.c \
@@ -138,6 +139,7 @@ SNEK_LOCAL_INC = \
 
 SNEK_LOCAL_BUILTINS = \
 	snek-math.builtin \
+	snek-random.builtin \
 	snek-gpio.builtin \
 	snek-input.builtin \
 	snek-hifive1revb.builtin

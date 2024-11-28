@@ -737,7 +737,10 @@ snek_builtin_neopixel(snek_poly_t pixels)
 		list_size = 1;
 
 	if (snek_neopixels == NULL || snek_neopixel_count < list_size) {
+		snek_stack_push_list(pixels_list);
 		snek_neopixels = snek_alloc(list_size * sizeof (struct snek_neopixel));
+		pixels_list = snek_stack_pop_list();
+		pixels_data = snek_list_data(pixels_list);
 		if (!snek_neopixels)
 			return SNEK_NULL;
 		snek_neopixel_count = list_size;
@@ -746,7 +749,7 @@ snek_builtin_neopixel(snek_poly_t pixels)
 	if (is_immediate)
 		set_neopixel(0, pixels);
 	else {
-		for (int p = 0; p < pixels_list->size; p++) {
+		for (int p = 0; p < list_size; p++) {
 			set_neopixel(p, pixels_data[p]);
 			if (snek_abort)
 				return SNEK_NULL;
@@ -782,6 +785,6 @@ snek_builtin_tonefor(snek_poly_t a, snek_poly_t b)
 	snek_builtin_tone(a);
 	snek_builtin_on();
 	snek_builtin_time_sleep(b);
-	return snek_builtin_off();
+	return snek_builtin_tone(SNEK_ZERO);
 }
 #endif

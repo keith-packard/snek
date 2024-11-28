@@ -9,6 +9,7 @@ black = 0.77
 white = 0.06
 threshold = (black + white) / 2
 
+
 # Provide an 'error' value between -1 and 1 indicating
 # how far off we are from the line
 def measure():
@@ -104,7 +105,6 @@ def init():
 def loop():
     init()
     while True:
-
         # Compute desired motor setting
         value = process()
 

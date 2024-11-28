@@ -162,7 +162,7 @@ snek_builtin_reset(void)
 
 typedef volatile uint8_t vuint8_t;
 
-static vuint8_t * PROGMEM const port_to_mode_PGM[] = {
+static vuint8_t * CONST port_to_mode_PGM[] = {
 	NOT_A_PORT,
 	&DDRA,
 	&DDRB,
@@ -178,7 +178,7 @@ static vuint8_t * PROGMEM const port_to_mode_PGM[] = {
 	&DDRL,
 };
 
-static vuint8_t * PROGMEM const port_to_output_PGM[] = {
+static vuint8_t * CONST port_to_output_PGM[] = {
 	NOT_A_PORT,
 	&PORTA,
 	&PORTB,
@@ -194,7 +194,7 @@ static vuint8_t * PROGMEM const port_to_output_PGM[] = {
 	&PORTL,
 };
 
-static vuint8_t * PROGMEM const port_to_input_PGM[] = {
+static vuint8_t * CONST port_to_input_PGM[] = {
 	NOT_A_PIN,
 	&PINA,
 	&PINB,
@@ -210,7 +210,7 @@ static vuint8_t * PROGMEM const port_to_input_PGM[] = {
 	&PINL,
 };
 
-const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
+CONST uint8_t digital_pin_to_port_PGM[] = {
 	// PORTLIST
 	// -------------------------------------------
 	PE	, // PE 0 ** 0 ** USART0_RX
@@ -285,7 +285,7 @@ const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
 	PK	, // PK 7 ** 69 ** A15
 };
 
-const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
+CONST uint8_t digital_pin_to_bit_mask_PGM[] = {
 	// PIN IN PORT
 	// -------------------------------------------
 	_BV( 0 )	, // PE 0 ** 0 ** USART0_RX
@@ -363,28 +363,28 @@ const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
 static volatile uint8_t *
 ddr_reg(uint8_t pin)
 {
-	return pgm_read_ptr(&port_to_mode_PGM[pgm_read_byte(&digital_pin_to_port_PGM[pin])]);
+	return port_to_mode_PGM[digital_pin_to_port_PGM[pin]];
 }
 
 static volatile uint8_t *
 pin_reg(uint8_t pin)
 {
-	return pgm_read_ptr(&port_to_input_PGM[pgm_read_byte(&digital_pin_to_port_PGM[pin])]);
+	return port_to_input_PGM[digital_pin_to_port_PGM[pin]];
 }
 
 static volatile uint8_t *
 port_reg(uint8_t pin)
 {
-	return pgm_read_ptr(&port_to_output_PGM[pgm_read_byte(&digital_pin_to_port_PGM[pin])]);
+	return port_to_output_PGM[digital_pin_to_port_PGM[pin]];
 }
 
 static uint8_t
 bit(uint8_t pin)
 {
-	return pgm_read_byte(&digital_pin_to_bit_mask_PGM[pin]);
+	return digital_pin_to_bit_mask_PGM[pin];
 }
 
-static volatile uint8_t * const PROGMEM ocr_reg_addrs[NUM_PIN] = {
+static volatile uint8_t * CONST ocr_reg_addrs[NUM_PIN] = {
 	[2] = &OCR3BL,
 	[3] = &OCR3CL,
 	[4] = &OCR0B,
@@ -404,7 +404,7 @@ static volatile uint8_t * const PROGMEM ocr_reg_addrs[NUM_PIN] = {
 
 static volatile uint8_t *
 ocr_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_ptr(&ocr_reg_addrs[pin]);
+	return ocr_reg_addrs[pin];
 }
 
 static bool
@@ -413,7 +413,7 @@ has_pwm(uint8_t p)
 	return ocr_reg(p) != NULL;
 }
 
-static volatile uint8_t * const PROGMEM tcc_reg_addrs[] = {
+static volatile uint8_t * CONST tcc_reg_addrs[] = {
 	[2] = &TCCR3A,
 	[3] = &TCCR3A,
 	[4] = &TCCR0A,
@@ -433,10 +433,10 @@ static volatile uint8_t * const PROGMEM tcc_reg_addrs[] = {
 
 static volatile uint8_t *
 tcc_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_ptr(&tcc_reg_addrs[pin]);
+	return tcc_reg_addrs[pin];
 }
 
-static uint8_t const PROGMEM tcc_vals[] = {
+static uint8_t CONST tcc_vals[] = {
 	[2] = (0 << COM3B0) | (1 << COM3B1),
 	[3] = (0 << COM3C0) | (1 << COM3C1),
 	[4] = (0 << COM0B0) | (1 << COM0B1),
@@ -457,7 +457,7 @@ static uint8_t const PROGMEM tcc_vals[] = {
 static uint8_t
 tcc_val(uint8_t pin)
 {
-	return (uint8_t) pgm_read_byte(&tcc_vals[pin]);
+	return tcc_vals[pin];
 }
 
 static bool
@@ -656,20 +656,4 @@ snek_builtin_stopall(void)
 			set_out(p);
 		}
 	return SNEK_NULL;
-}
-
-static uint32_t random_next;
-
-snek_poly_t
-snek_builtin_random_seed(snek_poly_t a)
-{
-	random_next = a.u;
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_random_randrange(snek_poly_t a)
-{
-	random_next = random_next * 1103515245L + 12345L;
-	return snek_float_to_poly(random_next % (uint32_t) snek_poly_get_float(a));
 }

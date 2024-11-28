@@ -168,6 +168,7 @@ ISR(RX_vect)
 	switch (c) {
 	case 'c' & 0x1f:
 		snek_abort = true;
+		rx_ring.count = 0;
 		break;
 	case 's' & 0x1f:
 		tx_flow = true;
@@ -231,18 +232,56 @@ snek_uart_putchar(char c, FILE *stream)
 }
 
 void
-_snek_uart_puts(const char *PROGMEM string)
+_snek_uart_puts(CONST char *string)
 {
 	char c;
-	while ((c = pgm_read_byte(string++)))
+	while ((c = *string++))
 		snek_uart_putch(c);
 }
+
+#ifdef SNEK_NEED_UART_WAIT_QUEUED
+void
+snek_uart_wait_queued(char c, uint32_t ticks)
+{
+	int		ret = 0;
+	uint8_t		count;
+	uint32_t	end_tick = snek_ticks() + ticks;
+
+	for (;;) {
+		cli();
+		for (count = 0; count < rx_ring.count; count++) {
+			uint8_t	pos = (rx_ring.read + count) & (UART_RINGSIZE - 1);
+			if (rx_ring.buf[pos] == c) {
+				ret = 1;
+				break;
+			}
+		}
+		sei();
+		if (ret)
+			return;
+		if (((int32_t) (snek_ticks() - end_tick)) >= 0)
+			return;
+	}
+}
+#endif
 
 void
 snek_uart_init(void)
 {
 #if defined(__AVR_ATmega4809__)
-	PORTMUX.USARTROUTEA |= PORTMUX_USART30_bm;
+#ifndef USART_CHSIZE_0_bm
+#define USART_CHSIZE_0_bm USART_CHSIZE0_bm
+#endif
+
+#ifndef USART_CHSIZE_1_bm
+#define USART_CHSIZE_1_bm USART_CHSIZE1_bm
+#endif
+
+#ifndef PORTMUX_USART3_0_bm
+#define PORTMUX_USART3_0_bm PORTMUX_USART30_bm
+#endif
+
+	PORTMUX.USARTROUTEA |= PORTMUX_USART3_0_bm;
 
 	int32_t baud_setting;
 	baud_setting = (((8 * F_CPU) / UART_BAUD) + 1) / 2;
@@ -250,7 +289,7 @@ snek_uart_init(void)
 	baud_setting += (baud_setting * sigrow_val) / 1024;
 
 	USART3.BAUD = baud_setting;
-	USART3.CTRLC = (USART_CHSIZE0_bm | USART_CHSIZE1_bm);
+	USART3.CTRLC = (USART_CHSIZE_0_bm | USART_CHSIZE_1_bm);
 	VPORTB_DIR |= (1 << 4);
 	VPORTB_OUT |= (1 << 4);
 	USART3.CTRLB = (USART_RXEN_bm |

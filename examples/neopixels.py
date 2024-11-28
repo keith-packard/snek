@@ -19,6 +19,8 @@
 # Rotate a rainbow through a set of pixels
 #
 
+from time import *
+
 DOWN = BUTTONA
 UP = BUTTONB
 
@@ -67,7 +69,7 @@ def rainbow_cycle(wait):
             if bright < 0.99:
                 bright += 0.01
                 print(bright)
-        time.sleep(wait)
+        sleep(wait)
 
 
 def cycles():

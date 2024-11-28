@@ -53,7 +53,7 @@
 #define SSD_SET_FADE		0x23		/* + 1 byte */
 #define SSD_SET_ZOOM		0xd6		/* + 1 byte */
 
-static const PROGMEM uint8_t setup[] = {
+static CONST uint8_t setup[] = {
 	0x00,
 	SSD_DISPLAY_ON(0),	/* display off */
 	SSD_SET_START_LINE(0),
@@ -159,7 +159,7 @@ snek_builtin_draw_erase(void)
 	memset(fb, '\0', sizeof(fb));
 	for (page = 0; page < 8; page++) {
 		ssd_start_write(0, page);
-		for (i = 0; i < 1024; i++)
+		for (i = 0; i < (SCREEN_WIDTH * SCREEN_HEIGHT)>>3; i++)
 			snek_i2c_write(0);
 		snek_i2c_stop();
 	}
@@ -174,7 +174,7 @@ snek_oled_init(void)
 		uint8_t i;
 		ssd_start(0x00);
 		for (i = 0; i < SETUP_LEN; i++)
-			snek_i2c_write(pgm_read_byte(&setup[i]));
+			snek_i2c_write(setup[i]);
 		snek_i2c_stop();
 		snek_builtin_draw_erase();
 	}

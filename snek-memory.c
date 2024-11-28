@@ -23,17 +23,11 @@ uint8_t	snek_pool[SNEK_POOL] __attribute__((aligned(SNEK_ALLOC_ROUND)));
 #endif
 
 struct snek_root {
-	const snek_mem_t	*type;
+	CONST snek_mem_t	*type;
 	void			**addr;
 };
 
-#ifndef SNEK_ROOT_DECLARE
-#define SNEK_ROOT_DECLARE(n) n
-#define SNEK_ROOT_TYPE(n) ((n)->type)
-#define SNEK_ROOT_ADDR(n) ((n)->addr)
-#endif
-
-static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
+static CONST struct snek_root snek_root[] = {
 	{
 		.type = &snek_name_mem,
 		.addr = (void **) (void *) &snek_names,
@@ -59,7 +53,7 @@ static const struct snek_root	SNEK_ROOT_DECLARE(snek_root)[] = {
 		.addr = (void **) (void *) &snek_empty_tuple,
 	},
 	{
-		.type = NULL,
+		.type = (CONST void *) 0,
 		.addr = (void **) (void *) &snek_a,
 	},
 	{
@@ -194,9 +188,9 @@ snek_size_round(snek_offset_t size)
 }
 
 static snek_offset_t
-snek_size(const snek_mem_t *mem, void *addr)
+snek_size(CONST snek_mem_t *mem, void *addr)
 {
-	return snek_size_round(SNEK_MEM_SIZE(mem)(addr));
+	return snek_size_round(mem->size(addr));
 }
 
 static void
@@ -289,7 +283,7 @@ reset_chunks(void)
  */
 
 static void
-walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
+walk(bool (*visit_addr)(CONST struct snek_mem *type, void **addr),
      bool (*visit_poly)(snek_poly_t *p))
 {
 	snek_offset_t i;
@@ -298,17 +292,15 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 	for (i = 0; i < snek_stackp; i++)
 		visit_poly(&snek_stack[i]);
 	for (i = 0; i < (snek_offset_t) SNEK_ROOT; i++) {
-		const snek_mem_t *mem = SNEK_ROOT_TYPE(&snek_root[i]);
-		if (mem) {
-			void **a = SNEK_ROOT_ADDR(&snek_root[i]), *v;
-			if (a == NULL || (v = *a) != NULL) {
-				visit_addr(mem, a);
-			}
+		CONST snek_mem_t *type = snek_root[i].type;
+		void		**addr = snek_root[i].addr;
+		if (type) {
+			if (addr == NULL || *addr != NULL)
+				visit_addr(type, addr);
 		} else {
-			snek_poly_t *a = (snek_poly_t *) SNEK_ROOT_ADDR(&snek_root[i]), p;
-			if (a && !snek_is_null(p = *a)) {
-				visit_poly(a);
-			}
+			snek_poly_t *p = (snek_poly_t *) addr;
+			if (!snek_is_null(*p))
+				visit_poly(p);
 		}
 	}
 	while (!snek_offset_is_none(snek_note_list)) {
@@ -329,7 +321,7 @@ walk(bool (*visit_addr)(const struct snek_mem *type, void **addr),
 }
 
 static bool
-snek_mark_ref(const struct snek_mem *type, void **ref)
+snek_mark_ref(CONST struct snek_mem *type, void **ref)
 {
 	return snek_mark_addr(type, *ref);
 }
@@ -426,10 +418,10 @@ snek_collect(uint8_t style)
 		for (; c < chunk_last; c++) {
 			snek_offset_t	size = snek_chunk[c].size;
 
+			snek_chunk[c].new_offset = top;
+
 			debug_memory("  moving %d -> %d (%d)\n",
 			       snek_chunk[c].old_offset, top, size);
-
-			snek_chunk[c].new_offset = top;
 
 			memmove(&snek_pool[top],
 				&snek_pool[snek_chunk[c].old_offset],
@@ -494,7 +486,7 @@ snek_mark_blob(void *addr, snek_offset_t size)
 
 #ifdef DEBUG_MEMORY
 static const char *
-type_name(const struct snek_mem *type)
+type_name(CONST struct snek_mem *type)
 {
 	if (type == &snek_code_mem)
 		return "code";
@@ -520,7 +512,7 @@ type_name(const struct snek_mem *type)
 #endif
 
 bool
-snek_mark_block_addr(const struct snek_mem *type, void *addr)
+snek_mark_block_addr(CONST struct snek_mem *type, void *addr)
 {
 	bool ret;
 	ret = snek_mark_blob(addr, snek_size(type, addr));
@@ -534,24 +526,24 @@ snek_mark_block_addr(const struct snek_mem *type, void *addr)
  * Mark an object and all that it refereces
  */
 bool
-snek_mark_addr(const struct snek_mem *type, void *addr)
+snek_mark_addr(CONST struct snek_mem *type, void *addr)
 {
 	bool ret;
 	ret = snek_mark_block_addr(type, addr);
 	if (!ret)
-		SNEK_MEM_MARK(type)(addr);
+		type->mark(addr);
 	return ret;
 }
 
 bool
-snek_mark_offset(const struct snek_mem *type, snek_offset_t offset)
+snek_mark_offset(CONST struct snek_mem *type, snek_offset_t offset)
 {
 	if (snek_offset_is_none(offset))
 		return true;
 	return snek_mark_addr(type, pool_addr(offset));
 }
 
-const struct snek_mem SNEK_MEMS_DECLARE(_snek_mems)[] = {
+CONST struct snek_mem _snek_mems[] = {
 	[snek_list-1] = {
 		.size = snek_list_size,
 		.mark = snek_list_mark,
@@ -647,7 +639,7 @@ snek_move_block_offset(void *ref)
 	return false;
 }
 
-bool
+static bool
 snek_move_block_addr(void **ref)
 {
 	void		*addr = *ref;
@@ -667,23 +659,23 @@ snek_move_block_addr(void **ref)
 }
 
 bool
-snek_move_addr(const struct snek_mem *type, void **ref)
+snek_move_addr(CONST struct snek_mem *type, void **ref)
 {
 	bool ret;
 	ret = snek_move_block_addr(ref);
 	if (!ret)
-		SNEK_MEM_MOVE(type)(*ref);
+		type->move(*ref);
 
 	return ret;
 }
 
 bool
-snek_move_offset(const struct snek_mem *type, snek_offset_t *ref)
+snek_move_offset(CONST struct snek_mem *type, snek_offset_t *ref)
 {
 	bool ret;
 	ret = snek_move_block_offset(ref);
 	if (!ret)
-		SNEK_MEM_MOVE(type)(pool_addr(*ref));
+		type->move(pool_addr(*ref));
 	return ret;
 }
 

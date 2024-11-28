@@ -80,7 +80,9 @@ described below.
 
  * [Narrow 1284](https://www.crowdsupply.com/pandauino/narrow).
 
- * [Arduino Nano Every](https://store.arduino.cc/usa/nano-every).
+ * [Arduino Nano Every](https://store.arduino.cc/usa/nano-every). This
+   uses flash for storage, and includes most of the math library and
+   the tone driver.
 
  * [LilyPad Arduino 328](https://www.sparkfun.com/products/13342).
    This port leaves out dictionaries and slices so that it has space
@@ -95,6 +97,19 @@ described below.
 ## Recent Changes
 
 Here's some places that have seen recent work
+
+ * Remove the -big variants. The variants supporting boot loaders now
+   have sufficient space to support all of the options formerly
+   reserved for the -big ones.
+
+ * Rewrite the ATmel chip support to use __flash attributes. Target
+   newer GCC version. With these changes, there's lots more space
+   available on ATmel targets.
+
+ * Changed the builtin math, time and random functions to no longer
+   include the math., time. or random. prefixes. This makes them more
+   convenient to use. To retain compatibility with Python, you can
+   use 'from math import *' which Snek will ignore.
 
  * [Mu](https://codewith.mu/) version 1.2.0 has Snek support built in
    now. Mu is an IDE designed for new Python users that offers a more

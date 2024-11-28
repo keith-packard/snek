@@ -669,14 +669,14 @@ snek_assign(snek_id_t id, snek_op_t op)
  * Call a builtin function
  */
 static void
-snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnamed)
+snek_call_builtin(CONST snek_builtin_t *builtin, uint8_t nposition, uint8_t nnamed)
 {
 	snek_poly_t *actuals = &snek_stack[snek_stackp - (nposition + (nnamed << 1))];
-	snek_soffset_t nformal = SNEK_BUILTIN_NFORMAL(builtin);
+	snek_soffset_t nformal = builtin->nformal;
 
 	/* Varargs functions have nformal == -1 */
 	if (nformal < 0) {
-		snek_a = SNEK_BUILTIN_FUNCV(builtin)(nposition, nnamed, actuals);
+		snek_a = (builtin->funcv)(nposition, nnamed, actuals);
 	} else if (nposition != nformal || nnamed) {
 
 		/* Otherwise, complain if the argument count doesn't
@@ -687,19 +687,19 @@ snek_call_builtin(const snek_builtin_t *builtin, uint8_t nposition, uint8_t nnam
 	} else {
 		switch (nformal) {
 		case 0:
-			snek_a = SNEK_BUILTIN_FUNC0(builtin)();
+			snek_a = builtin->func0();
 			break;
 		case 1:
-			snek_a = SNEK_BUILTIN_FUNC1(builtin)(actuals[0]);
+			snek_a = builtin->func1(actuals[0]);
 			break;
 #if SNEK_BUILTIN_NAMES_MAX_ARGS >= 2
 		case 2:
-			snek_a = SNEK_BUILTIN_FUNC2(builtin)(actuals[0], actuals[1]);
+			snek_a = builtin->func2(actuals[0], actuals[1]);
 			break;
 #endif
 #if SNEK_BUILTIN_NAMES_MAX_ARGS >= 3
 		case 3:
-			snek_a = SNEK_BUILTIN_FUNC3(builtin)(actuals[0], actuals[1], actuals[2]);
+			snek_a = builtin->func3(actuals[0], actuals[1], actuals[2]);
 			break;
 #endif
 #if SNEK_BUILTIN_NAMES_MAX_ARGS >= 4

@@ -14,5 +14,3 @@
 time.sleep, 1
 time.monotonic, 0
 reset, 0
-random.seed, 1
-random.randrange, 1

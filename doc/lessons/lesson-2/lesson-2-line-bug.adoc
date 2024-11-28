@@ -80,7 +80,7 @@ light sensor using something like this (use <Ctrl>C to stop):
 
 	while True:
 		print(read(A1))
-		time.sleep(1)
+		sleep(1)
 
 Consider:
 

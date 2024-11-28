@@ -41,6 +41,7 @@ math.exp, 1
 math.log, 1
 math.log10, 1
 math.pow, 2
+pow, 2, =math.pow
 #
 # Trigonometric functions
 #
@@ -72,5 +73,5 @@ math.tanh, 1
 math.pi, -2, 3.141592653589793
 math.e, -2, 2.718281828459045
 math.tau, -2, 6.283185307179586
-math.inf, -2, INFINITY
-math.nan, -2, NAN
+math.inf, -2, (snek_poly_t)(float)INFINITY
+math.nan, -2, (snek_poly_t)(float)NAN

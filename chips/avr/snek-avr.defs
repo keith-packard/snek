@@ -16,17 +16,22 @@ SNEK_AO = $(SNEK_ROOT)/ao
 
 SNEK_PORT?=.
 
-SNEK_LOCAL_VPATH = $(SNEK_PORT):$(SNEK_AVR):$(SNEK_AO)
+SNEK_LOCAL_VPATH = $(SNEK_AVR):$(SNEK_AO)
+
+vpath ao-pins.h $(SNEK_PORT)
 
 SNEK_AVR_SRC = \
 	snek-io.c \
 	snek-pow.c \
+	snek-random-small.c \
+	snek-input.c \
 	snek-avr-eeprom.c \
 	ao-snek-avr.c \
 	ao-usb-avr.c \
 	ao-notask.c \
 	ao-product.c \
-	snek-atof.c
+	snek-atof.c \
+	strfromg.c
 
 SNEK_AVR_INC = \
 	ao.h \
@@ -43,27 +48,45 @@ SNEK_AVR_INC = \
 SNEK_AVR_BUILTINS = \
 	snek-gpio.builtin \
 	snek-eeprom.builtin \
+	snek-random.builtin \
+	snek-input.builtin \
 	snek-avr.builtin
 
 SNEK_NO_FILE = 1
 
-OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
+#OPT=-Os -frename-registers -funsigned-char -fno-jump-tables -mcall-prologues
+
+OPT=-Os \
+    -mrelax \
+    -Wno-array-bounds \
+    -frename-registers \
+    -funsigned-char \
+    -mcall-prologues \
+    -fno-move-loop-invariants \
+    -fno-move-loop-stores \
+    -fno-split-loops \
+    -fno-unswitch-loops \
+    -fno-unroll-loops \
+    -fno-peel-loops
 
 SNEK_CFLAGS = $(SNEK_MOST_WARNINGS) $(SNEK_BASE_CFLAGS)
 
 AO_CFLAGS=\
-	-std=c99 $(OPT) -g
+	$(OPT) -g
 
 AVR_CFLAGS=-DF_CPU=$(AVR_CLOCK) -mmcu=atmega32u4 -g $(SNEK_CFLAGS) -Waddr-space-convert \
 	-I. -I$(SNEK_PORT) -I$(SNEK_AVR) -I$(SNEK_AO) -I$(SNEK_ROOT) $(AO_CFLAGS)
 
-CFLAGS = $(AVR_CFLAGS) $(SNEK_CFLAGS)
+AVR_FLASH_SIZE ?= 0x7e00
+
+CFLAGS = $(SNEK_CFLAGS) $(AVR_CFLAGS)
 
 LDSCRIPT=$(SNEK_AVR)/snek-avr51.x
 
 LDFLAGS=$(SNEK_LDFLAGS) \
-	-Wl,-uvfprintf -lprintf_flt -lm \
+	-lm \
 	-Wl,-T$(LDSCRIPT) \
+	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=$(AVR_FLASH_SIZE) \
 	-Wl,-Map=$(MAP)
 
 CC=avr-gcc

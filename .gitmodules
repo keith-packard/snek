@@ -1,0 +1,3 @@
+[submodule "ubaboot"]
+	path = ubaboot
+	url = https://github.com/keith-packard/ubaboot.git

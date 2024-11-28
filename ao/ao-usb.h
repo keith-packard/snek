@@ -52,7 +52,7 @@ ao_usb_disable(void);
 void
 ao_usb_init(void);
 
-extern const uint8_t ao_usb_descriptors [];
+extern CONST uint8_t ao_usb_descriptors [];
 
 #define AO_USB_SETUP_DIR_MASK	(0x01 << 7)
 #define AO_USB_SETUP_TYPE_MASK	(0x03 << 5)
@@ -158,8 +158,6 @@ struct ao_usb_line_coding {
 	uint8_t		parity;
 	uint8_t		data_bits;
 } ;
-
-extern struct ao_usb_line_coding ao_usb_line_coding;
 
 extern uint8_t ao_usb_running;
 

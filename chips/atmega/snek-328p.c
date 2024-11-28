@@ -181,7 +181,7 @@ has_pwm(uint8_t p)
 	return pwm_pins & (1 << p);
 }
 
-static volatile uint8_t * const PROGMEM ocr_reg_addrs[] = {
+static volatile uint8_t * CONST ocr_reg_addrs[] = {
 	[3] = &OCR2B,
 	[5] = &OCR0B,
 	[6] = &OCR0A,
@@ -192,10 +192,10 @@ static volatile uint8_t * const PROGMEM ocr_reg_addrs[] = {
 
 static volatile uint8_t *
 ocr_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_word(&ocr_reg_addrs[pin]);
+	return ocr_reg_addrs[pin];
 }
 
-static volatile uint8_t * const PROGMEM tcc_reg_addrs[] = {
+static volatile uint8_t * CONST  tcc_reg_addrs[] = {
 	[3] = &TCCR2A,
 	[5] = &TCCR0A,
 	[6] = &TCCR0A,
@@ -206,10 +206,10 @@ static volatile uint8_t * const PROGMEM tcc_reg_addrs[] = {
 
 static volatile uint8_t *
 tcc_reg(uint8_t pin) {
-	return (volatile uint8_t *) pgm_read_word(&tcc_reg_addrs[pin]);
+	return tcc_reg_addrs[pin];
 }
 
-static uint8_t const PROGMEM tcc_val_addrs[] = {
+static uint8_t CONST tcc_val_addrs[] = {
 	[3] = 1 << COM2B1,
 	[5] = 1 << COM0B1,
 	[6] = 1 << COM0A1,
@@ -221,7 +221,7 @@ static uint8_t const PROGMEM tcc_val_addrs[] = {
 static uint8_t
 tcc_val(uint8_t pin)
 {
-	return (uint8_t) pgm_read_byte(&tcc_val_addrs[pin]);
+	return tcc_val_addrs[pin];
 }
 
 static void
@@ -381,6 +381,7 @@ snek_poly_t
 snek_builtin_setpower(snek_poly_t a)
 {
 	float p = snek_poly_get_float(a);
+	printf("%p\n", &p);
 	if (p < 0.0f) p = 0.0f;
 	if (p > 1.0f) p = 1.0f;
 	power[power_pin] = (uint8_t) (p * 255.0f + 0.5f);
@@ -480,20 +481,4 @@ snek_builtin_stopall(void)
 			set_out(p);
 		}
 	return SNEK_NULL;
-}
-
-static uint32_t random_next;
-
-snek_poly_t
-snek_builtin_random_seed(snek_poly_t a)
-{
-	random_next = a.u;
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_random_randrange(snek_poly_t a)
-{
-	random_next = random_next * 1103515245L + 12345L;
-	return snek_float_to_poly(random_next % (uint32_t) snek_poly_get_float(a));
 }

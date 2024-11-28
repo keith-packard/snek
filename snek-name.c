@@ -24,9 +24,6 @@ snek_id_t   snek_id = SNEK_BUILTIN_END;
 #define SNEK_BUILTIN_NAMES(a) (snek_builtin_names[a])
 #endif
 
-#ifndef SNEK_BUILTIN_NAMES_CMP
-#define SNEK_BUILTIN_NAMES_CMP(a,b) strcmp(a,b)
-#endif
 #ifndef snek_builtin_names_return
 #define snek_builtin_names_return(a) ((const char *) (a))
 #endif
@@ -55,9 +52,9 @@ snek_name_id_builtin(char *name, bool *keyword)
 
 	for (i = 0;
 	     i < sizeof (snek_builtin_names);
-	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i+k]) + 1 + k)
+	     i += snek_builtin_names_len(&snek_builtin_names[i+k]) + 1 + k)
 	{
-		if (SNEK_BUILTIN_NAMES_CMP(name, (const char *) &snek_builtin_names[i+k]) == 0) {
+		if (snek_const_strcmp(name, &snek_builtin_names[i+k]) == 0) {
 			if (id >= SNEK_BUILTIN_END) {
 				id = SNEK_BUILTIN_ID(i);
 				*keyword = true;
@@ -82,7 +79,7 @@ snek_name_string_builtin(snek_id_t id)
 
 	for (i = 0;
 	     --id;
-	     i += snek_builtin_names_len((const char *) &snek_builtin_names[i]) + 1)
+	     i += snek_builtin_names_len(&snek_builtin_names[i]) + 1)
 		;
 	return snek_builtin_names_return(&snek_builtin_names[i]);
 }
@@ -167,7 +164,7 @@ snek_name_move(void *addr)
 	}
 }
 
-const snek_mem_t SNEK_MEM_DECLARE(snek_name_mem) = {
+CONST snek_mem_t snek_name_mem = {
 	.size = snek_name_size,
 	.mark = snek_name_mark,
 	.move = snek_name_move,

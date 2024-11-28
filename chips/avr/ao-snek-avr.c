@@ -186,16 +186,16 @@ main (void)
 		snek_parse();
 }
 
-static const PROGMEM uint8_t _pin_map[NUM_PIN] = PIN_MAP;
-static const PROGMEM uint8_t _adc_map[NUM_ADC] = ADC_MAP;
-static uint8_t const PROGMEM ocr_reg_addrs[NUM_PIN] = OCR_REG_ADDRS;
-static volatile uint8_t const PROGMEM tcc_reg_addrs[] = TCC_REG_ADDRS;
-static uint8_t const PROGMEM tcc_reg_vals[] = TCC_REG_VALS;
+static CONST uint8_t _pin_map[NUM_PIN] = PIN_MAP;
+static CONST uint8_t _adc_map[NUM_ADC] = ADC_MAP;
+static CONST uint8_t ocr_reg_addrs[NUM_PIN] = OCR_REG_ADDRS;
+static CONST uint8_t tcc_reg_addrs[] = TCC_REG_ADDRS;
+static CONST uint8_t tcc_reg_vals[] = TCC_REG_VALS;
 
-static uint8_t
+static inline uint8_t
 pin_map(uint8_t pin)
 {
-	return pgm_read_byte(&_pin_map[pin]);
+	return _pin_map[pin];
 }
 
 static volatile uint8_t *
@@ -230,7 +230,7 @@ has_adc(uint8_t p)
 
 static volatile uint8_t *
 ocr_reg(uint8_t pin) {
-	return (volatile uint8_t *) (uintptr_t) pgm_read_byte(&ocr_reg_addrs[pin]);
+	return (volatile uint8_t *) (uintptr_t) ocr_reg_addrs[pin];
 }
 
 static bool
@@ -241,14 +241,14 @@ has_pwm(uint8_t p)
 
 static volatile uint8_t *
 tcc_reg(uint8_t pin) {
-	return (volatile uint8_t *) (uintptr_t) pgm_read_byte(&tcc_reg_addrs[pin]);
+	return (volatile uint8_t *) (uintptr_t) tcc_reg_addrs[pin];
 }
 
 
 static uint8_t
 tcc_reg_val(uint8_t pin)
 {
-	return (uint8_t) pgm_read_byte(&tcc_reg_vals[pin]);
+	return tcc_reg_vals[pin];
 }
 
 static void
@@ -416,7 +416,7 @@ snek_builtin_read(snek_poly_t a)
 	set_dir(p, 0);
 
 	if (has_adc(p) && !pull[p]) {
-		uint8_t pin = pgm_read_byte(&_adc_map[p - FIRST_ADC]);
+		uint8_t pin = _adc_map[p - FIRST_ADC];
 		ADMUX = (analog_reference << REFS0) | (pin & 7);
 		ADCSRA |= (1 << ADSC);
 		while (ADCSRA & (1 << ADSC))
@@ -486,22 +486,6 @@ snek_builtin_time_monotonic(void)
 	return snek_float_to_poly((float) snek_ticks() * SECONDS_PER_TICK);
 }
 
-static uint32_t random_next;
-
-snek_poly_t
-snek_builtin_random_seed(snek_poly_t a)
-{
-	random_next = a.u;
-	return SNEK_NULL;
-}
-
-snek_poly_t
-snek_builtin_random_randrange(snek_poly_t a)
-{
-	random_next = random_next * 1103515245L + 12345L;
-	return snek_float_to_poly(random_next % (uint32_t) snek_poly_get_float(a));
-}
-
 extern char __snek_data_start__, __snek_data_end__;
 extern char __snek_bss_start__, __snek_bss_end__;
 extern char __text_start__, __text_end__;
@@ -521,5 +505,5 @@ snek_builtin_reset(void)
 
 	/* and off we go! */
 	longjmp(snek_reset_buf, 1);
-	return SNEK_NULL;
+	__builtin_unreachable();
 }

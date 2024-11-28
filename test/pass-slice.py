@@ -22,7 +22,6 @@ def slice_model(start, end, step, len):
     ret = []
 
     if step > 0:
-
         # default start is 0
         if start == ():
             start = 0
@@ -52,7 +51,6 @@ def slice_model(start, end, step, len):
             val += step
 
     else:
-
         # default start is len - 1
         if start == ():
             start = len - 1
@@ -78,7 +76,6 @@ def slice_model(start, end, step, len):
 
 
 def slice_string(value, start, end, step):
-
     indices = slice_model(start, end, step, len(value))
 
     ret = ""
@@ -88,7 +85,6 @@ def slice_string(value, start, end, step):
 
 
 def slice_list(value, start, end, step):
-
     indices = slice_model(start, end, step, len(value))
 
     ret = []
@@ -98,7 +94,6 @@ def slice_list(value, start, end, step):
 
 
 def slice_tuple(value, start, end, step):
-
     indices = slice_model(start, end, step, len(value))
 
     ret = ()
