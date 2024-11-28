@@ -1,3 +1,13 @@
+snek (1.10-1) unstable; urgency=medium
+
+  * New upstream version
+
+  * Adapt to new gcc-avr version. Closes: #1088139.
+
+  * Depend on arch-specific qemu packages. Close: #1086204.
+
+ -- Keith Packard <keithp@keithp.com>  Thu, 28 Nov 2024 12:30:53 -0800
+
 snek (1.9-3) unstable; urgency=medium
 
   * Fix lintian errors
