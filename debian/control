@@ -11,7 +11,7 @@ Build-Depends-Indep: avr-libc, gcc-avr,
  asciidoctor, ruby-asciidoctor-pdf, ruby-coderay
 Standards-Version: 4.7.0
 Homepage: https://sneklang.org
-Vcs-Git: git://sneklang.org/git/snek.git
+Vcs-Git: https://sneklang.org/cgit/snek.git
 Vcs-Browser: https://sneklang.org/cgit/snek.git
 
 Package: snek
