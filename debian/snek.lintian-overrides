@@ -2,4 +2,3 @@ snek: arch-independent-package-contains-binary-or-object
 snek: arch-dependent-file-in-usr-share
 snek: unstripped-binary-or-object
 snek: statically-linked-binary
-snek: missing-dependency-on-libc
