@@ -24,11 +24,15 @@ SNEK_NANO_EVERY ?= 0
 ifneq "$(SNEK_NANO_EVERY)" "0"
 SNEK_PORTS_NANO_EVERY=$(SNEK_PORTS)/nano-every/snek-nano-every-$(SNEK_VERSION).hex
 endif
+SNEK_EV3 ?= 1
+ifneq "$(SNEK_EV3)" "0"
+SNEK_PORTS_EV3=$(SNEK_PORTS)/ev3/snek-ev3-$(SNEK_VERSION).hex
+endif
 #SNEKMAC ?= imac-remote:build/snek
 FIRMWARE ?= \
 	$(SNEK_PORTS)/crickit/snek-crickit-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/duemilanove/snek-duemilanove-$(SNEK_VERSION).hex \
-	$(SNEK_PORTS)/ev3/snek-ev3-$(SNEK_VERSION) \
+	$(SNEK_PORTS_EV3) \
 	$(SNEK_PORTS)/feather/snek-feather-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/grove/snek-grove-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/itsybitsy3v/snek-itsybitsy3v-$(SNEK_VERSION).hex \
