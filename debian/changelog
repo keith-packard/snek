@@ -1,3 +1,12 @@
+snek (1.11-1) unstable; urgency=medium
+
+  * switch debian/watch URL to use https
+
+  * Stop building EV3 port as gcc-arm-linux-gnueabi is unavailable on
+    armhf. Closes: #1091294.
+
+ -- Keith Packard <keithp@keithp.com>  Thu, 06 Feb 2025 11:33:49 -0800
+
 snek (1.10-1) unstable; urgency=medium
 
   * New upstream version
