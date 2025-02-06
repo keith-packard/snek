@@ -1,3 +1,9 @@
+snek (1.11-2) unstable; urgency=medium
+
+  * Fix Risc-V32 qemu dependency. Closes: #1086024.
+
+ -- Keith Packard <keithp@keithp.com>  Thu, 06 Feb 2025 15:25:14 -0800
+
 snek (1.11-1) unstable; urgency=medium
 
   * switch debian/watch URL to use https
