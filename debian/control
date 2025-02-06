@@ -7,7 +7,7 @@ Build-Depends: debhelper-compat (= 13), libreadline-dev, python3:any, lola, gawk
 Build-Depends-Indep: avr-libc, gcc-avr,
  binutils-arm-none-eabi, gcc-arm-none-eabi, picolibc-arm-none-eabi (>= 1.4), qemu-system-arm,
  binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.4),
- gcc-arm-linux-gnueabi, libc6-dev-armel-cross, qemu-system-riscv,
+ qemu-system-riscv,
  asciidoctor, ruby-asciidoctor-pdf, ruby-coderay
 Standards-Version: 4.7.0
 Homepage: https://sneklang.org

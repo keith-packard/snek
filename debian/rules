@@ -26,17 +26,14 @@ SNEK_MOST_WARNINGS =  \
 %:
 	dh $@
 
-override_dh_strip:
-	dh_strip -X.elf -Xsnek-ev3
-
-override_dh_dwz:
-	dh_dwz -X.elf -Xsnek-ev3
-
-override_dh_shlibdeps:
-	dh_shlibdeps -X.elf -Xsnek-ev3
-
 override_dh_auto_build-indep:
-	dh_auto_build -- "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)"
+	dh_auto_build -- "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)" SNEK_EV3=0
+
+override_dh_auto_test-indep:
+	dh_auto_test -- SNEK_EV3=0
+
+override_dh_auto_install-indep:
+	dh_auto_install -- SNEK_EV3=0
 
 override_dh_auto_build-arch:
 	dh_auto_build -- -C ports/posix SUBDIRS= FIRMWARE= "SNEK_MOST_WARNINGS=$(SNEK_MOST_WARNINGS)"
