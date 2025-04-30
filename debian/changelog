@@ -1,3 +1,11 @@
+snek (1.12-1) unstable; urgency=medium
+
+  * New upstream
+
+  * Picolibc 1.8.10 compatibility. Closes: #1104364.
+
+ -- Keith Packard <keithp@keithp.com>  Tue, 29 Apr 2025 20:38:16 -0700
+
 snek (1.11-2) unstable; urgency=medium
 
   * Fix Risc-V32 qemu dependency. Closes: #1086024.
