@@ -25,6 +25,7 @@ FILE	*snek_posix_input;
 static const struct option options[] = {
 	{ .name = "version", .has_arg = 0, .val = 'v' },
 	{ .name = "interactive", .has_arg = 0, .val = 'i' },
+	{ .name = "lego", .has_arg = 1, .val = 'l' },
 	{ .name = "help", .has_arg = 0, .val = '?' },
 	{ .name = NULL, .has_arg = 0, .val = 0 },
 };
@@ -32,7 +33,7 @@ static const struct option options[] = {
 static void
 usage (char *program, int val)
 {
-	fprintf(stderr, "usage: %s [--version] [--help] [--interactive] <program.py>\n", program);
+	fprintf(stderr, "usage: %s [--version] [--help] [--interactive] [--lego <device>] <program.py>\n", program);
 	exit(val);
 }
 
@@ -113,6 +114,7 @@ main (int argc, char **argv)
 	int c;
 	bool do_interactive = true;
 	bool interactive_flag = false;
+	char *lego = NULL;
 
 	while ((c = getopt_long(argc, argv, "v?i", options, NULL)) != -1) {
 		switch (c) {
@@ -122,6 +124,9 @@ main (int argc, char **argv)
 			break;
 		case 'i':
 			interactive_flag = true;
+			break;
+		case 'l':
+			lego = optarg;
 			break;
 		case '?':
 			usage(argv[0], 0);
@@ -135,6 +140,13 @@ main (int argc, char **argv)
 	signal(SIGINT, sigint);
 
 	snek_init();
+
+	if (lego) {
+		if (!snek_lego_init(lego)) {
+			perror(lego);
+			exit(1);
+		}
+	}
 
 	bool ret = true;
 

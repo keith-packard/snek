@@ -20,7 +20,9 @@ SNEK_LOCAL_SRC = \
 	snek-math.c \
 	snek-random.c \
 	snek-curses.c \
-	snek-input.c
+	snek-input.c \
+	snek-70909.c \
+	snek-lego.c
 
 SNEK_LOCAL_INC = snek-posix.h
 SNEK_LOCAL_CFLAGS = 
@@ -28,7 +30,8 @@ SNEK_LOCAL_BUILTINS = \
 	snek-posix.builtin \
 	snek-math.builtin \
 	snek-input.builtin \
-	snek-random.builtin
+	snek-random.builtin \
+	snek-gpio.builtin
 
 include $(SNEK_ROOT)/snek-install.defs
 
@@ -47,7 +50,7 @@ CFLAGS+=-DSNEK_MEM_INCLUDE_NAME $(CFLAGS_READLINE) $(OPT) -g -I. $(SNEK_CFLAGS) 
 
 LIBS=$(LIBS_STATIC) $(LIBS_READLINE) -lm
 
-all: snek snek.desktop
+all: snek snek.desktop snek-70909-test
 
 snek: $(SNEK_OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SNEK_OBJ) $(LIBS)
@@ -65,3 +68,9 @@ snek.desktop: snek.desktop.in
 
 clean::
 	rm -f snek snek.desktop
+
+snek-70909-test: snek-70909-test.c snek-70909.c snek-70909.h
+	cc $(CFLAGS) -o $@ snek-70909-test.c snek-70909.c
+
+clean::
+	rm -f snek-70909-test
