@@ -28,3 +28,11 @@ stdscr.refresh, 0
 stdscr.getch, 0
 #include <snek-posix.h>
 #define SNEK_POOL 262144
+A, -2, 1
+B, -2, 2
+C, -2, 3
+D, -2, 4
+E, -2, 5
+F, -2, 6
+G, -2, 7
+H, -2, 8

@@ -30,4 +30,6 @@ int snek_getc(FILE *input);
 
 #define SNEK_DEBUG	1
 
+int snek_lego_init(char *lego);
+
 #endif /* _SNEK_POSIX_H_ */
