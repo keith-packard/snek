@@ -10,7 +10,6 @@ Here are the steps to take when creating a new release of snek.
 
   ** crickit
   ** duemilanove
-  ** duemilanove-big
   ** esp32
   ** ev3
   ** feather
@@ -20,7 +19,6 @@ Here are the steps to take when creating a new release of snek.
   ** itsybitsy5v
   ** itsybitsym0
   ** lilypad
-  ** lilypad-big
   ** mega
   ** metrom0
   ** nano33iot
@@ -33,7 +31,6 @@ Here are the steps to take when creating a new release of snek.
   ** snekboard
   ** uduino
   ** uno
-  ** uno-big
   ** xiao
   ** windows
 
