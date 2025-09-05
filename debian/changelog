@@ -1,3 +1,13 @@
+snek (1.13-1) unstable; urgency=medium
+
+  * New upstream
+
+  * Adapt to asciidoctor-pdf repackaging. Closes: #1114390.
+
+  * Support cross building.
+
+ -- Keith Packard <keithp@keithp.com>  Fri, 05 Sep 2025 12:13:58 -0700
+
 snek (1.12-1) unstable; urgency=medium
 
   * New upstream
