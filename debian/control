@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Keith Packard <keithp@keithp.com>
 Rules-Requires-Root: no
 Build-Depends: debhelper-compat (= 13), libreadline-dev, python3:any, lola, gawk
-Build-Depends-Indep: avr-libc, gcc-avr,
+Build-Depends-Indep: avr-libc:native, gcc-avr:native,
  binutils-arm-none-eabi, gcc-arm-none-eabi, picolibc-arm-none-eabi (>= 1.4), qemu-system-arm,
  binutils-riscv64-unknown-elf, gcc-riscv64-unknown-elf, picolibc-riscv64-unknown-elf (>= 1.4),
  qemu-system-riscv32,
@@ -16,6 +16,7 @@ Vcs-Browser: https://sneklang.org/cgit/snek.git
 
 Package: snek
 Architecture: all
+Multi-Arch: foreign
 Suggests: snek-bin
 Depends: ${misc:Depends}, python3:any, python3-serial, usbutils
 Description: Embedded system programming language
