@@ -61,13 +61,9 @@ MAP=$(BASE).map
 override CC=avr-gcc
 
 MCU=atmega4809
-ATMEGA4809_LIBC_LIB=$(ATMEGA4809_LIBC)/avr/lib/$(shell avr-gcc -print-multi-os-directory -mmcu=$(MCU))
-ATMEGA4809_LIBC_INCLUDE=$(ATMEGA4809_LIBC)/avr/include
-CRT0=crt$(MCU).o
 
 CFLAGS=-DF_CPU=20000000UL \
 	-mmcu=$(MCU) \
-	-isystem$(ATMEGA4809_LIBC_INCLUDE) -L$(ATMEGA4809_LIBC_LIB) \
 	-I. -I$(SNEK_LOCAL_VPATH) -g \
 	$(SNEK_CFLAGS) \
 	$(OPT) \
@@ -83,12 +79,9 @@ all: $(HEX) snek-$(BOARD)-install snek-$(BOARD)-install.1 snek-$(BOARD)-reset-po
 $(HEX): $(ELF)
 	avr-objcopy -O ihex -R .eeprom $^ $@
 
-$(ELF): $(SNEK_OBJ) $(CRT0)
+$(ELF): $(SNEK_OBJ)
 	$(CC) $(CFLAGS) -o $@ $(SNEK_OBJ) $(LDFLAGS)
 	@gawk '/__data_load_end/{printf("$(BASE) ROM: %d bytes\n", strtonum($$1)); }' $(MAP)
-
-$(CRT0): $(ATMEGA4809_LIBC_LIB)/$(CRT0)
-	cp $^ $@
 
 snek-$(BOARD)-install: snek-nano-every-install.in
 	$(SNEK_NANO_EVERY_SED) $^ > $@
