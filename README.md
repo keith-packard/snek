@@ -286,6 +286,50 @@ mailing list here](https://keithp.com/mailman/listinfo/snek)
 
 Here are more specific notes about Snek releases.
 
+### Version 1.13
+
+ * Always build nano-every by relying on a recent avr-libc to be
+   available.
+
+ * Support debian cross builds by overriding CC for embedded targets.
+
+### Version 1.12
+
+ * Provide compatibility with newer picolibc which no longer
+   defines _PICOLIBC__.
+
+### Version 1.11
+
+ * Fix debian builds on armhf
+
+### Version 1.10
+
+ * Ignore 'from <name> import *' commands to improve Python
+   compatibility.
+
+ * Use ubaboot for atmega32u4 devices so that snek can be easily
+   replaced.
+
+ * Add features to avr targets as newer GCC versions are more space
+   efficient. The -big variants have been removed as the regular
+   versions now have all of the same functionality.
+
+ * Store programs in flash on the nano-every instead of eeprom. This
+   provides 4KB of space instead of 256 bytes.
+
+ * Place math, random and time names in the global namespace too.
+   This provides compatibility with apps using 'from math import *'.
+
+ * Provide 'tone' and 'tonefor' on the nano-every board.
+
+### Version 1.9
+
+ * Store most recent repl value in _, like Python.
+
+ * Return an empty string ('') when the user provides no data to input
+
+ * Only allow one parameter to input, like Python.
+
 ### Version 1.8
 
  * Add 'str' builtin. Just like Python, the str builtin converts any
