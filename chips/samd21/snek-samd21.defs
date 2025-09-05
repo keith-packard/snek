@@ -90,7 +90,7 @@ LDFLAGS=$(SNEK_LDFLAGS) $(CFLAGS) -Wl,-T$(SNEK_SAMD21)/registers.ld -T$(LDSCRIPT
 
 LIBS=-lm
 
-CC=arm-none-eabi-gcc
+override CC=arm-none-eabi-gcc
 OBJCOPY=arm-none-eabi-objcopy
 
 PROG=$(PROGNAME)-$(SNEK_VERSION).elf

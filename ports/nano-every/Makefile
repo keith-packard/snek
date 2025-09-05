@@ -58,7 +58,7 @@ BASE=snek-$(BOARD)-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
-CC=avr-gcc
+override CC=avr-gcc
 
 MCU=atmega4809
 ATMEGA4809_LIBC_LIB=$(ATMEGA4809_LIBC)/avr/lib/$(shell avr-gcc -print-multi-os-directory -mmcu=$(MCU))

@@ -68,7 +68,7 @@ LDFLAGS=$(SNEK_LDFLAGS) $(CFLAGS) -n
 LIBS=-lm
 
 ARCH=riscv64-unknown-elf
-CC=$(ARCH)-gcc
+override CC=$(ARCH)-gcc
 OBJCOPY=$(ARCH)-objcopy
 
 PROG=$(PROGNAME)-$(SNEK_VERSION).elf

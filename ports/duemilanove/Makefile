@@ -76,7 +76,7 @@ BASE=snek-$(BOARD)-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
-CC=avr-gcc
+override CC=avr-gcc
 
 CFLAGS=-DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) $(SNEK_CFLAGS) $(OPT) -g -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
