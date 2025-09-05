@@ -20,10 +20,6 @@ SNEK_ESP32 ?= 0
 ifneq "$(SNEK_ESP32)" "0"
 SNEK_PORTS_ESP32=$(SNEK_PORTS)/esp32/snek-esp32-$(SNEK_VERSION).bin
 endif
-SNEK_NANO_EVERY ?= 0
-ifneq "$(SNEK_NANO_EVERY)" "0"
-SNEK_PORTS_NANO_EVERY=$(SNEK_PORTS)/nano-every/snek-nano-every-$(SNEK_VERSION).hex
-endif
 SNEK_EV3 ?= 1
 ifneq "$(SNEK_EV3)" "0"
 SNEK_PORTS_EV3=$(SNEK_PORTS)/ev3/snek-ev3-$(SNEK_VERSION).hex
@@ -42,6 +38,7 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/mega/snek-mega-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/metrom0/snek-metrom0-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/nano33iot/snek-nano33iot-$(SNEK_VERSION).uf2 \
+	$(SNEK_PORTS)/nano-every/snek-nano-every-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/narrow-1284/snek-narrow-1284-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/playground/snek-playground-$(SNEK_VERSION).uf2 \
 	$(SNEK_PORTS)/qemu-arm/snek-qemu-arm-$(SNEK_VERSION).elf \
@@ -50,8 +47,7 @@ FIRMWARE ?= \
 	$(SNEK_PORTS)/uduino/snek-uduino-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/uno/snek-uno-$(SNEK_VERSION).hex \
 	$(SNEK_PORTS)/xiao/snek-xiao-$(SNEK_VERSION).uf2 \
-	$(SNEK_PORTS_HIFIVE1REVB) $(SNEK_PORTS_ESP32) \
-	$(SNEK_PORTS_NANO_EVERY)
+	$(SNEK_PORTS_HIFIVE1REVB) $(SNEK_PORTS_ESP32)
 
 USBFIRMWARE ?= \
 	$(SNEK_PORTS)/nano33iot/update-bootloader-nano33iot.ino \
