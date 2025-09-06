@@ -16,7 +16,7 @@ RUN apt-get update && \
     lola \
     gawk \
     asciidoctor \
-    ruby-asciidoctor-pdf \
+    asciidoctor-pdf \
     ruby-coderay \
     gcc-arm-linux-gnueabi \
     libc6-dev-armel-cross \
