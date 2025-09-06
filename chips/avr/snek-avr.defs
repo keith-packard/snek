@@ -89,7 +89,7 @@ LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,--defsym -Wl,__TEXT_REGION_LENGTH__=$(AVR_FLASH_SIZE) \
 	-Wl,-Map=$(MAP)
 
-CC=avr-gcc
+override CC=avr-gcc
 
 BASE=$(PROGNAME)-$(SNEK_VERSION)
 PROG=$(BASE).elf

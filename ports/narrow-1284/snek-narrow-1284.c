@@ -59,9 +59,9 @@ port_init(void)
 	OCR1BH = 0;
 
 	/* Timer 2 */
-	TCCR2B = ((1 << CS22) |
-		  (0 << CS21) |
-		  (0 << CS20));
+	TCCR2B = ((0 << CS22) |
+		  (1 << CS21) |
+		  (1 << CS20));
 
 	TCCR2A = ((1 << WGM20));
 

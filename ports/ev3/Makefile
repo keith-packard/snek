@@ -16,7 +16,7 @@ vpath snek-posix.c ../posix
 
 SNEK_ROOT=../..
 
-CC=arm-linux-gnueabi-gcc
+override CC=arm-linux-gnueabi-gcc
 PROGNAME=snek-ev3
 PROG=$(PROGNAME)-$(SNEK_VERSION)
 SERVER=snekserver-$(SNEK_VERSION)

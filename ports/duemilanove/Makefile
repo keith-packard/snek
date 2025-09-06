@@ -26,7 +26,6 @@ INSTALLER?=1
 ATMEGA_FLASH_SIZE?=0x7e00	# reserve 512 bytes for the boot loader
 ATMEGA_RAM_SIZE=0x740		# reserve 192 bytes for the stack
 MCU?=atmega328p
-SNEK_GLOBAL_ALIAS?=n
 
 include $(SNEK_ATMEGA)/snek-atmega.defs
 
@@ -76,7 +75,7 @@ BASE=snek-$(BOARD)-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
-CC=avr-gcc
+override CC=avr-gcc
 
 CFLAGS=-DUART_BAUD=$(BAUD) -DF_CPU=$(CLOCK)UL -mmcu=atmega328p -I. -I$(SNEK_LOCAL_VPATH) $(SNEK_CFLAGS) $(OPT) -g -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \

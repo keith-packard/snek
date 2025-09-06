@@ -46,7 +46,7 @@ BASE=snek-mega-$(SNEK_VERSION)
 ELF=$(BASE).elf
 HEX=$(BASE).hex
 MAP=$(BASE).map
-CC=avr-gcc
+override CC=avr-gcc
 CFLAGS=-DF_CPU=16000000UL -mmcu=atmega2560 -I. -I$(SNEK_LOCAL_VPATH) -g $(SNEK_CFLAGS) $(OPT) -Waddr-space-convert
 LDFLAGS=$(SNEK_LDFLAGS) \
 	-Wl,-uvfprintf -lprintf_flt -lm \

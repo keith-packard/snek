@@ -34,7 +34,7 @@ include $(SNEK_ROOT)/snek-install.defs
 
 WINDOWS_INSTALL=build/nsis/snek-windows-$(SNEK_VERSION_DASH).exe
 
-CC=i686-w64-mingw32-gcc
+override CC=i686-w64-mingw32-gcc
 MINGFLAGS=-Wall -Wextra -mconsole
 
 OPT=-O0

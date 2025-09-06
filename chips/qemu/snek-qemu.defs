@@ -57,7 +57,7 @@ LIBS=-lm
 PROG=$(PROGNAME)-$(SNEK_VERSION).elf
 MAP=$(PROGNAME)-$(SNEK_VERSION).map
 
-CC=$(ARCH)-gcc
+override CC=$(ARCH)-gcc
 OBJCOPY=$(ARCH)-objcopy
 
 distclean:	clean

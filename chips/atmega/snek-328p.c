@@ -41,7 +41,8 @@ tcc0_set(void)
 static void
 tcc0_reset(void)
 {
- 	tccr0a = ((1 << WGM01) |
+ 	tccr0a = ((0 << WGM02) |
+		  (0 << WGM01) |
 		  (1 << WGM00));
 
 	tccr0b = ((0 << CS02) |
@@ -51,7 +52,8 @@ tcc0_reset(void)
 }
 #else
 #define tcc0_reset(a) do {			\
-		TCCR0A = ((1 << WGM01) |	\
+		TCCR0A = ((0 << WGM02) |	\
+			  (0 << WGM01) |	\
 			  (1 << WGM00));	\
 						\
 		TCCR0B = ((0 << CS02) |		\
@@ -73,7 +75,7 @@ port_init(void)
 
 	/* Timer 1 */
 	TCCR1B = ((0 << CS12) |
-		  (1 << CS11) |
+		  (0 << CS11) |
 		  (1 << CS10));
 
 	TCCR1A = ((0 << WGM12) |
@@ -84,12 +86,14 @@ port_init(void)
 	OCR1BH = 0;
 
 	/* Timer 2 */
-	TCCR2B = ((1 << CS22) |
-		  (0 << CS21) |
-		  (0 << CS20));
+	/* /32 to generate a suitable clock */
+	TCCR2B = ((0 << CS22) |
+		  (1 << CS21) |
+		  (1 << CS20));
 
 	TCCR2A = ((1 << WGM20) |
-		  (1 << WGM21));
+		  (0 << WGM21) |
+		  (0 << WGM22));
 
 	/* enable interrupt */
 	TIMSK2 = (1 << TOIE2);
@@ -358,6 +362,7 @@ snek_builtin_tone(snek_poly_t a)
 	tcc0_set();
 
 	OCR0A = (uint8_t) (val - 1);
+	OCR0B = 0;
 
 	set_dir(5, 1);
 	set_on(5);
@@ -381,7 +386,6 @@ snek_poly_t
 snek_builtin_setpower(snek_poly_t a)
 {
 	float p = snek_poly_get_float(a);
-	printf("%p\n", &p);
 	if (p < 0.0f) p = 0.0f;
 	if (p > 1.0f) p = 1.0f;
 	power[power_pin] = (uint8_t) (p * 255.0f + 0.5f);
