@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Clone snek'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: snek
 
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Clone snek'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: snek
 
