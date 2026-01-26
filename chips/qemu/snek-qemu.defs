@@ -36,17 +36,9 @@ PICOLIBC_CFLAGS= \
 	-specs=picolibc.specs \
 	$(PICOLIBC_PRINTF_CFLAGS)
 
-OPT?=-Os
+OPT?=-O2
 
-# Add --crt0=semihost for picolibc >= 1.6
-CRT0_FLAG=$(shell \
-	(echo '#include "picolibc.h"'; \
-	echo '__PICOLIBC__ __PICOLIBC_MINOR__ __PICOLIBC_PATCHLEVEL__') | \
-	arm-none-eabi-gcc -E - --specs=picolibc.specs | \
-	grep '^[0-9]' | \
-	awk '{ if ($$1 > 1 || ($$1 == 1 && $$2 >= 6)) print "--crt0=semihost";}')
-
-CFLAGS=$(ARCH_CFLAGS) --oslib=semihost $(CRT0_FLAG) \
+CFLAGS=$(ARCH_CFLAGS) --oslib=semihost --crt0=semihost \
 	-std=c18 $(OPT) -g \
 	-I. -I$(SNEK_QEMU) -I$(SNEK_ROOT) $(PICOLIBC_CFLAGS) $(SNEK_CFLAGS)
 

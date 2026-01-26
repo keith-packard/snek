@@ -74,7 +74,7 @@ PICOLIBC_CFLAGS= \
 	-specs=picolibc.specs \
 	$(PICOLIBC_PRINTF_CFLAGS)
 
-OPT?=-Os
+OPT?=-O2
 
 AO_CFLAGS=\
 	-std=c18 $(OPT) -g

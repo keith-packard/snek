@@ -30,7 +30,7 @@ OBJ=$(SRC:.c=.o)
 all: $(PROG) snek-riscv
 
 $(PROG): Makefile $(OBJ)
-	$(call quiet,CC) $(LDFLAGS) -Wl,-Tsnek-qemu-riscv.ld -Wl,-M=$(MAP) -o $@ $(OBJ) $(LIBS)
+	$(call quiet,CC) $(LDFLAGS) -Tsnek-qemu-riscv.ld -Wl,-M=$(MAP) -o $@ $(OBJ) $(LIBS)
 
 $(OBJ): $(SNEK_INC)
 

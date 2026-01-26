@@ -3,3 +3,5 @@ __flash_size = 0x00040000;
 __ram =        0x00040000;
 __ram_size   = 0x00040000;
 __stack_size = 1k;
+
+INCLUDE picolibc.ld
