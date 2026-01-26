@@ -18,7 +18,7 @@ BOOK_FILES=snek-book.pdf snek-cover.pdf snek-book-book.pdf snek-cover-book.pdf
 
 book: $(BOOK_FILES)
 
-LETTER_ATTRIBUTES=--attribute='pdf-theme=snek' 
+LETTER_ATTRIBUTES=--attribute='pdf-theme=snek' -a optimize
 BOOK_ATTRIBUTES=--attribute='pdf-theme=snek-book' -a optimize
 ATTRIBUTES=--attribute="revdate=$(SNEK_DATE)" --attribute="version=$(SNEK_VERSION)"
 
