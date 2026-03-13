@@ -37,21 +37,41 @@ usage (char *program, int val)
 }
 
 #ifdef USE_READLINE
-#define snek_readline(p) readline(p)
-#define snek_add_history(p) add_history(p)
-#define snek_free_line(p) free(p)
-#else
+static bool snek_use_readline;
+#endif
+
 static char *
 snek_readline(char *prompt)
 {
 	static char	line[256];
+#ifdef USE_READLINE
+	if (snek_use_readline)
+		return readline(prompt);
+#endif
 	fputs(prompt, stdout);
 	fflush(stdout);
 	return fgets(line, sizeof(line), stdin);
 }
-#define snek_add_history(p)
-#define snek_free_line(p)
+
+static void
+snek_add_history(const char *line)
+{
+	(void) line;
+#ifdef USE_READLINE
+	if (snek_use_readline)
+		add_history(line);
 #endif
+}
+
+static void
+snek_free_line(char *line)
+{
+	(void) line;
+#ifdef USE_READLINE
+	if (snek_use_readline)
+		free(line);
+#endif
+}
 
 static int
 snek_getc_interactive(void)
@@ -154,8 +174,11 @@ main (int argc, char **argv)
 	if (do_interactive) {
 		printf("Welcome to Snek version %s\n", SNEK_VERSION);
 		snek_file = "<stdin>";
-		snek_posix_input = stdin;
 		snek_interactive = true;
+#ifdef USE_READLINE
+		snek_use_readline = isatty(0);
+#endif
+		snek_posix_input = stdin;
 		if (snek_parse() != snek_parse_success)
 			ret = false;
 		printf("\n");
