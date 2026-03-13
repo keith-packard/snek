@@ -25,9 +25,9 @@ const char anim[] = "\\|/-";
 
 int main(void)
 {
-	lego_buf_t	l;
-	int		s, i;
-	int		t;
+	dacta_t	l;
+	int	s, i;
+	int	t;
 
 	if (lego_start(&l, DEVICE) < 0) {
 		perror(DEVICE);

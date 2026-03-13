@@ -134,7 +134,6 @@ main (int argc, char **argv)
 	int c;
 	bool do_interactive = true;
 	bool interactive_flag = false;
-	char *lego = NULL;
 
 	while ((c = getopt_long(argc, argv, "v?i", options, NULL)) != -1) {
 		switch (c) {
@@ -144,9 +143,6 @@ main (int argc, char **argv)
 			break;
 		case 'i':
 			interactive_flag = true;
-			break;
-		case 'l':
-			lego = optarg;
 			break;
 		case '?':
 			usage(argv[0], 0);
@@ -160,13 +156,6 @@ main (int argc, char **argv)
 	signal(SIGINT, sigint);
 
 	snek_init();
-
-	if (lego) {
-		if (!snek_lego_init(lego)) {
-			perror(lego);
-			exit(1);
-		}
-	}
 
 	bool ret = true;
 

@@ -40,7 +40,7 @@ milliseconds(void)
 #define TIMEOUT_MS	100
 
 static void
-lego_lock(lego_buf_t *l)
+lego_lock(dacta_t *l)
 {
 	int	ret = pthread_mutex_lock(&l->mutex);
 	if (ret) {
@@ -49,7 +49,7 @@ lego_lock(lego_buf_t *l)
 }
 
 static void
-lego_unlock(lego_buf_t *l)
+lego_unlock(dacta_t *l)
 {
 	int	ret = pthread_mutex_unlock(&l->mutex);
 	if (ret) {
@@ -59,7 +59,7 @@ lego_unlock(lego_buf_t *l)
 
 /* Fill the input buffer. Timeout if there is nothing available */
 static int
-lego_fill(lego_buf_t *l, int timeout)
+lego_fill(dacta_t *l, int timeout)
 {
 	struct pollfd	fds[1] = {
 		{ .fd = l->fd, .events = POLLIN | POLLERR | POLLHUP, .revents = 0 }
@@ -87,7 +87,7 @@ lego_fill(lego_buf_t *l, int timeout)
 
 /* Discard any pending input to re-synchronize the device */
 static void
-lego_flush(lego_buf_t *l)
+lego_flush(dacta_t *l)
 {
 	int ret;
 
@@ -101,7 +101,7 @@ lego_flush(lego_buf_t *l)
 
 /* Get a single byte from the device */
 static int
-lego_getc(lego_buf_t *l)
+lego_getc(dacta_t *l)
 {
 	int	ret;
 
@@ -115,7 +115,7 @@ lego_getc(lego_buf_t *l)
 
 /* Wait for the device to report back the startup string */
 static int
-lego_read_until(lego_buf_t *l, char *buf, size_t len, const char *start, const char *end)
+lego_read_until(dacta_t *l, char *buf, size_t len, const char *start, const char *end)
 {
 	size_t	start_len = strlen(start);
 	size_t	end_len = strlen(end);
@@ -162,7 +162,7 @@ lego_read_until(lego_buf_t *l, char *buf, size_t len, const char *start, const c
 static const char init_string[] = "p\0###Do you byte, when I knock?$$$";
 
 static int
-lego_init(lego_buf_t *l)
+lego_init(dacta_t *l)
 {
 	char	buf[LEGO_BUFSIZE];
 	int	try;
@@ -248,7 +248,7 @@ lego_chksum_sensor_packet(lego_sensor_packet_t *sensor)
  * Read a complete sensor packet
  */
 static int
-lego_read_sensor_packet(lego_buf_t *l, lego_sensor_packet_t *sensor)
+lego_read_sensor_packet(dacta_t *l, lego_sensor_packet_t *sensor)
 {
 	int	c;
 	size_t	i;
@@ -282,7 +282,7 @@ lego_read_sensor_packet(lego_buf_t *l, lego_sensor_packet_t *sensor)
 static void *
 lego_reader (void *_closure)
 {
-	lego_buf_t		*l = _closure;
+	dacta_t		*l = _closure;
 	lego_sensor_packet_t	sensor;
 	int			ret;
 	int			i;
@@ -330,7 +330,7 @@ lego_reader (void *_closure)
 }
 
 int
-lego_start(lego_buf_t *l, char *device)
+lego_start(dacta_t *l, char *device)
 {
 	l->fd = open(device, O_RDWR);
 	if (l->fd < 0)
@@ -371,7 +371,7 @@ lego_start(lego_buf_t *l, char *device)
 }
 
 void
-lego_stop(lego_buf_t *l)
+lego_stop(dacta_t *l)
 {
 	if (l->running) {
 		l->running = false;
@@ -383,7 +383,7 @@ lego_stop(lego_buf_t *l)
 }
 
 lego_sensor_t
-lego_sensor(lego_buf_t *l, int i)
+lego_sensor(dacta_t *l, int i)
 {
 	lego_sensor_t	v;
 
@@ -394,7 +394,7 @@ lego_sensor(lego_buf_t *l, int i)
 }
 
 bool
-lego_connected(lego_buf_t *l)
+lego_connected(dacta_t *l)
 {
 	bool ret;
 

@@ -172,6 +172,15 @@ snek_id_ref(snek_id_t id, bool insert)
 	return &v->value;
 }
 
+snek_poly_t *
+snek_global_ref(snek_id_t id, bool insert)
+{
+	snek_variable_t *v = snek_variable_lookup(true, id, insert);
+	if (!v)
+		return NULL;
+	return &v->value;
+}
+
 bool
 snek_id_store(snek_id_t id, snek_poly_t value)
 {
