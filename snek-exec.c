@@ -860,7 +860,7 @@ snek_exec(snek_code_t *code_in)
 				snek_a = snek_float_to_poly(-snek_poly_get_float(snek_a));
 				break;
 			case snek_op_lnot:
-				snek_a = snek_float_to_poly(~(uint32_t) snek_float_to_int(snek_poly_get_float(snek_a)));
+				snek_a = snek_float_to_poly((~(uint32_t) snek_float_to_int(snek_poly_get_float(snek_a))) & 0xffffff);
 				break;
 			case snek_op_call:
 
