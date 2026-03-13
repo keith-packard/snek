@@ -34,7 +34,6 @@ import os
 import os.path
 import argparse
 
-
 UF2_MAGIC_START0 = 0x0A324655  # "UF2\n"
 UF2_MAGIC_START1 = 0x9E5D5157  # Randomly selected
 UF2_MAGIC_END = 0x0AB16F30  # Ditto

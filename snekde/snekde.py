@@ -444,7 +444,7 @@ class EditWin:
     # Convert x/y coord to text index
 
     def cursor_to_point(self, cursor):
-        (cur_col, cur_line) = cursor
+        cur_col, cur_line = cursor
         if cur_line < 0:
             cur_line = 0
         elif cur_line >= len(self.text.split("\n")):
@@ -646,7 +646,7 @@ class EditWin:
     def pop_undo(self):
         if not self.undo:
             return False
-        (point, operation, self_point, self_mark) = self.undo.pop()
+        point, operation, self_point, self_mark = self.undo.pop()
 
         if isinstance(operation, str):
             # Replace deleted text
@@ -751,7 +751,7 @@ class EditWin:
     def copy(self, delete=False):
         selection = self.get_selection()
         if selection:
-            (start, end) = selection
+            start, end = selection
 
             self.cut = self.text[start:end]
             if delete:
@@ -1212,7 +1212,7 @@ def screen_resize():
     #
     # Update desired window sizes
     #
-    (edit_lines, edit_y, repl_lines, repl_y) = screen_get_sizes()
+    edit_lines, edit_y, repl_lines, repl_y = screen_get_sizes()
     stdscr.clear()
     snek_edit_win.resize(edit_lines, snek_cols, edit_y, 0)
     snek_repl_win.resize(repl_lines, snek_cols, repl_y, 0)
@@ -1226,7 +1226,7 @@ def screen_init(text):
     curses.raw()
     stdscr.keypad(True)
     stdscr.notimeout(False)
-    (edit_lines, edit_y, repl_lines, repl_y) = screen_get_sizes()
+    edit_lines, edit_y, repl_lines, repl_y = screen_get_sizes()
     snek_edit_win = EditWin(edit_lines, snek_cols, edit_y, 0)
     if text:
         snek_edit_win.set_text(text)
