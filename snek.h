@@ -591,6 +591,9 @@ snek_frame_pop(void);
 snek_poly_t *
 snek_id_ref(snek_id_t id, bool insert);
 
+snek_poly_t *
+snek_global_ref(snek_id_t id, bool insert);
+
 bool
 snek_id_store(snek_id_t id, snek_poly_t value);
 
