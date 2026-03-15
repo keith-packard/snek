@@ -841,6 +841,9 @@ snek_poly_len(snek_poly_t a);
 float
 snek_poly_get_float(snek_poly_t a);
 
+const char *
+snek_poly_get_string(snek_poly_t a);
+
 snek_soffset_t
 snek_poly_get_soffset(snek_poly_t a);
 

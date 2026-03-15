@@ -155,6 +155,18 @@ snek_poly_get_float(snek_poly_t a)
 }
 
 /*
+ * Return a string, or raise an error if the value isn't one
+ */
+const char *
+snek_poly_get_string(snek_poly_t a)
+{
+	if (snek_poly_type(a) == snek_string)
+		return snek_poly_to_string(a);
+	snek_error_type_1(a);
+	return NULL;
+}
+
+/*
  * Return an soffset, or raise an error if the value isn't a number
  */
 snek_soffset_t
