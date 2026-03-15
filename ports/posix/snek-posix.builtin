@@ -20,6 +20,9 @@ curses.echo, 0
 curses.cbreak, 0
 curses.nocbreak, 0
 curses.endwin, 0
+lego.open, -1
+lego.list, 0
+lego.close, -1
 stdscr.nodelay, 1
 stdscr.erase, 0
 stdscr.addstr, 3
@@ -28,3 +31,4 @@ stdscr.refresh, 0
 stdscr.getch, 0
 #include <snek-posix.h>
 #define SNEK_POOL 262144
+#define SNEK_STRING_BUILD
