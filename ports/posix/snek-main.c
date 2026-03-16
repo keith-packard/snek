@@ -20,8 +20,6 @@
 #endif
 #include <signal.h>
 
-FILE	*snek_posix_input;
-
 static const struct option options[] = {
 	{ .name = "version", .has_arg = 0, .val = 'v' },
 	{ .name = "interactive", .has_arg = 0, .val = 'i' },
@@ -36,6 +34,8 @@ usage (char *program, int val)
 	exit(val);
 }
 
+static FILE *snek_posix_input;
+
 #ifdef USE_READLINE
 static bool snek_use_readline;
 #endif
@@ -45,55 +45,39 @@ snek_readline(char *prompt)
 {
 	static char	line[256];
 #ifdef USE_READLINE
-	if (snek_use_readline)
-		return readline(prompt);
+	static char	*line_base;
+	if (snek_use_readline) {
+		if (line_base)
+			free(line_base);
+		line_base = readline(prompt);
+		if (line_base)
+			add_history(line);
+		return line_base;
+	}
 #endif
 	fputs(prompt, stdout);
 	fflush(stdout);
 	return fgets(line, sizeof(line), stdin);
 }
 
-static void
-snek_add_history(const char *line)
-{
-	(void) line;
-#ifdef USE_READLINE
-	if (snek_use_readline)
-		add_history(line);
-#endif
-}
-
-static void
-snek_free_line(char *line)
-{
-	(void) line;
-#ifdef USE_READLINE
-	if (snek_use_readline)
-		free(line);
-#endif
-}
-
 static int
 snek_getc_interactive(void)
 {
-	static char	*line, *line_base;
-	int	    c;
+	static char *line;
+	int	     c;
 
 	if (!line)
 	{
 		char *prompt = "> ";
 		if (snek_parse_middle)
 			prompt = "+ ";
-		line_base = snek_readline (prompt);
-		line = line_base;
+		line = snek_readline (prompt);
 		if (!line)
 			return EOF;
-		snek_add_history (line_base);
 	}
 	c = (*line++) & 0xff;
-	if (!c) {
+	if (!c || c == '\n') {
 		c = '\n';
-		snek_free_line (line_base);
 		line = 0;
 	}
 	return c;
@@ -102,7 +86,7 @@ snek_getc_interactive(void)
 static bool snek_sigint;
 
 int
-snek_getc(FILE *input)
+snek_getc(void)
 {
 	int c = EOF;
 	if (!snek_abort)
@@ -111,7 +95,7 @@ snek_getc(FILE *input)
 		if (snek_interactive)
 			c = snek_getc_interactive();
 		else
-			c = getc(input);
+			c = getc(snek_posix_input);
 	}
 	if (snek_sigint)
 		return EOF;
@@ -153,6 +137,9 @@ main (int argc, char **argv)
 	}
 
 	signal(SIGINT, sigint);
+
+	if (interactive_flag)
+		setvbuf(stdout, NULL, _IOLBF, 0);
 
 	snek_init();
 
