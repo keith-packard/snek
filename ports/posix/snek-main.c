@@ -173,3 +173,32 @@ main (int argc, char **argv)
 
 	return ret ? 0 : 1;
 }
+
+snek_poly_t
+snek_builtin_reset(uint8_t nposition, uint8_t nnamed, snek_poly_t *args)
+{
+	const char *start_file = NULL;
+	(void) nnamed;
+	if (nposition) {
+		start_file = snek_poly_get_string(*args);
+		if (!start_file)
+			return SNEK_NULL;
+	}
+	const char *argv[] = {
+		"snek",
+		"-i",
+		start_file,
+		NULL
+	};
+
+	/*
+	 * Reset is done before \n from the input line is processed
+	 * and echoed, so print it here to make sure Snek banner is
+	 * not printed on the same line as reset() echo.
+	 */
+	printf("\n");
+	fflush(stdout);
+	execv("/proc/self/exe", (char **) argv);
+	perror("execv");
+	return SNEK_NULL;
+}
